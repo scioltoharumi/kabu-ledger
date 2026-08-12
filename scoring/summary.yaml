@@ -1,0 +1,15 @@
+as_of: '2026-08-10'
+total: 3
+hit: 0
+miss: 0
+unresolvable: 0
+open: 3
+hit_rate: null
+brier: null
+brier_baseline: 0.25
+by_metric_source:
+  kpi: 2
+  price: 1
+invalid: []
+note: 実弾投入の判断材料はブライアススコア（低いほど良い・確信度0.5一律なら0.25）。的中率は参考。採点は resolve_by 時点の値で行い、期限前は
+  open のまま据え置く。判定不能が多い場合は予測の書き方（metric の取得経路）に問題がある。as_of は日足の最終営業日であって実行時刻ではない。

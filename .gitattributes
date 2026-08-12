@@ -1,0 +1,20 @@
+# 改行コードをリポジトリ内で LF に固定する。
+#
+# 理由: 本プロジェクトは「git diff が先週から何が変わったかそのものになる」ことを
+# 設計の柱にしている（CLAUDE.md の不変条件・D8）。ローカル(Windows)で生成した
+# docs/*.html が CRLF、CI(Linux) が LF になると、内容が同一でも全行が差分として
+# 現れ、週次の差分が読めなくなる。
+#
+# 生成物（docs/ と data/*.csv）を追跡している以上、改行コードの揺れは
+# 「決定論的生成」の担保を実質的に無効化する。
+
+* text=auto eol=lf
+
+*.py    text eol=lf
+*.html  text eol=lf
+*.csv   text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf

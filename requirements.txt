@@ -1,0 +1,6 @@
+requests>=2.32
+beautifulsoup4>=4.12
+PyYAML>=6.0
+# ローカル(Windows)は SSL 検査プロキシ配下で certifi のバンドルでは検証できない。
+# OS の証明書ストアを使う。CI(Linux) では不要。
+truststore>=0.9 ; platform_system == "Windows"

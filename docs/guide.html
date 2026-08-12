@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>読み方</title><style>
+:root{--paper:#fdfdfc;--ink:#1c1c1a;--dim:#6b6b66;--rule:#d8d6d0;--soft:#f4f2ed;
+--buy:#1f6f43;--watch:#6b6b66;--probe:#23548c;--liq:#9a3324;--trend:#7d5a3c;
+--sell:#b3261e;--hot:#8a5a00;--warn:#8a5a00}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);margin:0;padding:2rem 1.25rem 4rem;
+font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+line-height:1.75;font-size:15px;-webkit-text-size-adjust:100%}
+main{max-width:64rem;margin:0 auto}
+h1{font-size:1.6rem;font-weight:700;letter-spacing:.02em;margin:0 0 .3rem}
+h2{font-size:1.05rem;font-weight:700;margin:2.75rem 0 .6rem;
+padding-bottom:.35rem;border-bottom:1px solid var(--rule)}
+h3{font-size:.95rem;font-weight:700;margin:1.8rem 0 .3rem}
+p{margin:.6rem 0}
+.lede{color:var(--dim);margin:0 0 1.5rem;font-size:.9rem}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:.75rem 0}
+.scroll table{margin:0}
+table{width:100%;border-collapse:collapse;margin:.75rem 0;font-size:.85rem}
+th,td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--rule);
+vertical-align:top}
+th{font-weight:600;color:var(--dim);font-size:.75rem;letter-spacing:.06em;
+white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;
+font-family:ui-monospace,"SF Mono",Menlo,monospace}
+td.c,th.c{text-align:center}
+th.w{white-space:normal;min-width:6rem}
+.stamp{display:inline-block;padding:.05rem .45rem;border-radius:2px;
+font-size:.72rem;font-weight:700;color:#fff;white-space:nowrap}
+.s-buy{background:var(--buy)}.s-watch{background:var(--watch)}
+.s-probe{background:var(--probe)}.s-liq{background:var(--liq)}
+.s-trend{background:var(--trend)}.s-sell{background:var(--sell)}
+.s-hot{background:var(--hot)}
+.mk{font-weight:700;font-size:1.05rem;line-height:1.2}
+.mk-ok{color:var(--buy)}.mk-ng{color:var(--liq)}.mk-unk{color:var(--warn)}
+.res{display:inline-block;min-width:3.6rem;text-align:center;padding:.02rem .35rem;
+border-radius:2px;font-size:.7rem;font-weight:700;white-space:nowrap}
+.r-pass{background:#e6f0e9;color:var(--buy)}
+.r-fail{background:#f7e9e6;color:var(--liq)}
+.r-unknown{background:#fbf1dd;color:var(--warn)}
+.r-skipped{background:var(--soft);color:var(--dim)}
+.r-na{background:var(--soft);color:var(--dim)}
+.gate{border-left:3px solid var(--liq);background:#fbf3f1;padding:.6rem .8rem;
+margin:1rem 0;font-size:.85rem}
+.notice{border-left:3px solid var(--warn);background:#fdf8ee;padding:.6rem .8rem;
+margin:1rem 0;font-size:.85rem}
+.note{border-left:3px solid var(--rule);background:var(--soft);padding:.6rem .8rem;
+margin:1rem 0;font-size:.85rem}
+.src{color:var(--dim);font-size:.75rem}
+ul,ol{margin:.6rem 0;padding-left:1.3rem}
+li{margin:.3rem 0}
+code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.82em;
+background:var(--soft);padding:.05rem .3rem;border-radius:2px;
+overflow-wrap:anywhere}
+pre{background:var(--soft);padding:.8rem;overflow-x:auto;font-size:.8rem;
+line-height:1.65;border-radius:2px;white-space:pre-wrap;overflow-wrap:anywhere}
+a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+nav{font-size:.8rem;margin:0 0 2rem;color:var(--dim)}
+nav a{margin-right:1rem;display:inline-block}
+footer{margin-top:4rem;padding-top:1rem;border-top:1px solid var(--rule);
+color:var(--dim);font-size:.75rem}
+@media(max-width:640px){body{padding:1.25rem .8rem 3rem}table{font-size:.78rem}
+h1{font-size:1.3rem}th,td{padding:.45rem .45rem}}
+</style></head><body><main><h1>この台帳の読み方</h1><p class="lede">専門用語を知らなくても読み切れるように書いた案内。後半に用語集がある。分からない言葉が出てきたら用語集を見れば足りる。</p><nav><a href="index.html">台帳</a><a href="scoring.html">予測採点</a><a href="data.html">データ台帳</a><a href="formula.html">算出ロジック</a><a href="guide.html">読み方</a></nav><h2>この台帳は何か</h2><p>条件を決めて機械的に絞り込んだ4つの会社の株について、毎週おなじ手順で状態を測り直し、記録として残しているページ。「今どういう状態か」を毎週おなじ物差しで書き留めることが目的で、「買え」「売れ」と勧めるものではない。実際に売買するかどうかは、この台帳を見た人間が決める。</p><p>大事なのは、毎週おなじ計算を、おなじ順番で行っていること。後から「あのときは特別だった」と言い訳できないように、手順のほうを先に固定してある。</p><h2>見る順番</h2><ol><li><strong>まず判定スタンプの色を見る。</strong>赤系（売り・見送）は「今は買わない／降りる」、青（調査）は「まだ判断できない」、灰（監視）は「持ったまま様子を見る」、琥珀（様子見(過熱)）は「上がりすぎているので今日は追わない」、緑（買）は「条件をすべて満たした候補」。</li><li><strong>次に「確定段階と根拠」を読む。</strong>どの段階でその判定になったかが書いてある。たとえば「① 流動性ゲート」で確定していれば、その銘柄については他の指標を一切見ていない。</li><li><strong>最後に指標の実値を見る。</strong>「—」が並んでいたら、その銘柄は判定に必要な材料がまだ足りていない。数字が無いことを悪い材料と読む必要はないが、良い材料と読むこともできない。</li></ol><h2>判定スタンプの意味</h2><table><thead><tr><th>判定</th><th class="w">意味</th></tr></thead><tbody><tr><td><span class="stamp s-liq">見送(流動性)</span></td><td>20日平均売買代金が閾値未満。他の指標を見ずにここで確定する</td></tr><tr><td><span class="stamp s-trend">見送(トレンド)</span></td><td>週足中期移動平均線が下向き。鉄則の第一条により買いで入らない</td></tr><tr><td><span class="stamp s-sell">売り</span></td><td>雲の下、または逆指値ライン抵触、または基準到達×デッドクロス気味</td></tr><tr><td><span class="stamp s-hot">様子見(過熱)</span></td><td>RSI・25日乖離率・信用倍率のいずれかが過熱域。入るなら押し目を待つ</td></tr><tr><td><span class="stamp s-probe">調査</span></td><td>必要な指標が算出できないか、ファンダ条件を満たさない。買を出さずに止める</td></tr><tr><td><span class="stamp s-watch">監視</span></td><td>保有中で6か月2倍ライン未到達。様子見・損切り確認</td></tr><tr><td><span class="stamp s-buy">買</span></td><td>①〜⑤のゲートをすべて通過した（鉄則の全項目を確認したわけではない）。売買の実行判断は人間が行う</td></tr></tbody></table><p>判定は上から順に見ていって、当てはまった時点で止まる。たとえば売買が細すぎる銘柄は、業績がどれだけ良くてもそこで「見送(流動性)」になり、それより下は評価しない。これは手抜きではなく、「売りたいときに売れない株は、判断が当たっていても意味がない」という考え方によるもの。</p><p>ただし<strong>買っている銘柄の「売り」だけは順番の外</strong>にある。雲の下に落ちた・逆指値の線を割った・目標に届いたが勢いが落ちた、のいずれかが起きていれば、他の項目がどうであっても先に「売り」を出す。「まだ判断できない」で止めてよいのは買う側の話で、降りる側でそれをやると降り遅れるため。</p><h2>「—」と「?」の意味</h2><div class="note">この台帳では、分からないことを分からないまま表示する。「—」は数字が計算できなかったこと、「?」は条件を満たすか判定できなかったことを表す。それらしい数字で埋めることはしない。そして、判定に必要な数字が欠けているときは、先に進めずに「調査」で止める決まりにしている。</div><h2>スクリーニング5条件の表</h2><p>もともとこの4銘柄を選んだときの条件が、今も満たされているかを○×で示している。選んだ後に条件から外れることはよくあるので、そこを毎週見えるようにしている。この5条件は判定とは別系統で、5つ全部○でも自動的に「買」にはならない。</p><h2>保有銘柄の見方</h2><p>実際に買った銘柄は、2本の線で管理する。1本目は「買値の -10%」で、ここまで下がったら降りる線。2本目は「6か月で2倍」に届くための進み具合の線で、たとえば買ってから3か月なら +41% 進んでいれば予定どおりとする。到達率が 1.00 なら予定どおり、それ未満なら遅れている。</p><h2>やってはいけない読み方</h2><ul><li><strong>「買」を買い推奨と読まないこと。</strong>この台帳は候補を並べるところまでで、いくら買うか・本当に買うかは決めていない。</li><li><strong>「買」を「全部確認した」と読まないこと。</strong>確認しているのは①〜⑤のゲートだけで、季節性・同業他社の決算・出来高を伴うトレンドか・マクロは見ていない。何を見ていないかは「算出ロジック」に一覧で書いてある。</li><li><strong>「—」を 0 と読まないこと。</strong>「—」は「計算できなかった」であって「ゼロだった」ではない。</li><li><strong>「?」を○にも×にも読み替えないこと。</strong>条件を満たすかどうかが分からない状態は、それ自体が情報である。</li><li><strong>先週の判定を引きずらないこと。</strong>判定は毎週ゼロから計算し直している。先週「買」でも今週「売り」になり得る。</li></ul><h2>用語集</h2><table><tbody><tr><th class="w">株価（終値）</th><td>その日の取引が終わったときの値段。この台帳では、2つのサイトから取った値段が一致したときだけ採用する。一致しなかった日は空欄にして、どちらの値も記録に残す。</td></tr><tr><th class="w">出来高</th><td>その日に売買が成立した株数。多いほど取引が活発。</td></tr><tr><th class="w">売買代金</th><td>出来高 × 株価。金額でみた取引の活発さ。</td></tr><tr><th class="w">流動性</th><td>売りたいときに売れる・買いたいときに買える度合い。売買代金が小さい銘柄は、判断が正しくても実際には売買できないことがある。</td></tr><tr><th class="w">移動平均</th><td>直近◯日の株価の平均。日々の上下をならして流れを見るための線。25日移動平均なら直近25営業日の平均。</td></tr><tr><th class="w">乖離率</th><td>今の株価が移動平均からどれだけ離れているかの割合。プラスに大きいほど「上がりすぎ」の目安になる。</td></tr><tr><th class="w">日足・週足</th><td>1日ぶんを1点として並べたものが日足、1週間ぶんを1点にまとめたものが週足。週足のほうが大きな流れを見るのに向いている。</td></tr><tr><th class="w">RSI</th><td>直近の値動きのうち、上がった分がどれくらいの割合を占めるかを 0〜100 で表した数字。80 を超えると「買われすぎ」の目安。</td></tr><tr><th class="w">一目均衡表・雲</th><td>過去の高値と安値から作る帯（雲）を先の日付にずらして描いたもの。株価が雲の上にあれば強い、雲の下に落ちたら弱い、と読む。この台帳では雲の下に落ちたら「売り」にする。</td></tr><tr><th class="w">ゴールデンクロス／デッドクロス</th><td>短い期間の移動平均が長い期間の移動平均を下から上に抜けるのがゴールデンクロス（強い）、上から下に抜けるのがデッドクロス（弱い）。この台帳では、2本の線がほぼ平行なときは「どちらでもない」として扱う。</td></tr><tr><th class="w">信用取引・信用倍率</th><td>お金や株を借りて行う売買のこと。買った人の残高（買い残）を売った人の残高（売り残）で割ったものが信用倍率。5倍を超えると「あとで売られる圧力が溜まっている」目安になる。</td></tr><tr><th class="w">逆指値</th><td>「ここまで下がったら自動的に売る」という注文。この台帳では買値の -10% を基準線として表示する。</td></tr><tr><th class="w">6か月2倍ライン</th><td>信用取引が6か月までしか持てないことに合わせた進捗の目安。1か月で +12%、2か月で +26%、3か月で +41%、4か月で +59%、5か月で +78%、6か月で +100%。到達率 1.00 でちょうど基準どおり。</td></tr><tr><th class="w">前年同四半期比</th><td>同じ3か月間を1年前と比べた増減率。季節で売上が変わる会社を公平に比べるために使う。</td></tr><tr><th class="w">経常利益</th><td>本業のもうけに、利息などの本業以外の損益を足し引きした利益。</td></tr><tr><th class="w">1Q進捗率</th><td>1年間の計画に対して、最初の3か月で何%まで進んだか。30% を超えていると、その後の上方修正が期待できる目安になる。</td></tr><tr><th class="w">スクリーニング</th><td>条件を決めて、当てはまる銘柄を機械的に絞り込むこと。この台帳の4銘柄はその結果である。</td></tr><tr><th class="w">ブライアススコア</th><td>予測の当て方の良し悪しを測る点数。「自信あり」と言って外すほど悪くなる。低いほど良い。</td></tr><tr><th class="w">TOPIX・グロース250</th><td>市場全体の値動きを表す指数。個別銘柄が上がったのか市場全体が上がったのかを分けて見るために使う。</td></tr><tr><th class="w">append-only</th><td>記録を後から書き換えない、という決まり。追記だけを許すことで、過去の判断の履歴が改変されないようにしている。</td></tr></tbody></table><p class="src">計算式そのものを確認したい場合は<a href="formula.html">算出ロジック</a>に、もとの数字と取得元を確認したい場合は<a href="data.html">データ台帳</a>にすべて書いてある。</p><footer>集計基準日 2026-08-10（株価データの最終営業日）。本サイトは個人の検討用であり、投資助言ではありません。判定スタンプは候補提示であって推奨ではありません。数値はすべて出所と取得日を併記しています。</footer></main></body></html>

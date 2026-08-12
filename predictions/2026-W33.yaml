@@ -1,0 +1,30 @@
+week: 2026-W33
+registered_at: '2026-08-12'
+predictions:
+- id: P-2026W33-01
+  code: '4073'
+  metric: stock_revenue_ratio
+  operator: '>'
+  reference: 0.61
+  resolve_by: '2026-08-21'
+  confidence: 0.6
+  status: open
+  note: 2026-08-14 本決算で確認
+- id: P-2026W33-02
+  code: '4073'
+  metric: operating_income
+  operator: '>'
+  reference: 0
+  resolve_by: '2026-08-21'
+  confidence: 0.7
+  status: open
+  note: 通期黒字化計画の達成可否
+- id: P-2026W33-03
+  code: '4937'
+  metric: avg_turnover_20d
+  operator: '>'
+  reference: 30000000
+  resolve_by: '2026-09-12'
+  confidence: 0.5
+  status: open
+  note: 流動性ゲートを通過し続けるか

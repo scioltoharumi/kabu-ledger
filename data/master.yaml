@@ -1,0 +1,117 @@
+# 銘柄マスタ
+# 出所: 楽天証券スクリーニング「成長株0606」2026-08-12 10:46 取得（15分ディレイ）
+# TO_VERIFY = 未検証。resolve ジョブが二重照合で埋めるまで null 扱い。推測で埋めない。
+#
+# flags はコードが読む固定語彙。**自由記述を混ぜない**（読まれない情報を置かない）。
+#   "制度信用: 買建のみ"  貸借銘柄ではなく売り残が構造的に常に0。judge はこの銘柄で
+#                         信用倍率の RATIO_NA を「該当しない」として過熱の材料から外す
+#                         （売り残0が取引所ルールの帰結で、需給の情報を持たないため）。
+#                         この扱いが無いと、当該銘柄は永久に「様子見(過熱)」から出られない。
+#   "時価総額が極小"      表示のみ。判定には使わない
+
+screening:
+  name: "成長株0606"
+  captured_at: "2026-08-12T10:46:00+09:00"
+  source: "楽天証券アプリ / 検索結果 / 15分ディレイ"
+  hit_count: 4
+  note: "スクリーニング条件そのものは Notion 側。条件変更時は screening.revision を上げる"
+  revision: 1
+
+stocks:
+  - code: "3851"
+    name: "日本一ソフトウェア"
+    market: "東証スタンダード"
+    sector: TO_VERIFY
+    valuation_model: per_netcash      # ゲーム: 純現金控除後PER
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    screen_price: 1173.0
+    screen_change_pct: 3.35
+    holding:                          # D15/D18。保有していなければ status: none で全項目 null
+      status: none                    # none / holding
+      buy_price: null                 # 逆指値ライン・6か月2倍ラインの基準
+      buy_date: null                  # 経過月数の起点
+      shares: null                    # 数量
+
+  - code: "4073"
+    name: "ジィ・シィ企画"
+    market: "東証グロース"
+    sector: "情報・通信業"
+    valuation_model: ev_sales         # 赤字/黒字化途上のためPER不使用
+    fiscal_year_end: "06"
+    ir_url: TO_VERIFY
+    peers: ["3744", TO_VERIFY, TO_VERIFY]   # kabutan「比較される銘柄」: TMN / DIシステム / シャノン
+    next_earnings: "2026-08-14"
+    next_earnings_source: "https://kabutan.jp/stock/?code=4073"
+    screen_price: 531.0
+    screen_change_pct: -0.75
+    flags: ["制度信用: 買建のみ", "時価総額が極小"]
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "4937"
+    name: "Waqoo"
+    market: "東証グロース"
+    sector: "化学"
+    valuation_model: per_margin       # 化粧品EC: PER + 営業利益率
+    fiscal_year_end: "09"
+    ir_url: "https://waqoo.jp/"
+    peers: TO_VERIFY
+    screen_price: 1921.0
+    screen_change_pct: -2.39
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "6570"
+    name: "共和コーポレーション"
+    market: "東証スタンダード"
+    sector: TO_VERIFY
+    valuation_model: ev_ebitda        # 設備型: 償却影響が大きくPER不適
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    screen_price: 2799.0
+    screen_change_pct: 7.57
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+# 流動性ゲート: 判定より上位。ここで落ちたら他の指標を見ない
+liquidity_gate:
+  min_avg_turnover_20d_jpy: 30000000   # 20日平均売買代金 3,000万円
+  on_fail: "見送(流動性)"
+  rationale: "時価総額十数億規模では、判定が正しくても建てられず降りられない"
+
+# 6か月2倍ライン（信用の期限が6か月であることに由来・鉄則）
+# キー = 買付からの経過月数（完了月数）、値 = 到達すべき騰落率
+target_ladder:
+  1: 0.12
+  2: 0.26
+  3: 0.41
+  4: 0.59
+  5: 0.78
+  6: 1.00
+
+# 逆指値ライン: 買値 × (1 + stop_loss_pct)。鉄則「上手くなるまでは買値の-10%で逆指値を必ずかける」
+stop_loss_pct: -0.10
+
+# judge の閾値の上書き（既定は src/judge.py の DEFAULT_JUDGE）。
+judge:
+  # 鉄則「週足**中期**移動平均線を見てトレンドが下がっていたら決して買いで入らない」の
+  # 「中期」が何週かは投資ルールに書かれていない。
+  #   日本の週足チャートの慣行  13週=短期 / 26週=中期 / 52週=長期
+  #   鉄則の枠組み              6か月2倍ライン＝信用の期限＝26週
+  # 実データ（2026-08-10）では 4073 の結論が 13週(flat) と 26週(down) で反転した。
+  # **マスターが確定するまで両方を評価し、どちらかが下向きなら不通過**にする（保守側）。
+  # 確定したらこの配列を [13] か [26] の1つにする。
+  # TODO(マスター確認): 「週足中期移動平均線」は13週か26週か
+  weekly_trend_periods: [13, 26]

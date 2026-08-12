@@ -1,0 +1,128 @@
+# 取得元定義
+# 原則: 生終値のみ。調整後終値は混在させない（MISMATCH の主因になる）
+# AI に取得元を探させない。ここに書いたものだけを順に試す。
+#
+# セレクタは 2026-08-12 に実地調査して確定した（推測ではない）。
+# 3ソースとも同一日の OHLCV が完全一致することを確認済み。
+
+price:
+  # 日足の時系列ページ。上から順に試行し、2件成功した時点で照合する
+  chain:
+    - id: kabutan
+      url: "https://kabutan.jp/stock/kabuka?code={code}&ashi=day"
+      paged_url: "https://kabutan.jp/stock/kabuka?code={code}&ashi=day&page={page}"
+      table_selector: "table.stock_kabuka_dwm"
+      today_selector: "table.stock_kabuka0"
+      columns: [date, open, high, low, close, change, change_pct, volume]
+      date_format: "yy/mm/dd"      # 例: 26/08/12
+      rows_per_page: 30
+      pageable: true
+    - id: minkabu
+      url: "https://minkabu.jp/stock/{code}/daily_bar"
+      paged_url: "https://minkabu.jp/stock/{code}/daily_bar?page={page}"
+      table_selector: "table#fourvalue_timeline"
+      columns: [date, open, high, low, close, close_adjusted, volume]
+      date_format: "yyyy/mm/dd"    # 例: 2026/08/10
+      rows_per_page: 20
+      pageable: true
+    - id: yahoo_jp
+      url: "https://finance.yahoo.co.jp/quote/{code}.T/history"
+      paged_url: "https://finance.yahoo.co.jp/quote/{code}.T/history?page={page}"
+      table_selector: "table#histlist"
+      columns: [date, open, high, low, close, volume, close_adjusted, per, pbr]
+      date_format: "yyyy/m/d"      # 例: 2026/8/10
+      rows_per_page: 20
+      pageable: true
+  required_agreements: 2
+  compare_field: close             # 照合は生終値で行う（調整後終値は使わない）
+  on_mismatch: "MISMATCH"          # 両値を記録し、判定は前週値を据え置き
+  on_all_fail: "FETCH_FAILED"      # 欠測として記録。推定値で埋めない
+
+# 信用残高（週次公表）。判定の過熱チェックに使う（信用倍率5倍超）
+#
+# セレクタは 2026-08-12 に実地調査して確定した（推測ではない）。
+# 対象テーブルは id も class も持たないため、見出し（th）のテキストで特定する。
+# 単位はページ側の見出し「信用取引 (単位:千株)」から読み取り、unit 列に記録する。
+# コード側で単位を仮定しない（見出しが変わったら UNIT_UNKNOWN を立てて欠測を明示する）。
+margin:
+  chain:
+    - id: kabutan
+      url: "https://kabutan.jp/stock/?code={code}"
+      match_th: ["売り残", "買い残"]
+      unit_heading: "信用"            # この語を含む直近の見出しから「単位:○○」を読む
+      columns: [date, short_balance, long_balance, ratio]
+      date_format: "mm/dd"            # 例: 07/31（年が無いので取得日から補う）
+      note: "株価ページ内の「日付/売り残/買い残/倍率」テーブル。2026-08-12 実測で直近4週分
+             （行数は固定と仮定しない。返ってきた行をそのまま append-only で積む）"
+  # 売り残0の銘柄（4073 は制度信用が買建のみ）は倍率が「－」になる。
+  # 定義できないだけなので None として記録し、推定で埋めない。
+  ratio_unavailable_marks: ["－", "-", "―", "--", "---"]
+
+# 指数（相対パフォーマンス I-17: 対TOPIX 4週/12週）。
+# 時系列テーブルの構造は kabutan の個別銘柄ページと同一なので price と同じパーサを使う。
+# セレクタ・指数コードは 2026-08-12 に実地調査して確定した（推測ではない）。
+index:
+  targets:
+    - id: topix
+      name: "TOPIX"
+      chain:
+        - id: kabutan
+          url: "https://kabutan.jp/stock/kabuka?code=0010&ashi=day"
+          paged_url: "https://kabutan.jp/stock/kabuka?code=0010&ashi=day&page={page}"
+          table_selector: "table.stock_kabuka_dwm"
+          columns: [date, open, high, low, close, change, change_pct, volume]
+          date_format: "yy/mm/dd"
+          rows_per_page: 30
+          pageable: true
+        - id: yahoo_jp
+          url: "https://finance.yahoo.co.jp/quote/998405.T/history"
+          paged_url: "https://finance.yahoo.co.jp/quote/998405.T/history?page={page}"
+          match_th: ["日付", "始値", "高値", "安値", "終値"]   # class がビルド毎のハッシュのため
+          columns: [date, open, high, low, close]              # 出来高列なし → volume は None
+          date_format: "yyyy/m/d"
+          rows_per_page: 20
+          pageable: true
+          note: "遡れるのは約1年（2025-08-12 まで確認）。それ以前は kabutan 単独になる"
+    - id: growth250
+      name: "東証グロース市場250指数"
+      chain:
+        - id: kabutan
+          url: "https://kabutan.jp/stock/kabuka?code=0012&ashi=day"
+          paged_url: "https://kabutan.jp/stock/kabuka?code=0012&ashi=day&page={page}"
+          table_selector: "table.stock_kabuka_dwm"
+          columns: [date, open, high, low, close, change, change_pct, volume]
+          date_format: "yy/mm/dd"
+          rows_per_page: 30
+          pageable: true
+      note: "第2ソース未確定。Yahoo には該当コードが無いことを確認済み（998410/998420/998430 は404）。
+             1ソースのため status は SINGLE_SOURCE になる。取得元の追加は人間の承認を経る"
+  required_agreements: 2
+  compare_field: close
+  on_mismatch: "MISMATCH"
+  on_all_fail: "FETCH_FAILED"
+
+disclosure:
+  # 分割・権利落ちは株価サイトでは拾えない。一次情報のみ
+  - id: tdnet
+    url: "https://www.release.tdnet.info/inbs/I_list_001_{yyyymmdd}.html"
+  - id: edinet
+    url: "https://api.edinet-fsa.go.jp/api/v2/documents.json"
+
+fetch_policy:
+  user_agent: "kabu-ledger/1.0 (personal research; contact via repo issues)"
+  interval_sec: 3
+  timeout_sec: 20
+  retries: 2
+  historical_days: 245             # 初回の遡り。約1年ぶんの営業日数（D16）
+                                   # 必要ページ数は各取得元の rows_per_page から算出する
+
+# 取得できなかった項目は null + status。株価は LLM に推定させない
+# （決算データは D14/D17 により Claude の抽出を許可。assumed フラグ必須）
+never_infer:
+  - close
+  - open
+  - high
+  - low
+  - volume
+  - shares_outstanding
+  - margin.*

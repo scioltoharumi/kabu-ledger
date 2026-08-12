@@ -1,0 +1,5 @@
+date,code,long_balance,short_balance,ratio,unit,status,source_url,fetched_at
+2026-07-10,6570,93.2,6.2,15.03,千株,OK,https://kabutan.jp/stock/?code=6570,2026-08-12T14:20:08.980150+09:00
+2026-07-17,6570,98.3,6.8,14.46,千株,OK,https://kabutan.jp/stock/?code=6570,2026-08-12T14:20:08.980150+09:00
+2026-07-24,6570,95.5,8.4,11.37,千株,OK,https://kabutan.jp/stock/?code=6570,2026-08-12T14:20:08.980150+09:00
+2026-07-31,6570,95.9,9.6,9.99,千株,OK,https://kabutan.jp/stock/?code=6570,2026-08-12T14:20:08.980150+09:00
