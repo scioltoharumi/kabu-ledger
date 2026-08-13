@@ -1,4 +1,12 @@
-<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>データの出どころ</title><style>
+"""台帳の見た目。build.py を小さく保つために分離している。
+
+方針（v2.0）:
+  - 落ち着いた紙面調。読み物としてのレポートが主役
+  - スマホ閲覧を一級市民とする
+  - 表は横スクロールを内側に閉じ込め、ページ本体は横に流れない
+"""
+
+CSS = """
 :root{--paper:#fdfdfc;--ink:#1c1c1a;--dim:#6b6b66;--rule:#d8d6d0;--soft:#f4f2ed;
 --accent:#23548c;--warn:#8a5a00;--danger:#9a3324;--good:#1f6f43;--flag:#7a4f9a}
 *{box-sizing:border-box}
@@ -72,4 +80,4 @@ h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:2.2rem}
 table{font-size:.8rem}th,td{padding:.45rem .5rem}
 .card{padding:.9rem 1rem}
 }
-</style></head><body><main><h1>データの出どころ</h1><p class="lede">数値がどこから来たのかを開示する。各銘柄の詳しい出典は、それぞれのレポート末尾「⑥ 出典」にある。</p><nav><a href="index.html">台帳</a><a href="data.html">データの出どころ</a></nav><h2>株価</h2><div class="scroll"><table><thead><tr><th>コード</th><th>銘柄</th><th>終値</th><th>最終営業日</th><th>レポート</th></tr></thead><tbody><tr><td>3851</td><td>日本一ソフトウェア</td><td class="num">1,135</td><td>2026-08-10</td><td>未作成</td></tr><tr><td>4073</td><td>ジィ・シィ企画</td><td class="num">535</td><td>2026-08-10</td><td>レポートあり</td></tr><tr><td>4937</td><td>Waqoo</td><td class="num">1,968</td><td>2026-08-10</td><td>未作成</td></tr><tr><td>6570</td><td>共和コーポレーション</td><td class="num">2,602</td><td>2026-08-10</td><td>未作成</td></tr></tbody></table></div><h2>集め方の原則</h2><ul><li>株価は複数のサイトから取り、<strong>値が一致したときだけ採用</strong>している。一致しなかった日は空欄のまま残す（推測で埋めない）</li><li>レポートの記述は、まとめサイトを含めて広く集めている。<strong>一次情報（決算短信・企業IR）と二次情報（まとめサイト・報道）を区別して</strong>出典欄に書き分けている</li><li>調べきれなかったことは「未確認」として残す。分かったふりをしない</li></ul><footer>集計基準日 2026-08-10／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
+"""
