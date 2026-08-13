@@ -81,11 +81,22 @@ font-family:ui-monospace,"SF Mono",Menlo,monospace}
 --viz-ink:#0b0b0b;--viz-muted:#898781;--viz-surface:#fdfdfc}
 .viz svg{width:100%;height:auto;display:block;overflow:visible}
 .viz figcaption{color:var(--dim);font-size:.82rem;margin-top:.5rem;line-height:1.7}
+/* 図の出所。検証済みか手書きかを図と一緒に必ず見せる（同じ見た目で並べない） */
+.viz-src{color:var(--dim);font-size:.74rem;line-height:1.6;margin:.45rem 0 0;
+padding:.35rem .55rem;background:var(--soft);border-left:2px solid var(--good);
+border-radius:2px;overflow-wrap:anywhere}
+.viz-src-hand{border-left-color:var(--warn);background:#fbf1dd;color:var(--warn)}
 .viz-tick{fill:#898781;font-size:12px;font-family:inherit}
 .viz-value{fill:#0b0b0b;font-size:13px;font-weight:700;font-family:inherit}
 .viz-bar rect,.viz-dot circle{transition:opacity .12s ease}
 .viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
 .viz-bar,.viz-dot{cursor:default}
+
+/* 折りたたみ（裏取りで「裏付けが取れた記述」を畳む。JSは使わない） */
+details{margin:1rem 0;border:1px solid var(--rule);border-radius:3px;
+padding:.5rem .8rem;background:#fff}
+details summary{cursor:pointer;font-size:.88rem;font-weight:700;color:var(--dim)}
+details[open] summary{margin-bottom:.4rem}
 
 /* 読み取りの手がかり（図の下に置く短い注記） */
 .readout{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;

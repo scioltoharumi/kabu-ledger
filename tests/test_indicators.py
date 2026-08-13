@@ -17,8 +17,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import indicators as ind  # noqa: E402
+import realdata as rd  # noqa: E402
 
 
 # --- 検証ヘルパ ---------------------------------------------------------------
@@ -465,14 +467,25 @@ def _load_real_rows():
         return list(csv.DictReader(f))
 
 
+def _min_bars_needed() -> int:
+    """全指標を算出するのに必要な最小の営業日数（**定数から導く**）。
+
+    ここに実データの行数（1076 等）を書くと、次の週次取得で意味を失ううえ、
+    「何本あれば足りるのか」がテストから読み取れなくなる。要求は指標側の
+    定数で決まっているので、そこから引く。
+    """
+    return max(
+        ind.ICHIMOKU_SPAN_B_PERIODS + ind.ICHIMOKU_DISPLACEMENT + 1,
+        ind.VOLUME_RATIO_LOOKBACK_DAYS + ind.VOLUME_RATIO_WINDOW_DAYS,
+        ind.WEEKLY_MA_LONG_PERIODS * 5,      # 26週ぶんの営業日
+    )
+
+
 def test_real_data_all_indicators():
     rows = _load_real_rows()
-    # daily.csv は append-only なので行数は増える一方。等値で固定すると
-    # 次の週次取得で必ず落ちる（CI がデプロイを止める条件になっている）。
-    # 「初回取得ぶん（4銘柄×269営業日）を下回らない」ことだけを検証する。
-    assert len(rows) >= 1076, f"daily.csv の行数が減っている: {len(rows)}"
+    need = _min_bars_needed()
     codes = sorted({r["code"] for r in rows})
-    eq(codes, ["3851", "4073", "4937", "6570"], "銘柄")
+    eq(codes, rd.codes(), "銘柄（master.yaml と一致する）")
 
     header = (f"{'code':>5} {'bars':>5} {'wk':>4} {'close':>8} {'sma25':>9} "
               f"{'dev%':>7} {'rsi14':>6} {'雲':>6} {'交差':>12} "
@@ -480,25 +493,38 @@ def test_real_data_all_indicators():
               f"{'日足5/25':>10}")
     _REAL_SUMMARY.append(header)
 
-    bar_counts = {c: len(ind.bars_from_rows(rows, code=c)) for c in codes}
-    eq(len(set(bar_counts.values())), 1,
-       f"全銘柄の営業日数が揃っていない: {bar_counts}")
+    # 営業日の網羅は**生の行**で見る。確定足（bars_from_rows の既定）で数えると、
+    # 「最新営業日の照合が一部の銘柄でだけ成立した」ふつうの状態で本数がずれ、
+    # データが1日進むたびに落ちる。取得漏れの検出は checks.py の coverage の担当。
+    day_counts = {c: len({r["date"] for r in rows if r["code"] == c}) for c in codes}
+    eq(len(set(day_counts.values())), 1,
+       f"全銘柄の営業日数が揃っていない: {day_counts}")
 
     for code in codes:
         bars = ind.bars_from_rows(rows, code=code)
-        assert len(bars) >= 269, f"{code} の営業日数が減っている: {len(bars)}"
+        assert len(bars) >= need, \
+            f"{code}: 確定足が {len(bars)}本しかなく、全指標には {need}本必要"
 
         closes = [b.close for b in bars]
         highs = [b.high for b in bars]
         lows = [b.low for b in bars]
         volumes = [b.volume for b in bars]
 
-        # 先頭の SINGLE_SOURCE 行は close が空のまま残っている（埋めていない）
-        assert closes[0] is None, f"{code}: 先頭行の終値は未採用のはず"
-        # 最終行は「片方の取得元がまだ当日分を出していない」だけで空のことがある
-        # （minkabu は翌日に載る）。最新日そのものではなく直近に採用値があることを見る。
-        assert any(c is not None for c in closes[-5:]), \
-            f"{code}: 直近5営業日のどこにも採用値が無い"
+        # CSV で close が空の行は、Bar でも None のまま（value_primary で埋めない）。
+        # 特定の行番号を当てにせず、**空だった行すべて**について確かめる。
+        empty_days = {r["date"] for r in rows
+                      if r["code"] == code and not str(r["close"] or "").strip()}
+        assert empty_days, f"{code}: close が空の行が1つも無い（前提が変わっている）"
+        for b in bars:
+            if b.date in empty_days:
+                assert b.close is None, \
+                    f"{code} {b.date}: 照合を通っていない値が close に入っている"
+
+        # 確定足の末尾は必ず採用値を持つ（drop_unconfirmed_tail の担保）。
+        # 「最終行に終値がある」を生の行に対して仮定すると、最新営業日が
+        # 未照合になったふつうの週に落ちる。
+        assert closes[-1] is not None, \
+            f"{code}: 確定足の末尾に採用値が無い（未確定行が残っている）"
 
         ma25 = ind.sma(closes, ind.DAILY_MA_MID_PERIODS)
         dev = ind.ma_deviation_pct(closes)
@@ -546,19 +572,34 @@ def test_real_data_all_indicators():
 
 def test_real_data_no_trade_rows_are_zero_volume():
     rows = _load_real_rows()
-    no_trade = [r for r in rows if r["status"] == "NO_TRADE"]
-    # append-only なので NO_TRADE も増えうる。初回取得ぶんを下回らないことだけ見る。
-    assert len(no_trade) >= 7, f"NO_TRADE 行数が減っている: {len(no_trade)}"
+    no_trade = [r for r in rows
+                if "NO_TRADE" in str(r["status"] or "").split("|")]
+    # 件数はべた書きしない（append-only なので増える）。「1件も無い＝この検査が
+    # 空回りしている」ことだけを見て、あとは全件について不変条件を確かめる。
+    assert no_trade, "NO_TRADE の行が1つも無く、この検査が空回りしている"
+    quoted = 0
     for r in no_trade:
         eq(int(r["volume"]), 0, f"{r['date']} {r['code']} の出来高")
-        assert r["close"] != "", "NO_TRADE でも終値（気配値）は入っている"
+        # NO_TRADE は照合結果に**付加**されるフラグ（D24）。売買不成立の日に
+        # 終値（気配値）が載るかは、その日にどの取得元が値を返したかで変わる。
+        # 「NO_TRADE なら必ず終値がある」と決めつけると、片側の取得元しか
+        # 当日分を出していない週に落ちる。**入っているなら主ソースと一致する**
+        # ことだけを全件で見て、気配値の記録が生きていることは総数で見る。
+        if r["close"]:
+            quoted += 1
+            eq(r["close"], r["value_primary"],
+               f"{r['date']} {r['code']}: 終値と主ソースの値が食い違う")
+    assert quoted, "NO_TRADE の日に終値（気配値）が1件も残っていない"
 
-    # 4937 は NO_TRADE を6日含むが、20日平均売買代金は算出できる（0を含めて平均する）
-    bars = ind.bars_from_rows(rows, code="4937")
-    # 採用値のある行だけで計算する（最新日は照合が成立せず空のことがある）
-    priced = [b for b in bars if b.close is not None]
-    turn = ind.avg_turnover([b.close for b in priced], [b.volume for b in priced])
-    assert turn is not None and turn > 0, "NO_TRADE を含んでも売買代金は算出できる"
+    # NO_TRADE を含む銘柄でも 20日平均売買代金は算出できる（0を含めて平均する）
+    codes = sorted({r["code"] for r in no_trade})
+    for code in codes:
+        bars = ind.bars_from_rows(rows, code=code)
+        # 採用値のある行だけで計算する（最新日は照合が成立せず空のことがある）
+        priced = [b for b in bars if b.close is not None]
+        turn = ind.avg_turnover([b.close for b in priced], [b.volume for b in priced])
+        assert turn is not None and turn > 0, \
+            f"{code}: NO_TRADE を含んでも売買代金は算出できる"
 
 
 def test_real_data_is_deterministic():

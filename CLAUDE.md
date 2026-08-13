@@ -22,20 +22,69 @@
 
 ### データ層
 
-- `data/` 配下の CSV（`prices/` `indices/` `margin/` `kpi/`）は **append-only**。
-  過去行の変更・削除を禁止。`checks.py` の `check_append_only` が、git HEAD
-  （CI）または `--baseline`（ローカル）と**行単位で突き合わせて** FAIL させる。
+- `data/` 配下の CSV（`prices/` `indices/` `margin/` `kpi/` `fundamentals/`
+  `tanshin/` `verification/`）と `data/verification/*.yaml` は **append-only**。
+  過去行・過去 run の変更・削除を禁止。`checks.py` の `check_append_only` が、
+  git HEAD（CI）または `--baseline`（ローカル）と**行単位で突き合わせて** FAIL させる。
   ベースラインが取れない場合は「スキップ」ではなく WARN で明示する（未検証を黙らせない）。
+  追記性の一意キーは**ヘッダに実在する列だけ**で組み立てる。決められないファイルは
+  「追記性を検証できていない」と WARN する（鍵が潰れると追記が改変に化ける）。
+- **append-only の唯一の例外は「照合不成立 → 成立」の訂正**（D38）。
+  鍵が (code, date) / (code, period, metric) で二度と新しくならないため、
+  1回の取得失敗がその行の検証状態を恒久的に固定していた。**採用値が空 ⇄ 非空**に
+  動かす訂正だけを認め、前後の値と理由を `data/revisions.csv`（追記専用）に必ず残す。
+  記録の無い書き換え・**採用値を別の値に書き換えること**は記録があっても FAIL。
+  - `repair`（空 → 埋まる）は取得側が自動で行う（`fetch.py` / `fetch_fundamentals.py`）
+  - `withdraw`（埋まる → 空）は**自動化しない**（D39）。取得元の一時的な不調で
+    採用値が消えると、直したかった障害を自分で起こす。
+    `python src/fetch_fundamentals.py --withdraw-invalid --reason "…"` で人間が実行する
 - 取得失敗は **推定値で埋めない**。`null` + `status`（`FETCH_FAILED` / `MISMATCH` /
   `SINGLE_SOURCE`）で記録する。欠測は台帳冒頭に表示する。
-- `close`（採用値）が埋まってよいのは **2ソース照合が成立した行だけ**。
+- `close`（採用値）が埋まってよいのは **運営の異なる2つの取得元で照合が成立した行だけ**。
+  独立性は `id` ではなく `sources.yaml` の `operator` で数える（D36）。
+  株探と みんかぶ は同一運営（ミンカブ・ジ・インフォノイド）なので、
+  その一致は独立した2つの確認ではない。
   `status` は `|` 区切りの複数フラグを持ち（例 `SINGLE_SOURCE|NO_TRADE`）、
   照合結果はちょうど1つ入る。付加フラグ（`NO_TRADE` / `VOLUME_MISMATCH`）で
   照合結果を上書きしない。
+- **財務数値（`data/fundamentals/{code}.csv`）にも同じ規律を通す。**
+  `value`（採用値）が埋まってよいのは **別サイト2つ以上が一致した行だけ**。
+  同一サイトの別ページが裏付けても独立した確認ではないので `SINGLE_SOURCE`。
+  **別々の勘定科目を突き合わせない**（D35）。IR BANK の BS 表の「株主資本」は
+  `shareholders_equity` であって kabutan の「自己資本」（`equity`）ではない。
+  照合は**表示解像度**（「26.4億」なら 10百万円）の範囲で行い、その許容幅を
+  `tolerance` 列に残す。完全一致でなかった行には `ROUNDING` を付ける。
+  レポート（`reports/{code}.md`）に書く数値は、この CSV で status が `OK` の値を正とし、
+  `SINGLE_SOURCE` / `MISMATCH` の数値は**そう明示せずに断定形で書かない**。
+- **レポートの図の数値は front matter に手書きしない。** `charts.<id>.source` に
+  metric と期を書き、`src/chartdata.py` が CSV の採用値を引いて組み立てる。
+  採用値でない期は 0 で埋めず欠測（—）にする。`prices` を引く図は `close`
+  （採用終値）だけを使う。**始値・高値・安値・出来高は照合を通っていないので図に使わない**。
+  CSV に無い項目だけ `data:` に手書きしてよいが、**台帳の図に「手書き（未検証）」と
+  自動で表示される**。表示を消す方法は用意しない（隠せないことが目的）。
+- **図の見出しは、その図のすべての点について成立する主張だけを書く**（D40）。
+  `dataset: tanshin` の点が混ざる図に「別サイト2つ以上が一致した値だけ」と書かない。
+  決算短信の**自己検算に落ちた行**（`*_CROSS_FAILED`）は図に採用しない（D41）。
 - 取得元は `data/sources.yaml` のチェーンのみ。**新規の取得元を自律的に追加しない**。
   チェーンが全滅した場合は欠測として記録し、追加は人間の承認を経る。
 - 数値は必ず `source_url` と `fetched_at` を伴う。伴わない値は記録しない。
 - 生終値のみを扱う。調整後終値と混在させない。
+
+### 裏取り（`data/verification/{code}.yaml`）
+
+- **レポート本文を根拠にしない。** `sources` に書けるリポジトリ内パスは
+  `data/…` `src/…` のみ（`reports/…` は書けない・D45）。
+  書けると `tier: dataset` と組み合わせて**レポートがレポートを認証する**。
+- **claim は `id` で畳んで最新の判定を採る**（D43）。最新 run だけを見ると、
+  claim 1件だけの run を足すだけで前回の指摘が全部消える。
+- **`contradicted` は「本文から消えた」だけでは解除しない**（D44）。
+  `resolutions:` に `how: removed / rewritten` を記録し、
+  それが本文と整合することを機械が確かめて初めて解除する。
+  言い回しを変えただけでは解除されない。
+- **叩いた事実は `data/verification/fetch_log.csv` に残る**（D46）。
+  `urls_refetched[].http_status` は自己申告なので、ログと突き合わせる。
+- 隔離ジョブで指標を確かめるときは `python src/judge.py --indicators-only`
+  （master.yaml を読まない経路・D47）。引数なしの `judge.py` はこの構成では落ちる。
 
 ### 予測と採点
 
@@ -164,12 +213,30 @@ Issue にラベルを付けて閉じたときの記録は未実装。`decisions/
 
 ```text
 data/master.yaml        銘柄マスタ・流動性ゲート閾値・保有情報・judge の閾値上書き
-data/sources.yaml       取得元チェーン
+data/sources.yaml       取得元チェーン（price.chain の `operator` が独立性の正）
 data/prices/daily.csv   株価 OHLCV（append-only）
 data/margin/{code}.csv  信用残高（append-only・単位はページから読んだ値を unit 列に記録）
 data/indices/{id}.csv   指数 topix / growth250（append-only・列は daily.csv と同一）
 data/kpi/{code}.csv     KPI時系列（append-only・定義列必須）
+data/fundamentals/{code}.csv  財務数値の2ソース照合結果（append-only・鍵は code+period+metric）
+data/tanshin/{code}.csv 決算短信PDF（一次情報）から抽出した値（append-only）
+data/tanshin/fetch_log.csv  どの PDF をいつ読んだか（append-only・1本の短信=1行）
+data/revisions.csv      append-only の例外として行った訂正の台帳（追記専用・D38）
+                        revised_at / file / key / column / old_value / new_value /
+                        kind(repair|withdraw) / reason
 data/corporate_actions.yaml  分割・権利落ちの確認記録（任意。checks.py が参照）
+data/link_status.csv    出典URLの死活記録（append-only・`checks.py --check-links` のときだけ書く）
+data/verification/{code}.yaml  記述の裏取り記録（append-only・別コンテキストが出典を
+                        再取得して1件ずつ判定した結果。`resolutions:` は
+                        contradicted の始末。手順は
+                        `.claude/skills/kabu-ledger-verify/SKILL.md` が正。
+                        語彙と読み方は `src/verification.py` が正）
+data/verification/fetch_log.csv  fetch_source.py が叩いた事実（append-only・
+                        裏取り記録の「再取得した」を裏付ける唯一の材料）
+reports/{code}.md       銘柄レポート（v2.0 の主役。front matter の charts と本文の表の
+                        数値を checks.py が data/fundamentals の採用値と突き合わせる。
+                        図は `charts.<id>.source` で CSV から引く＝手書きしない。
+                        **散文の言明は突合が届かないので data/verification/ が受け持つ**）
 theses/{code}.md       テーゼと反証条件（人間が書く）
 predictions/*.yaml     事前登録した予測（人間が追加）
 scoring/summary.yaml   採点結果
@@ -178,20 +245,34 @@ scoring/last_stamps.json 前回の判定スタンプ（notify.py が更新）
 bear/                  ベアケース出力（隔離ジョブ）
 docs/                  GitHub Pages 出力
 src/                   indicators / judge / fetch / fetch_margin / fetch_index /
-                       checks / score / build / notify
+                       fetch_fundamentals / fetch_tanshin / checks / score / build / notify /
+                       chartdata（図の数値を検証済み CSV から引く）/ chart / report / style /
+                       verification（裏取り記録の語彙と読み方）/
+                       revise（訂正台帳への追記。append-only の例外を記録する）/
+                       fetch_source（裏取り専用の出典再取得。取得先をレポート記載のURLに限る）
 tests/                 test_indicators / test_judge / test_fetch / test_checks /
-                       test_score / test_notify（すべて素の python で実行できる）
+                       test_fetch_fundamentals / test_fetch_tanshin / test_chartdata /
+                       test_score / test_notify / test_verification / test_data_advance
+                       （すべて素の python で実行できる）
 ```
 
 ## 実行順
 
 ```text
-tests → fetch.py → fetch_margin.py → fetch_index.py → checks.py → score.py
-      → (bear) → build.py → notify.py
+tests → fetch.py → fetch_margin.py → fetch_index.py → fetch_fundamentals.py
+      → fetch_tanshin.py → checks.py → (checks.py --check-links) → score.py
+      → (bear) → (verify) → build.py → notify.py
 ```
 
 `checks.py` が FAIL したら後続を実行しない。
+`fetch_tanshin.py` と `checks.py --check-links` は外部要因で落ちうるので
+`continue-on-error`（記録が増えないだけで、判定と公開は進む）。
+`build.py` は `docs/` と **`scoring/stamps.json`**（notify.py の唯一の入力）を出力する。
 `bear` は Should 要件なので、失敗しても `build.py` / `notify.py` は実行する。
+`verify`（記述の裏取り・F3）も同じ扱いで、失敗しても公開は止めない。
+裏が取れなかった記述は `build.py` が台帳に「未確認」として出す（印を消す方法は用意しない）。
+ただし **出典と食い違うと判定された記述が本文に残っていると `checks.py` が FAIL する**ので、
+直すまで翌週の取得・公開は動かない。
 
 初回の一括取得の直後は `checks.py --scan-all` を1回だけ実行する（分割・外れ値を全履歴で走査する。
 週次の既定は直近5営業日ぶんのみ）。

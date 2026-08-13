@@ -18,9 +18,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import indicators as ind  # noqa: E402
 import judge as J  # noqa: E402
+import realdata as rd  # noqa: E402
 
 
 # --- 検証ヘルパ ---------------------------------------------------------------
@@ -811,8 +813,8 @@ def test_fundamentals_streak():
 _REAL_SUMMARY: list[str] = []
 
 
-def _real_as_of() -> str:
-    """daily.csv の最終営業日。**日付を直書きしない**。
+def _real_as_of(code: str | None = None) -> str:
+    """daily.csv の「確定した」最終営業日。**日付を直書きしない**。
 
     週次取得で必ず更新されるため、固定値にすると次の実行で CI が落ちる
     （tests は weekly.yml のデプロイ判定に入っている）。
@@ -822,11 +824,7 @@ def _real_as_of() -> str:
     あり、その行は指標の対象外になる（indicators.drop_unconfirmed_tail）。
     judge の基準日もその確定日に揃うので、ここも close のある日で取る。
     """
-    import csv
-    with (ROOT / "data" / "prices" / "daily.csv").open(encoding="utf-8") as f:
-        dates = [str(r["date"]) for r in csv.DictReader(f)
-                 if str(r.get("close") or "").strip()]
-    return max(dates)
+    return rd.last_confirmed_date(code)
 
 
 def _has_kpi(code: str) -> bool:
@@ -837,12 +835,13 @@ def _has_kpi(code: str) -> bool:
 def test_real_data_judges_without_exception():
     master = J.load_master()
     verdicts = J.judge_all(master)
-    as_of = _real_as_of()
-    eq([v.code for v in verdicts], ["3851", "4073", "4937", "6570"], "証券コード順")
+    eq([v.code for v in verdicts], rd.codes(), "証券コード順（master.yaml と一致）")
     for v in verdicts:
         assert v.stamp in J.STAMPS, f"{v.code}: 未定義のスタンプ {v.stamp!r}"
         assert v.reason, f"{v.code}: 根拠が空"
-        eq(v.as_of, as_of, f"{v.code}: 基準日は最終足の日付")
+        # 基準日は銘柄ごとの「確定した最終足」。全銘柄で同じ日とは限らない
+        # （片方の取得元がその日ぶんを出していない銘柄があると1日ずれる）。
+        eq(v.as_of, _real_as_of(v.code), f"{v.code}: 基準日は最終足の日付")
         eq(len(v.checks), len(J.STAGE_ORDER), f"{v.code}: 全ゲートを記録")
         eq(len(v.screen), 6, f"{v.code}: スクリーニング5条件＋参考1行")
         # KPI が未整備の間は、ファンダ2条件が必ず「未計算(?)」であること。

@@ -1,0 +1,255 @@
+"""実データ（`data/`）から**期待値を引く**ための共用ヘルパ。
+
+なぜ要るか
+----------
+テストに日付・値・件数をべた書きすると、**実データが1日進んだだけで CI が
+全面的に落ちる**。実際に落ちた（週次取得で daily.csv に4行増えただけで、
+「最終行には終値がある」「出来高0は6日」といった前提が一斉に崩れた）。
+
+このプロジェクトのデータは append-only で毎週増える。テストが確かめるべきは
+**データの形と不変条件**であって、今週のデータの中身ではない。
+実データが要るテストは、期待値をここから引くこと。
+
+  ×  expect(rep, WARN, "no_trade", "4937: 出来高0（売買不成立）が 6日")
+  ○  expect(rep, WARN, "no_trade", f"4937: 出来高0（売買不成立）が {rd.zero_volume_days('4937')}日")
+
+もうひとつの罠
+--------------
+最新営業日は**照合が成立せず `close` が空になるのが普通**である
+（取得元によって当日分が載る時刻が違う。minkabu は翌日）。
+「最終行には採用値がある」を暗黙に仮定したテストは、翌週かならず落ちる。
+「確定した最後の日」は `last_confirmed_date()` で取る。
+
+このファイルは `test_*.py` に一致しないので、pytest にも weekly.yml の
+`for f in tests/test_*.py` にも**テストとして拾われない**（ヘルパ専用）。
+"""
+from __future__ import annotations
+
+import csv
+from datetime import date, timedelta
+from functools import lru_cache
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+DATA = ROOT / "data"
+PRICES = DATA / "prices" / "daily.csv"
+
+
+# --- 読み取り -----------------------------------------------------------------
+
+def read_csv(path: Path) -> tuple[list[str], list[dict]]:
+    with Path(path).open(encoding="utf-8-sig", newline="") as f:
+        r = csv.DictReader(f)
+        return list(r.fieldnames or []), list(r)
+
+
+def write_csv(path: Path, fields, rows) -> None:
+    with Path(path).open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=fields)
+        w.writeheader()
+        w.writerows(rows)
+
+
+@lru_cache(maxsize=1)
+def _prices() -> tuple[tuple[str, ...], tuple[dict, ...]]:
+    fields, rows = read_csv(PRICES)
+    return tuple(fields), tuple(rows)
+
+
+def price_fields() -> list[str]:
+    return list(_prices()[0])
+
+
+def price_rows(code: str | None = None) -> list[dict]:
+    """daily.csv の行（日付昇順）。code を渡すとその銘柄だけ。"""
+    rows = [dict(r) for r in _prices()[1]]
+    if code is not None:
+        rows = [r for r in rows if r["code"] == str(code)]
+    return sorted(rows, key=lambda r: r["date"])
+
+
+@lru_cache(maxsize=1)
+def master() -> dict:
+    import yaml
+    return yaml.safe_load((DATA / "master.yaml").read_text(encoding="utf-8"))
+
+
+def codes() -> list[str]:
+    """master.yaml に載っている証券コード（昇順）。銘柄が増えても追随する。"""
+    return sorted(str(s["code"]) for s in master().get("stocks", []))
+
+
+# --- 日付 ---------------------------------------------------------------------
+
+def dates(code: str | None = None) -> list[str]:
+    return sorted({r["date"] for r in price_rows(code)})
+
+
+def latest_date(code: str | None = None) -> str:
+    """実データの最新営業日。**この行の `close` は空のことがある**。"""
+    return dates(code)[-1]
+
+
+def first_date(code: str | None = None) -> str:
+    return dates(code)[0]
+
+
+def last_confirmed_date(code: str | None = None) -> str:
+    """`close`（2ソース照合を通った採用値）が入っている最後の日。
+
+    指標・判定・台帳の基準日はここに揃う（`indicators.drop_unconfirmed_tail`）。
+    """
+    ds = [r["date"] for r in price_rows(code) if str(r.get("close") or "").strip()]
+    assert ds, "採用値のある行が1つも無い（照合が全滅している）"
+    return max(ds)
+
+
+def mid_date(code: str | None = None) -> str:
+    """履歴の中ほどにある営業日（最初でも最後でもない1日）。
+
+    「過去行を書き換えた」「履歴に穴が空いた」を作るための足場。
+    先頭・末尾は別の検査が反応してしまうので中央から取る。
+    """
+    ds = dates(code)
+    assert len(ds) >= 3, f"履歴が短すぎる: {len(ds)}日"
+    return ds[len(ds) // 2]
+
+
+def next_business_day(day: str | None = None) -> str:
+    """その日の次の平日（祝日表は持たない＝決定論的）。"""
+    d = date.fromisoformat(day or latest_date())
+    while True:
+        d += timedelta(days=1)
+        if d.weekday() < 5:
+            return d.isoformat()
+
+
+def day_after_all_fetches(margin_days: int = 60) -> str:
+    """CSV に記録された**どの取得時刻より後**の日付。
+
+    「取得は動いたのに古い日付しか返ってこない」壊れ方を作るときに使う。
+    固定日（2026-10-01 など）を書くと、実データの fetched_at がその日を
+    追い越した瞬間に検査の前提が崩れる。
+    """
+    fetched = [str(r.get("fetched_at") or "")[:10] for r in price_rows()]
+    fetched = [d for d in fetched if d]
+    base = max(fetched + [latest_date()])
+    return (date.fromisoformat(base) + timedelta(days=margin_days)).isoformat()
+
+
+# --- 件数（メッセージに件数が出る検査の期待値） ---------------------------------
+
+def zero_volume_days(code: str) -> int:
+    return sum(1 for r in price_rows(code) if str(r.get("volume") or "").strip() == "0")
+
+
+def no_trade_days(code: str) -> int:
+    """status に NO_TRADE が立っている日数（`check_no_trade` が数えるのと同じ集合）。"""
+    return sum(1 for r in price_rows(code)
+               if "NO_TRADE" in str(r.get("status") or "").split("|"))
+
+
+def status_days(code: str, status: str) -> int:
+    return sum(1 for r in price_rows(code)
+               if status in str(r.get("status") or "").split("|"))
+
+
+def index_rows(index_id: str) -> list[dict]:
+    _, rows = read_csv(DATA / "indices" / f"{index_id}.csv")
+    return sorted(rows, key=lambda r: r["date"])
+
+
+def index_status_days(index_id: str, status: str) -> int:
+    return sum(1 for r in index_rows(index_id)
+               if status in str(r.get("status") or "").split("|"))
+
+
+def shared_history_date(index_id: str) -> str:
+    """株価にも指数にもあり、かつ最新営業日ではない1日。
+
+    「指数に穴が空いた」を作る足場。最新日を消すと別の検査（取得漏れ）が
+    反応してしまうので、履歴の中ほどから取る。
+    """
+    idx = {r["date"] for r in index_rows(index_id)}
+    common = sorted(idx & set(dates()))
+    common = [d for d in common if d != latest_date()]
+    assert common, f"{index_id} と株価に共通の営業日が無い"
+    return common[len(common) // 2]
+
+
+# --- 行の合成（「1日進んだ」状況を作る） ----------------------------------------
+
+def _has_ok(row: dict) -> bool:
+    return "OK" in str(row.get("status") or "").split("|")
+
+
+def unconfirmed_row(day: str, template: dict, ok_template: dict | None = None) -> dict:
+    """**照合が成立しなかった1日**の行を作る（fetch.py が実際に書く形）。
+
+    `close` は空・`status=SINGLE_SOURCE`・副ソースなし。取得元によって当日分が
+    載る時刻が違うため、**最新営業日はこの形になるのが普通**である。
+    今回の事故（データが1日進んで CI が全面的に落ちた）の再現に使う。
+    """
+    price = str(template.get("close") or template.get("value_primary") or "")
+    src_p = str(template.get("source_primary") or "").strip() or "yahoo_jp"
+    row = dict(template)
+    row.update({
+        "date": day,
+        "close": "",
+        "status": "SINGLE_SOURCE",
+        "source_primary": src_p,
+        "value_primary": price,
+        "source_secondary": "",
+        "value_secondary": "",
+        "fetched_at": f"{day}T09:59:00+09:00",
+    })
+    return row
+
+
+def confirmed_row(day: str, template: dict, ok_template: dict | None = None) -> dict:
+    """照合が成立した1日の行（`close` が埋まる正常形）。
+
+    取得元の名前は、その系列で実際に照合が成立した行から取る。
+    `status=OK` は第2ソースの記録があって初めて成立する（checks の schema 検査）。
+    """
+    base = ok_template or template
+    price = str(template.get("close") or template.get("value_primary") or "")
+    src_p = str(base.get("source_primary") or "").strip() or "kabutan"
+    src_s = str(base.get("source_secondary") or "").strip() or "minkabu"
+    row = dict(template)
+    row.update({
+        "date": day,
+        "close": price,
+        "status": "OK",
+        "source_primary": src_p,
+        "value_primary": price,
+        "source_secondary": src_s,
+        "value_secondary": price,
+        "fetched_at": f"{day}T09:59:00+09:00",
+    })
+    return row
+
+
+def advance_rows(rows: list[dict], day: str, confirmed: bool | None = None,
+                 id_field: str = "code") -> list[dict]:
+    """OHLCV 形式の CSV の中身から「1日ぶんの新しい行」を作る。
+
+    銘柄（または指数）ごとに1行。`confirmed` を省略すると、その系列の
+    直近の行が照合成立だったかどうかに合わせる（growth250 のように第2ソースが
+    無い系列を、実態と違う「照合成立」にしないため）。
+    """
+    ordered = sorted(rows, key=lambda r: str(r.get("date") or ""))
+    last: dict[str, dict] = {}
+    last_ok: dict[str, dict] = {}
+    for r in ordered:
+        key = str(r.get(id_field) or "")
+        last[key] = r
+        if _has_ok(r):
+            last_ok[key] = r
+    out = []
+    for key in sorted(last):
+        template = last[key]
+        want = _has_ok(template) if confirmed is None else confirmed
+        make = confirmed_row if want else unconfirmed_row
+        out.append(make(day, template, last_ok.get(key)))
+    return out

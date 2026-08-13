@@ -45,6 +45,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import judge as J  # noqa: E402
 import score as S  # noqa: E402
+import verification as VF  # noqa: E402
 
 STAMPS = ROOT / "scoring" / "stamps.json"
 STATE = ROOT / "scoring" / "last_stamps.json"
@@ -501,9 +502,92 @@ def main(argv: Sequence[str] | None = None) -> int:
         STATE.write_text(json.dumps(new_state, ensure_ascii=False, indent=2,
                                     sort_keys=True) + "\n", encoding="utf-8")
 
+    v_issued, v_failed = notify_verification(names, repo, args.dry_run)
+    issued += v_issued
+    failed += v_failed
+
     print(f"起票 {issued} 件 / 変化 {len(changed)} 件 / 失敗 {len(failed)} 件"
           + ("（dry-run のため状態は更新していない）" if args.dry_run else ""))
     return 1 if failed else 0
+
+
+def unresolved_contradictions(code: str) -> list:
+    """出典と食い違うと判定され、まだ始末が記録されていない記述。
+
+    `contradicted` は設計上「翌週の data ジョブを止める」いちばん強い状態なのに、
+    **人に届く経路がどこにも無かった**。台帳を開くか CI ログを読むまで
+    誰も気づかず、翌週ジョブが止まって初めて分かる（気づくのが1週間遅い）。
+    """
+    rec = VF.load(code)
+    if rec is None or rec.latest is None:
+        return []
+    resolved = rec.resolved_ids
+    return [c for c, _owner in rec.folded()
+            if c.verdict in VF.FATAL_IF_KEPT and c.id not in resolved]
+
+
+def verification_body(code: str, name: str, claims: list, repo: str) -> str:
+    lines = [
+        f"# {code} {name}: 出典と食い違う記述が残っている",
+        "",
+        "別の文脈が出典を再取得して検証した結果、**出典が別のことを言っている**"
+        "と判定された記述。直すまで翌週の取得・公開が止まる"
+        "（`checks.py` が FAIL にする）。",
+        "",
+    ]
+    for c in claims:
+        lines.append(f"## {c.id}")
+        lines.append(f"- 本文: 「{c.quote}」")
+        lines.append(f"- 分かったこと: {c.evidence}")
+        if c.action:
+            lines.append(f"- どうするか: {c.action}")
+        if c.sources:
+            lines.append("- 出典: " + " / ".join(c.sources))
+        lines.append("")
+    lines += [
+        "## 直したあと",
+        "",
+        f"`data/verification/{code}.yaml` の `resolutions:` に",
+        "`{id, resolved_at, how: removed|rewritten, note}` を追記する。",
+        "`how: rewritten` なら書き直した本文を `quote:` に書く"
+        "（checks.py がそれが本文に実在することを機械で確かめる）。",
+        "**言い回しを変えるだけでは解除されない。**",
+        "",
+        f"レポート: `reports/{code}.md`",
+    ]
+    if repo:
+        lines.append(f"リポジトリ: {repo}")
+    return "\n".join(lines)
+
+
+def notify_verification(names: dict, repo: str, dry_run: bool) -> tuple:
+    """未解決の `contradicted` を Issue にする。戻り値 (起票数, 失敗した銘柄)。"""
+    issued = 0
+    failed: list[str] = []
+    vdir = ROOT / "data" / "verification"
+    if not vdir.exists():
+        return issued, failed
+    for path in sorted(vdir.glob("*.yaml")):
+        code = path.stem
+        claims = unresolved_contradictions(code)
+        if not claims:
+            continue
+        title = (f"[{code}] {names.get(code, '')} "
+                 f"出典と食い違う記述 {len(claims)}件（直すまで翌週が止まる）")
+        body = verification_body(code, names.get(code, ""), claims, repo)
+        if dry_run:
+            print(f"\n{'=' * 78}\n# title: {title}\n{'=' * 78}\n{body}")
+            issued += 1
+            continue
+        try:
+            gh_issue(title, body)
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            print(f"[ERROR] {code} の裏取り Issue 起票に失敗: "
+                  f"{type(e).__name__}: {e}")
+            failed.append(code)
+            continue
+        issued += 1
+    return issued, failed
 
 
 if __name__ == "__main__":

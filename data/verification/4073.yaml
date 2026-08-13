@@ -1,0 +1,646 @@
+# 裏取り記録（append-only）— reports/4073.md
+#
+# 手順の正: .claude/skills/kabu-ledger-verify/SKILL.md
+# 語彙の正: src/verification.py（VERDICTS / TIERS）
+#
+# レポートを書いた文脈とは別の文脈が、本文の出典URLを src/fetch_source.py で
+# 実際に再取得し、記述がその出典で裏付けられるかを1件ずつ判定した結果。
+# **過去の run は書き換えない。**新しい検証は runs の末尾に足す。
+code: "4073"
+runs:
+  - run: "2026-08-13T20:10:00+09:00"
+    report_updated: "2026-08-13"
+    report_sha256: "da9cc0665ebdfe74fecdfb6f3e9cff3ad72eca6fa747d132d3be85a602986fd9"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    note: >-
+      本文に書かれている出典URL 11件のうち 7件を再取得した。
+      残り4件（kabutan 決算ページ・IR BANK 2件・決算短信PDF）は、
+      src/fetch_fundamentals.py と src/fetch_tanshin.py が毎週機械で抜いて
+      CSV に落としているため、そちらを裏付けに使う（urls_delegated）。
+
+    urls_refetched:
+      - {url: "https://www.gck.co.jp/company/co-outline/", http_status: 200}
+      - {url: "https://www.gck.co.jp/ir/", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=4073", http_status: 200}
+      - {url: "https://kabuyoho.jp/sp/reportTarget?bcode=4073", http_status: 200}
+      - {url: "https://minkabu.jp/stock/4073", http_status: 200}
+      - {url: "https://note.com/tatsuya_sabato/n/naf535589c0bf", http_status: 200}
+      - {url: "https://www.zaikei.co.jp/article/20260722/862304.html", http_status: 200}
+
+    urls_delegated:
+      - url: "https://kabutan.jp/stock/finance?code=4073"
+        to: "data/fundamentals/4073.csv"
+      - url: "https://irbank.net/E36666/results"
+        to: "data/fundamentals/4073.csv"
+      - url: "https://irbank.net/E36666"
+        to: "data/fundamentals/4073.csv"
+      - url: "https://www.nikkei.com/markets/ir/irftp/data/tdnr/tdnetg3/20260515/fxfcrw/140120260515536364.pdf"
+        to: "data/tanshin/4073.csv"
+
+    claims:
+      # --- この会社は何者か ------------------------------------------------
+      - id: V01
+        section: company
+        quote: "**CARD CREW PLUS**（導入180社以上）"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://note.com/tatsuya_sabato/n/naf535589c0bf"]
+        evidence: >-
+          出典の note 記事を再取得（200・本文4,596字）。
+          「CARD CREW」「180」「導入」のいずれも1件もヒットしない。
+          記事は有料（¥200〜）の「決済・DX関連銘柄20選」で、4073 に触れているのは
+          冒頭2段落のみ。製品名も導入社数も書かれていない。
+        action: "会社の製品ページ等の一次情報を出典に足すか、この記述を落とす"
+
+      - id: V02
+        section: company
+        quote: "顧客は中堅〜大手の流通事業者。"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://note.com/tatsuya_sabato/n/naf535589c0bf"]
+        evidence: >-
+          同記事は 4073 を「金融機関や決済事業者向けにソリューションを提供する
+          フィンテック企業」と書いており、小売・流通向けとは書いていない。
+          「ストック型ビジネスの比率が高く」という一文は同記事にあるが、
+          これは TIS（3626）の説明であって 4073 の説明ではない。
+          収益2本立て（ペイメントインテグレーション／ペイメントサービス）の
+          記述も同記事には無い。
+        action: "決算説明資料・有報の事業セグメント記述を出典にして書き直す"
+
+      - id: V12
+        section: company
+        quote: "取引銀行は千葉銀行・りそな・京葉・みずほ・三井住友・三菱UFJ・三菱UFJ信託の**7行**"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.gck.co.jp/company/co-outline/"]
+        evidence: >-
+          会社概要ページを再取得（200）。取引銀行欄に千葉銀行・りそな銀行・京葉銀行・
+          みずほ銀行・三井住友銀行・三菱UFJ銀行・三菱UFJ信託銀行の7行を確認。
+          同ページで設立1995年9月13日・千葉県佐倉市・Global Communication Planning・
+          許認可「関東（ク）第186号」も確認した。
+
+      - id: V13
+        section: company
+        quote: "上場は2021年"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: >-
+          この記述に対応する出典が本文に無い。会社概要ページ（一次情報）にも
+          上場年の記載は無く、kabutan の銘柄ページにも上場年は出ていない。
+        action: "上場年を書くなら有報・会社沿革ページを出典に足す"
+
+      # --- 財務 ------------------------------------------------------------
+      - id: V16
+        section: financials
+        quote: "### 直近3期＋今期計画（すべて2ソース照合済み）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          表の16マス（2023/6・2024/6・2025/6・2026/6予 × 売上高・営業利益・
+          最終利益・自己資本比率）はすべて status に OK を含む採用値と一致する。
+          checks.py の突合検査でも 15件突合・食い違い0件。
+        action: >-
+          決算短信は「単体（非連結）」だが本文はその別に触れていない。
+          連単の別を1行足すと読み手が誤らない
+
+      - id: V17
+        section: outlook
+        quote: "4Q単独で営業益170百万円が必要（過去最高四半期の2.5倍）"
+        verdict: contradicted
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          四半期の営業利益の過去最高は kabutan「3ヵ月決算過去最高」と IR BANK の
+          両方が一致した採用値で **160百万円（2022年4-6月期）**。
+          必要額170百万円はその1.06倍であって2.5倍ではない。
+          2.5倍は「直近で最も良かった四半期（26年1-3月・68百万円）」に対する比。
+          なお 4073 の4-6月期は季節的に最も強い四半期で、その事実も本文に無い。
+        action: >-
+          「過去最高四半期（160百万円・2022年4-6月期）をわずかに上回る必要がある」
+          に直す。難易度の評価そのものが変わる
+
+      - id: V18
+        section: financials
+        quote: "**その2.5倍を1四半期で**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          この文は直前で「直近で最も良かった四半期（26年1-3月）の営業利益が
+          68百万円だった」と基準を明示しており、68×2.5≒170 で正しい。
+          誤っているのは V17（リスク表）の「過去最高四半期の2.5倍」という言い換えだけ。
+
+      - id: V19
+        section: outlook
+        quote: "売上723百万円は前年同期比+90.3%、営業利益+68百万円"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          Q2026-01_2026-03 の revenue 723・operating_income 68 は採用値（OK）。
+          前年同期 Q2025-01_2025-03 の revenue 380 も採用値。723/380-1 = +90.26%。
+        action: >-
+          比率（+90.3%）は本文で人が計算しており、コードが出した値ではない。
+          SKILL.md の「比率はコードが出す」に照らすと、実額2つを示して
+          比率はコードに出させるのが本来の形
+
+      # --- 展望とリスク ----------------------------------------------------
+      - id: V03
+        section: outlook
+        quote: "**2027年6月期に売上計上予定**である（財経新聞・フィスコ）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.zaikei.co.jp/article/20260722/862304.html"]
+        evidence: >-
+          記事本文に「受注金額は4.63億円で、売上計上予定時期は27年6月期。
+          8月に公表予定の27年6月期の業績予想に織り込む予定」を確認（200）。
+        action: >-
+          ただし記事は2026年7月22日13:41配信で、本文が書く「7/21に獲得」という
+          発表日はこの出典には無い。発表日を書くなら適時開示を出典にする
+
+      - id: V14
+        section: financials
+        quote: "2026年6月26日にコミットメントライン契約を更新している"
+        verdict: unverifiable
+        tier: none
+        sources: ["https://www.gck.co.jp/ir/"]
+        evidence: >-
+          この記述に対応する出典が本文に無い。一次情報として掲げられている
+          gck.co.jp/ir/ を再取得（200）したが、ページはナビゲーションの目次だけで
+          IRニュースの本文も適時開示の一覧も HTML に含まれていない。
+        action: "適時開示（TDnet）のURLを出典に足す。取れなければ記述を落とす"
+
+      - id: V15
+        section: outlook
+        quote: "2026年7月17日に代表取締役の異動を開示"
+        verdict: unverifiable
+        tier: none
+        sources: ["https://www.gck.co.jp/ir/"]
+        evidence: "V14 と同じ。開示そのものを指す出典が本文に無い。"
+        action: "適時開示のURLを出典に足す。取れなければ記述を落とす"
+
+      # --- 値動きと市場の評価 ----------------------------------------------
+      - id: V04
+        section: price
+        quote: "レーティングを出している証券会社が**0社**"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://kabuyoho.jp/sp/reportTarget?bcode=4073"
+          - "https://minkabu.jp/stock/4073"
+        evidence: >-
+          株予報Pro を再取得（200）。強気0人・やや強気0人・中立0人・やや弱気0人・
+          弱気0人、平均と人数は「--」。みんかぶも「アナリスト 対象外」と表示しており、
+          独立した2つ目の出典が同じ結論を示している。
+
+      - id: V05
+        section: price
+        quote: "520円（下値目途267円／上値目途773円）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=4073"]
+        evidence: >-
+          理論株価（PBR基準）520円（7.13倍）・下値目途267円（3.66倍）・
+          上値目途773円（10.60倍）を確認。判定も「妥当水準」で本文と一致。
+
+      - id: V06
+        section: price
+        quote: "目標株価 641円（現在から約+20%）"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://minkabu.jp/stock/4073"]
+        evidence: "再取得時点のみんかぶ目標株価は644円。取得日（2026-08-12）から動いている。"
+        action: "「2026-08-12時点」と取得日を添える。数値は毎週動く"
+
+      - id: V07
+        section: price
+        quote: "PBR 7.4倍・PSR 0.73倍"
+        verdict: superseded
+        tier: secondary
+        sources:
+          - "https://minkabu.jp/stock/4073"
+          - "https://kabuyoho.jp/sp/reportTarget?bcode=4073"
+          - "https://kabutan.jp/stock/?code=4073"
+        evidence: >-
+          PSR は再取得時点のみんかぶで0.74倍。PBR は株予報Pro 7.41倍・kabutan 7.45倍で
+          本文の7.4倍と整合するが、**みんかぶだけ5.10倍**と大きく違う（BPSの取り方が
+          違うため。株予報Proは BPS 実績73円、みんかぶは別基準）。
+        action: >-
+          PBR は出典によって5.10〜7.45と割れる。断定形で書くなら「どのBPSで割った値か」を
+          添えるか、割れている事実を書く
+
+      - id: V08
+        section: price
+        quote: "みんかぶの株価診断は「**割高**」"
+        verdict: supported
+        tier: secondary
+        sources: ["https://minkabu.jp/stock/4073"]
+        evidence: "株価診断「割高」・個人予想「買い」をいずれも確認（200）。"
+
+      - id: V09
+        section: company
+        quote: "時価総額13.6億円の小型株"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4073"]
+        evidence: >-
+          再取得時点の kabutan は時価総額13.8億円（株価543円）。
+          本文の13.6億円は2026-08-12取得時点（株価535円前後）の値。
+          発行済株式数2,539,060株とも整合する。
+        action: "時価総額は株価で毎日動く。取得日を添えるか、株数と株価で示す"
+
+      - id: V10
+        section: company
+        quote: "**TMN・DIシステム・シャノン**"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4073"]
+        evidence: >-
+          kabutan の「比較される銘柄」に ＴＭＮ／ＤＩシステム／シャノン を確認（200）。
+        action: >-
+          株予報Proの「他社比較」は 3627 テクミラＨ／3940 ノムラシステムＣ／3690 イルグルム
+          と別の3社を挙げている。比較対象はサイトごとに違うことを書き添えるとよい
+
+      - id: V11
+        section: price
+        quote: "制度信用は**買建のみ**で売りから入れず"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4073"]
+        evidence: >-
+          kabutan に「証券取引所が指定する制度信用銘柄のうち、買建(信用買い)のみが
+          できる銘柄」と明記。信用取引表も 08/07 時点で売り残0.0・買い残140.4千株・
+          倍率「－」で整合する。
+
+      - id: V20
+        section: price
+        quote: "週足26週移動平均の傾き：**−0.546%/週（下向き）**"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py", "data/prices/daily.csv"]
+        evidence: >-
+          python src/judge.py を再実行し、4073 の週足MAの傾きが
+          13週 -0.230%/週・26週 -0.546%/週 と出力されることを確認（基準日 2026-08-10）。
+
+      - id: V21
+        section: price
+        quote: "20日平均売買代金は6,596万円だが、**中央値は470万円**"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py", "data/prices/daily.csv"]
+        evidence: >-
+          同じ実行で「20日平均売買代金 6,596万円 ≥ 3,000万円（同期間の中央値 470万円）」
+          を確認。
+
+      - id: V22
+        section: price
+        quote: "直近1年の値幅は、**照合済みの終値で 415円〜816円**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          2025-09-04 終値816（status OK）、2026-06-24 終値415（OK）。
+          本文の日付表（2026-07-21 436／2026-08-05 729／2026-08-06 579／
+          2026-08-10 535）もすべて status OK の採用終値と一致。
+
+      - id: V23
+        section: updates
+        quote: "6/25 の10年来安値414円"
+        verdict: unverifiable
+        tier: none
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          2026-06-25 の安値414円は主ソースの値として存在するが（終値は427でOK）、
+          手元の株価データは約1年分（1,080行・2025-07-03以降）しかなく、
+          「10年来」かどうかを確かめる材料が無い。
+        action: "「10年来」を書くなら長期チャートの出典を足す。無ければ『直近1年で最安』に直す"
+
+      # --- 出典の建て付け --------------------------------------------------
+      - id: V24
+        section: sources
+        quote: "IR情報 | <https://www.gck.co.jp/ir/>"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://www.gck.co.jp/ir/"]
+        evidence: >-
+          一次情報として掲げられているが、再取得すると（200・772字）中身は
+          ナビゲーションの目次だけで、IRニュース・適時開示・決算短信の一覧が
+          HTML に含まれない（JS描画とみられる）。**このURLを根拠にできる記述は現状ゼロ**。
+        action: "個別の開示PDFのURLを出典に書く。目次ページは出典として機能しない"
+
+      - id: V25
+        section: financials
+        quote: "この段落の数字はまだ確かめられていない。"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          原価率について本文が「照合が成立していない」と自己申告している内容は
+          CSV と一致する（FY2022-06・FY2023-06 が MISMATCH、他の期は SINGLE_SOURCE）。
+          未確認であることを隠していない。
+
+  # --- run 2 ------------------------------------------------------------
+  # run1 の指摘で本文が直った後の再検証。**run1 は1行も書き換えていない**。
+  - run: '2026-08-13T21:05:00+09:00'
+    report_updated: '2026-08-13'
+    report_sha256: bbe65283fe60aeededd4126cdded5f733cad625b7469eeb71f8cf44fe42d035d
+    verifier: kabu-ledger-verify（別コンテキスト・F3）
+    note: run1 の指摘（V17）を受けて本文が直された後の再検証。run1 と同じセッションで 取り直した7件の出典をそのまま根拠に使い、**書き換わった箇所だけを取り直した**。各 run
+      はその時点の本文の全量スナップショットにする（台帳は最新 run を表示するため）。
+    urls_refetched:
+    - url: https://www.gck.co.jp/company/co-outline/
+      http_status: 200
+    - url: https://www.gck.co.jp/ir/
+      http_status: 200
+    - url: https://kabutan.jp/stock/?code=4073
+      http_status: 200
+    - url: https://kabuyoho.jp/sp/reportTarget?bcode=4073
+      http_status: 200
+    - url: https://minkabu.jp/stock/4073
+      http_status: 200
+    - url: https://note.com/tatsuya_sabato/n/naf535589c0bf
+      http_status: 200
+    - url: https://www.zaikei.co.jp/article/20260722/862304.html
+      http_status: 200
+    urls_delegated:
+    - url: https://kabutan.jp/stock/finance?code=4073
+      to: data/fundamentals/4073.csv
+    - url: https://irbank.net/E36666/results
+      to: data/fundamentals/4073.csv
+    - url: https://irbank.net/E36666
+      to: data/fundamentals/4073.csv
+    - url: https://www.nikkei.com/markets/ir/irftp/data/tdnr/tdnetg3/20260515/fxfcrw/140120260515536364.pdf
+      to: data/tanshin/4073.csv
+    claims:
+    - id: V01
+      section: company
+      quote: '**CARD CREW PLUS**（導入180社以上）'
+      verdict: unsupported
+      tier: secondary
+      sources:
+      - https://note.com/tatsuya_sabato/n/naf535589c0bf
+      evidence: 出典の note 記事を再取得（200・本文4,596字）。 「CARD CREW」「180」「導入」のいずれも1件もヒットしない。 記事は有料（¥200〜）の「決済・DX関連銘柄20選」で、4073
+        に触れているのは 冒頭2段落のみ。製品名も導入社数も書かれていない。
+      action: 会社の製品ページ等の一次情報を出典に足すか、この記述を落とす
+    - id: V02
+      section: company
+      quote: 顧客は中堅〜大手の流通事業者。
+      verdict: unsupported
+      tier: secondary
+      sources:
+      - https://note.com/tatsuya_sabato/n/naf535589c0bf
+      evidence: 同記事は 4073 を「金融機関や決済事業者向けにソリューションを提供する フィンテック企業」と書いており、小売・流通向けとは書いていない。 「ストック型ビジネスの比率が高く」という一文は同記事にあるが、
+        これは TIS（3626）の説明であって 4073 の説明ではない。 収益2本立て（ペイメントインテグレーション／ペイメントサービス）の 記述も同記事には無い。
+      action: 決算説明資料・有報の事業セグメント記述を出典にして書き直す
+    - id: V12
+      section: company
+      quote: 取引銀行は千葉銀行・りそな・京葉・みずほ・三井住友・三菱UFJ・三菱UFJ信託の**7行**
+      verdict: supported
+      tier: primary
+      sources:
+      - https://www.gck.co.jp/company/co-outline/
+      evidence: 会社概要ページを再取得（200）。取引銀行欄に千葉銀行・りそな銀行・京葉銀行・ みずほ銀行・三井住友銀行・三菱UFJ銀行・三菱UFJ信託銀行の7行を確認。 同ページで設立1995年9月13日・千葉県佐倉市・Global
+        Communication Planning・ 許認可「関東（ク）第186号」も確認した。
+    - id: V13
+      section: company
+      quote: 上場は2021年
+      verdict: unverifiable
+      tier: none
+      sources: []
+      evidence: この記述に対応する出典が本文に無い。会社概要ページ（一次情報）にも 上場年の記載は無く、kabutan の銘柄ページにも上場年は出ていない。
+      action: 上場年を書くなら有報・会社沿革ページを出典に足す
+    - id: V16
+      section: financials
+      quote: '### 直近3期＋今期計画（すべて2ソース照合済み）'
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4073.csv
+      evidence: 表の16マス（2023/6・2024/6・2025/6・2026/6予 × 売上高・営業利益・ 最終利益・自己資本比率）はすべて status に OK を含む採用値と一致する。
+        checks.py の突合検査でも 15件突合・食い違い0件。
+      action: 決算短信は「単体（非連結）」だが本文はその別に触れていない。 連単の別を1行足すと読み手が誤らない
+    - id: V17
+      section: outlook
+      quote: 4Q単独で営業益170百万円が必要（四半期の過去最高160百万円・2022年4-6月期をわずかに上回る水準）
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4073.csv
+      evidence: run1 で contradicted と判定した「過去最高四半期の2.5倍」が本文から消え、採用値と一致する表現に直っている。四半期の営業利益の過去最高は Q2022-04_2022-06
+        の 160百万円（kabutan 3ヵ月決算過去最高 と irbank_q が一致）。170/160 = 1.06倍で「わずかに上回る」と整合する。
+    - id: V18
+      section: financials
+      quote: 四半期の営業利益の過去最高は **160百万円（2022年4-6月期）**
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4073.csv
+      evidence: data/fundamentals/4073.csv の Q2022-04_2022-06 operating_income = 160（status OK・2サイト一致）。期の表記も一致する。
+    - id: V19
+      section: outlook
+      quote: 売上723百万円は前年同期比+90.3%、営業利益+68百万円
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4073.csv
+      evidence: Q2026-01_2026-03 の revenue 723・operating_income 68 は採用値（OK）。 前年同期 Q2025-01_2025-03 の
+        revenue 380 も採用値。723/380-1 = +90.26%。
+      action: 比率（+90.3%）は本文で人が計算しており、コードが出した値ではない。 SKILL.md の「比率はコードが出す」に照らすと、実額2つを示して 比率はコードに出させるのが本来の形
+    - id: V03
+      section: outlook
+      quote: '**2027年6月期に売上計上予定**である（財経新聞・フィスコ）'
+      verdict: supported
+      tier: secondary
+      sources:
+      - https://www.zaikei.co.jp/article/20260722/862304.html
+      evidence: 記事本文に「受注金額は4.63億円で、売上計上予定時期は27年6月期。 8月に公表予定の27年6月期の業績予想に織り込む予定」を確認（200）。
+      action: ただし記事は2026年7月22日13:41配信で、本文が書く「7/21に獲得」という 発表日はこの出典には無い。発表日を書くなら適時開示を出典にする
+    - id: V14
+      section: financials
+      quote: 2026年6月26日にコミットメントライン契約を更新している
+      verdict: unverifiable
+      tier: none
+      sources:
+      - https://www.gck.co.jp/ir/
+      evidence: この記述に対応する出典が本文に無い。一次情報として掲げられている gck.co.jp/ir/ を再取得（200）したが、ページはナビゲーションの目次だけで IRニュースの本文も適時開示の一覧も
+        HTML に含まれていない。
+      action: 適時開示（TDnet）のURLを出典に足す。取れなければ記述を落とす
+    - id: V15
+      section: outlook
+      quote: 2026年7月17日に代表取締役の異動を開示
+      verdict: unverifiable
+      tier: none
+      sources:
+      - https://www.gck.co.jp/ir/
+      evidence: V14 と同じ。開示そのものを指す出典が本文に無い。
+      action: 適時開示のURLを出典に足す。取れなければ記述を落とす
+    - id: V04
+      section: price
+      quote: レーティングを出している証券会社が**0社**
+      verdict: supported
+      tier: secondary
+      sources:
+      - https://kabuyoho.jp/sp/reportTarget?bcode=4073
+      - https://minkabu.jp/stock/4073
+      evidence: 株予報Pro を再取得（200）。強気0人・やや強気0人・中立0人・やや弱気0人・ 弱気0人、平均と人数は「--」。みんかぶも「アナリスト 対象外」と表示しており、 独立した2つ目の出典が同じ結論を示している。
+    - id: V05
+      section: price
+      quote: 520円（下値目途267円／上値目途773円）
+      verdict: supported
+      tier: secondary
+      sources:
+      - https://kabuyoho.jp/sp/reportTarget?bcode=4073
+      evidence: 理論株価（PBR基準）520円（7.13倍）・下値目途267円（3.66倍）・ 上値目途773円（10.60倍）を確認。判定も「妥当水準」で本文と一致。
+    - id: V06
+      section: price
+      quote: 目標株価 641円（現在から約+20%）
+      verdict: superseded
+      tier: secondary
+      sources:
+      - https://minkabu.jp/stock/4073
+      evidence: 再取得時点のみんかぶ目標株価は644円。取得日（2026-08-12）から動いている。
+      action: 「2026-08-12時点」と取得日を添える。数値は毎週動く
+    - id: V07
+      section: price
+      quote: PBR 7.4倍・PSR 0.73倍
+      verdict: superseded
+      tier: secondary
+      sources:
+      - https://minkabu.jp/stock/4073
+      - https://kabuyoho.jp/sp/reportTarget?bcode=4073
+      - https://kabutan.jp/stock/?code=4073
+      evidence: PSR は再取得時点のみんかぶで0.74倍。PBR は株予報Pro 7.41倍・kabutan 7.45倍で 本文の7.4倍と整合するが、**みんかぶだけ5.10倍**と大きく違う（BPSの取り方が
+        違うため。株予報Proは BPS 実績73円、みんかぶは別基準）。
+      action: PBR は出典によって5.10〜7.45と割れる。断定形で書くなら「どのBPSで割った値か」を 添えるか、割れている事実を書く
+    - id: V08
+      section: price
+      quote: みんかぶの株価診断は「**割高**」
+      verdict: supported
+      tier: secondary
+      sources:
+      - https://minkabu.jp/stock/4073
+      evidence: 株価診断「割高」・個人予想「買い」をいずれも確認（200）。
+    - id: V09
+      section: company
+      quote: 時価総額13.6億円の小型株
+      verdict: superseded
+      tier: secondary
+      sources:
+      - https://kabutan.jp/stock/?code=4073
+      evidence: 再取得時点の kabutan は時価総額13.8億円（株価543円）。 本文の13.6億円は2026-08-12取得時点（株価535円前後）の値。 発行済株式数2,539,060株とも整合する。
+      action: 時価総額は株価で毎日動く。取得日を添えるか、株数と株価で示す
+    - id: V10
+      section: company
+      quote: '**TMN・DIシステム・シャノン**'
+      verdict: supported
+      tier: secondary
+      sources:
+      - https://kabutan.jp/stock/?code=4073
+      evidence: kabutan の「比較される銘柄」に ＴＭＮ／ＤＩシステム／シャノン を確認（200）。
+      action: 株予報Proの「他社比較」は 3627 テクミラＨ／3940 ノムラシステムＣ／3690 イルグルム と別の3社を挙げている。比較対象はサイトごとに違うことを書き添えるとよい
+    - id: V11
+      section: price
+      quote: 制度信用は**買建のみ**で売りから入れず
+      verdict: supported
+      tier: secondary
+      sources:
+      - https://kabutan.jp/stock/?code=4073
+      evidence: kabutan に「証券取引所が指定する制度信用銘柄のうち、買建(信用買い)のみが できる銘柄」と明記。信用取引表も 08/07 時点で売り残0.0・買い残140.4千株・
+        倍率「－」で整合する。
+    - id: V20
+      section: price
+      quote: 週足26週移動平均の傾き：**−0.546%/週（下向き）**
+      verdict: supported
+      tier: dataset
+      sources:
+      - src/judge.py
+      - data/prices/daily.csv
+      evidence: python src/judge.py を再実行し、4073 の週足MAの傾きが 13週 -0.230%/週・26週 -0.546%/週 と出力されることを確認（基準日
+        2026-08-10）。
+    - id: V21
+      section: price
+      quote: 20日平均売買代金は6,596万円だが、**中央値は470万円**
+      verdict: supported
+      tier: dataset
+      sources:
+      - src/judge.py
+      - data/prices/daily.csv
+      evidence: 同じ実行で「20日平均売買代金 6,596万円 ≥ 3,000万円（同期間の中央値 470万円）」 を確認。
+    - id: V22
+      section: price
+      quote: 直近1年の値幅は、**照合済みの終値で 415円〜816円**
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/prices/daily.csv
+      evidence: 2025-09-04 終値816（status OK）、2026-06-24 終値415（OK）。 本文の日付表（2026-07-21 436／2026-08-05 729／2026-08-06
+        579／ 2026-08-10 535）もすべて status OK の採用終値と一致。
+    - id: V23
+      section: updates
+      quote: 6/25 の10年来安値414円
+      verdict: unverifiable
+      tier: none
+      sources:
+      - data/prices/daily.csv
+      evidence: 2026-06-25 の安値414円は主ソースの値として存在するが（終値は427でOK）、 手元の株価データは約1年分（1,080行・2025-07-03以降）しかなく、
+        「10年来」かどうかを確かめる材料が無い。
+      action: 「10年来」を書くなら長期チャートの出典を足す。無ければ『直近1年で最安』に直す
+    - id: V24
+      section: sources
+      quote: IR情報 | <https://www.gck.co.jp/ir/>
+      verdict: unsupported
+      tier: primary
+      sources:
+      - https://www.gck.co.jp/ir/
+      evidence: 一次情報として掲げられているが、再取得すると（200・772字）中身は ナビゲーションの目次だけで、IRニュース・適時開示・決算短信の一覧が HTML に含まれない（JS描画とみられる）。**このURLを根拠にできる記述は現状ゼロ**。
+      action: 個別の開示PDFのURLを出典に書く。目次ページは出典として機能しない
+    - id: V25
+      section: financials
+      quote: この段落の数字はまだ確かめられていない。
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4073.csv
+      evidence: 原価率について本文が「照合が成立していない」と自己申告している内容は CSV と一致する（FY2022-06・FY2023-06 が MISMATCH、他の期は SINGLE_SOURCE）。
+        未確認であることを隠していない。
+    - id: V26
+      section: financials
+      quote: なお4-6月期はこの会社にとって季節的に最も強い四半期である
+      verdict: contradicted
+      tier: dataset
+      sources:
+      - data/fundamentals/4073.csv
+      evidence: 採用値（status OK）の四半期売上高を並べると、4-6月期が最大だったのは FY2022（570 vs 332/339/347）と FY2025（565 vs 536/363/380）の2年だけ。FY2023
+        は1-3月が最大（496 vs 4-6月 352）、FY2024 は7-9月が最大（517 vs 4-6月 395）、FY2026 も1-3月が最大（723 vs 389/381）。営業利益でも
+        2024年4-6月期は -33 の赤字で、同じ FY2024 通期は +58 なので残り3四半期の合計は +91 ——4-6月期はその年で最も弱い四半期だった。「季節的に最も強い」を支える材料が無く、複数年で逆を示している。
+        なお、この一文の起点は run1 の V17 evidence に検証者自身が書いた未検証の断定
+        （「4073 の4-6月期は季節的に最も強い四半期で」）とみられる。**裏取りの記録に
+        未検証の主張を混ぜてはいけない。** run1 は append-only なので消さず、ここで打ち消す。
+      action: この一文を落とすか、「直近の FY2025 では4-6月期が最も強かった（営業利益61百万円）が、年によって最強の四半期は入れ替わる」に直す。
+
+# ---------------------------------------------------------------------------
+# 判定の始末（resolutions）
+#
+# `contradicted`（出典と食い違う）と判定された記述を、そのあとどう始末したかの記録。
+# **判定そのものではない**ので runs には入れない。判定を上書きもしない。
+#
+# なぜ要るのか:
+#   旧実装は「quote が本文に無ければ WARN」だったため、誤った主張を残したまま
+#   一語だけ言い換えれば FAIL が消えた（「直した」と「言い回しを変えた」を
+#   機械が区別できていなかった）。ここに始末を書いて初めて解除される。
+#
+#   how: removed   その一文を落とした。checks.py が「quote が本文に無い」ことを
+#                  機械で確かめてから解除する（書いただけでは解除されない）
+#   how: rewritten 書き直した。quote に**新しい本文の該当箇所**を書く。
+#                  それが現在の本文に実在することを checks.py が確かめる
+resolutions:
+  - id: V26
+    resolved_at: "2026-08-13"
+    how: removed
+    note: >-
+      「なお4-6月期はこの会社にとって季節的に最も強い四半期である」を本文から削除した。
+      V26 の evidence のとおり、採用値の四半期売上・営業利益は複数年で逆を示しており、
+      言い換えでは残せない断定だったため、条件を付けて残さず落とした。
+      現在の本文に「季節」を含む記述は無い（checks.py が quote の不在を機械で確認する）。

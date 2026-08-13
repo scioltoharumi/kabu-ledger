@@ -1438,12 +1438,68 @@ def _print(v: Verdict) -> None:
             print(f"    ・{c}")
 
 
+def codes_from_prices() -> list[str]:
+    """`data/prices/daily.csv` に出てくる証券コード（master.yaml を読まない）。"""
+    p = ROOT / "data" / "prices" / "daily.csv"
+    if not p.exists():
+        return []
+    with p.open(encoding="utf-8-sig", newline="") as f:
+        return sorted({str(r.get("code") or "").strip()
+                       for r in csv.DictReader(f) if str(r.get("code") or "").strip()})
+
+
+def indicators_only() -> dict:
+    """**master.yaml を読まずに**指標だけを出す（裏取りの隔離ジョブ用）。
+
+    weekly.yml の verify ジョブは `data/master.yaml` を sparse-checkout から
+    意図的に外している（買値・買付日が入っているため・D18）。ところが
+    kabu-ledger-verify の SKILL.md は取得元表に `python src/judge.py` を挙げており、
+    その構成では `load_master()` が `FileNotFoundError` で落ちる。
+    結果、検証者は指示された経路で指標を確かめられず、
+    **前回の run の evidence をそのまま持ち越す**（＝前回の検証を根拠にする）
+    方向に流れる。ここが隔離を守ったまま指標を出す入口。
+
+    判定（買/見送）は出さない。判定には master.yaml の閾値・保有情報が要る。
+    """
+    out: dict = {}
+    for code in codes_from_prices():
+        bars = load_bars(code)
+        ind = compute(bars)
+        out[code] = {
+            "as_of": ind.as_of,
+            "bars": ind.bars,
+            "close": ind.close,
+            "avg_turnover_20d": ind.avg_turnover_20d,
+            "median_turnover_20d": ind.median_turnover_20d,
+            "ma_short": ind.ma_short,
+            "ma_mid": ind.ma_mid,
+            "ma_deviation_pct": ind.ma_deviation_pct,
+            "rsi14": ind.rsi14,
+            "volume_ratio_3m": ind.volume_ratio_3m,
+            "weekly_bars_used": ind.weekly_bars_used,
+            "weekly_ma_mid_slope_pct": ind.weekly_ma_mid_slope_pct,
+            "weekly_ma_mid_direction": ind.weekly_ma_mid_direction,
+            "weekly_ma_long_slope_pct": ind.weekly_ma_long_slope_pct,
+            "weekly_ma_long_direction": ind.weekly_ma_long_direction,
+            "ichimoku_position": ind.ichimoku.position if ind.ichimoku else None,
+        }
+    return out
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="鉄則ベースの判定を実行する")
     ap.add_argument("--json", action="store_true", help="JSON で出力する")
     ap.add_argument("--stamps", action="store_true",
                     help="{code: stamp} だけを JSON で出力する")
+    ap.add_argument("--indicators-only", action="store_true",
+                    help="master.yaml を読まずに指標だけを JSON で出す"
+                         "（裏取りの隔離ジョブ用。判定は出さない）")
     args = ap.parse_args(argv)
+
+    if args.indicators_only:
+        print(json.dumps(indicators_only(), ensure_ascii=False,
+                         sort_keys=True, indent=2))
+        return 0
 
     verdicts = judge_all()
     if args.stamps:

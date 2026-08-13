@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from datetime import datetime
 from pathlib import Path
 
 try:  # ローカル(Windows)は SSL 検査プロキシ配下。CI(Linux) では不要
@@ -31,7 +32,8 @@ except ImportError:
 
 import yaml
 
-from fetch import Bar, append_only, fetch_source, pages_for, reconcile
+from fetch import (JST, Bar, append_only, fetch_source, operators_of,
+                   pages_for, reconcile)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -58,21 +60,29 @@ def main() -> int:
         label = f"（遡り {days}営業日）" if days else "（直近）"
         print(f"取得中: {tid} {target['name']}{label}")
 
+        operators = operators_of(target["chain"])
         by_source: list[list[Bar]] = []
+        seen_ops: set[str] = set()
         for entry in target["chain"]:
             pages = pages_for(entry, days)
             bars = fetch_source(tid, entry, pol, pages)
             if bars:
                 by_source.append(bars)
-            if len(by_source) >= required:
-                break   # 照合に必要な数が揃えば以降の取得元は試さない
+                seen_ops.add(operators.get(str(entry["id"]), str(entry["id"])))
+            # 運営が異なる取得元が必要数そろったら以降は試さない（fetch.py と同じ規律）
+            if len(seen_ops) >= required:
+                break
 
         if not by_source:
             failed.append(tid)
             continue
 
-        rows = reconcile(tid, by_source, required)
-        added = append_only(ROOT / "data" / "indices" / f"{tid}.csv", rows)
+        rows = reconcile(tid, by_source, required, operators)
+        now = datetime.now(JST).isoformat()
+        added, fixed = append_only(ROOT / "data" / "indices" / f"{tid}.csv",
+                                   rows, now)
+        if fixed:
+            print(f"  {fixed}件を訂正（照合不成立→成立。data/revisions.csv に記録）")
         ok = sum(1 for r in rows if r["status"] == "OK")
         single = sum(1 for r in rows if r["status"] == "SINGLE_SOURCE")
         mismatch = sum(1 for r in rows if r["status"] == "MISMATCH")

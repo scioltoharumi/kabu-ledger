@@ -1,6 +1,9 @@
 requests>=2.32
 beautifulsoup4>=4.12
 PyYAML>=6.0
+# 決算短信PDF（一次情報）のテキスト抽出。src/fetch_tanshin.py が使う。
+# 入っていないと短信を読めず、二次情報の検算ができない
+pypdf>=5.0
 # 銘柄レポート（reports/*.md）を台帳の HTML にする
 Markdown>=3.5
 # ローカル(Windows)は SSL 検査プロキシ配下で certifi のバンドルでは検証できない。

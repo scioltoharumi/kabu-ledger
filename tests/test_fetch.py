@@ -127,6 +127,114 @@ def test_small_volume_difference_is_not_flagged():
 
 
 # =============================================================================
+# 独立性（**同一運営の2媒体は独立した確認ではない**）
+# =============================================================================
+
+_OPS = {"kabutan": "minkabu_infonoid", "minkabu": "minkabu_infonoid",
+        "yahoo_jp": "yahoo_japan"}
+
+
+def test_two_media_of_the_same_operator_are_not_two_sources():
+    """株探と みんかぶ は同一運営。その一致では採用値にしない。
+
+    財務側は `_fund_site` が「同じサイトの別ページは独立した確認ではない」を
+    守っているのに、株価側は id の数だけを見ていた。実データ1,080行のうち
+    1,036行が (kabutan, minkabu) の一致で採用終値になっていた。
+    """
+    row = F.reconcile("9999", [[bar("kabutan", 100.0, 500)],
+                               [bar("minkabu", 100.0, 500)]], 2, _OPS)[0]
+    eq(flags(row), {"SINGLE_SOURCE"}, "同一運営の2媒体は1つと数える")
+    is_none(row["close"], "照合不成立なので採用値は空")
+
+
+def test_different_operators_are_two_sources():
+    row = F.reconcile("9999", [[bar("kabutan", 100.0, 500)],
+                               [bar("yahoo_jp", 100.0, 500)]], 2, _OPS)[0]
+    eq(flags(row), {"OK"}, "運営が異なれば照合成立")
+    eq(row["close"], 100.0, "採用値が入る")
+
+
+def test_independent_pair_skips_the_same_operator():
+    """同一運営が先に並んでいても、副ソースは運営の異なるものを選ぶ。"""
+    row = F.reconcile("9999", [[bar("kabutan", 100.0, 500)],
+                               [bar("minkabu", 100.0, 500)],
+                               [bar("yahoo_jp", 100.0, 500)]], 2, _OPS)[0]
+    eq(row["source_secondary"], "yahoo_jp", "運営の異なる相手を選ぶ")
+    eq(flags(row), {"OK"}, "照合成立")
+
+
+def test_operators_of_defaults_to_the_id():
+    eq(F.operators_of([{"id": "x"}, {"id": "y", "operator": "z"}]),
+       {"x": "x", "y": "z"}, "operator 未記載は id 自身を運営とみなす")
+
+
+def test_real_price_chain_has_an_independent_pair():
+    """`sources.yaml` の price.chain に、運営の異なる取得元が2つ以上あること。
+
+    無ければ採用終値が永久に作れない（設定変更でそうなったら気づけるように）。
+    """
+    import yaml
+    cfg = yaml.safe_load((ROOT / "data" / "sources.yaml").read_text(
+        encoding="utf-8"))
+    ops = set(F.operators_of(cfg["price"]["chain"]).values())
+    required = cfg["price"]["required_agreements"]
+    assert len(ops) >= required, f"運営が {sorted(ops)} しかない（要 {required}）"
+
+
+# =============================================================================
+# 訂正（照合不成立 → 成立）
+# =============================================================================
+
+def test_unconfirmed_day_is_repaired_when_the_second_operator_comes_back():
+    """途中の1日が採用終値を持たないまま固定される壊れ方を直す。
+
+    鍵が (code, date) なので、その日の取得が片肺だった行は永久に `close` が空。
+    その1日が20日/25日窓の内側に入った瞬間、`indicators` の窓が丸ごと None になり
+    **全銘柄の流動性ゲートが unknown に落ちて「調査」で止まる**。
+    """
+    import csv
+    import tempfile
+
+    week1 = F.reconcile("9999", [[bar("kabutan", 100.0, 500)]], 2, _OPS)
+    week2 = F.reconcile("9999", [[bar("kabutan", 100.0, 500)],
+                                 [bar("yahoo_jp", 100.0, 500)]], 2, _OPS)
+    eq(flags(week1[0]), {"SINGLE_SOURCE"}, "1週目は照合不成立")
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "daily.csv"
+        led = Path(tmp) / "revisions.csv"
+        F.append_only(path, week1, "t1", led)
+        added, fixed = F.append_only(path, week2, "t2", led)
+        eq((added, fixed), (0, 1), "行は増えず、1行が訂正される")
+        rows = list(csv.DictReader(path.open(encoding="utf-8")))
+        eq(len(rows), 1, "行が増えない")
+        eq(rows[0]["close"], "100.0", "採用終値が入る")
+        led_rows = list(csv.DictReader(led.open(encoding="utf-8")))
+        assert led_rows, "訂正が台帳に記録される"
+        assert all(r["kind"] == "repair" for r in led_rows), "向きは repair"
+
+
+def test_adopted_close_is_never_withdrawn_automatically():
+    """OK → SINGLE_SOURCE の方向には自動で動かさない。
+
+    取得元の一時的な不調で採用終値が消えると、直したかった障害を自分で起こす。
+    """
+    import csv
+    import tempfile
+
+    good = F.reconcile("9999", [[bar("kabutan", 100.0, 500)],
+                                [bar("yahoo_jp", 100.0, 500)]], 2, _OPS)
+    half = F.reconcile("9999", [[bar("kabutan", 100.0, 500)]], 2, _OPS)
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "daily.csv"
+        led = Path(tmp) / "revisions.csv"
+        F.append_only(path, good, "t1", led)
+        eq(F.append_only(path, half, "t2", led), (0, 0), "何も起きない")
+        rows = list(csv.DictReader(path.open(encoding="utf-8")))
+        eq(rows[0]["close"], "100.0", "採用終値が消えない")
+        assert not led.exists(), "訂正は記録されない"
+
+
+# =============================================================================
 # パース
 # =============================================================================
 

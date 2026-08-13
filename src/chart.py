@@ -57,21 +57,34 @@ def _fmt(v: float, unit: str) -> str:
     return f"{s}{unit}"
 
 
-def _wrap(inner: str, vb_w: int, vb_h: int, caption: str = "") -> str:
+def _wrap(inner: str, vb_w: int, vb_h: int, caption: str = "",
+          source_note: str = "") -> str:
+    """図を figure で包む。
+
+    source_note は「この図の数値がどこから来たか」。**必ず図と一緒に出す**。
+    2ソース照合済みの値と、人が転記した未検証の値を同じ見た目で並べない
+    （CLAUDE.md データ層／D7）。
+    """
     cap = ""
     if caption:
         cap = f'<figcaption>{html.escape(caption)}</figcaption>'
+    src = ""
+    if source_note:
+        cls = "viz-src"
+        if source_note.startswith("手書き"):
+            cls = "viz-src viz-src-hand"
+        src = f'<p class="{cls}">{html.escape(source_note)}</p>'
     return (
         f'<figure class="viz">'
         f'<svg viewBox="0 0 {vb_w} {vb_h}" role="img" '
-        f'preserveAspectRatio="xMidYMid meet">{inner}</svg>{cap}</figure>'
+        f'preserveAspectRatio="xMidYMid meet">{inner}</svg>{cap}{src}</figure>'
     )
 
 
 # --- 棒グラフ（正負対応・単一系列） ---------------------------------------
 
 def bar(data: list[dict], unit: str = "", caption: str = "",
-        zero_label: str = "0") -> str:
+        zero_label: str = "0", source_note: str = "") -> str:
     """縦棒。値が負なら赤で下向きに描く。y 軸は1本のみ。"""
     pts = _pts(data)
     vals = [p.value for p in pts if p.value is not None]
@@ -144,14 +157,14 @@ def bar(data: list[dict], unit: str = "", caption: str = "",
                 f'text-anchor="middle" class="viz-tick">'
                 f'{html.escape(p.label)}</text>')
 
-    return _wrap("".join(parts), W, H, caption)
+    return _wrap("".join(parts), W, H, caption, source_note)
 
 
 # --- 折れ線（単一系列） ---------------------------------------------------
 
 def line(data: list[dict], unit: str = "", caption: str = "",
          band: tuple[float, float] | None = None,
-         band_label: str = "") -> str:
+         band_label: str = "", source_note: str = "") -> str:
     """折れ線。band を渡すと参考帯（注意水準など）を敷く。"""
     pts = _pts(data)
     vals = [p.value for p in pts if p.value is not None]
@@ -226,14 +239,14 @@ def line(data: list[dict], unit: str = "", caption: str = "",
                      f'text-anchor="middle" class="viz-tick">'
                      f'{html.escape(p.label)}</text>')
 
-    return _wrap("".join(parts), W, H, caption)
+    return _wrap("".join(parts), W, H, caption, source_note)
 
 
 # --- 進捗（実績 vs 必要量） -----------------------------------------------
 
 def progress(done: float, target: float, unit: str = "",
              done_label: str = "実績", rest_label: str = "残り",
-             caption: str = "") -> str:
+             caption: str = "", source_note: str = "") -> str:
     """目標に対する到達と残りを1本のバーで見せる。
 
     done が負（＝赤字）の場合、残りは目標との差になり、バーは
@@ -290,14 +303,15 @@ def progress(done: float, target: float, unit: str = "",
     parts.append(f'<text x="{pad_l}" y="{y + bh + 22}" class="viz-value">'
                  f'{html.escape(rest_label)} {html.escape(_fmt(gap, unit))}</text>')
 
-    return _wrap("".join(parts), W, H, caption)
+    return _wrap("".join(parts), W, H, caption, source_note)
 
 
 # --- レンジ内の位置（52週高安の中で今どこか） -----------------------------
 
 def range_pos(low: float, high: float, current: float, unit: str = "円",
               low_label: str = "安値", high_label: str = "高値",
-              markers: list[dict] | None = None, caption: str = "") -> str:
+              markers: list[dict] | None = None, caption: str = "",
+              source_note: str = "") -> str:
     W, H = 720, 118
     pad_l, pad_r = 44, 44
     bar_w = W - pad_l - pad_r
@@ -339,32 +353,42 @@ def range_pos(low: float, high: float, current: float, unit: str = "円",
                  f'{html.escape(high_label)}<tspan x="{W - pad_r}" dy="14">'
                  f'{html.escape(_fmt(high, unit))}</tspan></text>')
 
-    return _wrap("".join(parts), W, H, caption)
+    return _wrap("".join(parts), W, H, caption, source_note)
 
 
 # --- ディスパッチ ---------------------------------------------------------
 
 def render(spec: dict) -> str:
-    """front matter の charts エントリ1件を SVG にする。"""
+    """front matter の charts エントリ1件（chartdata で解決済み）を SVG にする。
+
+    `source_note` は chartdata.resolve_chart が入れる出所の説明。描く値が
+    足りなければ空文字を返す（呼び手が「描けなかった」と表示する）。
+    """
     kind = spec.get("type")
     caption = spec.get("caption", "")
     unit = spec.get("unit", "")
+    note = spec.get("source_note", "")
     if kind == "bar":
         return bar(spec.get("data", []), unit, caption,
-                   spec.get("zero_label", "0"))
+                   spec.get("zero_label", "0"), note)
     if kind == "line":
         band = spec.get("band")
         band_t = tuple(band) if band and len(band) == 2 else None
         return line(spec.get("data", []), unit, caption, band_t,
-                    spec.get("band_label", ""))
+                    spec.get("band_label", ""), note)
     if kind == "progress":
+        if spec.get("done") is None or spec.get("target") is None:
+            return ""
         return progress(float(spec["done"]), float(spec["target"]), unit,
                         spec.get("done_label", "実績"),
-                        spec.get("rest_label", "残り"), caption)
+                        spec.get("rest_label", "残り"), caption, note)
     if kind == "range":
+        need = ("low", "high", "current")
+        if any(spec.get(k) is None for k in need):
+            return ""
         return range_pos(float(spec["low"]), float(spec["high"]),
                          float(spec["current"]), unit,
                          spec.get("low_label", "安値"),
                          spec.get("high_label", "高値"),
-                         spec.get("markers"), caption)
+                         spec.get("markers"), caption, note)
     return ""

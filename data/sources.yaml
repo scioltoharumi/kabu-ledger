@@ -6,9 +6,19 @@
 # 3ソースとも同一日の OHLCV が完全一致することを確認済み。
 
 price:
-  # 日足の時系列ページ。上から順に試行し、2件成功した時点で照合する
+  # 日足の時系列ページ。上から順に試行し、**運営が異なる取得元が2件**そろった時点で照合する。
+  #
+  # ★`operator` は「誰が運営しているか」。株探（kabutan）と みんかぶ（minkabu）は
+  #   どちらも ミンカブ・ジ・インフォノイド の媒体で、**同じ会社の2媒体**である。
+  #   id だけを数えていた旧実装では、実データ1,080行のうち 1,036行が
+  #   (kabutan, minkabu) の一致で採用終値になっており、yahoo_jp が副ソースに
+  #   なった行は0だった。つまり「2ソース照合済み」の大半が同一運営の2媒体の一致で、
+  #   財務側（kabutan と irbank で運営が分かれている）より独立性が弱かった。
+  #   同一サイトの別ページを独立と数えない財務側の規律（fundamentals.required_sites）を、
+  #   株価にも通す。
   chain:
     - id: kabutan
+      operator: minkabu_infonoid
       url: "https://kabutan.jp/stock/kabuka?code={code}&ashi=day"
       paged_url: "https://kabutan.jp/stock/kabuka?code={code}&ashi=day&page={page}"
       table_selector: "table.stock_kabuka_dwm"
@@ -18,6 +28,7 @@ price:
       rows_per_page: 30
       pageable: true
     - id: minkabu
+      operator: minkabu_infonoid       # kabutan と同一運営（独立した確認ではない）
       url: "https://minkabu.jp/stock/{code}/daily_bar"
       paged_url: "https://minkabu.jp/stock/{code}/daily_bar?page={page}"
       table_selector: "table#fourvalue_timeline"
@@ -26,6 +37,7 @@ price:
       rows_per_page: 20
       pageable: true
     - id: yahoo_jp
+      operator: yahoo_japan
       url: "https://finance.yahoo.co.jp/quote/{code}.T/history"
       paged_url: "https://finance.yahoo.co.jp/quote/{code}.T/history?page={page}"
       table_selector: "table#histlist"
@@ -33,6 +45,7 @@ price:
       date_format: "yyyy/m/d"      # 例: 2026/8/10
       rows_per_page: 20
       pageable: true
+  # 「運営が異なる取得元が何件一致したら採用値にするか」。id の数ではない。
   required_agreements: 2
   compare_field: close             # 照合は生終値で行う（調整後終値は使わない）
   on_mismatch: "MISMATCH"          # 両値を記録し、判定は前週値を据え置き
@@ -101,12 +114,504 @@ index:
   on_mismatch: "MISMATCH"
   on_all_fail: "FETCH_FAILED"
 
+# 財務数値（決算・財務・CF・比率）。src/fetch_fundamentals.py が読む。
+#
+# レポート（reports/{code}.md）の数値は、これまで人間が表を目で読んで転記していた。
+# 株価の close と同じ規律（2ソース一致でしか採用値にしない）を財務にも適用するための定義。
+#
+# セレクタ・列・単位は 2026-08-13 に実地調査して確定した（推測ではない）。
+#   kabutan: 決算ページ内の表。ラップしている div の class（fin_year_result_d 等）か、
+#            見出し（th）テキストで特定する。単位はページ末尾の「※単位について」に
+#            明記されており、その文言の存在を unit_assert で確認する。
+#            **コード側で「百万円だろう」と仮定しない。**
+#   irbank : セル自身が「26.4億」「136百万」と桁を持つ（JPY_suffixed）。
+#            企業コード（E36666）は証券コードと別体系。irbank_index から機械的に解決する。
+#
+# **列は位置で読むが、先頭行がヘッダ定義と完全一致しない表は読まない。**
+# 1列挿入されただけで別の数字を拾う事故（review-findings F-02 と同型）を塞ぐ。
+fundamentals:
+  required_sites: 2            # 別サイトが2つ一致して初めて採用値になる
+  on_mismatch: "MISMATCH"      # 両値を残し、採用値は空のまま
+  on_all_fail: "FETCH_FAILED"  # 欠測として記録。推定値で埋めない
+  # 「値が無い」ことを示す表記。数値として読まない
+  na_marks: ["-", "－", "―", "‐", "--", "---", "赤字", "黒字", "黒転", "赤転",
+             "赤縮", "黒縮", "*", "＊", "%", "％", "-%", "－%", "－％"]
+
+  # 証券コード → IR BANK 企業コードの解決元。**URL を推測で組み立てない**
+  irbank_index:
+    url: "https://irbank.net/{code}"
+    company_link_re: "^/?(E\\d{5})(/|$)"
+    note: "ページ内の /E##### リンクが一意であることと、title に証券コードと社名の
+           両方が含まれることを確認したうえで採用する（別会社を掴んでいないことの確認）"
+
+  # 指標 → 正規化後の単位。ここに無い指標は記録しない（語彙を勝手に増やさない）
+  #   JPY_million 百万円 / JPY 円 / pct ％ / x 倍
+  metrics:
+    revenue: JPY_million
+    operating_income: JPY_million
+    ordinary_income: JPY_million
+    net_income: JPY_million
+    eps: JPY
+    bps: JPY
+    operating_margin: pct
+    cost_ratio: pct
+    sga_ratio: pct
+    roe: pct
+    roa: pct
+    total_assets: JPY_million
+    net_assets: JPY_million
+    equity: JPY_million
+    # 自己資本（equity）とは別の勘定科目。IR BANK の BS 表はこちらしか持たない。
+    # equity と突き合わせない（irbank_bs の note を参照）。
+    shareholders_equity: JPY_million
+    equity_ratio: pct
+    retained_earnings: JPY_million
+    interest_bearing_debt: JPY_million
+    interest_bearing_debt_ratio: x
+    operating_cf: JPY_million
+    investing_cf: JPY_million
+    financing_cf: JPY_million
+    free_cf: JPY_million
+    capex: JPY_million
+    cash_equivalents: JPY_million
+
+  sources:
+    # --- kabutan（決算ページ1枚に必要な表がすべて載っている） -----------------
+    - id: kabutan_fy
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: rows_period_first
+      period_kind: fy
+      table_selector: "div.fin_year_result_d table"
+      expect_header: [決算期, 売上高, 営業益, 経常益, 最終益, 修正1株益, 修正1株配, 発表日]
+      unit_assert:
+        - "売上高、営業益、経常益、最終益は「百万円」"
+        - "修正1株益、修正1株配は「円」"
+      columns:
+        - null                                        # 決算期
+        - {metric: revenue, unit: JPY_million}
+        - {metric: operating_income, unit: JPY_million}
+        - {metric: ordinary_income, unit: JPY_million}
+        - {metric: net_income, unit: JPY_million}
+        - {metric: eps, unit: JPY}
+        - null                                        # 修正1株配
+        - null                                        # 発表日
+
+    - id: kabutan_fy10
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: rows_period_first
+      period_kind: fy
+      table_selector: "div.fin_year_growth_d table"
+      expect_header: [決算期, 売上高, 前年比, 営業益, 前年比, 経常益, 前年比, 修正1株益, 前年比]
+      unit_assert:
+        - "売上高、営業益、経常益、最終益は「百万円」"
+      note: "10年ぶんの売上高。利益列は有料会員のみで欠けるが、欠けた列は読まないだけ"
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_million}
+        - null
+        - {metric: operating_income, unit: JPY_million}
+        - null
+        - {metric: ordinary_income, unit: JPY_million}
+        - null
+        - {metric: eps, unit: JPY}
+        - null
+
+    - id: kabutan_fy_profit
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: rows_period_first
+      period_kind: fy
+      table_selector: "div.fin_year_profit_d table"
+      expect_header: [決算期, 売上高, 営業益, 売上営業利益率, ＲＯＥ, ＲＯＡ, 総資産回転率, 修正1株益]
+      unit_assert:
+        - "進捗率、売上営業利益率は「％」"
+        - "ROE、ROAは「％」"
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_million}
+        - {metric: operating_income, unit: JPY_million}
+        - {metric: operating_margin, unit: pct}
+        - {metric: roe, unit: pct}
+        - {metric: roa, unit: pct}
+        - null                                        # 総資産回転率（単位「回」）
+        - {metric: eps, unit: JPY}
+
+    - id: kabutan_cf
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: rows_period_first
+      period_kind: fy
+      match_th: [フリーCF]
+      expect_header: [決算期, 営業益, フリーCF, 営業CF, 投資CF, 財務CF, 現金等残高, 現金比率]
+      unit_assert:
+        - "フリーCF、営業CF、投資CF、財務CF、現金等残高は「百万円」"
+      columns:
+        - null
+        - {metric: operating_income, unit: JPY_million}
+        - {metric: free_cf, unit: JPY_million}
+        - {metric: operating_cf, unit: JPY_million}
+        - {metric: investing_cf, unit: JPY_million}
+        - {metric: financing_cf, unit: JPY_million}
+        - {metric: cash_equivalents, unit: JPY_million}
+        - null                                        # 現金比率
+
+    - id: kabutan_bs
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: rows_period_first
+      period_kind: fy
+      match_th: [有利子負債倍率]
+      expect_header: [決算期, １株純資産, 自己資本比率, 総資産, 自己資本, 剰余金, 有利子負債倍率, 発表日]
+      unit_assert:
+        - "１株純資産は「円」"
+        - "自己資本比率は「％」"
+        - "総資産、自己資本、剰余金は「百万円」"
+        - "有利子負債倍率は「倍」"
+      note: "最終行は四半期末の残高（例 25.07-03）。IR BANK は年度末しか持たないため
+             四半期の行は SINGLE_SOURCE になる（＝採用値は空のまま）"
+      columns:
+        - null
+        - {metric: bps, unit: JPY}
+        - {metric: equity_ratio, unit: pct}
+        - {metric: total_assets, unit: JPY_million}
+        - {metric: equity, unit: JPY_million}
+        - {metric: retained_earnings, unit: JPY_million}
+        - {metric: interest_bearing_debt_ratio, unit: x}
+        - null
+
+    # 累計決算の表は見出しが「対通期進捗率」「対上期進捗率」のどちらかで、
+    # **一方しか存在しない**。variant_group が同じ群は、どれか1つ当たれば正常とする。
+    - id: kabutan_ytd3q
+      variant_group: kabutan_ytd
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: rows_period_first
+      period_kind: fy
+      match_th: [対通期進捗率]
+      expect_header: [決算期, 売上高, 営業益, 経常益, 最終益, 修正1株益, 対通期進捗率, 発表日]
+      unit_assert:
+        - "売上高、営業益、経常益、最終益は「百万円」"
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_million}
+        - {metric: operating_income, unit: JPY_million}
+        - {metric: ordinary_income, unit: JPY_million}
+        - {metric: net_income, unit: JPY_million}
+        - {metric: eps, unit: JPY}
+        - null                                        # 対通期進捗率（比率はコードが出す）
+        - null
+
+    - id: kabutan_ytd_h1
+      variant_group: kabutan_ytd
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: rows_period_first
+      period_kind: fy
+      match_th: [対上期進捗率]
+      expect_header: [決算期, 売上高, 営業益, 経常益, 最終益, 修正1株益, 対上期進捗率, 発表日]
+      unit_assert:
+        - "売上高、営業益、経常益、最終益は「百万円」"
+      note: "累計決算の表は、直近の開示が1Qなら見出しが「対上期進捗率」、
+             2Q以降なら「対通期進捗率」に変わる。どちらか一方しか存在しない"
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_million}
+        - {metric: operating_income, unit: JPY_million}
+        - {metric: ordinary_income, unit: JPY_million}
+        - {metric: net_income, unit: JPY_million}
+        - {metric: eps, unit: JPY}
+        - null
+        - null
+
+    - id: kabutan_half
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: rows_period_first
+      period_kind: fy
+      table_selector: "div.fin_half_result_d table"
+      expect_header: [決算期, 売上高, 営業益, 経常益, 最終益, 修正1株益, 修正1株配, 発表日]
+      unit_assert:
+        - "売上高、営業益、経常益、最終益は「百万円」"
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_million}
+        - {metric: operating_income, unit: JPY_million}
+        - {metric: ordinary_income, unit: JPY_million}
+        - {metric: net_income, unit: JPY_million}
+        - {metric: eps, unit: JPY}
+        - null
+        - null
+
+    - id: kabutan_q
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: rows_period_first
+      period_kind: fy
+      table_selector: "div.fin_quarter_result_d table"
+      expect_header: [決算期, 売上高, 営業益, 経常益, 最終益, 修正1株益, 売上営業損益率, 発表日]
+      unit_assert:
+        - "売上高、営業益、経常益、最終益は「百万円」"
+        - "進捗率、売上営業利益率は「％」"
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_million}
+        - {metric: operating_income, unit: JPY_million}
+        - {metric: ordinary_income, unit: JPY_million}
+        - {metric: net_income, unit: JPY_million}
+        - {metric: eps, unit: JPY}
+        - {metric: operating_margin, unit: pct}
+        - null
+
+    - id: kabutan_q10
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: rows_period_first
+      period_kind: fy
+      table_selector: "div.fin_quarter_growth_d table"
+      expect_header: [決算期, 売上高, 前年同期比, 営業益, 前年同期比, 経常益, 前年同期比, 修正1株益, 前年同期比]
+      unit_assert:
+        - "売上高、営業益、経常益、最終益は「百万円」"
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_million}
+        - null
+        - {metric: operating_income, unit: JPY_million}
+        - null
+        - {metric: ordinary_income, unit: JPY_million}
+        - null
+        - {metric: eps, unit: JPY}
+        - null
+
+    - id: kabutan_record_fy
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: transposed_record
+      period_kind: fy
+      heading_equals: "過去最高 【実績】"
+      expect_header: ["", 売上高, 営業益, 経常益, 最終益, 修正1株益]
+      value_row_label: "過去最高"
+      period_row_label: "決算期"
+      unit_assert:
+        - "売上高、営業益、経常益、最終益は「百万円」"
+      note: "10年表の利益列が有料で欠ける年（4073 は 2016〜2021）を、過去最高の年だけ
+             埋められる。IR BANK の同じ年と照合できる"
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_million}
+        - {metric: operating_income, unit: JPY_million}
+        - {metric: ordinary_income, unit: JPY_million}
+        - {metric: net_income, unit: JPY_million}
+        - {metric: eps, unit: JPY}
+
+    - id: kabutan_record_q
+      site: kabutan
+      url: "https://kabutan.jp/stock/finance?code={code}"
+      kind: transposed_record
+      period_kind: quarter
+      heading_equals: "3ヵ月決算過去最高 【実績】"
+      expect_header: ["", 売上高, 営業益, 経常益, 最終益, 修正1株益]
+      value_row_label: "過去最高"
+      period_row_label: "決算期"
+      unit_assert:
+        - "売上高、営業益、経常益、最終益は「百万円」"
+      note: "決算期は四半期末（例 2026.03）。3か月遡って期間キーにする"
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_million}
+        - {metric: operating_income, unit: JPY_million}
+        - {metric: ordinary_income, unit: JPY_million}
+        - {metric: net_income, unit: JPY_million}
+        - {metric: eps, unit: JPY}
+
+    # --- IR BANK（10年ぶん。原価率・販管費率は kabutan が持たない） -----------
+    - id: irbank_pl
+      variant_group: irbank_pl
+      site: irbank
+      url: "https://irbank.net/{ecode}/results"
+      kind: rows_period_first
+      period_kind: fy
+      expect_header: [年度, 売上, 営利, 経常, 純利, EPS, ROE, ROA, 営利率, 原価率, 販管費率]
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_suffixed}
+        - {metric: operating_income, unit: JPY_suffixed}
+        - {metric: ordinary_income, unit: JPY_suffixed}
+        - {metric: net_income, unit: JPY_suffixed}
+        - {metric: eps, unit: JPY}
+        - {metric: roe, unit: pct}
+        - {metric: roa, unit: pct}
+        - {metric: operating_margin, unit: pct}
+        - {metric: cost_ratio, unit: pct}
+        - {metric: sga_ratio, unit: pct}
+
+    # IR BANK の業績表は会計基準で列が変わる（2026-08-13 実測の3通り）。
+    #   非連結         年度/売上/営利/経常/純利/EPS/...
+    #   非連結＋包括   年度/売上/営利/経常/純利/包括/EPS/...
+    #   連結           年度/売上/営利/経常/当期利益/包括/EPS/...
+    # ヘッダ完全一致で選ぶので、当てはまる1つだけが読まれる（列ずれで別の数字を
+    # 拾うことは無い）。包括利益は指標として持たないため読み飛ばす。
+    - id: irbank_pl_comprehensive
+      variant_group: irbank_pl
+      site: irbank
+      url: "https://irbank.net/{ecode}/results"
+      kind: rows_period_first
+      period_kind: fy
+      expect_header: [年度, 売上, 営利, 経常, 純利, 包括, EPS, ROE, ROA, 営利率, 原価率, 販管費率]
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_suffixed}
+        - {metric: operating_income, unit: JPY_suffixed}
+        - {metric: ordinary_income, unit: JPY_suffixed}
+        - {metric: net_income, unit: JPY_suffixed}
+        - null                                        # 包括利益
+        - {metric: eps, unit: JPY}
+        - {metric: roe, unit: pct}
+        - {metric: roa, unit: pct}
+        - {metric: operating_margin, unit: pct}
+        - {metric: cost_ratio, unit: pct}
+        - {metric: sga_ratio, unit: pct}
+
+    - id: irbank_pl_consolidated
+      variant_group: irbank_pl
+      site: irbank
+      url: "https://irbank.net/{ecode}/results"
+      kind: rows_period_first
+      period_kind: fy
+      expect_header: [年度, 売上, 営利, 経常, 当期利益, 包括, EPS, ROE, ROA, 営利率, 原価率, 販管費率]
+      columns:
+        - null
+        - {metric: revenue, unit: JPY_suffixed}
+        - {metric: operating_income, unit: JPY_suffixed}
+        - {metric: ordinary_income, unit: JPY_suffixed}
+        - {metric: net_income, unit: JPY_suffixed}
+        - null                                        # 包括利益
+        - {metric: eps, unit: JPY}
+        - {metric: roe, unit: pct}
+        - {metric: roa, unit: pct}
+        - {metric: operating_margin, unit: pct}
+        - {metric: cost_ratio, unit: pct}
+        - {metric: sga_ratio, unit: pct}
+
+    - id: irbank_bs
+      site: irbank
+      url: "https://irbank.net/{ecode}/results"
+      kind: rows_period_first
+      period_kind: fy
+      expect_header: [年度, 総資産, 純資産, 株主資本, 自己資本比率, 利益剰余金, 有利子負債, 有利子負債比率, BPS]
+      note: "有利子負債比率は「％」表記。kabutan の有利子負債倍率（倍）と単位が違うので
+             正規化してから照合する（UNIT_CONVERTED が立つ）。
+             ★4列目は「株主資本」であって「自己資本」ではない。
+             自己資本 = 株主資本 + その他の包括利益累計額 なので、連結企業では必ずずれる。
+             kabutan の『自己資本』（equity）と突き合わせると、
+             **別々の勘定科目どうしを照合してしまう**（差が表示解像度に収まった期だけ
+             OK|ROUNDING で採用され、収まらない期は MISMATCH になる＝判定が丸め幅で決まる）。
+             実測: 6570 FY2024-03 は kabutan 自己資本 3,991 / irbank 株主資本 3,900 で、
+             両サイトの自己資本比率 28.1% × 総資産 14,211 = 3,993 は 3,991 側と一致する。
+             よって別 metric（shareholders_equity）として記録し、equity とは照合しない。
+             IR BANK はこの表に自己資本の列を持たないため、equity は kabutan 単独
+             （SINGLE_SOURCE）になるのが正しい状態である。"
+      columns:
+        - null
+        - {metric: total_assets, unit: JPY_suffixed}
+        - {metric: net_assets, unit: JPY_suffixed}
+        - {metric: shareholders_equity, unit: JPY_suffixed}
+        - {metric: equity_ratio, unit: pct}
+        - {metric: retained_earnings, unit: JPY_suffixed}
+        - {metric: interest_bearing_debt, unit: JPY_suffixed}
+        - {metric: interest_bearing_debt_ratio, unit: pct}
+        - {metric: bps, unit: JPY}
+
+    - id: irbank_cf
+      site: irbank
+      url: "https://irbank.net/{ecode}/results"
+      kind: rows_period_first
+      period_kind: fy
+      expect_header: [年度, 営業CF, 投資CF, 財務CF, フリーCF, 設備投資, 現金等, 営業CFマージン]
+      columns:
+        - null
+        - {metric: operating_cf, unit: JPY_suffixed}
+        - {metric: investing_cf, unit: JPY_suffixed}
+        - {metric: financing_cf, unit: JPY_suffixed}
+        - {metric: free_cf, unit: JPY_suffixed}
+        - {metric: capex, unit: JPY_suffixed}
+        - {metric: cash_equivalents, unit: JPY_suffixed}
+        - null
+
+    - id: irbank_q
+      site: irbank
+      url: "https://irbank.net/{ecode}/quarter"
+      kind: matrix_metric_year
+      multi: true
+      expect_header: [科目, 年度, 1Q, 2Q, 3Q, 4Q, 通期]
+      quarter_columns: [1Q, 2Q, 3Q, 4Q]
+      annual_column: 通期
+      note: "同じヘッダの表が「業績」と「財務」で2つあるため multi: true。
+             metric_map に無い科目（売上債権・回転期間など）は読み飛ばす。
+             四半期の期間は決算期末の年月と四半期番号から計算する（2026/06 期の 1Q は
+             2025-07〜2025-09 ＝ kabutan の '25.07-09'）"
+      metric_map:
+        売上高: {metric: revenue, unit: JPY_suffixed}
+        営業利益: {metric: operating_income, unit: JPY_suffixed}
+        経常利益: {metric: ordinary_income, unit: JPY_suffixed}
+        当期純利益: {metric: net_income, unit: JPY_suffixed}
+        営業利益率: {metric: operating_margin, unit: pct}
+        売上原価率: {metric: cost_ratio, unit: pct}
+        販管費率: {metric: sga_ratio, unit: pct}
+
 disclosure:
   # 分割・権利落ちは株価サイトでは拾えない。一次情報のみ
   - id: tdnet
     url: "https://www.release.tdnet.info/inbs/I_list_001_{yyyymmdd}.html"
   - id: edinet
     url: "https://api.edinet-fsa.go.jp/api/v2/documents.json"
+
+# 決算短信（PDF）＝ 一次情報。kabutan / minkabu / irbank の決算欄は二次情報であり、
+# ここと同じ層に置かない（SKILL.md「取得元」）。src/fetch_tanshin.py が読む。
+#
+# 構造は 2026-08-13 に実地確認して確定した（推測ではない）。
+#   TDnet 一覧: table#main-list-table の各行が
+#               [時刻, 5桁コード, 会社名, 表題, XBRL, 上場取引所, 更新履歴]
+#               リンクは相対 PDF 名（例 140120260812518453.pdf）
+#   4073 3Q短信: 1ページ目に サマリー表（経営成績・財政状態・業績予想）が全部載る
+tanshin:
+  discovery:
+    - id: tdnet
+      # 適時開示の日次一覧。ページは 001 から始まり 100件ごとに増える
+      list_url: "https://www.release.tdnet.info/inbs/I_list_{page:03d}_{yyyymmdd}.html"
+      pdf_base: "https://www.release.tdnet.info/inbs/"
+      table_selector: "table#main-list-table"
+      columns: [time, code5, company, title, xbrl, exchange, history]
+      max_pages: 8
+      retention_days: 31
+      note: "保持は約31日。それ以前の開示はここから辿れない（実測: 2026-05-15 の
+             4073 短信は 404）。過去分は known_pdfs に人間が確認したURLを置く"
+
+  # 人間が実際にアクセスして中身を確認した短信PDF。**推測でURLを組み立てない**。
+  # TDnet の保持期間を過ぎた開示はここからしか辿れない。
+  known_pdfs:
+    "4073":
+      - url: "https://www.nikkei.com/markets/ir/irftp/data/tdnr/tdnetg3/20260515/fxfcrw/140120260515536364.pdf"
+        disclosed_on: "2026-05-15"
+        title: "2026年6月期 第3四半期決算短信〔日本基準〕(非連結)"
+        verified_on: "2026-08-13"
+        note: "TDnet 原本（release.tdnet.info/inbs/140120260515536364.pdf）は保持期間切れ。
+               日経の irftp ミラーが同一ファイル名で生きている"
+
+  # 表題がこの語を含む開示だけを短信として扱う。決算説明資料・訂正は別物
+  title_include: ["決算短信"]
+  title_exclude: ["説明資料", "説明会", "補足"]
+
+  # PDF が読めなかったことを記録する status（黙って二次情報に落とさない）
+  unreadable_statuses:
+    - DOWNLOAD_FAILED     # HTTP が 200 を返さない
+    - NOT_PDF             # 応答が PDF ではない
+    - PDF_ENCRYPTED       # 暗号化されていて開けない
+    - PDF_UNREADABLE      # pypdf が例外を投げた
+    - PDF_IMAGE_ONLY      # テキスト層が無い（画像PDF・要OCR）
+    - SUMMARY_UNPARSED    # PDF は読めたがサマリー表の構造に当たらなかった
+    - NOT_FOUND           # 一覧に該当する短信が無い
 
 fetch_policy:
   user_agent: "kabu-ledger/1.0 (personal research; contact via repo issues)"
@@ -126,3 +631,6 @@ never_infer:
   - volume
   - shares_outstanding
   - margin.*
+  # 財務数値も同じ扱い。fetch_fundamentals.py は四則演算をしない（単位の正規化のみ）。
+  # 照合が成立していない値は value 列を空のままにする（D7）
+  - fundamentals.*

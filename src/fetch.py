@@ -33,6 +33,10 @@ import requests
 import yaml
 from bs4 import BeautifulSoup
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import revise as RV  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 JST = timezone(timedelta(hours=9))
 FIELDS = [
@@ -217,10 +221,38 @@ def _no_trade(b: Bar) -> bool:
     return b.volume == 0
 
 
-def reconcile(code: str, by_source: list[list[Bar]], required: int) -> list[dict]:
+def operators_of(chain) -> dict[str, str]:
+    """取得元 id -> 運営（`sources.yaml` の `operator`。無ければ id 自身）。"""
+    out: dict[str, str] = {}
+    for entry in chain or []:
+        out[str(entry["id"])] = str(entry.get("operator") or entry["id"])
+    return out
+
+
+def _independent_pair(found: list[Bar], operators: dict[str, str],
+                      required: int) -> Bar | None:
+    """主ソースと**運営が異なる**最初のソースを副ソースとして返す。
+
+    株探と みんかぶ は同一運営（ミンカブ・ジ・インフォノイド）なので、
+    その2つの一致は「独立した2つの確認」ではない。財務側が
+    `_fund_site` で「同じサイトの別ページは独立した確認ではない」を守っているのと
+    同じ規律を株価にも通す。
+    """
+    if required < 2 or not found:
+        return None
+    head = operators.get(found[0].source, found[0].source)
+    for b in found[1:]:
+        if operators.get(b.source, b.source) != head:
+            return b
+    return None
+
+
+def reconcile(code: str, by_source: list[list[Bar]], required: int,
+              operators: dict[str, str] | None = None) -> list[dict]:
     """日付ごとに複数ソースを突き合わせ、行を組み立てる。
 
-    2ソースの生終値が一致 -> OK / 不一致 -> MISMATCH / 1ソースのみ -> SINGLE_SOURCE
+    運営の異なる2ソースの生終値が一致 -> OK / 不一致 -> MISMATCH /
+    独立した相手がいない -> SINGLE_SOURCE
 
     **照合結果を上書きしない**（2026-08-12 修正）。旧実装は照合を走らせた直後に
     `if no_trade: row["close"] = primary.close; row["status"] = "NO_TRADE"` を
@@ -232,6 +264,7 @@ def reconcile(code: str, by_source: list[list[Bar]], required: int) -> list[dict
     さらに no_trade の判定は主ソース単独ではなく**照合に参加した全ソースの一致**で行う。
     """
     now = datetime.now(JST).isoformat()
+    ops = operators or {}
 
     per_date: dict[str, list[Bar]] = {}
     for bars in by_source:
@@ -244,7 +277,7 @@ def reconcile(code: str, by_source: list[list[Bar]], required: int) -> list[dict
     for date in sorted(per_date):
         found = per_date[date]
         primary = found[0]
-        secondary = found[1] if len(found) >= required and required >= 2 else None
+        secondary = _independent_pair(found, ops, required)
         participants = [primary] + ([secondary] if secondary is not None else [])
 
         # 売買不成立。始値・高値・安値は存在せず、終値欄には気配値が入る。
@@ -295,27 +328,70 @@ def reconcile(code: str, by_source: list[list[Bar]], required: int) -> list[dict
     return rows
 
 
-def append_only(path: Path, rows: list[dict]) -> int:
-    """既存 (code, date) は書き換えない。冪等性の担保。"""
-    existing: set[tuple[str, str]] = set()
+def append_only(path: Path, rows: list[dict], now: str = "",
+                ledger: Path | None = None) -> tuple[int, int]:
+    """既存 (code, date) は書き換えない。冪等性の担保。
+
+    **例外は「照合不成立 → 成立」の訂正だけ**（`revise.py` の原則）。
+    鍵が (code, date) なので、ある日の取得が片肺だった行は永久に
+    `close` が空のまま固定され、その1日が20日/25日窓の内側に入った瞬間に
+    **全銘柄の流動性ゲートが unknown に落ちて「調査」で止まる**。
+    採用値が空だった行が今回 `OK` になったときだけ書き戻し、
+    その事実を `data/revisions.csv` に必ず残す。
+
+    採用値を下げる方向（OK → 空）は**自動では行わない**。取得元の一時的な
+    不調で採用終値が消えると、直したかった障害を自分で起こすことになる。
+
+    戻り値は (追記した行数, 訂正した行数)。
+    """
+    existing: dict[tuple[str, str], dict] = {}
+    order: list[tuple[str, str]] = []
     if path.exists():
-        with path.open(encoding="utf-8") as f:
+        with path.open(encoding="utf-8-sig", newline="") as f:
             for r in csv.DictReader(f):
-                existing.add((r["code"], r["date"]))
+                key = (r["code"], r["date"])
+                existing[key] = r
+                order.append(key)
 
     new = [r for r in rows if (r["code"], r["date"]) not in existing]
-    if not new:
-        return 0
+    repairs = []
+    for r in rows:
+        key = (r["code"], r["date"])
+        old = existing.get(key)
+        if old is None or not RV.is_repair(old, r, "close"):
+            continue
+        diffs = RV.diff_columns(old, r, FIELDS)
+        if diffs:
+            repairs.append((key, old, r, diffs))
 
-    path.parent.mkdir(parents=True, exist_ok=True)
-    write_header = not path.exists()
-    new.sort(key=lambda r: (r["date"], r["code"]))
-    with path.open("a", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
-        if write_header:
+    if repairs:
+        try:
+            rel = "data/" + path.resolve().relative_to(
+                (ROOT / "data").resolve()).as_posix()
+        except ValueError:
+            rel = "data/" + path.name
+        for key, old, fixed, diffs in repairs:
+            existing[key] = {c: fixed.get(c) for c in FIELDS}
+            RV.append_records(
+                rel, "/".join(key), diffs, RV.REPAIR,
+                "照合不成立で採用値が空だった行が、今回の取得で"
+                "運営の異なる2つの取得元で一致した",
+                now, ledger)
+        with path.open("w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=FIELDS)
             w.writeheader()
-        w.writerows(new)
-    return len(new)
+            w.writerows(existing[k] for k in order)
+
+    if new:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        write_header = not path.exists()
+        new.sort(key=lambda r: (r["date"], r["code"]))
+        with path.open("a", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=FIELDS)
+            if write_header:
+                w.writeheader()
+            w.writerows(new)
+    return len(new), len(repairs)
 
 
 def main() -> int:
@@ -329,6 +405,7 @@ def main() -> int:
     pol = cfg["fetch_policy"]
     days = pol["historical_days"] if args.historical else 0
     required = cfg["price"]["required_agreements"]
+    operators = operators_of(cfg["price"]["chain"])
 
     all_rows: list[dict] = []
     failed: list[str] = []
@@ -338,25 +415,34 @@ def main() -> int:
         label = f"（遡り {days}営業日）" if days else "（直近）"
         print(f"取得中: {code} {s['name']}{label}")
         by_source: list[list[Bar]] = []
+        seen_ops: set[str] = set()
         for entry in cfg["price"]["chain"]:
             pages = pages_for(entry, days)
             bars = fetch_source(code, entry, pol, pages)
             if bars:
                 by_source.append(bars)
-            if len(by_source) >= required:
-                break   # 照合に必要な数が揃えば以降の取得元は試さない
+                seen_ops.add(operators.get(str(entry["id"]), str(entry["id"])))
+            # **運営が異なる**取得元が必要数そろったら以降は試さない。
+            # id の数で打ち切ると、同一運営の2媒体（株探・みんかぶ）で
+            # 満足してしまい、独立した確認が1件も入らない。
+            if len(seen_ops) >= required:
+                break
 
         if not by_source:
             failed.append(code)
             continue
 
-        rows = reconcile(code, by_source, required)
+        rows = reconcile(code, by_source, required, operators)
         all_rows.extend(rows)
         ok = sum(1 for r in rows if r["status"] == "OK")
         print(f"  {len(rows)}営業日分（OK {ok} / 照合不一致・単独 {len(rows) - ok}）")
 
-    added = append_only(ROOT / "data" / "prices" / "daily.csv", all_rows)
+    now = datetime.now(JST).isoformat()
+    added, fixed = append_only(ROOT / "data" / "prices" / "daily.csv",
+                               all_rows, now)
     print(f"\n{added}件を追記（取得 {len(all_rows)}件・既存分は据え置き）")
+    if fixed:
+        print(f"{fixed}件を訂正（照合不成立→成立。data/revisions.csv に記録）")
 
     if failed:
         print(f"要確認: 全ソース取得失敗 {', '.join(failed)}", file=sys.stderr)
