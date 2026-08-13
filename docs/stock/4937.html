@@ -23,7 +23,11 @@ th,td{text-align:left;padding:.5rem .65rem;border-bottom:1px solid var(--rule);
 vertical-align:top}
 thead th{font-weight:700;color:var(--dim);font-size:.78rem;letter-spacing:.04em;
 white-space:nowrap;border-bottom:2px solid var(--rule)}
+/* 1列目を折り返さないのは、日付・コードのような短い見出し列だけを想定している。
+   本文が入る列にかかると表が画面外まで伸び、他の列が押し出されて行が縦に潰れる。
+   本文を持つ表（一覧・Markdown 由来）は .prose-table を付けて折り返させる。 */
 td:first-child{white-space:nowrap}
+.prose-table td{white-space:normal;overflow-wrap:anywhere}
 blockquote{margin:1.2rem 0;padding:.8rem 1rem;background:var(--soft);
 border-left:3px solid var(--accent);font-size:.92rem}
 blockquote p{margin:.3rem 0}
@@ -110,6 +114,14 @@ display:block;margin-top:.35rem}
 border:1px solid var(--rule);border-radius:3px;padding:.02rem .3rem;
 margin-left:.35rem;white-space:nowrap;display:inline-block}
 .ext:hover{border-color:var(--ink);color:var(--ink)}
+/* 列幅を固定し、余りを1列目（銘柄と概要）に渡す。auto レイアウトだと概要文の
+   長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */
+@media(min-width:641px){
+.list-table{table-layout:fixed}
+.list-table th:nth-child(2),.list-table td:nth-child(2){width:7rem}
+.list-table th:nth-child(3),.list-table td:nth-child(3){width:11rem}
+.list-table td:nth-child(2) .sub{white-space:nowrap}
+}
 
 @media(max-width:640px){
 body{padding:1.25rem .85rem 3rem;font-size:15px}
@@ -141,7 +153,7 @@ font-size:.72rem;font-weight:700}
 <p><strong>次週に見ること</strong>：①出来高が続くか（材料が抜けたあと1日100株に戻るか） ②3Q決算短信のセグメント別内訳（D2Cとメディカルサポートのどちらが伸びたか） ③親会社グループとの取引額（関連当事者取引）の開示 ④信用買い残（8/7時点189.6千株）の推移</p></div><h2>この会社は何者か</h2><p>東証グロース上場。業種分類は「化学」。発行済株式数3,663,068株（株探・2026-08-13取得）。配当は無配。</p>
 <p>時価総額は株探が2026-08-13に表示していた<strong>74.7億円</strong>を載せているが、74.7億円÷3,663,068株＝約2,038円で、これは当台帳が8月13日に取得した株価（2,038円・照合前）と一致する。つまり<strong>8月13日のザラ場の値</strong>である。<strong>本レポートのほかの株価指標はすべて8月12日の採用終値2,150円ベース</strong>で、同じ株数で計算すると<strong>約78.8億円</strong>（3,663,068株×2,150円）になる。基準日が1日ずれるだけで5%前後動くので、時価総額を見るときは基準日を確かめること。</p>
 <h3>何をして稼いでいるか — 事業は2本</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th></th>
@@ -209,7 +221,7 @@ font-size:.72rem;font-weight:700}
 <figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">906百万円</text><g class="viz-bar"><title>24/7-9: 519百万円</title><rect x="71.9" y="116.2" width="46.0" height="131.8" fill="var(--viz-pos)" rx="3"/></g><text x="94.9" y="268.0" text-anchor="middle" class="viz-tick">24/7-9</text><g class="viz-bar"><title>24/10-12: 407百万円</title><rect x="153.6" y="144.7" width="46.0" height="103.3" fill="var(--viz-pos)" rx="3"/></g><text x="176.6" y="268.0" text-anchor="middle" class="viz-tick">24/10-12</text><g class="viz-bar"><title>25/1-3: 427百万円</title><rect x="235.4" y="139.6" width="46.0" height="108.4" fill="var(--viz-pos)" rx="3"/></g><text x="258.4" y="268.0" text-anchor="middle" class="viz-tick">25/1-3</text><g class="viz-bar"><title>25/4-6: 482百万円</title><rect x="317.1" y="125.6" width="46.0" height="122.4" fill="var(--viz-pos)" rx="3"/></g><text x="340.1" y="268.0" text-anchor="middle" class="viz-tick">25/4-6</text><g class="viz-bar"><title>25/7-9: 644百万円</title><rect x="398.9" y="84.5" width="46.0" height="163.5" fill="var(--viz-pos)" rx="3"/></g><text x="421.9" y="268.0" text-anchor="middle" class="viz-tick">25/7-9</text><g class="viz-bar"><title>25/10-12: 407百万円</title><rect x="480.6" y="144.7" width="46.0" height="103.3" fill="var(--viz-pos)" rx="3"/></g><text x="503.6" y="268.0" text-anchor="middle" class="viz-tick">25/10-12</text><g class="viz-bar"><title>26/1-3: 726百万円</title><rect x="562.4" y="63.7" width="46.0" height="184.3" fill="var(--viz-pos)" rx="3"/></g><text x="585.4" y="268.0" text-anchor="middle" class="viz-tick">26/1-3</text><g class="viz-bar"><title>26/4-6: 906百万円 — 直近（3Q）</title><rect x="644.1" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="667.1" y="12.0" text-anchor="middle" class="viz-value">906百万円</text><text x="667.1" y="268.0" text-anchor="middle" class="viz-tick">26/4-6</text></svg><figcaption>四半期ごとの売上高（3か月ぶんだけ。累計ではない）。2025年10-12月の407百万円から、726百万円・906百万円と2四半期続けて大きく伸びている。この2四半期が今期の上方修正の中身にあたる。</figcaption><p class="viz-src">出所: data/fundamentals/4937.csv の採用値（別サイト2つ以上が一致した値だけ）。8/8点を採用。</p></figure>
 <p>2025年10-12月の407百万円から、726百万円 → 906百万円。<strong>2四半期で2.2倍</strong>になっている。</p>
 <h3>直近4期＋今期計画（すべて2ソース照合済み）</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>決算期</th>
@@ -274,7 +286,7 @@ font-size:.72rem;font-weight:700}
 </blockquote>
 <h3>財務の余力</h3>
 <figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">68.2%</text><g class="viz-bar"><title>2023/9: 48.9%</title><rect x="140.0" y="83.1" width="46.0" height="164.9" fill="var(--viz-pos)" rx="3"/></g><text x="163.0" y="268.0" text-anchor="middle" class="viz-tick">2023/9</text><g class="viz-bar"><title>2024/9: 68.2%</title><rect x="358.0" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">2024/9</text><g class="viz-bar"><title>2025/9: 65.1%</title><rect x="576.0" y="28.5" width="46.0" height="219.5" fill="var(--viz-pos)" rx="3"/></g><text x="599.0" y="268.0" text-anchor="middle" class="viz-tick">2025/9</text></svg><figcaption>自己資本比率。総資産のうち、返さなくてよい自前の資本がどれだけあるかを示す。2024年9月期に48.9%から68.2%へ跳ね上がったのは、この期に総資産が15.8億円から31.3億円へほぼ倍増していることと合わせて見る必要がある。この期には2024年1月1日付のセルプロジャパンとの株式交換（現金を使わず自社株を渡す買い方なので、資産と自己資本が同時に増える）が入っており、跳ね上がりと向きは合う。ただしそれで全額を説明できるかは未確認。</figcaption><p class="viz-src">出所: data/fundamentals/4937.csv の採用値（別サイト2つ以上が一致した値だけ）。3/3点を採用。</p></figure>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>決算期</th>
@@ -327,7 +339,7 @@ font-size:.72rem;font-weight:700}
 <p><strong>数値の食い違い</strong>：株予報Proは BPS を700円、PBR を3.07倍としている（2026-08-13取得）。当台帳の採用値（2025年9月期末 591.15円）と違うのは、算出の基準になる時点が期末か直近四半期かで異なるためとみられるが、<strong>確認していない</strong>。どちらの数字も本文で断定形には使っていない。</p>
 </blockquote>
 <p>キャッシュフローは小さい会社らしく振れる。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>決算期</th>
@@ -363,7 +375,7 @@ font-size:.72rem;font-weight:700}
 </table></div>
 <p>営業CF（本業で実際に入ってきた現金）は3期とも黒字だが、直近2期は投資を差し引くと<strong>フリーCFがマイナス</strong>になっている。現金残高が13億円前後で横ばいなのはそのためである。</p>
 <h3>数値が確かめられていないところ</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>項目</th>
@@ -402,7 +414,7 @@ font-size:.72rem;font-weight:700}
 </ol>
 <h3>⚠️ ただし、この銘柄の最大の論点は業績ではなく「建てられるか」</h3>
 <p>この台帳の流動性ゲート（20日平均売買代金3,000万円）に対し、<strong>8月12日時点の20日平均は2,871万円で、通過していない</strong>。しかもその平均は、材料が出た8月10日・12日の2日だけで作られている。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>期間</th>
@@ -431,7 +443,7 @@ font-size:.72rem;font-weight:700}
 <p>（出来高は取得元1つ（株探）の値で、終値のような2ソース照合を通っていない。桁の目安として読むこと）</p>
 <p><strong>普段は1日に数十万円しか動かない板である。</strong> 買えたとしても、売りたいときに同じ値段で降りられる保証がない。鉄則の「損切りは想定したストーリーが崩れたら」を実行できる前提が、この銘柄では成立していない可能性が高い。</p>
 <h3>注意すべき点</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>リスク</th>
@@ -483,7 +495,7 @@ font-size:.72rem;font-weight:700}
 </ul><h2>値動きと市場の評価</h2><h3>いまどこにいるか</h3>
 <figure class="viz"><svg viewBox="0 0 720 118" role="img" preserveAspectRatio="xMidYMid meet"><rect x="44" y="52" width="632" height="12" rx="6" fill="var(--viz-grid)"/><rect x="44" y="52" width="632.0" height="12" rx="6" fill="var(--viz-pos)" opacity="0.35"/><g class="viz-dot"><title>目標株価: 1,452円</title><line x1="260.6" y1="46" x2="260.6" y2="70" stroke="var(--viz-muted)" stroke-width="1.5"/></g><text x="260.6" y="40" text-anchor="middle" class="viz-tick">目標株価</text><g class="viz-dot"><title>理論株価: 1,698円</title><line x1="407.0" y1="46" x2="407.0" y2="70" stroke="var(--viz-muted)" stroke-width="1.5"/></g><text x="407.0" y="40" text-anchor="middle" class="viz-tick">理論株価</text><g class="viz-dot"><title>現在: 2,150円</title><circle cx="676.0" cy="58.0" r="9" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2.5"/></g><text x="676.0" y="94.0" text-anchor="middle" class="viz-value">現在 2,150円</text><text x="44" y="94.0" text-anchor="middle" class="viz-tick">52週安値(終値)<tspan x="44" dy="14">1,088円</tspan></text><text x="676" y="94.0" text-anchor="middle" class="viz-tick">52週高値(終値)<tspan x="676" dy="14">2,150円</tspan></text></svg><figcaption>直近1年の値幅（終値ベース）のなかで、いまどこにいるか。8月12日の終値2,150円が、そのまま52週の高値になっている。印はみんかぶの目標株価1,452円と株予報Proの理論株価（PBR基準）1,698円で、どちらも人が転記した未検証の数値。いまの株価はその両方を上回っている。</figcaption><p class="viz-src">出所: data/prices/daily.csv の採用終値（2つの取得元が一致した終値だけ）。ザラ場の高値・安値は照合を通っていないので使っていない。3/3点を採用、52週の採用終値 236営業日。安値 2025-08-15 / 高値 2026-08-12 / 現在 2026-08-12、図中の印は手書き（未検証）。</p></figure>
 <p>直近1年の値幅は、<strong>照合済みの終値で 1,088円〜2,150円</strong>。いまは2,150円で、<strong>その高値そのもの</strong>にいる。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>日付</th>
@@ -531,7 +543,7 @@ font-size:.72rem;font-weight:700}
 </table></div>
 <p>上の表のうち <strong>2026-07-17 と 2026-08-03 の2日だけは例外</strong>で、売買がまったく成立しなかったため株探1サイトの値しか無く、<strong>2つの取得元による照合を通していない</strong>（4937には同じ形の日が計6日ある：5/26・6/10・6/23・7/1・7/17・8/3）。それ以外の終値と、レンジの図の高値・安値・現在値は、<strong>2つの取得元で一致した終値</strong>である。ザラ場では8月12日に1,901円まで下げてから2,150円で引けており、<strong>1日のなかで13%動いている</strong>。ただし日中の高値・安値は取得元1つの値しか持っておらず照合していないため、採用値としては扱っていない。</p>
 <h3>市場はどう評価しているか</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>見る人</th>
@@ -588,7 +600,7 @@ font-size:.72rem;font-weight:700}
 <li>週足26週移動平均の傾き：<strong>+0.322%/週（上向き）</strong></li>
 </ul>
 <p>鉄則「週足中期移動平均線が下向きなら決して買いで入らない」には引っかからない。しかし、それより上位の関門で止まる。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>鉄則・ゲートの観点</th>
@@ -620,7 +632,7 @@ font-size:.72rem;font-weight:700}
 </tbody>
 </table></div>
 <p><strong>流動性ゲートは「判定が正しくても建てられず降りられない」ことを避けるための関門</strong>であり、この台帳では他のどの指標よりも上位に置いている。2,871万円という平均自体が2日の材料で作られたものなので、<strong>実態はゲートの数字よりさらに悪い</strong>。</p><h2>出典</h2><h3>この節の読み方 — 数値には3つの段階がある</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>段階</th>
@@ -648,7 +660,7 @@ font-size:.72rem;font-weight:700}
 </table></div>
 <p>段階ごとの件数は、ページ末尾の<strong>「数値の検証状況」</strong>に機械が出している。この銘柄は決算短信PDF（一次情報）の取り込みがまだ無く、<strong>一次情報との突き合わせは行えていない</strong>。</p>
 <h3>一次情報</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>内容</th>
@@ -678,7 +690,7 @@ font-size:.72rem;font-weight:700}
 <p>※ 決算短信PDFはまだ機械で読み取っていない。<strong>2026年9月期3Q（8/7開示）から取り込むこと。</strong> セグメント別の内訳と関連当事者取引は、この一次情報でしか確かめられない。</p>
 </blockquote>
 <h3>二次情報（機械で突き合わせているもの）</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>内容</th>
@@ -706,7 +718,7 @@ font-size:.72rem;font-weight:700}
 </table></div>
 <p>この2サイトは <code>data/fundamentals/4937.csv</code> に<strong>別々に記録し、値が一致した行だけを採用値</strong>にしている。</p>
 <h3>二次情報（人が読んで書いたもの・未照合）</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>内容</th>

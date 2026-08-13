@@ -23,7 +23,11 @@ th,td{text-align:left;padding:.5rem .65rem;border-bottom:1px solid var(--rule);
 vertical-align:top}
 thead th{font-weight:700;color:var(--dim);font-size:.78rem;letter-spacing:.04em;
 white-space:nowrap;border-bottom:2px solid var(--rule)}
+/* 1列目を折り返さないのは、日付・コードのような短い見出し列だけを想定している。
+   本文が入る列にかかると表が画面外まで伸び、他の列が押し出されて行が縦に潰れる。
+   本文を持つ表（一覧・Markdown 由来）は .prose-table を付けて折り返させる。 */
 td:first-child{white-space:nowrap}
+.prose-table td{white-space:normal;overflow-wrap:anywhere}
 blockquote{margin:1.2rem 0;padding:.8rem 1rem;background:var(--soft);
 border-left:3px solid var(--accent);font-size:.92rem}
 blockquote p{margin:.3rem 0}
@@ -110,6 +114,14 @@ display:block;margin-top:.35rem}
 border:1px solid var(--rule);border-radius:3px;padding:.02rem .3rem;
 margin-left:.35rem;white-space:nowrap;display:inline-block}
 .ext:hover{border-color:var(--ink);color:var(--ink)}
+/* 列幅を固定し、余りを1列目（銘柄と概要）に渡す。auto レイアウトだと概要文の
+   長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */
+@media(min-width:641px){
+.list-table{table-layout:fixed}
+.list-table th:nth-child(2),.list-table td:nth-child(2){width:7rem}
+.list-table th:nth-child(3),.list-table td:nth-child(3){width:11rem}
+.list-table td:nth-child(2) .sub{white-space:nowrap}
+}
 
 @media(max-width:640px){
 body{padding:1.25rem .85rem 3rem;font-size:15px}

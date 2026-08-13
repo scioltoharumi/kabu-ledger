@@ -23,7 +23,11 @@ th,td{text-align:left;padding:.5rem .65rem;border-bottom:1px solid var(--rule);
 vertical-align:top}
 thead th{font-weight:700;color:var(--dim);font-size:.78rem;letter-spacing:.04em;
 white-space:nowrap;border-bottom:2px solid var(--rule)}
+/* 1列目を折り返さないのは、日付・コードのような短い見出し列だけを想定している。
+   本文が入る列にかかると表が画面外まで伸び、他の列が押し出されて行が縦に潰れる。
+   本文を持つ表（一覧・Markdown 由来）は .prose-table を付けて折り返させる。 */
 td:first-child{white-space:nowrap}
+.prose-table td{white-space:normal;overflow-wrap:anywhere}
 blockquote{margin:1.2rem 0;padding:.8rem 1rem;background:var(--soft);
 border-left:3px solid var(--accent);font-size:.92rem}
 blockquote p{margin:.3rem 0}
@@ -110,6 +114,14 @@ display:block;margin-top:.35rem}
 border:1px solid var(--rule);border-radius:3px;padding:.02rem .3rem;
 margin-left:.35rem;white-space:nowrap;display:inline-block}
 .ext:hover{border-color:var(--ink);color:var(--ink)}
+/* 列幅を固定し、余りを1列目（銘柄と概要）に渡す。auto レイアウトだと概要文の
+   長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */
+@media(min-width:641px){
+.list-table{table-layout:fixed}
+.list-table th:nth-child(2),.list-table td:nth-child(2){width:7rem}
+.list-table th:nth-child(3),.list-table td:nth-child(3){width:11rem}
+.list-table td:nth-child(2) .sub{white-space:nowrap}
+}
 
 @media(max-width:640px){
 body{padding:1.25rem .85rem 3rem;font-size:15px}
@@ -143,7 +155,7 @@ font-size:.72rem;font-weight:700}
 <p>決済の許可を取り、精算データを作り、店舗側に返す。こうした処理の一部を担っている。クレジットカード番号を扱う許認可（関東（ク）第186号）を持つ登録事業者でもある。</p>
 <h3>収益は2本立て</h3>
 <p>この会社を理解するうえで一番大事なのが、<strong>稼ぎ方が2種類ある</strong>ことと、<strong>その比率が業績の振れ幅を決めている</strong>ことである。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th></th>
@@ -184,7 +196,7 @@ font-size:.72rem;font-weight:700}
 <p>2022年6月期以降、<strong>黒字と赤字を1年おきに往復している</strong>。2023年6月期には最終赤字773百万円を計上した。今期予想の営業利益92百万円は、ピーク時386百万円の4分の1にあたる。</p>
 <p>2019年6月期と2021年6月期の棒が空いているのは、<strong>その年の営業利益を1つの取得元しか持っておらず、突き合わせができていない</strong>ためである。数字が無いのではなく、確かめられていないので置いていない。</p>
 <h3>直近3期＋今期計画（すべて2ソース照合済み）</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>決算期</th>
@@ -241,7 +253,7 @@ font-size:.72rem;font-weight:700}
 <h3>財務の余力</h3>
 <figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">23.5%</text><g class="viz-bar"><title>2023/6: 21.7%</title><rect x="112.8" y="35.6" width="46.0" height="212.4" fill="var(--viz-pos)" rx="3"/></g><text x="135.8" y="268.0" text-anchor="middle" class="viz-tick">2023/6</text><g class="viz-bar"><title>2024/6: 23.5%</title><rect x="276.2" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="299.2" y="268.0" text-anchor="middle" class="viz-tick">2024/6</text><g class="viz-bar"><title>2025/6: 13.5%</title><rect x="439.8" y="115.9" width="46.0" height="132.1" fill="var(--viz-pos)" rx="3"/></g><text x="462.8" y="268.0" text-anchor="middle" class="viz-tick">2025/6</text><g class="viz-bar"><title>26/6 3Q: 9.9% — 直近 / 決算短信 2026-05-15（一次情報）・kabutan_bs と一致</title><rect x="603.2" y="151.1" width="46.0" height="96.9" fill="var(--viz-pos)" rx="3"/></g><text x="626.2" y="145.1" text-anchor="middle" class="viz-value">9.9%</text><text x="626.2" y="268.0" text-anchor="middle" class="viz-tick">26/6 3Q</text></svg><figcaption>自己資本比率。総資産のうち自前の資本がどれだけあるかを示す。3四半期時点で9.9%まで下がっている。1割を切ると、赤字が続いた場合に資本が持たなくなる危険が高まる。</figcaption><p class="viz-src">出所: data/fundamentals/4073.csv の採用値（別サイト2つ以上が一致した値だけ）。ただし 1点は data/tanshin/4073.csv（決算短信PDF＝一次情報。まとめサイト側の照合状態は点ごとの注記を見る）。4/4点を採用。</p></figure>
 <p>自己資本比率は3四半期時点で <strong>9.9%</strong>。前期の13.5%からさらに下がった。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>指標</th>
@@ -286,7 +298,7 @@ font-size:.72rem;font-weight:700}
 <p>7/21 の4.63億円の案件は、<strong>2027年6月期に売上計上予定</strong>である（財経新聞・フィスコ）。つまり<strong>今期の通期予想の達成には寄与しない</strong>。</p>
 <p>株価はこの発表でストップ高になったが、8/14 に問われるのは<strong>この案件抜きで4Qに170百万円を稼げたか</strong>である。ここは混同しやすい。</p>
 <h3>注意すべき点</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>リスク</th>
@@ -330,7 +342,7 @@ font-size:.72rem;font-weight:700}
 </ul><h2>値動きと市場の評価</h2><h3>いまどこにいるか</h3>
 <figure class="viz"><svg viewBox="0 0 720 118" role="img" preserveAspectRatio="xMidYMid meet"><rect x="44" y="52" width="632" height="12" rx="6" fill="var(--viz-grid)"/><rect x="44" y="52" width="197.0" height="12" rx="6" fill="var(--viz-pos)" opacity="0.35"/><g class="viz-dot"><title>年初来高値: 729円</title><line x1="538.9" y1="46" x2="538.9" y2="70" stroke="var(--viz-muted)" stroke-width="1.5"/></g><text x="538.9" y="40" text-anchor="middle" class="viz-tick">年初来高値</text><g class="viz-dot"><title>理論株価: 520円</title><line x1="209.5" y1="46" x2="209.5" y2="70" stroke="var(--viz-muted)" stroke-width="1.5"/></g><text x="209.5" y="40" text-anchor="middle" class="viz-tick">理論株価</text><g class="viz-dot"><title>現在: 540円</title><circle cx="241.0" cy="58.0" r="9" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2.5"/></g><text x="241.0" y="94.0" text-anchor="middle" class="viz-value">現在 540円</text><text x="44" y="94.0" text-anchor="middle" class="viz-tick">52週安値(終値)<tspan x="44" dy="14">415円</tspan></text><text x="676" y="94.0" text-anchor="middle" class="viz-tick">52週高値(終値)<tspan x="676" dy="14">816円</tspan></text></svg><figcaption>直近1年の値幅（終値ベース）のなかで、いまどこにいるか。6月24日に415円まで下げた後、8月5日に729円まで戻し、いまは535円。ザラ場の高値・安値は2つの取得元で照らし合わせていないため、この図には使っていない。</figcaption><p class="viz-src">出所: data/prices/daily.csv の採用終値（2つの取得元が一致した終値だけ）。ザラ場の高値・安値は照合を通っていないので使っていない。3/3点を採用、52週の採用終値 242営業日。安値 2026-06-24 / 高値 2025-09-04 / 現在 2026-08-12、図中の印は手書き（未検証）。</p></figure>
 <p>直近1年の値幅は、<strong>照合済みの終値で 415円〜816円</strong>。いまは535円で、下から3割ほどの位置にいる。ただしこの1年の動きは激しい。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>日付</th>
@@ -375,7 +387,7 @@ font-size:.72rem;font-weight:700}
 <p><strong>6月に約10年ぶりの安値をつけた1か月半後に、年初来高値まで76%上昇し、その翌日に20%下落している。</strong> 値動きの荒さは、この銘柄を理解するうえで事業の話と同じくらい重要である。</p>
 <h3>市場はどう評価しているか</h3>
 <p>ここが割れている。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>見る人</th>
@@ -434,7 +446,7 @@ font-size:.72rem;font-weight:700}
 </ul>
 <p>鉄則「週足中期移動平均線が下向きなら決して買いで入らない」に照らすと、<strong>26週線は下向き</strong>。現時点では買いで入る条件を満たしていない。</p>
 <p>20日平均売買代金は6,596万円だが、<strong>中央値は470万円</strong>。少数の日に売買が集中しており、普段は極めて薄い。「平均では流動性がある」ように見えて、実際に建てられる玉は限られる。</p><h2>出典</h2><h3>この節の読み方 — 数値には3つの段階がある</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>段階</th>
@@ -462,7 +474,7 @@ font-size:.72rem;font-weight:700}
 </table></div>
 <p>段階ごとの件数と、どの項目が食い違ったかは、ページ末尾の<strong>「数値の検証状況」</strong>に機械が出している。</p>
 <h3>一次情報</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>内容</th>
@@ -492,7 +504,7 @@ font-size:.72rem;font-weight:700}
 <p>※ 決算短信PDFは機械で読み取り済み（21項目）。うち7項目は同じ期のまとめサイトの値と一致することを機械で確認している。<strong>8/14 の本決算が出たら、同じ手順で本決算のPDFを取り込むこと。</strong></p>
 </blockquote>
 <h3>二次情報（機械で突き合わせているもの）</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>内容</th>
@@ -515,7 +527,7 @@ font-size:.72rem;font-weight:700}
 </table></div>
 <p>この2つは <code>data/fundamentals/4073.csv</code> に<strong>別々に記録し、値が一致した行だけを採用値</strong>にしている。同じサイトの別ページどうしが裏付けても、独立した確認ではないので採用しない。</p>
 <h3>二次情報（人が読んで書いたもの・未照合）</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>内容</th>

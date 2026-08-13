@@ -23,7 +23,11 @@ th,td{text-align:left;padding:.5rem .65rem;border-bottom:1px solid var(--rule);
 vertical-align:top}
 thead th{font-weight:700;color:var(--dim);font-size:.78rem;letter-spacing:.04em;
 white-space:nowrap;border-bottom:2px solid var(--rule)}
+/* 1列目を折り返さないのは、日付・コードのような短い見出し列だけを想定している。
+   本文が入る列にかかると表が画面外まで伸び、他の列が押し出されて行が縦に潰れる。
+   本文を持つ表（一覧・Markdown 由来）は .prose-table を付けて折り返させる。 */
 td:first-child{white-space:nowrap}
+.prose-table td{white-space:normal;overflow-wrap:anywhere}
 blockquote{margin:1.2rem 0;padding:.8rem 1rem;background:var(--soft);
 border-left:3px solid var(--accent);font-size:.92rem}
 blockquote p{margin:.3rem 0}
@@ -110,6 +114,14 @@ display:block;margin-top:.35rem}
 border:1px solid var(--rule);border-radius:3px;padding:.02rem .3rem;
 margin-left:.35rem;white-space:nowrap;display:inline-block}
 .ext:hover{border-color:var(--ink);color:var(--ink)}
+/* 列幅を固定し、余りを1列目（銘柄と概要）に渡す。auto レイアウトだと概要文の
+   長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */
+@media(min-width:641px){
+.list-table{table-layout:fixed}
+.list-table th:nth-child(2),.list-table td:nth-child(2){width:7rem}
+.list-table th:nth-child(3),.list-table td:nth-child(3){width:11rem}
+.list-table td:nth-child(2) .sub{white-space:nowrap}
+}
 
 @media(max-width:640px){
 body{padding:1.25rem .85rem 3rem;font-size:15px}
@@ -145,7 +157,7 @@ font-size:.72rem;font-weight:700}
 <p>海外は米カリフォルニアの子会社 <strong>NIS America</strong> が北米・欧州向けの販売を担う。ほかにベトナム開発拠点、国内のグラフィック制作会社などを傘下に持つ。</p>
 <h3>稼ぎ方の性質 — 「積み上がらない」商売</h3>
 <p>この会社を理解するうえで一番大事なのは、<strong>売上がストック（毎月入ってくる継続収入）ではなくフロー（作品を出したときに入る一時収入）でできている</strong>ことである。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th></th>
@@ -191,7 +203,7 @@ font-size:.72rem;font-weight:700}
 <figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="200.4" x2="708" y2="200.4" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="204.4" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">1,566百万円</text><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">-409百万円</text><g class="viz-bar"><title>2022/3: 1,566百万円</title><rect x="85.5" y="18.0" width="46.0" height="182.4" fill="var(--viz-pos)" rx="3"/></g><text x="108.5" y="268.0" text-anchor="middle" class="viz-tick">2022/3</text><g class="viz-bar"><title>2023/3: 745百万円</title><rect x="194.5" y="113.6" width="46.0" height="86.8" fill="var(--viz-pos)" rx="3"/></g><text x="217.5" y="268.0" text-anchor="middle" class="viz-tick">2023/3</text><g class="viz-bar"><title>2024/3: 401百万円</title><rect x="303.5" y="153.7" width="46.0" height="46.7" fill="var(--viz-pos)" rx="3"/></g><text x="326.5" y="268.0" text-anchor="middle" class="viz-tick">2024/3</text><g class="viz-bar"><title>2025/3: -274百万円</title><rect x="412.5" y="200.4" width="46.0" height="31.9" fill="var(--viz-neg)" rx="3"/></g><text x="435.5" y="268.0" text-anchor="middle" class="viz-tick">2025/3</text><g class="viz-bar"><title>2026/3: -409百万円 — 2期連続の営業赤字</title><rect x="521.5" y="200.4" width="46.0" height="47.6" fill="var(--viz-neg)" rx="3"/></g><text x="544.5" y="263.0" text-anchor="middle" class="viz-value">-409百万円</text><text x="544.5" y="268.0" text-anchor="middle" class="viz-tick">2026/3</text><g class="viz-bar"><title>2027/3予: 296百万円 — 会社予想</title><rect x="630.5" y="165.9" width="46.0" height="34.5" fill="var(--viz-pos)" rx="3"/></g><text x="653.5" y="159.9" text-anchor="middle" class="viz-value">296百万円</text><text x="653.5" y="268.0" text-anchor="middle" class="viz-tick">2027/3予</text></svg><figcaption>営業利益（本業のもうけ）。青が黒字、赤が赤字。2022年3月期の1,566百万円から4年で−409百万円まで落ちた。今期の会社予想296百万円は「赤字から黒字へ」の転換を織り込んだ数字であって、過去の水準に戻る計画ではない。</figcaption><p class="viz-src">出所: data/fundamentals/3851.csv の採用値（別サイト2つ以上が一致した値だけ）。6/6点を採用。</p></figure>
 <p>2022年3月期に1,566百万円あった営業利益は、2025年3月期に−274百万円、2026年3月期に−409百万円と<strong>2期連続の赤字</strong>になった。今期予想の296百万円は黒字転換の計画であって、山だった1,566百万円に戻る計画ではない。</p>
 <h3>直近5期＋今期計画（すべて2ソース照合済み）</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>決算期</th>
@@ -263,7 +275,7 @@ font-size:.72rem;font-weight:700}
 </blockquote>
 <h3>財務の余力 — ここは厚い</h3>
 <figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">73.6%</text><g class="viz-bar"><title>2024/3: 73.6%</title><rect x="140.0" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="163.0" y="268.0" text-anchor="middle" class="viz-tick">2024/3</text><g class="viz-bar"><title>2025/3: 69.6%</title><rect x="358.0" y="30.5" width="46.0" height="217.5" fill="var(--viz-pos)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">2025/3</text><g class="viz-bar"><title>2026/3: 69.4%</title><rect x="576.0" y="31.1" width="46.0" height="216.9" fill="var(--viz-pos)" rx="3"/></g><text x="599.0" y="268.0" text-anchor="middle" class="viz-tick">2026/3</text></svg><figcaption>自己資本比率。総資産のうち、返さなくてよい自前の資本がどれだけあるかを示す。7割前後を保っている。赤字が2期続いてもこの水準にあるということは、当面の資金繰りで追い込まれる会社ではない、という意味になる。</figcaption><p class="viz-src">出所: data/fundamentals/3851.csv の採用値（別サイト2つ以上が一致した値だけ）。3/3点を採用。</p></figure>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>決算期</th>
@@ -310,7 +322,7 @@ font-size:.72rem;font-weight:700}
 </ul>
 <p>赤字が2期続いた会社としては、財務は明らかに厚い。<strong>この銘柄のリスクは「潰れるか」ではなく「稼げる会社に戻るか」</strong>にある。</p>
 <p>営業キャッシュフロー（本業で実際に入ってきた現金）は3期とも黒字を保っている。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>決算期</th>
@@ -350,7 +362,7 @@ font-size:.72rem;font-weight:700}
 <p><strong>「投資CFが大きい＝新作の開発投資が続いている」と読まないこと。</strong> 出典はそう書いていない。<strong>開発投資の実額は、決算短信のキャッシュフロー計算書を読むまで分からない</strong>（この記事は投資CFの項目別内訳を持たない）。</p>
 </blockquote>
 <h3>数値が確かめられていないところ</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>項目</th>
@@ -390,7 +402,7 @@ font-size:.72rem;font-weight:700}
 <p>10万本は同社の規模では大きいニュースだが、<strong>それが今期の会社計画（売上47.8億円・営業296百万円）をどれだけ埋めるかは、価格・海外分・原価・広告費が分からないと計算できない</strong>。本レポートでは計算していないし、<strong>推測で数字を置くこともしない</strong>。</p>
 <p>さらに、株価はすでに材料を織り込みにいっている。8月12日時点で<strong>25日移動平均線から+19.3%上に離れている</strong>（鉄則の目安は「7〜8%超えたら怪しい」）。</p>
 <h3>注意すべき点</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>リスク</th>
@@ -434,7 +446,7 @@ font-size:.72rem;font-weight:700}
 </ul><h2>値動きと市場の評価</h2><h3>いまどこにいるか</h3>
 <figure class="viz"><svg viewBox="0 0 720 118" role="img" preserveAspectRatio="xMidYMid meet"><rect x="44" y="52" width="632" height="12" rx="6" fill="var(--viz-grid)"/><rect x="44" y="52" width="632.0" height="12" rx="6" fill="var(--viz-pos)" opacity="0.35"/><g class="viz-dot"><title>理論株価: 871円</title><line x1="208.9" y1="46" x2="208.9" y2="70" stroke="var(--viz-muted)" stroke-width="1.5"/></g><text x="208.9" y="40" text-anchor="middle" class="viz-tick">理論株価</text><g class="viz-dot"><title>現在: 1,140円</title><circle cx="676.0" cy="58.0" r="9" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2.5"/></g><text x="676.0" y="94.0" text-anchor="middle" class="viz-value">現在 1,140円</text><text x="44" y="94.0" text-anchor="middle" class="viz-tick">52週安値(終値)<tspan x="44" dy="14">776円</tspan></text><text x="676" y="94.0" text-anchor="middle" class="viz-tick">52週高値(終値)<tspan x="676" dy="14">1,140円</tspan></text></svg><figcaption>直近1年の値幅（終値ベース）のなかで、いまどこにいるか。8月12日の終値1,140円が、そのまま52週の高値になっている。印は株予報Proの理論株価（PBR基準）871円で、これは人が転記した未検証の数値。</figcaption><p class="viz-src">出所: data/prices/daily.csv の採用終値（2つの取得元が一致した終値だけ）。ザラ場の高値・安値は照合を通っていないので使っていない。3/3点を採用、52週の採用終値 241営業日。安値 2025-12-22 / 高値 2026-08-12 / 現在 2026-08-12、図中の印は手書き（未検証）。</p></figure>
 <p>直近1年の値幅は、<strong>照合済みの終値で 776円〜1,140円</strong>。いまは1,140円で、<strong>その高値そのもの</strong>にいる。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>日付</th>
@@ -484,7 +496,7 @@ font-size:.72rem;font-weight:700}
 <p>7月28日に出来高が前日の36倍になっているのが目印になる。<strong>新作の発売（7月30日）より前に、先回りの買いが入っている。</strong></p>
 <p>（出来高は取得元1つ（株探）の値で、終値のような2ソース照合を通っていない。桁の目安として読むこと。）</p>
 <h3>市場はどう評価しているか</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>見る人</th>
@@ -542,7 +554,7 @@ font-size:.72rem;font-weight:700}
 </ul>
 <p>鉄則「週足中期移動平均線が下向きなら決して買いで入らない」に照らすと、<strong>13週・26週とも上向き</strong>で、この条件には引っかからない。</p>
 <p>一方で、鉄則の他の観点には複数触れている。</p>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>鉄則の観点</th>
@@ -578,7 +590,7 @@ font-size:.72rem;font-weight:700}
 あわせて、<strong>出来高は取得元1つ（株探）の値で、終値のような2ソース照合を通っていない</strong>（<code>fetch.py</code> が照合しているのは <code>close</code> だけで、2倍以上ずれたときに <code>VOLUME_MISMATCH</code> を残すのみ）。上の36倍は桁の目安として読むこと。</p>
 </blockquote>
 <p>20日平均売買代金は8,469万円、<strong>中央値は4,899万円</strong>。流動性ゲート（3,000万円）は平均・中央値のどちらでも通過しており、4銘柄のなかでは<strong>最も建てやすい</strong>。</p><h2>出典</h2><h3>この節の読み方 — 数値には3つの段階がある</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>段階</th>
@@ -606,7 +618,7 @@ font-size:.72rem;font-weight:700}
 </table></div>
 <p>段階ごとの件数は、ページ末尾の<strong>「数値の検証状況」</strong>に機械が出している。この銘柄は決算短信PDF（一次情報）の取り込みがまだ無く、<strong>一次情報との突き合わせは行えていない</strong>。</p>
 <h3>一次情報</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>内容</th>
@@ -636,7 +648,7 @@ font-size:.72rem;font-weight:700}
 <p>※ 決算短信PDFはまだ機械で読み取っていない。<strong>2027年3月期1Q（8/7開示）から取り込むこと。</strong> 取り込めば、この表の数値と一次情報を機械で突き合わせられるようになる。</p>
 </blockquote>
 <h3>二次情報（機械で突き合わせているもの）</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>内容</th>
@@ -664,7 +676,7 @@ font-size:.72rem;font-weight:700}
 </table></div>
 <p>この2サイトは <code>data/fundamentals/3851.csv</code> に<strong>別々に記録し、値が一致した行だけを採用値</strong>にしている。同じサイトの別ページどうしが裏付けても、独立した確認ではないので採用しない。</p>
 <h3>二次情報（人が読んで書いたもの・未照合）</h3>
-<div class="scroll"><table>
+<div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>内容</th>

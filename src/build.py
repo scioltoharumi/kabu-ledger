@@ -82,8 +82,11 @@ def to_html(markdown_text: str, charts: dict | None = None) -> str:
     charts は chartdata.resolve_charts の戻り（id -> Resolved）。
     """
     raw = md.markdown(markdown_text, extensions=MD_EXT)
-    out = raw.replace("<table>", '<div class="scroll"><table>').replace(
-        "</table>", "</table></div>")
+    # prose-table: 本文（出典の「内容」列など）が1列目に来るので折り返させる。
+    # 付けないと style.py の `td:first-child{white-space:nowrap}` に当たって
+    # 表が画面外まで伸びる。
+    out = raw.replace("<table>", '<div class="scroll"><table class="prose-table">'
+                      ).replace("</table>", "</table></div>")
     return expand_charts(out, charts or {})
 
 
@@ -200,7 +203,7 @@ def render_row(stock: dict, rep: R.Report | None) -> str:
             f'<tr><td data-l="銘柄"><span class="nm">{name}</span>'
             f'<span class="sub">{html.escape(code)}／{market}</span></td>'
             f'<td data-l="終値" class="num">{close_txt}</td>'
-            f'<td data-l="状態" colspan="2"><span class="pill">レポート未作成</span></td>'
+            f'<td data-l="状態"><span class="pill">レポート未作成</span></td>'
             f"</tr>"
         )
 
@@ -297,7 +300,7 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     )
 
     table = (
-        '<div class="scroll"><table class="list-table"><thead><tr>'
+        '<div class="scroll"><table class="list-table prose-table"><thead><tr>'
         "<th>銘柄</th><th>終値</th><th>今週の動き</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div>"
     )
@@ -349,7 +352,7 @@ def unevaluated_block() -> str:
         f"観点が {len(rules)} 件ある。</strong>通過しなかったのではなく、"
         "<strong>見ていない</strong>。実装したらこの表から消える"
         "（<code>src/judge.py</code> の <code>UNEVALUATED_RULES</code> が正）。</p>"
-        '<div class="scroll"><table><thead><tr>'
+        '<div class="scroll"><table class="prose-table"><thead><tr>'
         "<th>鉄則の観点</th><th>なぜ評価していないか</th>"
         "</tr></thead><tbody>" + rows + "</tbody></table></div>"
     )
