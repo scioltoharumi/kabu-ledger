@@ -19,14 +19,18 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / "reports"
 
-# レポートの節見出し。この順で並べる（reports/*.md 側の順序に依存しない）
+# レポートの節見出し。**この順で並べる**（reports/*.md 側の書き順に依存しない）。
+#
+# 週次アップデートを先頭に置いている。会社の素性・財務・展望は一度読めば
+# 頭に入るが、毎週見に来る理由は「今週何があったか」だから。
+# 見出しの丸数字は照合時に無視するので、md 側に番号が残っていても構わない。
 SECTIONS = [
-    ("company", "① この会社は何者か"),
-    ("financials", "② 財務の推移と健全性"),
-    ("outlook", "③ 今後の展望とリスク"),
-    ("updates", "④ 週次アップデート"),
-    ("price", "⑤ 値動きと市場の評価"),
-    ("sources", "⑥ 出典"),
+    ("updates", "週次アップデート"),
+    ("company", "この会社は何者か"),
+    ("financials", "財務の推移と健全性"),
+    ("outlook", "今後の展望とリスク"),
+    ("price", "値動きと市場の評価"),
+    ("sources", "出典"),
 ]
 
 
@@ -86,19 +90,28 @@ def _split_front_matter(text: str) -> tuple[dict, str]:
     return meta, m.group(2)
 
 
+def _normalize_title(title: str) -> str:
+    """見出しの先頭にある丸数字・番号・記号を落として照合用に揃える。
+
+    表示順は SECTIONS が決めるので、md 側に「① 」等が残っていてもよい
+    （番号と表示順がずれると読み手が混乱するため、md 側も番号なしを推奨）。
+    """
+    return re.sub(r"^[①-⑳\d]+[.\s　]*", "", title).strip()
+
+
 def _split_sections(body: str) -> tuple[str, dict[str, str]]:
     """`## 見出し` で節に分ける。SECTIONS の見出しに一致するものだけ拾う。
 
     戻り値: (リード文, {key: markdown})
     """
-    title_to_key = {title: key for key, title in SECTIONS}
+    title_to_key = {_normalize_title(title): key for key, title in SECTIONS}
 
     # 最初の `## ` より前をリード（`# 銘柄名` と「一行でいうと」の引用）とする
     chunks = re.split(r"^##\s+(.+?)\s*$", body, flags=re.MULTILINE)
     lead = chunks[0]
     sections: dict[str, str] = {}
     for i in range(1, len(chunks) - 1, 2):
-        title = chunks[i].strip()
+        title = _normalize_title(chunks[i].strip())
         content = chunks[i + 1].strip()
         key = title_to_key.get(title)
         if key:
