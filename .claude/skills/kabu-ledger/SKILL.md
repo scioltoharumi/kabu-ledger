@@ -252,3 +252,10 @@ date,code,metric,value,unit,definition,assumed,source_url,fetched_at
 2. 欠測を残す > 埋めて完全に見せる
 3. 「調査」で止める > 「買」を出す
 4. 人間に確認する > 自律的に判断する
+
+## 表示を直したときの完了条件
+
+`.\tools\published.ps1 -Marker <今回入れた印>` が `PUBLISHED`（exit 0）を出すまで
+「反映されました」と報告しない。push しただけでは公開されない（GitHub Pages は
+build_type: workflow で、deploy するのは weekly.yml の publish ジョブだけ）。
+手順の詳細は CLAUDE.md「表示を直したときの標準手順」が正。

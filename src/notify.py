@@ -468,7 +468,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         # 前回が無い＝「変化」ではない。初期化として記録だけする（F6-1）。
         if not args.dry_run:
             STATE.write_text(json.dumps(current, ensure_ascii=False, indent=2,
-                                        sort_keys=True) + "\n", encoding="utf-8")
+                                        sort_keys=True) + "\n", encoding="utf-8",
+                             newline="\n")
         print(f"初期化: {rel(STATE)} に現在のスタンプ "
               f"{len(current)}件を記録した。起票 0 件"
               "（初回から起票するには --seed-issues）")
@@ -500,7 +501,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if not args.dry_run:
         STATE.write_text(json.dumps(new_state, ensure_ascii=False, indent=2,
-                                    sort_keys=True) + "\n", encoding="utf-8")
+                                    sort_keys=True) + "\n", encoding="utf-8",
+                         newline="\n")
 
     v_issued, v_failed = notify_verification(names, repo, args.dry_run)
     issued += v_issued

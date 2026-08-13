@@ -54,12 +54,24 @@ _TMPDIRS: list[Path] = []
 # chartdata は DATA を組み立てているので、それぞれ別に差し替える。
 _PATCH_TARGETS = (
     ("judge", {"ROOT": ""}),
-    ("build", {"ROOT": "", "DOCS": "docs"}),
+    ("build", {"ROOT": "", "DOCS": "docs", "STAMPS": "scoring/stamps.json"}),
+    # STAMPS は import 時に実リポジトリを指したまま固定される。ROOT を差し替えても
+    # 追随せず、判定が変わった週に build.main() が実リポジトリの
+    # scoring/stamps.json を書き換える。data/ ではないので append-only 検査には
+    # 掛からず、git status に理由の分からない差分として出るだけになる。
     ("report", {"ROOT": "", "REPORTS": "reports"}),
     ("chartdata", {"ROOT": "", "DATA": "data"}),
     ("verification", {"ROOT": ""}),
-    ("fetch_source", {"ROOT": "", "REPORTS": "reports"}),
+    ("fetch_source", {"ROOT": "", "REPORTS": "reports",
+                      "FETCH_LOG": "data/verification/fetch_log.csv"}),
+    # log_fetch() は fetch_source.py の CLI からしか呼ばれず build.main() は
+    # 書かない。いまは予防。書く経路が生えたときに気づけるよう先に差し替えておく。
 )
+
+# 実リポジトリを指したままで構わないモジュール（読むだけ・Path 定数を持たない）。
+_UNPATCHED_OK = {"checks", "fetch", "fetch_fundamentals", "fetch_index",
+                 "fetch_margin", "fetch_tanshin", "notify", "revise",
+                 "score", "chart", "indicators", "style", "yamlio"}
 
 
 # =============================================================================
@@ -498,6 +510,44 @@ def test_realdata_helper_is_not_collected_as_a_test():
     assert helper.exists(), "tests/realdata.py が無い"
     assert not helper.name.startswith("test_"), \
         "ヘルパが test_ で始まっている（weekly.yml に拾われる）"
+
+
+def test_every_root_derived_path_is_patched():
+    """ROOT 派生の module-level Path が差し替え対象から漏れていないか。
+
+    漏れると、テストが**実リポジトリのファイルを書き換える**。data/ 以外なので
+    append-only 検査には掛からず、`git status` に理由不明の差分が出るだけになり、
+    原因調査に往復を使う。実際に build.STAMPS がこの穴だった。
+
+    score.py は S.Repo(root=base) で注入しているので module-level Path を持たない。
+    新しいモジュールはこの形にすれば、差し替え自体が要らなくなる。
+    """
+    covered = {name: set(attrs) for name, attrs in _PATCH_TARGETS}
+    for name in covered:                       # 遅延 import のものを確実に読む
+        if name not in sys.modules:
+            __import__(name)
+    missing = []
+    for path in sorted((ROOT / "src").glob("*.py")):
+        name = path.stem
+        if name in _UNPATCHED_OK:
+            continue
+        mod = sys.modules.get(name)
+        if mod is None:
+            continue                           # 読み込んでいない = 影響しない
+        for attr in dir(mod):
+            if not attr.isupper():
+                continue
+            v = getattr(mod, attr)
+            if not isinstance(v, Path) or attr in covered.get(name, set()):
+                continue
+            try:
+                v.resolve().relative_to(ROOT)
+            except ValueError:
+                continue
+            missing.append(f"{name}.{attr} = {v}")
+    assert not missing, (
+        f"差し替え漏れの Path 定数がある: {missing}。"
+        " _PATCH_TARGETS に足すか、_UNPATCHED_OK に理由つきで載せること")
 
 
 # =============================================================================

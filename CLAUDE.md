@@ -296,8 +296,12 @@ src/                   indicators / judge / fetch / fetch_margin / fetch_index /
                        fetch_source（裏取り専用の出典再取得。取得先をレポート記載のURLに限る）
 tests/                 test_indicators / test_judge / test_fetch / test_checks /
                        test_fetch_fundamentals / test_fetch_tanshin / test_chartdata /
-                       test_score / test_notify / test_verification / test_data_advance
+                       test_score / test_notify / test_verification / test_data_advance /
+                       test_eol（改行コードの固定）/ test_layout（表の崩れ・ブラウザ不要）
                        （すべて素の python で実行できる）
+tools/                 run_tests.py（開発用の並列ランナー。CI は使わない）/
+                       shot.ps1（headless Edge で採寸・目視。落とし穴一覧はこの冒頭コメントが正）/
+                       published.ps1（公開到達の確認）
 ```
 
 ## 実行順
@@ -314,6 +318,39 @@ tests → fetch.py → fetch_margin.py → fetch_index.py → fetch_fundamentals
 表示を直したら `gh workflow run weekly.yml --ref main` を回すまで公開版は変わらない。
 `publish` は checkout してから `build.py` を回し直すので、**直すべきは `src/` であって
 commit 済みの `docs/` ではない**（`docs/` の commit は差分を git 上に残すためのもの）。
+
+### 表示を直したときの標準手順
+
+作業中は `python tests/test_layout.py`（約3秒）で回し、**コミット前に
+`python tools/run_tests.py`（約45秒。CI と同じ全数を並列で回す）**。
+
+0. `.\tools\published.ps1 -Marker <今回入れる印>` → **MISSING（exit 1）を確認**。
+   ここで PUBLISHED が出るなら印が既に live にあるので別の印を選ぶ（事後検査が素通りする）。
+   「印」は今回の変更で新しく入る文字列（新規 CSS クラス名・新しい見出し等）に限る。
+1. `src/` を直す（`docs/` は直さない。publish が build.py を回し直す）。
+2. `$before=(gh run list -w weekly.yml -L1 --json databaseId|ConvertFrom-Json)[0].databaseId`
+   → `git add -A` → `git commit` → `git pull --rebase origin main` → `git push`
+   ← **ここではまだ公開されていない**
+3. `gh workflow run weekly.yml --ref main -f mode=site_only`
+   ← 取得と採点を飛ばす。full は実測309秒
+4. `do { Start-Sleep 3; $id=(gh run list -w weekly.yml -L1 --json databaseId|ConvertFrom-Json)[0].databaseId } while ($id -eq $before)`
+   → `gh run watch $id --exit-status`
+   ※固定 sleep で待つと1つ前の run を watch して即 exit 0 が返り、同じ誤認を再生産する。
+5. `.\tools\published.ps1 -Marker <0 と同じ印>` が `PUBLISHED`（exit 0）を出してから初めて
+   「公開されました」と言う。STALE ならスクリプトが自動で再試行する
+   （CDN は max-age=600、クエリ文字列では迂回できない）。
+
+**公開の完了条件は「ワークフローを回した」ではなく「live が main と一致し、
+今回入れた印が live に出た」。**
+
+`.github/` を含む push が `refusing to allow an OAuth App to create or update workflow ...`
+で弾かれたときだけ `gh auth refresh -s workflow` を実行する（認証コードは15分で失効するので、
+弾かれてから実行するのが正しい順番）。
+
+`pull --rebase` が `docs/` で衝突したら、中身を読まずに `python src/build.py` →
+`Select-String -Path docs -Pattern '^<<<<<<< ' -Recurse` が0件を確認 → `git add docs/` →
+`git rebase --continue`。**`data/` には同じ手を使わない**（append-only。衝突したら
+`git rebase --abort` して人間に上げる）。
 
 `checks.py` が FAIL したら後続を実行しない。
 `fetch_tanshin.py` と `checks.py --check-links` は外部要因で落ちうるので

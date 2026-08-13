@@ -25,6 +25,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
+import yamlio as Y
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -286,7 +287,7 @@ def load(code: str, data_dir: Path | None = None) -> Record | None:
     if not path.exists():
         return None
     try:
-        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        raw = Y.safe_load(path.read_text(encoding="utf-8"))
     except yaml.YAMLError as e:
         return Record(code=code, problems=("YAML を読めない: %s" % e,))
     return parse(raw, code)

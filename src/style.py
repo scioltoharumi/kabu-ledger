@@ -118,9 +118,12 @@ vertical-align:top}
 .list-table .sub{color:var(--dim);font-size:.76rem;display:block;margin-top:.1rem}
 .list-table .one{color:var(--ink);font-size:.85rem;line-height:1.65;
 display:block;margin-top:.35rem}
+/* nowrap にすると、中の長いURLが分割不能トークンになってスマホ幅で
+   ページ自体を横スクロールさせる（tools\shot.ps1 の採寸で 623px > 500px）。 */
 .ext{font-size:.72rem;color:var(--dim);text-decoration:none;
 border:1px solid var(--rule);border-radius:3px;padding:.02rem .3rem;
-margin-left:.35rem;white-space:nowrap;display:inline-block}
+margin-left:.35rem;white-space:normal;overflow-wrap:anywhere;
+max-width:100%;display:inline-block}
 .ext:hover{border-color:var(--ink);color:var(--ink)}
 /* 列幅を固定し、余りを1列目（銘柄と概要）に渡す。auto レイアウトだと概要文の
    長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */

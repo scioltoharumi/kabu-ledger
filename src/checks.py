@@ -118,6 +118,10 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+# YAML の読み込みは yamlio に集約する（libyaml があれば C 実装）。
+# `import yaml` は残す: 例外型 yaml.YAMLError をこのファイルの3箇所で捕まえている。
+import yamlio as Y  # noqa: E402
+
 # holding.status の語彙は judge.py が正（SSoT）。ここで再定義しない。
 # 閾値の再計算（MARGIN_RATIO_TOLERANCE 等）は「独立検算」なのであえて複製するが、
 # **語彙は複製すると片方だけ増えて検査が素通りになる**ので参照する。
@@ -1046,8 +1050,8 @@ def check_verification_append_only(rep: Report, data_dir: Path,
             rep.fail("append_only", rel, "ベースラインに存在したファイルが消えている")
             continue
         try:
-            old = yaml.safe_load(text) or {}
-            new = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            old = Y.safe_load(text) or {}
+            new = Y.safe_load(path.read_text(encoding="utf-8")) or {}
         except yaml.YAMLError as e:
             rep.fail("append_only", rel, f"YAML を読めない: {e}")
             continue
@@ -1206,7 +1210,7 @@ def load_corporate_actions(data_dir: Path) -> dict[tuple[str, str], dict]:
     path = data_dir / "corporate_actions.yaml"
     if not path.exists():
         return {}
-    doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    doc = Y.safe_load(path.read_text(encoding="utf-8")) or {}
     out: dict[tuple[str, str], dict] = {}
     for a in doc.get("actions") or []:
         out[(str(a.get("code")), str(a.get("date")))] = a
@@ -2780,7 +2784,7 @@ def _front_matter(path: Path) -> tuple[dict, str]:
     if m is None:
         return {}, text
     try:
-        meta = yaml.safe_load(m.group(1)) or {}
+        meta = Y.safe_load(m.group(1)) or {}
     except yaml.YAMLError:
         return {}, m.group(2)
     return (meta if isinstance(meta, dict) else {}), m.group(2)
@@ -3417,7 +3421,7 @@ def check_report_numbers(rep: Report, reports_dir: Path,
             meta, body = {}, text
         else:
             try:
-                meta = yaml.safe_load(m.group(1)) or {}
+                meta = Y.safe_load(m.group(1)) or {}
             except yaml.YAMLError as e:
                 rep.fail("report", target, f"front matter を読めない: {e}")
                 continue
@@ -3971,8 +3975,8 @@ def run_checks(data_dir: Path, baseline: Baseline | None,
                repo_root: Path | None = None) -> Report:
     """全検査を実行して Report を返す。I/O はここと各 check の入口に閉じる。"""
     rep = Report()
-    master = yaml.safe_load((data_dir / "master.yaml").read_text(encoding="utf-8"))
-    sources = yaml.safe_load((data_dir / "sources.yaml").read_text(encoding="utf-8"))
+    master = Y.safe_load((data_dir / "master.yaml").read_text(encoding="utf-8"))
+    sources = Y.safe_load((data_dir / "sources.yaml").read_text(encoding="utf-8"))
 
     prices_path = data_dir / "prices" / "daily.csv"
     target = "data/prices/daily.csv"
@@ -4080,6 +4084,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"追記性のベースライン: {baseline.kind if baseline else 'なし'}")
     for r in rep.results:
         print(r.line())
+    if not Y.USING_LIBYAML:
+        print("[WARN] pyyaml が libyaml 無しで入っている。YAML の解析が"
+              "純 Python 経路になり、検査もテストも約2倍遅い")
     print(f"\nFAIL {rep.fails} / WARN {rep.warns}")
     return 1 if rep.fails else 0
 

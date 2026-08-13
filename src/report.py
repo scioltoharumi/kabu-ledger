@@ -14,7 +14,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import yaml
+import yamlio as Y
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / "reports"
@@ -86,7 +86,7 @@ def _split_front_matter(text: str) -> tuple[dict, str]:
     m = re.match(r"^---\s*\n(.*?)\n---\s*\n(.*)$", text, flags=re.DOTALL)
     if not m:
         return {}, text
-    meta = yaml.safe_load(m.group(1)) or {}
+    meta = Y.safe_load(m.group(1)) or {}
     return meta, m.group(2)
 
 

@@ -23,7 +23,6 @@ import sys
 from pathlib import Path
 
 import markdown as md
-import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -32,6 +31,7 @@ import chartdata as CD
 import judge as J
 import report as R
 import verification as VF
+import yamlio as Y
 from style import CSS
 
 # 本文に置いた {{chart:id}} を図に差し替える。Markdown を HTML にした後に
@@ -121,7 +121,7 @@ def ext_link(url: str, label: str) -> str:
 
 def load_master() -> dict:
     path = ROOT / "data" / "master.yaml"
-    return yaml.safe_load(path.read_text(encoding="utf-8"))
+    return Y.safe_load(path.read_text(encoding="utf-8"))
 
 
 def load_weekly_close(code: str) -> tuple[str, float | None]:
@@ -324,7 +324,7 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
 
     body = intro + summary + table + howto + unevaluated_block()
     (DOCS / "index.html").write_text(page("銘柄調査台帳", body, as_of, 0),
-                                     encoding="utf-8")
+                                     encoding="utf-8", newline="\n")
 
 
 def unevaluated_block() -> str:
@@ -746,7 +746,7 @@ def build_stock_page(rep: R.Report, as_of: str) -> None:
 
     title = f"{rep.name}（{rep.code}）"
     (DOCS / "stock" / f"{rep.code}.html").write_text(
-        page(title, body, as_of, 1), encoding="utf-8")
+        page(title, body, as_of, 1), encoding="utf-8", newline="\n")
 
 
 def strip_title(lead: str) -> str:
@@ -882,14 +882,14 @@ def build_data_page(master: dict, reports: dict[str, R.Report], as_of: str) -> N
         + "</ul>"
     )
     (DOCS / "data.html").write_text(page("データの出どころ", body, as_of, 0),
-                                    encoding="utf-8")
+                                    encoding="utf-8", newline="\n")
 
 
 # --- main -----------------------------------------------------------------
 
 def main() -> int:
     DOCS.mkdir(exist_ok=True)
-    (DOCS / ".nojekyll").write_text("", encoding="utf-8")
+    (DOCS / ".nojekyll").write_text("", encoding="utf-8", newline="\n")
 
     master = load_master()
     codes = [s["code"] for s in master["stocks"]]
@@ -940,7 +940,7 @@ def write_stamps(master: dict) -> None:
     if STAMPS.exists() and STAMPS.read_text(encoding="utf-8") == body:
         print(f"  判定スタンプ {len(stamps)}件（変化なし）")
         return
-    STAMPS.write_text(body, encoding="utf-8")
+    STAMPS.write_text(body, encoding="utf-8", newline="\n")
     print(f"  判定スタンプ {len(stamps)}件を scoring/stamps.json に出力")
 
 
