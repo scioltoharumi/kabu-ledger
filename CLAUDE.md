@@ -308,6 +308,13 @@ tests → fetch.py → fetch_margin.py → fetch_index.py → fetch_fundamentals
       → (bear) → (verify) → build.py → notify.py
 ```
 
+**`docs/` を push しても公開されない。** GitHub Pages は `build_type: workflow` で、
+`weekly` の `publish` ジョブ（`actions/deploy-pages`）だけがデプロイする。
+`weekly` のトリガーは cron（JST 土 06:00）と `workflow_dispatch` だけで、**push では起動しない**。
+表示を直したら `gh workflow run weekly.yml --ref main` を回すまで公開版は変わらない。
+`publish` は checkout してから `build.py` を回し直すので、**直すべきは `src/` であって
+commit 済みの `docs/` ではない**（`docs/` の commit は差分を git 上に残すためのもの）。
+
 `checks.py` が FAIL したら後続を実行しない。
 `fetch_tanshin.py` と `checks.py --check-links` は外部要因で落ちうるので
 `continue-on-error`（記録が増えないだけで、判定と公開は進む）。
