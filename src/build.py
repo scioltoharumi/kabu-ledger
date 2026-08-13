@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import csv
 import html
+import re
 import sys
 from pathlib import Path
 
@@ -25,8 +26,13 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import chart as C
 import report as R
 from style import CSS
+
+# 本文に置いた {{chart:id}} を図に差し替える。Markdown を HTML にした後に
+# 適用するため、<p> で包まれた形も拾う。
+CHART_RE = re.compile(r"(?:<p>)?\{\{chart:([a-z0-9_]+)\}\}(?:</p>)?")
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
@@ -65,11 +71,33 @@ def page(title: str, body: str, as_of: str, depth: int = 0) -> str:
     return f"{head}<body><main>{body}{foot}</main></body></html>"
 
 
-def to_html(markdown_text: str) -> str:
-    """Markdown を HTML にする。表を横スクロールできるよう包む。"""
+def to_html(markdown_text: str, charts: dict | None = None) -> str:
+    """Markdown を HTML にする。表を横スクロールで包み、{{chart:id}} を図にする。"""
     raw = md.markdown(markdown_text, extensions=MD_EXT)
-    return raw.replace("<table>", '<div class="scroll"><table>').replace(
+    out = raw.replace("<table>", '<div class="scroll"><table>').replace(
         "</table>", "</table></div>")
+    return expand_charts(out, charts or {})
+
+
+def expand_charts(text: str, charts: dict) -> str:
+    """{{chart:id}} を SVG に置き換える。定義が無ければ欠落を隠さず残す。"""
+    def sub(m: re.Match) -> str:
+        cid = m.group(1)
+        spec = charts.get(cid)
+        if not spec:
+            return f'<p class="none">図「{html.escape(cid)}」は未定義</p>'
+        svg = C.render(spec)
+        if not svg:
+            return f'<p class="none">図「{html.escape(cid)}」を描けなかった</p>'
+        return svg
+    return CHART_RE.sub(sub, text)
+
+
+def ext_link(url: str, label: str) -> str:
+    """見出しの横に置く小さな外部リンク。"""
+    safe = html.escape(url, quote=True)
+    return (f'<a class="ext" href="{safe}" target="_blank" '
+            f'rel="noopener">{html.escape(label)} ↗</a>')
 
 
 # --- データ ---------------------------------------------------------------
@@ -114,81 +142,117 @@ def as_of_date() -> str:
 
 # --- 一覧ページ -----------------------------------------------------------
 
-def render_card(stock: dict, rep: R.Report | None) -> str:
+def first_sentence(text: str, limit: int = 78) -> str:
+    """最新週の要約を1文だけ取り出す（一覧を詰まらせないため）。"""
+    plain = re.sub(r"[*_`>#\-]", "", text).strip()
+    plain = re.sub(r"\s+", " ", plain)
+    for sep in ("。", "．"):
+        if sep in plain:
+            plain = plain.split(sep)[0] + sep
+            break
+    if len(plain) > limit:
+        plain = plain[: limit - 1] + "…"
+    return plain
+
+
+def render_row(stock: dict, rep: R.Report | None) -> str:
+    """一覧の1行。銘柄が増えても詰まらないよう、1銘柄1行に収める。
+
+    スマホでは CSS 側でカード状に積み替える（横スクロールさせない）。
+    """
     code = stock["code"]
     name = html.escape(stock.get("name", code))
     market = html.escape(str(stock.get("market", "")))
     date, close = load_weekly_close(code)
+    close_txt = f"{close:,.0f}" if close is not None else "—"
 
     if rep is None:
-        body = (
-            f'<div class="card"><h3>{name}</h3>'
-            f'<p class="meta">{html.escape(code)}／{market}</p>'
-            f'<div class="none">レポート未作成。'
-            f'この銘柄は <code>reports/{html.escape(code)}.md</code> がまだありません。</div>'
-            f"</div>"
+        return (
+            f'<tr><td data-l="銘柄"><span class="nm">{name}</span>'
+            f'<span class="sub">{html.escape(code)}／{market}</span></td>'
+            f'<td data-l="終値" class="num">{close_txt}</td>'
+            f'<td data-l="状態" colspan="2"><span class="pill">レポート未作成</span></td>'
+            f"</tr>"
         )
-        return body
 
-    flag = '<span class="flag">深掘り中</span>' if rep.deep_dive else ""
+    flag = '<span class="flag">深掘り</span>' if rep.deep_dive else ""
+    site = ""
+    for lk in rep.links:
+        if lk.get("primary"):
+            site = ext_link(str(lk.get("url", "")), str(lk.get("label", "公式")))
+            break
+
     oneline = html.escape(R.one_liner(rep))
-    close_txt = f"{close:,.0f}円" if close is not None else "—"
     earn = rep.meta.get("next_earnings")
     earn_pill = ""
     if earn:
-        earn_pill = f'<span class="pill pill-warn">次の決算 {html.escape(str(earn))}</span>'
+        earn_pill = (f'<span class="pill pill-warn">決算 '
+                     f'{html.escape(str(earn))}</span>')
 
     latest = rep.latest_week()
-    week_block = ""
+    week_txt = "—"
+    week_head = ""
     if latest is not None:
-        head, body_md = latest
-        first_para = body_md.split("\n\n")[0]
-        week_html = to_html(first_para)
-        week_block = (
-            f'<div class="week"><span class="wk">最新の動き — {html.escape(head)}</span>'
-            f"{week_html}</div>"
-        )
+        week_head = html.escape(latest[0].split("（")[0])
+        week_txt = html.escape(first_sentence(latest[1]))
 
     return (
-        f'<div class="card">'
-        f'<h3><a href="stock/{html.escape(code)}.html">{name}</a>{flag}</h3>'
-        f'<p class="meta">{html.escape(code)}／{market}／'
-        f'終値 <span class="num">{close_txt}</span>（{html.escape(date)}）</p>'
-        f'<p>{earn_pill}</p>'
-        f'<p class="oneline">{oneline}</p>'
-        f"{week_block}</div>"
+        f"<tr>"
+        f'<td data-l="銘柄"><span class="nm">'
+        f'<a href="stock/{html.escape(code)}.html">{name}</a>{flag}{site}</span>'
+        f'<span class="sub">{html.escape(code)}／{market}／{earn_pill}</span>'
+        f'<span class="one">{oneline}</span></td>'
+        f'<td data-l="終値" class="num">{close_txt}<span class="sub">'
+        f"{html.escape(date)}</span></td>"
+        f'<td data-l="今週"><span class="sub">{week_head}</span>{week_txt}</td>'
+        f"</tr>"
     )
 
 
 def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     stocks = sorted(master["stocks"], key=lambda s: s["code"])
-    cards = [render_card(s, reports.get(s["code"])) for s in stocks]
+    rows = [render_row(s, reports.get(s["code"])) for s in stocks]
     scr = master.get("screening", {})
     scr_name = html.escape(str(scr.get("name", "")))
+    n_deep = sum(1 for r in reports.values() if r.deep_dive)
 
     intro = (
         "<h1>銘柄調査台帳</h1>"
         f'<p class="lede">楽天証券スクリーニング「{scr_name}」を通過した銘柄について、'
         "<strong>その会社が何をしている会社なのか</strong>を調べて記録する。"
         "スクリーニング通過は入口であって結論ではない。"
-        "毎週の動きを積み重ねて、理解を深めることを目的にしている。</p>"
+        "毎週の動きを積み重ねて理解を深めることを目的にしている。</p>"
         + nav(0)
     )
 
+    summary = (
+        f'<p class="readout"><span>登録 <b>{len(stocks)}</b> 銘柄</span>'
+        f'<span>レポートあり <b>{len(reports)}</b></span>'
+        f'<span>深掘り中 <b>{n_deep}</b></span>'
+        f'<span>基準日 <b>{html.escape(as_of)}</b></span></p>'
+    )
+
+    table = (
+        '<div class="scroll"><table class="list-table"><thead><tr>'
+        "<th>銘柄</th><th>終値</th><th>今週の動き</th>"
+        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div>"
+    )
+
     howto = (
-        "<h2>この台帳の使い方</h2>"
+        "<h2>この台帳の読み方</h2>"
         "<ul>"
-        "<li>銘柄名をクリックすると、その会社の調査レポートが開く</li>"
+        "<li>銘柄名を押すと、その会社の調査レポートが開く</li>"
         "<li>レポートは <strong>① 何の会社か → ② 財務 → ③ 展望とリスク → "
-        "④ 週ごとの動き</strong> の順に並んでいる</li>"
-        "<li><span class=\"flag\">深掘り中</span> が付いた銘柄は、毎週すべての項目を"
+        "④ 週ごとの動き → ⑤ 値動きと市場の評価</strong> の順に並んでいる</li>"
+        '<li><span class="flag">深掘り</span> が付いた銘柄は毎週すべての項目を'
         "見直している。付いていない銘柄はニュースと値動きだけ追っている</li>"
         "<li>深掘り対象を変えたいときは Claude に「4073 を深掘りして」と言えばよい</li>"
-        "<li>すべての記述に出典 URL を付けている。気になったら元の記事を開いて確認できる</li>"
+        "<li>銘柄名の横の小さなリンクは会社の公式サイト。"
+        "各レポートの末尾には、使ったすべての出典 URL を載せている</li>"
         "</ul>"
     )
 
-    body = intro + "<h2>銘柄</h2>" + "".join(cards) + howto
+    body = intro + summary + table + howto
     (DOCS / "index.html").write_text(page("銘柄調査台帳", body, as_of, 0),
                                      encoding="utf-8")
 
@@ -201,7 +265,7 @@ def render_section(rep: R.Report, key: str, title: str) -> str:
         return ""
     if key == "updates":
         return render_updates(rep, title)
-    return f"<h2>{html.escape(title)}</h2>" + to_html(body_md)
+    return f"<h2>{html.escape(title)}</h2>" + to_html(body_md, rep.charts)
 
 
 def render_updates(rep: R.Report, title: str) -> str:
@@ -215,7 +279,7 @@ def render_updates(rep: R.Report, title: str) -> str:
     for head, body_md in entries:
         parts.append('<div class="upd">')
         parts.append(f"<h3>{html.escape(head)}</h3>")
-        parts.append(to_html(body_md))
+        parts.append(to_html(body_md, rep.charts))
         parts.append("</div>")
     return "".join(parts)
 
@@ -227,13 +291,16 @@ def build_stock_page(rep: R.Report, as_of: str) -> None:
     market = html.escape(str(rep.meta.get("market", "")))
     flag = '<span class="flag">深掘り中</span>' if rep.deep_dive else ""
 
+    links = "".join(ext_link(str(lk.get("url", "")), str(lk.get("label", "")))
+                    for lk in rep.links if lk.get("url"))
     head = (
         f"<h1>{name}（{code}）{flag}</h1>"
-        f'<p class="lede">{market}／レポート更新 {html.escape(rep.updated)}</p>'
+        f'<p class="lede">{market}／レポート更新 {html.escape(rep.updated)}'
+        f"<br>{links}</p>"
         + nav(1)
     )
     lead_md = strip_title(rep.lead)
-    body = head + to_html(lead_md)
+    body = head + to_html(lead_md, rep.charts)
     for key, title in R.SECTIONS:
         body += render_section(rep, key, title)
 

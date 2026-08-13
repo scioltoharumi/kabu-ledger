@@ -74,10 +74,55 @@ font-family:ui-monospace,"SF Mono",Menlo,monospace}
 .upd{border-left:2px solid var(--rule);padding-left:1rem;margin:1.5rem 0}
 .upd h3{margin-top:0}
 
+/* 図。色は dataviz のバリデータで検証済み（light 面 #fdfdfc 上で全項目 PASS）。
+   黒字=青 / 赤字=赤。「黒字=緑」は赤緑色覚で赤との ΔE が 4.1 しかなく採らない。 */
+.viz{margin:1.6rem 0;
+--viz-pos:#2a78d6;--viz-neg:#d03b3b;--viz-grid:#e1e0d9;--viz-axis:#c3c2b7;
+--viz-ink:#0b0b0b;--viz-muted:#898781;--viz-surface:#fdfdfc}
+.viz svg{width:100%;height:auto;display:block;overflow:visible}
+.viz figcaption{color:var(--dim);font-size:.82rem;margin-top:.5rem;line-height:1.7}
+.viz-tick{fill:#898781;font-size:12px;font-family:inherit}
+.viz-value{fill:#0b0b0b;font-size:13px;font-weight:700;font-family:inherit}
+.viz-bar rect,.viz-dot circle{transition:opacity .12s ease}
+.viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
+.viz-bar,.viz-dot{cursor:default}
+
+/* 読み取りの手がかり（図の下に置く短い注記） */
+.readout{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;
+font-size:.82rem;color:var(--dim)}
+.readout b{color:var(--ink);font-weight:700}
+
+/* 一覧表（銘柄が増えても詰まらないように） */
+.list-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+.list-table th{font-size:.75rem;color:var(--dim);text-align:left;
+padding:.4rem .5rem;border-bottom:2px solid var(--rule);white-space:nowrap}
+.list-table td{padding:.7rem .5rem;border-bottom:1px solid var(--rule);
+vertical-align:top}
+.list-table tr:hover td{background:var(--soft)}
+.list-table .nm{font-weight:700;font-size:.98rem}
+.list-table .sub{color:var(--dim);font-size:.76rem;display:block;margin-top:.1rem}
+.list-table .one{color:var(--ink);font-size:.85rem;line-height:1.65;
+display:block;margin-top:.35rem}
+.ext{font-size:.72rem;color:var(--dim);text-decoration:none;
+border:1px solid var(--rule);border-radius:3px;padding:.02rem .3rem;
+margin-left:.35rem;white-space:nowrap;display:inline-block}
+.ext:hover{border-color:var(--ink);color:var(--ink)}
+
 @media(max-width:640px){
 body{padding:1.25rem .85rem 3rem;font-size:15px}
 h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:2.2rem}
 table{font-size:.8rem}th,td{padding:.45rem .5rem}
 .card{padding:.9rem 1rem}
+/* 一覧表はスマホでカード状に積む（横スクロールさせない） */
+.list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
+.list-table thead{display:none}
+.list-table tr{border:1px solid var(--rule);border-radius:4px;
+padding:.7rem .8rem;margin:.7rem 0;background:#fff}
+.list-table td{border:0;padding:.15rem 0}
+.list-table td[data-l]::before{content:attr(data-l) "　";color:var(--dim);
+font-size:.72rem;font-weight:700}
+.list-table tr:hover td{background:transparent}
+.viz figcaption{font-size:.78rem}
+.viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
 """

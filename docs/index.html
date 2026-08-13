@@ -66,10 +66,55 @@ font-family:ui-monospace,"SF Mono",Menlo,monospace}
 .upd{border-left:2px solid var(--rule);padding-left:1rem;margin:1.5rem 0}
 .upd h3{margin-top:0}
 
+/* 図。色は dataviz のバリデータで検証済み（light 面 #fdfdfc 上で全項目 PASS）。
+   黒字=青 / 赤字=赤。「黒字=緑」は赤緑色覚で赤との ΔE が 4.1 しかなく採らない。 */
+.viz{margin:1.6rem 0;
+--viz-pos:#2a78d6;--viz-neg:#d03b3b;--viz-grid:#e1e0d9;--viz-axis:#c3c2b7;
+--viz-ink:#0b0b0b;--viz-muted:#898781;--viz-surface:#fdfdfc}
+.viz svg{width:100%;height:auto;display:block;overflow:visible}
+.viz figcaption{color:var(--dim);font-size:.82rem;margin-top:.5rem;line-height:1.7}
+.viz-tick{fill:#898781;font-size:12px;font-family:inherit}
+.viz-value{fill:#0b0b0b;font-size:13px;font-weight:700;font-family:inherit}
+.viz-bar rect,.viz-dot circle{transition:opacity .12s ease}
+.viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
+.viz-bar,.viz-dot{cursor:default}
+
+/* 読み取りの手がかり（図の下に置く短い注記） */
+.readout{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;
+font-size:.82rem;color:var(--dim)}
+.readout b{color:var(--ink);font-weight:700}
+
+/* 一覧表（銘柄が増えても詰まらないように） */
+.list-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+.list-table th{font-size:.75rem;color:var(--dim);text-align:left;
+padding:.4rem .5rem;border-bottom:2px solid var(--rule);white-space:nowrap}
+.list-table td{padding:.7rem .5rem;border-bottom:1px solid var(--rule);
+vertical-align:top}
+.list-table tr:hover td{background:var(--soft)}
+.list-table .nm{font-weight:700;font-size:.98rem}
+.list-table .sub{color:var(--dim);font-size:.76rem;display:block;margin-top:.1rem}
+.list-table .one{color:var(--ink);font-size:.85rem;line-height:1.65;
+display:block;margin-top:.35rem}
+.ext{font-size:.72rem;color:var(--dim);text-decoration:none;
+border:1px solid var(--rule);border-radius:3px;padding:.02rem .3rem;
+margin-left:.35rem;white-space:nowrap;display:inline-block}
+.ext:hover{border-color:var(--ink);color:var(--ink)}
+
 @media(max-width:640px){
 body{padding:1.25rem .85rem 3rem;font-size:15px}
 h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:2.2rem}
 table{font-size:.8rem}th,td{padding:.45rem .5rem}
 .card{padding:.9rem 1rem}
+/* 一覧表はスマホでカード状に積む（横スクロールさせない） */
+.list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
+.list-table thead{display:none}
+.list-table tr{border:1px solid var(--rule);border-radius:4px;
+padding:.7rem .8rem;margin:.7rem 0;background:#fff}
+.list-table td{border:0;padding:.15rem 0}
+.list-table td[data-l]::before{content:attr(data-l) "　";color:var(--dim);
+font-size:.72rem;font-weight:700}
+.list-table tr:hover td{background:transparent}
+.viz figcaption{font-size:.78rem}
+.viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
-</style></head><body><main><h1>銘柄調査台帳</h1><p class="lede">楽天証券スクリーニング「成長株0606」を通過した銘柄について、<strong>その会社が何をしている会社なのか</strong>を調べて記録する。スクリーニング通過は入口であって結論ではない。毎週の動きを積み重ねて、理解を深めることを目的にしている。</p><nav><a href="index.html">台帳</a><a href="data.html">データの出どころ</a></nav><h2>銘柄</h2><div class="card"><h3>日本一ソフトウェア</h3><p class="meta">3851／東証スタンダード</p><div class="none">レポート未作成。この銘柄は <code>reports/3851.md</code> がまだありません。</div></div><div class="card"><h3><a href="stock/4073.html">ジィ・シィ企画</a><span class="flag">深掘り中</span></h3><p class="meta">4073／東証グロース／終値 <span class="num">—</span>（2026-08-12）</p><p><span class="pill pill-warn">次の決算 2026-08-14</span></p><p class="oneline">中堅〜大手の小売・流通向けに、レジとカード会社をつなぐ決済システムを作って運用している会社。時価総額13.6億円の小型株。**今期の黒字化が達成できるかは、8/14 に発表される4-6月期の1四半期にかかっている。**</p><div class="week"><span class="wk">最新の動き — 2026-W33（2026-08-10 週）</span><p><strong>決算前の待ち状態。</strong> 8/14 に2026年6月期の本決算が出る。</p></div></div><div class="card"><h3>Waqoo</h3><p class="meta">4937／東証グロース</p><div class="none">レポート未作成。この銘柄は <code>reports/4937.md</code> がまだありません。</div></div><div class="card"><h3>共和コーポレーション</h3><p class="meta">6570／東証スタンダード</p><div class="none">レポート未作成。この銘柄は <code>reports/6570.md</code> がまだありません。</div></div><h2>この台帳の使い方</h2><ul><li>銘柄名をクリックすると、その会社の調査レポートが開く</li><li>レポートは <strong>① 何の会社か → ② 財務 → ③ 展望とリスク → ④ 週ごとの動き</strong> の順に並んでいる</li><li><span class="flag">深掘り中</span> が付いた銘柄は、毎週すべての項目を見直している。付いていない銘柄はニュースと値動きだけ追っている</li><li>深掘り対象を変えたいときは Claude に「4073 を深掘りして」と言えばよい</li><li>すべての記述に出典 URL を付けている。気になったら元の記事を開いて確認できる</li></ul><footer>集計基準日 2026-08-12／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
+</style></head><body><main><h1>銘柄調査台帳</h1><p class="lede">楽天証券スクリーニング「成長株0606」を通過した銘柄について、<strong>その会社が何をしている会社なのか</strong>を調べて記録する。スクリーニング通過は入口であって結論ではない。毎週の動きを積み重ねて理解を深めることを目的にしている。</p><nav><a href="index.html">台帳</a><a href="data.html">データの出どころ</a></nav><p class="readout"><span>登録 <b>4</b> 銘柄</span><span>レポートあり <b>1</b></span><span>深掘り中 <b>1</b></span><span>基準日 <b>2026-08-12</b></span></p><div class="scroll"><table class="list-table"><thead><tr><th>銘柄</th><th>終値</th><th>今週の動き</th></tr></thead><tbody><tr><td data-l="銘柄"><span class="nm">日本一ソフトウェア</span><span class="sub">3851／東証スタンダード</span></td><td data-l="終値" class="num">—</td><td data-l="状態" colspan="2"><span class="pill">レポート未作成</span></td></tr><tr><td data-l="銘柄"><span class="nm"><a href="stock/4073.html">ジィ・シィ企画</a><span class="flag">深掘り</span><a class="ext" href="https://www.gck.co.jp/" target="_blank" rel="noopener">公式サイト ↗</a></span><span class="sub">4073／東証グロース／<span class="pill pill-warn">決算 2026-08-14</span></span><span class="one">中堅〜大手の小売チェーン向けに、レジとカード会社をつなぐ決済システムを作って運用している千葉の会社。時価総額13.6億円の小型株。**今期の黒字化が達成できるかは、8/14 に発表される4-6月期の3か月にかかっている。**</span></td><td data-l="終値" class="num">—<span class="sub">2026-08-12</span></td><td data-l="今週"><span class="sub">2026-W33</span>決算前の待ち状態。</td></tr><tr><td data-l="銘柄"><span class="nm">Waqoo</span><span class="sub">4937／東証グロース</span></td><td data-l="終値" class="num">—</td><td data-l="状態" colspan="2"><span class="pill">レポート未作成</span></td></tr><tr><td data-l="銘柄"><span class="nm">共和コーポレーション</span><span class="sub">6570／東証スタンダード</span></td><td data-l="終値" class="num">—</td><td data-l="状態" colspan="2"><span class="pill">レポート未作成</span></td></tr></tbody></table></div><h2>この台帳の読み方</h2><ul><li>銘柄名を押すと、その会社の調査レポートが開く</li><li>レポートは <strong>① 何の会社か → ② 財務 → ③ 展望とリスク → ④ 週ごとの動き → ⑤ 値動きと市場の評価</strong> の順に並んでいる</li><li><span class="flag">深掘り</span> が付いた銘柄は毎週すべての項目を見直している。付いていない銘柄はニュースと値動きだけ追っている</li><li>深掘り対象を変えたいときは Claude に「4073 を深掘りして」と言えばよい</li><li>銘柄名の横の小さなリンクは会社の公式サイト。各レポートの末尾には、使ったすべての出典 URL を載せている</li></ul><footer>集計基準日 2026-08-12／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>

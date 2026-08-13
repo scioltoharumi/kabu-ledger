@@ -25,7 +25,7 @@ SECTIONS = [
     ("financials", "② 財務の推移と健全性"),
     ("outlook", "③ 今後の展望とリスク"),
     ("updates", "④ 週次アップデート"),
-    ("price", "⑤ 週足の値動き"),
+    ("price", "⑤ 値動きと市場の評価"),
     ("sources", "⑥ 出典"),
 ]
 
@@ -45,6 +45,16 @@ class Report:
     @property
     def deep_dive(self) -> bool:
         return bool(self.meta.get("deep_dive"))
+
+    @property
+    def charts(self) -> dict:
+        """front matter の charts。本文の {{chart:id}} と対応する。"""
+        return self.meta.get("charts") or {}
+
+    @property
+    def links(self) -> list[dict]:
+        """会社・一次情報への外部リンク。見出しの横に出す。"""
+        return self.meta.get("links") or []
 
     @property
     def updated(self) -> str:

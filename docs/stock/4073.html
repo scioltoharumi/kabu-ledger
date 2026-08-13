@@ -66,272 +66,155 @@ font-family:ui-monospace,"SF Mono",Menlo,monospace}
 .upd{border-left:2px solid var(--rule);padding-left:1rem;margin:1.5rem 0}
 .upd h3{margin-top:0}
 
+/* 図。色は dataviz のバリデータで検証済み（light 面 #fdfdfc 上で全項目 PASS）。
+   黒字=青 / 赤字=赤。「黒字=緑」は赤緑色覚で赤との ΔE が 4.1 しかなく採らない。 */
+.viz{margin:1.6rem 0;
+--viz-pos:#2a78d6;--viz-neg:#d03b3b;--viz-grid:#e1e0d9;--viz-axis:#c3c2b7;
+--viz-ink:#0b0b0b;--viz-muted:#898781;--viz-surface:#fdfdfc}
+.viz svg{width:100%;height:auto;display:block;overflow:visible}
+.viz figcaption{color:var(--dim);font-size:.82rem;margin-top:.5rem;line-height:1.7}
+.viz-tick{fill:#898781;font-size:12px;font-family:inherit}
+.viz-value{fill:#0b0b0b;font-size:13px;font-weight:700;font-family:inherit}
+.viz-bar rect,.viz-dot circle{transition:opacity .12s ease}
+.viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
+.viz-bar,.viz-dot{cursor:default}
+
+/* 読み取りの手がかり（図の下に置く短い注記） */
+.readout{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;
+font-size:.82rem;color:var(--dim)}
+.readout b{color:var(--ink);font-weight:700}
+
+/* 一覧表（銘柄が増えても詰まらないように） */
+.list-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+.list-table th{font-size:.75rem;color:var(--dim);text-align:left;
+padding:.4rem .5rem;border-bottom:2px solid var(--rule);white-space:nowrap}
+.list-table td{padding:.7rem .5rem;border-bottom:1px solid var(--rule);
+vertical-align:top}
+.list-table tr:hover td{background:var(--soft)}
+.list-table .nm{font-weight:700;font-size:.98rem}
+.list-table .sub{color:var(--dim);font-size:.76rem;display:block;margin-top:.1rem}
+.list-table .one{color:var(--ink);font-size:.85rem;line-height:1.65;
+display:block;margin-top:.35rem}
+.ext{font-size:.72rem;color:var(--dim);text-decoration:none;
+border:1px solid var(--rule);border-radius:3px;padding:.02rem .3rem;
+margin-left:.35rem;white-space:nowrap;display:inline-block}
+.ext:hover{border-color:var(--ink);color:var(--ink)}
+
 @media(max-width:640px){
 body{padding:1.25rem .85rem 3rem;font-size:15px}
 h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:2.2rem}
 table{font-size:.8rem}th,td{padding:.45rem .5rem}
 .card{padding:.9rem 1rem}
+/* 一覧表はスマホでカード状に積む（横スクロールさせない） */
+.list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
+.list-table thead{display:none}
+.list-table tr{border:1px solid var(--rule);border-radius:4px;
+padding:.7rem .8rem;margin:.7rem 0;background:#fff}
+.list-table td{border:0;padding:.15rem 0}
+.list-table td[data-l]::before{content:attr(data-l) "　";color:var(--dim);
+font-size:.72rem;font-weight:700}
+.list-table tr:hover td{background:transparent}
+.viz figcaption{font-size:.78rem}
+.viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
-</style></head><body><main><h1>ジィ・シィ企画（4073）<span class="flag">深掘り中</span></h1><p class="lede">東証グロース／レポート更新 2026-08-12</p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><blockquote>
-<p><strong>一行でいうと</strong>：中堅〜大手の小売・流通向けに、レジとカード会社をつなぐ決済システムを作って運用している会社。時価総額13.6億円の小型株。<strong>今期の黒字化が達成できるかは、8/14 に発表される4-6月期の1四半期にかかっている。</strong></p>
-</blockquote>
-<hr /><h2>① この会社は何者か</h2><h3>何で稼いでいるか</h3>
-<p>複数の店舗・レジを持つ小売チェーンが、クレジットカードやQR決済を受け付けるための<strong>裏側のシステム</strong>を提供している。店頭のレジとカード会社のあいだに立ち、決済の処理・精算データの作成・加盟店へのデータ返しを担う。主力製品はキャッシュレス決済パッケージ <strong>「CARD CREW PLUS」</strong>で、導入は全国180社以上とされる。</p>
-<p><strong>収益は2種類</strong>ある。</p>
-<div class="scroll"><table>
-<thead>
-<tr>
-<th>種類</th>
-<th>中身</th>
-<th>特徴</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>フロー型</strong></td>
-<td>システムの初期開発・決済端末の販売・受託開発</td>
-<td>案件のたびに大きく立つ。<strong>時期によって業績が跳ねる</strong></td>
-</tr>
-<tr>
-<td><strong>ストック型</strong></td>
-<td>導入後の運用・保守・処理手数料（サブスクリプション）</td>
-<td>毎月積み上がる。<strong>安定するが立ち上がりが遅い</strong></td>
-</tr>
-</tbody>
-</table></div>
-<p>まず開発案件（フロー）を取り、そこから運用（ストック）につなげる流れ。<strong>ストック比率が上がるほど収益が安定し、利益率も改善する</strong>という構造になっている。</p>
-<h3>顧客は誰か</h3>
-<p>中堅から大手の流通事業者が中心。テナントやフランチャイズで多店舗展開し、複数のレジを持つ企業。</p>
-<h3>競争環境</h3>
-<p>株探が挙げる「比較される銘柄」は <strong>TMN・DIシステム・シャノン</strong>。決済インフラ領域には大手（NTTデータ等）も存在し、時価総額13.6億円という規模は業界内では極めて小さい。</p>
-<blockquote>
-<p><strong>注意</strong>：ストック/フローの正確な構成比は、決算説明資料を確認できていない。上記の構造は二次情報（まとめサイト・IPO時の解説）に基づく。8/14 の本決算で確認したい項目。</p>
-</blockquote>
-<hr /><h2>② 財務の推移と健全性</h2><h3>通期業績（単位：百万円）</h3>
-<div class="scroll"><table>
-<thead>
-<tr>
-<th>決算期</th>
-<th style="text-align: right;">売上高</th>
-<th style="text-align: right;">営業益</th>
-<th style="text-align: right;">経常益</th>
-<th style="text-align: right;">最終益</th>
-<th style="text-align: right;">1株益(円)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>2020.06</td>
-<td style="text-align: right;"><strong>2,638</strong></td>
-<td style="text-align: right;"><strong>386</strong></td>
-<td style="text-align: right;">377</td>
-<td style="text-align: right;">268</td>
-<td style="text-align: right;">131.8</td>
-</tr>
-<tr>
-<td>2022.06</td>
-<td style="text-align: right;">1,588</td>
-<td style="text-align: right;">-55</td>
-<td style="text-align: right;">-82</td>
-<td style="text-align: right;">-91</td>
-<td style="text-align: right;">-39.2</td>
-</tr>
-<tr>
-<td>2023.06</td>
-<td style="text-align: right;">1,549</td>
-<td style="text-align: right;">-273</td>
-<td style="text-align: right;">-297</td>
-<td style="text-align: right;"><strong>-773</strong></td>
-<td style="text-align: right;">-310.4</td>
-</tr>
-<tr>
-<td>2024.06</td>
-<td style="text-align: right;">1,740</td>
-<td style="text-align: right;">58</td>
-<td style="text-align: right;">44</td>
-<td style="text-align: right;">72</td>
-<td style="text-align: right;">29.1</td>
-</tr>
-<tr>
-<td>2025.06</td>
-<td style="text-align: right;">1,844</td>
-<td style="text-align: right;">-80</td>
-<td style="text-align: right;">-115</td>
-<td style="text-align: right;">-146</td>
-<td style="text-align: right;">-58.4</td>
-</tr>
-<tr>
-<td><strong>2026.06（会社予想）</strong></td>
-<td style="text-align: right;"><strong>2,403</strong></td>
-<td style="text-align: right;"><strong>92</strong></td>
-<td style="text-align: right;">55</td>
-<td style="text-align: right;">54</td>
-<td style="text-align: right;">21.3</td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>ここが一番大事な点</strong>：2026年6月期の予想（売上2,403）は前期比+30.3%と大きく伸びるが、<strong>過去最高だった2020年6月期の2,638には届かない</strong>。営業益に至っては予想92に対し2020年は386。つまり「成長株」というより、<strong>一度大きく落ち込んだ会社が5年かけて元の水準に戻ろうとしている</strong>局面と読める。</p>
-<h3>直近4四半期（3ヶ月ごと・単位：百万円）</h3>
-<div class="scroll"><table>
-<thead>
-<tr>
-<th>四半期</th>
-<th style="text-align: right;">売上高</th>
-<th style="text-align: right;">営業益</th>
-<th style="text-align: right;">営業利益率</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>25.07-09（1Q）</td>
-<td style="text-align: right;">389</td>
-<td style="text-align: right;">-65</td>
-<td style="text-align: right;">-16.7%</td>
-</tr>
-<tr>
-<td>25.10-12（2Q）</td>
-<td style="text-align: right;">381</td>
-<td style="text-align: right;">-81</td>
-<td style="text-align: right;">-21.3%</td>
-</tr>
-<tr>
-<td>26.01-03（3Q）</td>
-<td style="text-align: right;"><strong>723</strong>（前年同期比 +90.3%）</td>
-<td style="text-align: right;"><strong>+68</strong></td>
-<td style="text-align: right;">+9.4%</td>
-</tr>
-</tbody>
-</table></div>
-<p>3Qで<strong>黒字に転換</strong>した。売上が前年同期比で9割増えている。これが直近の株価上昇の土台にある。</p>
-<h3>⚠️ 通期予想の達成は4Q（4-6月）の一発勝負</h3>
+</style></head><body><main><h1>ジィ・シィ企画（4073）<span class="flag">深掘り中</span></h1><p class="lede">東証グロース／レポート更新 2026-08-12<br><a class="ext" href="https://www.gck.co.jp/" target="_blank" rel="noopener">公式サイト ↗</a><a class="ext" href="https://www.gck.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=4073" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://irbank.net/E36666" target="_blank" rel="noopener">IR BANK ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><blockquote>
+<p><strong>一行でいうと</strong>：中堅〜大手の小売チェーン向けに、レジとカード会社をつなぐ決済システムを作って運用している千葉の会社。時価総額13.6億円の小型株。<strong>今期の黒字化が達成できるかは、8/14 に発表される4-6月期の3か月にかかっている。</strong></p>
+</blockquote><h2>① この会社は何者か</h2><p>千葉県佐倉市の会社で、1995年設立。上場は2021年。社名の由来は Global Communication Planning。</p>
+<h3>何をして稼いでいるか</h3>
+<p>イオンモールのような複数店舗を持つ小売チェーンが、クレジットカードやQR決済を受け付けるとき、<strong>レジとカード会社のあいだをつなぐ裏方のシステム</strong>が要る。この会社はそれを作って、動かし続けている。主力製品はキャッシュレス決済パッケージ <strong>CARD CREW PLUS</strong>（導入180社以上）。</p>
+<p>決済の許可を取り、精算データを作り、店舗側に返す。こうした処理の一部を担っている。クレジットカード番号を扱う許認可（関東（ク）第186号）を持つ登録事業者でもある。</p>
+<h3>収益は2本立て</h3>
+<p>この会社を理解するうえで一番大事なのが、<strong>稼ぎ方が2種類ある</strong>ことと、<strong>その比率が業績の振れ幅を決めている</strong>ことである。</p>
 <div class="scroll"><table>
 <thead>
 <tr>
 <th></th>
-<th style="text-align: right;">売上高</th>
-<th style="text-align: right;">営業益</th>
+<th>ペイメントインテグレーション（フロー型）</th>
+<th>ペイメントサービス（ストック型）</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>3Q累計（25.07-03）実績</td>
-<td style="text-align: right;">1,493</td>
-<td style="text-align: right;"><strong>-78</strong></td>
+<td>中身</td>
+<td>システムの初期開発、決済端末の販売、受託開発</td>
+<td>導入後の運用・保守、決済ASPサービス、コールセンター</td>
 </tr>
 <tr>
-<td>通期（2026.06）会社予想</td>
-<td style="text-align: right;">2,403</td>
-<td style="text-align: right;">+92</td>
+<td>お金の入り方</td>
+<td>案件を取ったときに、まとめて大きく</td>
+<td>毎月少しずつ、継続して</td>
 </tr>
 <tr>
-<td><strong>差＝4Q（26.04-06）に必要な数字</strong></td>
-<td style="text-align: right;"><strong>910</strong></td>
-<td style="text-align: right;"><strong>+170</strong></td>
+<td>業績への影響</td>
+<td><strong>大きな案件があると急に伸び、無いと落ちる</strong></td>
+<td>積み上がると安定するが、増えるのに時間がかかる</td>
 </tr>
 </tbody>
 </table></div>
-<p>3Q終了時点でまだ営業赤字（-78）。<strong>通期予想の92を達成するには、4Qの3ヶ月だけで営業益170百万円を出す必要がある</strong>。直近で最も良かった3Qですら+68なので、<strong>その2.5倍</strong>を1四半期で稼ぐ計算になる。</p>
-<p>売上910も、四半期として過去最高（723）を大きく超える水準。</p>
-<p><strong>8/14 の本決算は、この達成可否の答え合わせそのもの。</strong></p>
-<h3>財務の健全性（単位：百万円）</h3>
-<div class="scroll"><table>
-<thead>
-<tr>
-<th>決算期</th>
-<th style="text-align: right;">自己資本比率</th>
-<th style="text-align: right;">総資産</th>
-<th style="text-align: right;">自己資本</th>
-<th style="text-align: right;">剰余金</th>
-<th style="text-align: right;">有利子負債倍率</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>2023.06</td>
-<td style="text-align: right;">21.7%</td>
-<td style="text-align: right;">1,571</td>
-<td style="text-align: right;">340</td>
-<td style="text-align: right;">-407</td>
-<td style="text-align: right;">2.48倍</td>
-</tr>
-<tr>
-<td>2024.06</td>
-<td style="text-align: right;">23.5%</td>
-<td style="text-align: right;">1,764</td>
-<td style="text-align: right;">415</td>
-<td style="text-align: right;">-334</td>
-<td style="text-align: right;">2.30倍</td>
-</tr>
-<tr>
-<td>2025.06</td>
-<td style="text-align: right;">13.5%</td>
-<td style="text-align: right;">2,004</td>
-<td style="text-align: right;">270</td>
-<td style="text-align: right;">-480</td>
-<td style="text-align: right;">5.46倍</td>
-</tr>
-<tr>
-<td><strong>25.07-03（3Q時点）</strong></td>
-<td style="text-align: right;"><strong>9.9%</strong></td>
-<td style="text-align: right;">1,870</td>
-<td style="text-align: right;">185</td>
-<td style="text-align: right;"><strong>-579</strong></td>
-<td style="text-align: right;"><strong>7.99倍</strong></td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>財務は相当に苦しい。</strong></p>
-<ul>
-<li><strong>自己資本比率9.9%</strong> — 総資産のうち自前の資本は1割弱。残りは借入と負債</li>
-<li><strong>有利子負債倍率7.99倍</strong> — 自己資本の8倍の借金がある</li>
-<li><strong>剰余金 -579百万円</strong> — 過去の赤字が積み上がった状態（累積損失）</li>
-<li>2023年6月期に<strong>最終赤字773百万円</strong>を出したのが効いている</li>
-</ul>
-<h3>キャッシュフロー（単位：百万円）</h3>
-<div class="scroll"><table>
-<thead>
-<tr>
-<th>決算期</th>
-<th style="text-align: right;">営業CF</th>
-<th style="text-align: right;">投資CF</th>
-<th style="text-align: right;">財務CF</th>
-<th style="text-align: right;">現金等残高</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>2023.06</td>
-<td style="text-align: right;"><strong>-251</strong></td>
-<td style="text-align: right;">-143</td>
-<td style="text-align: right;">+735</td>
-<td style="text-align: right;">725</td>
-</tr>
-<tr>
-<td>2024.06</td>
-<td style="text-align: right;">+63</td>
-<td style="text-align: right;">-190</td>
-<td style="text-align: right;">+101</td>
-<td style="text-align: right;">699</td>
-</tr>
-<tr>
-<td>2025.06</td>
-<td style="text-align: right;"><strong>-229</strong></td>
-<td style="text-align: right;">-234</td>
-<td style="text-align: right;">+505</td>
-<td style="text-align: right;">742</td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>3期のうち2期で本業からの現金が出ていっている。</strong> 現金残高が700百万円台で保たれているのは、財務CF（＝借入）で埋めているため。2026年6月26日に<strong>コミットメントライン契約を更新</strong>しているのも、この資金繰り構造と整合する。</p>
+<p>まず開発案件（フロー）を取り、その顧客が運用契約（ストック）に移っていく流れ。<strong>ストックの比率が上がるほど業績が安定し、利益率も改善する</strong>構造になっている。</p>
+<p>裏を返すと、いまはフローの比重が高いため、<strong>四半期ごとに業績が大きく振れる</strong>。実際に直近も黒字と赤字を行き来している（②で見る）。</p>
+<h3>顧客と競合</h3>
+<p>顧客は中堅〜大手の流通事業者。テナントやフランチャイズで多店舗展開し、レジを多数持つ企業が中心。</p>
+<p>株探が「比較される銘柄」として挙げるのは <strong>TMN・DIシステム・シャノン</strong>。決済インフラには大手（NTTデータ等）もいる領域で、時価総額13.6億円という規模は極めて小さい。</p>
 <blockquote>
-<p><strong>読み方</strong>：黒字化しても、それが現金として残るまでには時間がかかる。営業CFがプラスに転じるかは、損益の黒字化とは別に見る必要がある。</p>
-</blockquote>
-<hr /><h2>③ 今後の展望とリスク</h2><h3>期待できる材料</h3>
+<p><strong>未確認</strong>：ストックとフローの正確な構成比は、決算説明資料を確認できていない。上の構造は二次情報にもとづく。8/14 の決算で確かめたい最重要項目のひとつ。</p>
+</blockquote><h2>② 財務の推移と健全性</h2><h3>10年で何が起きたか</h3>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">26.4億円</text><g class="viz-bar"><title>2016/6: 10.9億円</title><rect x="65.3" y="153.0" width="36.9" height="95.0" fill="var(--viz-pos)" rx="3"/></g><text x="83.7" y="268.0" text-anchor="middle" class="viz-tick">2016/6</text><g class="viz-bar"><title>2017/6: 11.2億円</title><rect x="124.8" y="150.4" width="36.9" height="97.6" fill="var(--viz-pos)" rx="3"/></g><text x="143.2" y="268.0" text-anchor="middle" class="viz-tick">2017/6</text><g class="viz-bar"><title>2018/6: 13.4億円</title><rect x="184.2" y="131.3" width="36.9" height="116.7" fill="var(--viz-pos)" rx="3"/></g><text x="202.6" y="268.0" text-anchor="middle" class="viz-tick">2018/6</text><g class="viz-bar"><title>2019/6: 15.5億円</title><rect x="243.7" y="113.0" width="36.9" height="135.0" fill="var(--viz-pos)" rx="3"/></g><text x="262.1" y="268.0" text-anchor="middle" class="viz-tick">2019/6</text><g class="viz-bar"><title>2020/6: 26.4億円 — 過去最高</title><rect x="303.1" y="18.0" width="36.9" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="321.5" y="12.0" text-anchor="middle" class="viz-value">26.4億円</text><text x="321.5" y="268.0" text-anchor="middle" class="viz-tick">2020/6</text><g class="viz-bar"><title>2021/6: 20.8億円</title><rect x="362.6" y="66.8" width="36.9" height="181.2" fill="var(--viz-pos)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">2021/6</text><g class="viz-bar"><title>2022/6: 15.9億円</title><rect x="422.0" y="109.5" width="36.9" height="138.5" fill="var(--viz-pos)" rx="3"/></g><text x="440.5" y="268.0" text-anchor="middle" class="viz-tick">2022/6</text><g class="viz-bar"><title>2023/6: 15.5億円</title><rect x="481.5" y="113.0" width="36.9" height="135.0" fill="var(--viz-pos)" rx="3"/></g><text x="499.9" y="268.0" text-anchor="middle" class="viz-tick">2023/6</text><g class="viz-bar"><title>2024/6: 17.4億円</title><rect x="540.9" y="96.4" width="36.9" height="151.6" fill="var(--viz-pos)" rx="3"/></g><text x="559.4" y="268.0" text-anchor="middle" class="viz-tick">2024/6</text><g class="viz-bar"><title>2025/6: 18.4億円</title><rect x="600.4" y="87.7" width="36.9" height="160.3" fill="var(--viz-pos)" rx="3"/></g><text x="618.8" y="268.0" text-anchor="middle" class="viz-tick">2025/6</text><g class="viz-bar"><title>2026/6予: 24.0億円 — 会社予想</title><rect x="659.8" y="38.9" width="36.9" height="209.1" fill="var(--viz-pos)" rx="3"/></g><text x="678.3" y="32.9" text-anchor="middle" class="viz-value">24.0億円</text><text x="678.3" y="268.0" text-anchor="middle" class="viz-tick">2026/6予</text></svg><figcaption>売上高の10年推移。2020年6月期の26.4億円がピークで、今期の会社予想24億円でもまだ届かない。「成長株」という言葉から受ける印象と、実際の位置は違う。</figcaption></figure>
+<p><strong>2020年6月期がピーク</strong>だった。売上26.4億円。そこから急落し、いま会社予想の24億円まで戻そうとしている。前期比 +30.3% という数字だけ見ると力強いが、<strong>6年前の水準にまだ届いていない</strong>。</p>
+<p>利益はもっと極端である。</p>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="152.7" x2="708" y2="152.7" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="156.7" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">386百万円</text><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">-273百万円</text><g class="viz-bar"><title>2019/6: 90.0百万円</title><rect x="71.9" y="121.3" width="46.0" height="31.4" fill="var(--viz-pos)" rx="3"/></g><text x="94.9" y="268.0" text-anchor="middle" class="viz-tick">2019/6</text><g class="viz-bar"><title>2020/6: 386百万円 — 過去最高</title><rect x="153.6" y="18.0" width="46.0" height="134.7" fill="var(--viz-pos)" rx="3"/></g><text x="176.6" y="12.0" text-anchor="middle" class="viz-value">386百万円</text><text x="176.6" y="268.0" text-anchor="middle" class="viz-tick">2020/6</text><g class="viz-bar"><title>2021/6: 200百万円</title><rect x="235.4" y="82.9" width="46.0" height="69.8" fill="var(--viz-pos)" rx="3"/></g><text x="258.4" y="268.0" text-anchor="middle" class="viz-tick">2021/6</text><g class="viz-bar"><title>2022/6: -56.0百万円</title><rect x="317.1" y="152.7" width="46.0" height="19.5" fill="var(--viz-neg)" rx="3"/></g><text x="340.1" y="268.0" text-anchor="middle" class="viz-tick">2022/6</text><g class="viz-bar"><title>2023/6: -273百万円 — 最終赤字774百万円</title><rect x="398.9" y="152.7" width="46.0" height="95.3" fill="var(--viz-neg)" rx="3"/></g><text x="421.9" y="263.0" text-anchor="middle" class="viz-value">-273百万円</text><text x="421.9" y="268.0" text-anchor="middle" class="viz-tick">2023/6</text><g class="viz-bar"><title>2024/6: 59.0百万円</title><rect x="480.6" y="132.1" width="46.0" height="20.6" fill="var(--viz-pos)" rx="3"/></g><text x="503.6" y="268.0" text-anchor="middle" class="viz-tick">2024/6</text><g class="viz-bar"><title>2025/6: -80.0百万円</title><rect x="562.4" y="152.7" width="46.0" height="27.9" fill="var(--viz-neg)" rx="3"/></g><text x="585.4" y="268.0" text-anchor="middle" class="viz-tick">2025/6</text><g class="viz-bar"><title>2026/6予: 92.0百万円 — 会社予想</title><rect x="644.1" y="120.6" width="46.0" height="32.1" fill="var(--viz-pos)" rx="3"/></g><text x="667.1" y="114.6" text-anchor="middle" class="viz-value">92.0百万円</text><text x="667.1" y="268.0" text-anchor="middle" class="viz-tick">2026/6予</text></svg><figcaption>営業利益。青が黒字、赤が赤字。2022年以降は黒字と赤字を1年おきに往復していて、利益が安定していない。今期予想の92百万円は、ピーク時386百万円の4分の1にあたる。</figcaption></figure>
+<p>2022年以降、<strong>黒字と赤字を1年おきに往復している</strong>。2023年6月期には最終赤字774百万円を計上した。今期予想の営業利益92百万円は、ピーク時386百万円の4分の1にあたる。</p>
+<h3>なぜ売上が戻っても利益が戻らないのか</h3>
+<figure class="viz"><svg viewBox="0 0 720 280" role="img" preserveAspectRatio="xMidYMid meet"><rect x="54" y="44.5" width="652" height="54.0" fill="var(--viz-neg)" opacity="0.08"/><text x="702" y="58.5" text-anchor="end" class="viz-tick">利益が出にくい水準</text><line x1="54" y1="44.5" x2="706" y2="44.5" stroke="var(--viz-grid)" stroke-width="1"/><text x="46" y="48.5" text-anchor="end" class="viz-tick">70.0%</text><line x1="54" y1="207.5" x2="706" y2="207.5" stroke="var(--viz-grid)" stroke-width="1"/><text x="46" y="211.5" text-anchor="end" class="viz-tick">54.9%</text><path d="M54.0,177.0 L162.7,207.5 L271.3,174.8 L380.0,150.9 L488.7,64.3 L597.3,126.6 L706.0,61.7" fill="none" stroke="var(--viz-pos)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><g class="viz-dot"><title>2019/6: 57.7%</title><circle cx="54.0" cy="177.0" r="4.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><g class="viz-dot"><title>2020/6: 54.9% — 最も良かった年</title><circle cx="162.7" cy="207.5" r="4.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><text x="162.7" y="195.5" text-anchor="middle" class="viz-value">54.9%</text><g class="viz-dot"><title>2021/6: 57.9%</title><circle cx="271.3" cy="174.8" r="4.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><g class="viz-dot"><title>2022/6: 60.1%</title><circle cx="380.0" cy="150.9" r="4.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><g class="viz-dot"><title>2023/6: 68.2%</title><circle cx="488.7" cy="64.3" r="4.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><g class="viz-dot"><title>2024/6: 62.4%</title><circle cx="597.3" cy="126.6" r="4.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><g class="viz-dot"><title>2025/6: 68.4% — 直近</title><circle cx="706.0" cy="61.7" r="4.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><text x="706.0" y="49.7" text-anchor="middle" class="viz-value">68.4%</text><text x="54.0" y="252.0" text-anchor="middle" class="viz-tick">2019/6</text><text x="162.7" y="252.0" text-anchor="middle" class="viz-tick">2020/6</text><text x="271.3" y="252.0" text-anchor="middle" class="viz-tick">2021/6</text><text x="380.0" y="252.0" text-anchor="middle" class="viz-tick">2022/6</text><text x="488.7" y="252.0" text-anchor="middle" class="viz-tick">2023/6</text><text x="597.3" y="252.0" text-anchor="middle" class="viz-tick">2024/6</text><text x="706.0" y="252.0" text-anchor="middle" class="viz-tick">2025/6</text></svg><figcaption>売上原価率。2020年の54.9%から2025年の68.4%まで13.5ポイント悪化している。売上が戻っても利益が出にくい体質になったことを意味する。ここが下がるかどうかが、黒字の持続性を左右する。</figcaption></figure>
+<p><strong>原価率が13.5ポイント悪化している。</strong> 2020年に54.9%だったものが、2025年には68.4%。100円売って、かつては45円残っていた粗利が、いまは32円しか残らない。</p>
+<p>売上を戻すだけでは利益が戻らない理由がここにある。<strong>この線が下がるかどうかが、黒字の持続性を決める。</strong></p>
+<h3>⚠️ 今期の黒字化は、最後の3か月に全部かかっている</h3>
+<figure class="viz"><svg viewBox="0 0 720 132" role="img" preserveAspectRatio="xMidYMid meet"><rect x="12" y="42" width="696" height="34" rx="4" fill="var(--viz-grid)" opacity="0.55"/><g class="viz-bar"><title>3Q終了時点の営業利益: -78.0百万円</title><rect x="12.0" y="42" width="319.3" height="34" rx="4" fill="var(--viz-neg)"/></g><line x1="708.0" y1="32" x2="708.0" y2="86" stroke="var(--viz-ink)" stroke-width="2"/><text x="708.0" y="26" text-anchor="middle" class="viz-value">目標 92.0百万円</text><line x1="331.3" y1="38" x2="331.3" y2="80" stroke="var(--viz-axis)" stroke-width="1.5" stroke-dasharray="3 3"/><text x="331.3" y="98" text-anchor="middle" class="viz-tick">0</text><text x="12" y="26" class="viz-tick">3Q終了時点の営業利益 -78.0百万円</text><text x="12" y="98" class="viz-value">4Qの3か月で必要な額 170百万円</text></svg><figcaption>今期の営業利益は、3四半期を終えてまだマイナス78百万円。会社予想の92百万円に届かせるには、最後の3か月だけで170百万円を稼ぐ必要がある。直近で最も良かった四半期（26年1-3月）ですら68百万円だった。</figcaption></figure>
+<p>3四半期を終えて、営業利益はまだ <strong>マイナス78百万円</strong>。会社予想の +92百万円に届かせるには、<strong>4-6月の3か月だけで170百万円</strong>を稼ぐ必要がある。</p>
+<p>直近で最も良かった四半期（26年1-3月）の営業利益が68百万円だったので、<strong>その2.5倍を1四半期で</strong>という計算になる。売上も、必要な910百万円は四半期として過去最高（723百万円）を大きく超える。</p>
+<p><strong>8/14 の決算は、この達成可否そのものである。</strong></p>
+<h3>財務の余力</h3>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">23.5%</text><g class="viz-bar"><title>2023/6: 21.7%</title><rect x="112.8" y="35.6" width="46.0" height="212.4" fill="var(--viz-pos)" rx="3"/></g><text x="135.8" y="268.0" text-anchor="middle" class="viz-tick">2023/6</text><g class="viz-bar"><title>2024/6: 23.5%</title><rect x="276.2" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="299.2" y="268.0" text-anchor="middle" class="viz-tick">2024/6</text><g class="viz-bar"><title>2025/6: 13.5%</title><rect x="439.8" y="115.9" width="46.0" height="132.1" fill="var(--viz-pos)" rx="3"/></g><text x="462.8" y="268.0" text-anchor="middle" class="viz-tick">2025/6</text><g class="viz-bar"><title>26/6 3Q: 9.9% — 直近</title><rect x="603.2" y="151.1" width="46.0" height="96.9" fill="var(--viz-pos)" rx="3"/></g><text x="626.2" y="145.1" text-anchor="middle" class="viz-value">9.9%</text><text x="626.2" y="268.0" text-anchor="middle" class="viz-tick">26/6 3Q</text></svg><figcaption>自己資本比率。総資産のうち自前の資本がどれだけあるかを示す。3四半期時点で9.9%まで下がっている。1割を切ると、赤字が続いた場合に資本が持たなくなる危険が高まる。</figcaption></figure>
+<p>自己資本比率は3四半期時点で <strong>9.9%</strong>。前期の13.5%からさらに下がった。</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>指標</th>
+<th style="text-align: right;">直近（26/6期 3Q）</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>自己資本比率</td>
+<td style="text-align: right;">9.9%</td>
+<td>総資産のうち自前の資本は1割弱。残りは借入と負債</td>
+</tr>
+<tr>
+<td>有利子負債倍率</td>
+<td style="text-align: right;">7.99倍</td>
+<td>自己資本の8倍の借金がある</td>
+</tr>
+<tr>
+<td>剰余金</td>
+<td style="text-align: right;">−579百万円</td>
+<td>過去の赤字が積み上がった状態</td>
+</tr>
+</tbody>
+</table></div>
+<p>営業キャッシュフロー（本業で入ってくる現金）は、<strong>直近3期のうち2期でマイナス</strong>である（2023年 −251／2024年 +63／2025年 −229 百万円）。現金残高が700百万円台に保たれているのは、借入で埋めているため。2026年6月26日にコミットメントライン契約を更新しているのも、この資金繰りと整合する。</p>
+<p>取引銀行は千葉銀行・りそな・京葉・みずほ・三井住友・三菱UFJ・三菱UFJ信託の<strong>7行</strong>。時価総額13.6億円の会社としては多い。</p>
+<blockquote>
+<p><strong>読み方</strong>：損益が黒字になっても、それが現金として残るまでには時間がかかる。営業CFがプラスに転じるかは、黒字化とは別に見る必要がある。</p>
+</blockquote><h2>③ 今後の展望とリスク</h2><h3>期待できること</h3>
 <ol>
-<li><strong>3Qで黒字転換した</strong> — 売上が前年同期比+90%。事業として上向きの兆しが出ている</li>
-<li><strong>7/21に大型案件を獲得</strong> — 既存取引先からキャッシュレス決済端末の案件、<strong>受注金額4.63億円</strong>。年間売上24億円の約19%に相当する規模。発表日は<strong>ストップ高</strong></li>
-<li><strong>ストック比率の上昇余地</strong> — 開発案件が運用契約に育てば、収益が安定し利益率も上がる構造</li>
+<li><strong>26年1-3月に黒字転換した</strong> — 売上723百万円は前年同期比+90.3%、営業利益+68百万円。事業が上向いた兆し</li>
+<li><strong>7/21に大型案件を獲得</strong> — キャッシュレス決済端末のリプレイス案件、<strong>受注金額4.63億円</strong>。年間売上24億円の約19%にあたる規模で、発表を受けてストップ高</li>
+<li><strong>ストック比率が上がる余地</strong> — 開発案件が運用契約に育てば、収益が安定し利益率も改善する</li>
 </ol>
+<h3>⚠️ ただし、大型案件は今期の数字には入らない</h3>
+<p>7/21 の4.63億円の案件は、<strong>2027年6月期に売上計上予定</strong>である（財経新聞・フィスコ）。つまり<strong>今期の通期予想の達成には寄与しない</strong>。</p>
+<p>株価はこの発表でストップ高になったが、8/14 に問われるのは<strong>この案件抜きで4Qに170百万円を稼げたか</strong>である。ここは混同しやすい。</p>
 <h3>注意すべき点</h3>
 <div class="scroll"><table>
 <thead>
@@ -343,56 +226,150 @@ table{font-size:.8rem}th,td{padding:.45rem .5rem}
 <tbody>
 <tr>
 <td><strong>通期予想の未達</strong></td>
-<td>4Q単独で営業益170百万円が必要（過去最高四半期の2.5倍）。<strong>8/14 に判明する</strong></td>
+<td>4Q単独で営業益170百万円が必要（過去最高四半期の2.5倍）。8/14 に判明する</td>
 </tr>
 <tr>
-<td><strong>財務の脆弱さ</strong></td>
+<td><strong>財務の薄さ</strong></td>
 <td>自己資本比率9.9%・有利子負債倍率7.99倍。赤字が続けば資本が持たない</td>
 </tr>
 <tr>
-<td><strong>業績の振れ幅が大きい</strong></td>
-<td>フロー型（案件）の比重が高く、四半期ごとに黒字↔赤字を行き来している</td>
+<td><strong>利益率の構造悪化</strong></td>
+<td>原価率が5年で13.5ポイント上昇。売上が戻っても利益が戻らない</td>
+</tr>
+<tr>
+<td><strong>業績の振れ幅</strong></td>
+<td>フロー型の比重が高く、四半期ごとに黒字と赤字を行き来している</td>
 </tr>
 <tr>
 <td><strong>売買が薄い</strong></td>
-<td>時価総額13.6億円。制度信用は<strong>買建のみ</strong>（貸借銘柄ではない）＝売りから入れず、需給が一方向に偏りやすい</td>
+<td>時価総額13.6億円。制度信用は<strong>買建のみ</strong>で売りから入れず、需給が一方向に偏りやすい</td>
 </tr>
 <tr>
 <td><strong>経営体制の変更</strong></td>
-<td>2026年7月17日に代表取締役の異動を開示。<strong>内容の確認が必要</strong></td>
-</tr>
-<tr>
-<td><strong>株価の水準</strong></td>
-<td>6/25に10年来安値414円をつけた後、537円まで戻している。<strong>大型案件の期待を織り込んだ後の水準</strong></td>
+<td>2026年7月17日に代表取締役の異動を開示。内容は未確認</td>
 </tr>
 </tbody>
 </table></div>
 <h3>何が起きたらストーリーが崩れるか</h3>
 <ul>
-<li><strong>8/14 の本決算で通期予想が未達</strong>、または<strong>下方修正</strong>が出る</li>
+<li><strong>8/14 の決算で通期予想が未達</strong>、または下方修正が出る</li>
 <li>ストック型売上の構成比が<strong>2四半期連続で低下</strong>する</li>
 <li>4Qの黒字が<strong>一過性の案件による一発</strong>で、翌期に反動減が出る</li>
-<li>自己資本比率がさらに低下し、<strong>増資（希薄化）</strong>が必要になる</li>
-</ul>
-<hr /><h2>④ 週次アップデート</h2><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W33（2026-08-10 週）</h3><p><strong>決算前の待ち状態。</strong> 8/14 に2026年6月期の本決算が出る。</p>
+<li>原価率が<strong>70%を超える</strong>（利益が構造的に出なくなる水準）</li>
+<li>自己資本比率がさらに下がり、<strong>増資（1株あたりの価値の希薄化）</strong>が必要になる</li>
+</ul><h2>④ 週次アップデート</h2><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W33（2026-08-10 週）</h3><p><strong>決算前の待ち状態。</strong> 8/14 に2026年6月期の本決算が出る。</p>
 <ul>
-<li>株価は537円前後。6/25の10年来安値414円から約30%戻した水準</li>
-<li>7/21の大型案件（4.63億円）でストップ高をつけた後、高値圏でもみ合い</li>
-<li><strong>この週の焦点は「4Qで営業益170百万円を出せたか」の一点</strong>。3Q時点で営業-78のため、達成できなければ通期予想（+92）は未達になる</li>
-<li>8/5に729円の年初来高値をつけた後、8/6に579円まで急落（ストップ安）。<strong>値動きが極端に荒い</strong>。時価総額13.6億円・買建のみという需給の薄さが効いている</li>
+<li>株価は535〜540円で推移。6/25 の10年来安値414円から約30%戻した水準</li>
+<li>この週の焦点は「<strong>4Qの3か月で営業益170百万円を出せたか</strong>」の一点。3Q時点で−78百万円のため、届かなければ通期予想は未達になる</li>
+<li>7/21 の大型案件（4.63億円）は<strong>来期計上</strong>であることを確認した。今期の数字には効かない。ストップ高の材料と今期業績は切り離して見る必要がある</li>
+<li>8/5 に年初来高値729円をつけた翌日、8/6 に579円までストップ安。<strong>1日で20%動いている</strong>。時価総額13.6億円・買建のみという需給の薄さが効いている</li>
 </ul>
-<p><strong>次週に見ること</strong>：本決算の①通期実績が予想（売上2,403・営業92）に届いたか ②2027年6月期の会社計画 ③ストック/フローの構成比 ④自己資本比率の改善有無</p>
-<hr /></div><h2>⑤ 週足の値動き</h2><ul>
-<li>直近終値：<strong>535円</strong>（2026-08-10）</li>
-<li>年初来高値：<strong>729円</strong>（2026-08-05）／年初来安値：<strong>414円</strong>（2026-06-25）</li>
-<li>52週高値：878円（2025-09-04）</li>
-<li>週足13週MAの傾き：<strong>-0.230%/週（ほぼ横ばい）</strong>／週足26週MAの傾き：<strong>-0.546%/週（下向き）</strong></li>
-<li>20日平均売買代金：6,596万円（ただし<strong>中央値は470万円</strong>。一部の日に売買が集中しており、普段は薄い）</li>
+<p><strong>次週に見ること</strong>：①通期実績が予想（売上2,403・営業92百万円）に届いたか ②2027年6月期の会社計画 ③ストック/フローの構成比 ④原価率が改善したか ⑤自己資本比率</p></div><h2>⑤ 値動きと市場の評価</h2><h3>いまどこにいるか</h3>
+<figure class="viz"><svg viewBox="0 0 720 118" role="img" preserveAspectRatio="xMidYMid meet"><rect x="44" y="52" width="632" height="12" rx="6" fill="var(--viz-grid)"/><rect x="44" y="52" width="164.8" height="12" rx="6" fill="var(--viz-pos)" opacity="0.35"/><g class="viz-dot"><title>年初来高値: 729円</title><line x1="473.1" y1="46" x2="473.1" y2="70" stroke="var(--viz-muted)" stroke-width="1.5"/></g><text x="473.1" y="40" text-anchor="middle" class="viz-tick">年初来高値</text><g class="viz-dot"><title>理論株価: 520円</title><line x1="188.4" y1="46" x2="188.4" y2="70" stroke="var(--viz-muted)" stroke-width="1.5"/></g><text x="188.4" y="40" text-anchor="middle" class="viz-tick">理論株価</text><g class="viz-dot"><title>現在: 535円</title><circle cx="208.8" cy="58.0" r="9" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2.5"/></g><text x="208.8" y="94.0" text-anchor="middle" class="viz-value">現在 535円</text><text x="44" y="94.0" text-anchor="middle" class="viz-tick">52週安値<tspan x="44" dy="14">414円</tspan></text><text x="676" y="94.0" text-anchor="middle" class="viz-tick">52週高値<tspan x="676" dy="14">878円</tspan></text></svg><figcaption>直近1年の値幅のなかで、いまどこにいるか。6月に10年来安値414円をつけた後、8月に729円まで急騰し、いまは535円。1か月半で下から上まで往復している。</figcaption></figure>
+<p>直近1年の値幅は <strong>414円〜878円</strong>。いまは535円で、ちょうど真ん中よりやや下。ただしこの1年半の動きは激しい。</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>日付</th>
+<th>出来事</th>
+<th>株価</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2025-09-04</td>
+<td>52週高値</td>
+<td>878円</td>
+</tr>
+<tr>
+<td>2026-06-25</td>
+<td><strong>10年来安値</strong></td>
+<td>414円</td>
+</tr>
+<tr>
+<td>2026-07-21</td>
+<td>大型案件4.63億円を発表 → 翌日ストップ高</td>
+<td>—</td>
+</tr>
+<tr>
+<td>2026-08-05</td>
+<td>年初来高値</td>
+<td>729円</td>
+</tr>
+<tr>
+<td>2026-08-06</td>
+<td><strong>ストップ安</strong></td>
+<td>579円</td>
+</tr>
+<tr>
+<td>2026-08-10</td>
+<td>直近終値</td>
+<td>535円</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>6月に10年来安値をつけた1か月半後に、年初来高値まで76%上昇し、その翌日に20%下落している。</strong> 値動きの荒さは、この銘柄を理解するうえで business の話と同じくらい重要である。</p>
+<h3>市場はどう評価しているか</h3>
+<p>ここが割れている。</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>見る人</th>
+<th>評価</th>
+<th>数字</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>アナリスト（機関投資家向け）</strong></td>
+<td><strong>カバーなし</strong></td>
+<td>レーティングを出している証券会社が<strong>0社</strong>（強気0・中立0・弱気0）</td>
+</tr>
+<tr>
+<td><strong>個人投資家（みんかぶ）</strong></td>
+<td><strong>買い</strong></td>
+<td>目標株価 641円（現在から約+20%）</td>
+</tr>
+<tr>
+<td><strong>株価診断（みんかぶ）</strong></td>
+<td><strong>割高</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>理論株価（PBR基準・アイフィスジャパン）</strong></td>
+<td><strong>妥当水準</strong></td>
+<td>520円（下値目途267円／上値目途773円）</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>アナリストが1人もカバーしていない</strong>という事実は重い。時価総額13.6億円では証券会社が調査コストを掛けられず、<strong>機関投資家の資金が入る前提が整っていない</strong>。値動きを作っているのは個人投資家の売買である。</p>
+<h3>過熱しているのか、冷めているのか</h3>
+<p>材料を並べると、<strong>「熱い」と「冷たい」が同居している</strong>。</p>
+<p><strong>熱い側</strong></p>
+<ul>
+<li>個人予想は「買い」、目標株価は現在より2割上</li>
+<li>7/21 の大型案件でストップ高、8/5 に年初来高値</li>
+<li>PBR 7.4倍・PSR 0.73倍。PBRが高いのは<strong>自己資本が薄いから</strong>でもあり、単純に人気とは言い切れない</li>
 </ul>
+<p><strong>冷たい側</strong></p>
+<ul>
+<li><strong>アナリストのカバーが0社</strong>。プロは見ていない</li>
+<li>みんかぶの株価診断は「<strong>割高</strong>」</li>
+<li>理論株価520円に対し現在535円。<strong>すでに妥当水準を少し超えている</strong></li>
+<li>8/6 のストップ安が示すとおり、上げた材料はすぐ剥がれた</li>
+</ul>
+<p><strong>読み取れること</strong>：この株価は業績の実績に対して付いているというより、<strong>大型案件という材料と、薄い需給に対して</strong>付いている。しかもその大型案件は来期の話である。8/14 の決算は、<strong>材料で買われた水準に実績が追いつくかどうか</strong>の検証になる。</p>
+<p>制度信用が買建のみ（売りから入れない）である点も効いている。<strong>下げ相場で買い戻しが入らない</strong>ため、悪材料が出たときの下落は素直に出やすい。</p>
 <blockquote>
-<p><strong>鉄則との関係</strong>：「週足中期移動平均線が下向きなら買いで入らない」に照らすと、26週MAは下向き。13週MAはほぼ横ばい。<strong>現時点では買いで入る条件を満たしていない。</strong></p>
+<p><strong>注意</strong>：ここで挙げた「市場の評価」は、みんかぶ・株予報Pro が公開している集計値である。SNS や掲示板の個別の書き込みは、書き手が特定できず検証もできないため採っていない。</p>
 </blockquote>
-<hr /><h2>⑥ 出典</h2><h3>一次情報</h3>
+<h3>鉄則との関係</h3>
+<ul>
+<li>週足13週移動平均の傾き：<strong>−0.230%/週（ほぼ横ばい）</strong></li>
+<li>週足26週移動平均の傾き：<strong>−0.546%/週（下向き）</strong></li>
+</ul>
+<p>鉄則「週足中期移動平均線が下向きなら決して買いで入らない」に照らすと、<strong>26週線は下向き</strong>。現時点では買いで入る条件を満たしていない。</p>
+<p>20日平均売買代金は6,596万円だが、<strong>中央値は470万円</strong>。少数の日に売買が集中しており、普段は極めて薄い。「平均では流動性がある」ように見えて、実際に建てられる玉は限られる。</p><h2>⑥ 出典</h2><h3>一次情報</h3>
 <div class="scroll"><table>
 <thead>
 <tr>
@@ -403,6 +380,16 @@ table{font-size:.8rem}th,td{padding:.45rem .5rem}
 </thead>
 <tbody>
 <tr>
+<td>会社概要・所在地・資本金・取引銀行・許認可</td>
+<td><a href="https://www.gck.co.jp/company/co-outline/">https://www.gck.co.jp/company/co-outline/</a></td>
+<td>2026-08-12</td>
+</tr>
+<tr>
+<td>IR情報</td>
+<td><a href="https://www.gck.co.jp/ir/">https://www.gck.co.jp/ir/</a></td>
+<td>2026-08-12</td>
+</tr>
+<tr>
 <td>2026年6月期 第3四半期決算短信</td>
 <td><a href="https://www.nikkei.com/markets/ir/irftp/data/tdnr/tdnetg3/20260515/fxfcrw/140120260515536364.pdf">https://www.nikkei.com/markets/ir/irftp/data/tdnr/tdnetg3/20260515/fxfcrw/140120260515536364.pdf</a></td>
 <td>2026-08-12</td>
@@ -410,7 +397,7 @@ table{font-size:.8rem}th,td{padding:.45rem .5rem}
 </tbody>
 </table></div>
 <blockquote>
-<p>※ PDF の本文は本レポート作成時点で機械的に読み取れていない。<strong>下記の二次情報から数値を取得している</strong>。8/14 の本決算後に一次情報で検算すること。</p>
+<p>※ 決算短信PDFの本文は機械的に読み取れていない。下記の二次情報から数値を取得している。<strong>8/14 の本決算後に一次情報で検算すること。</strong></p>
 </blockquote>
 <h3>二次情報</h3>
 <div class="scroll"><table>
@@ -423,7 +410,12 @@ table{font-size:.8rem}th,td{padding:.45rem .5rem}
 </thead>
 <tbody>
 <tr>
-<td>業績推移・四半期推移・財務指標・CF</td>
+<td>10年の業績推移・原価率・ROE/ROA</td>
+<td><a href="https://irbank.net/E36666/results">https://irbank.net/E36666/results</a></td>
+<td>2026-08-12</td>
+</tr>
+<tr>
+<td>四半期推移・財務指標・キャッシュフロー</td>
 <td><a href="https://kabutan.jp/stock/finance?code=4073">https://kabutan.jp/stock/finance?code=4073</a></td>
 <td>2026-08-12</td>
 </tr>
@@ -433,31 +425,31 @@ table{font-size:.8rem}th,td{padding:.45rem .5rem}
 <td>2026-08-12</td>
 </tr>
 <tr>
+<td>大型案件4.63億円が<strong>2027年6月期計上</strong>である旨</td>
+<td><a href="https://www.zaikei.co.jp/article/20260722/862304.html">https://www.zaikei.co.jp/article/20260722/862304.html</a></td>
+<td>2026-08-12</td>
+</tr>
+<tr>
+<td>株価診断・個人予想・目標株価・PSR</td>
+<td><a href="https://minkabu.jp/stock/4073">https://minkabu.jp/stock/4073</a></td>
+<td>2026-08-12</td>
+</tr>
+<tr>
+<td>アナリストレーティング・理論株価</td>
+<td><a href="https://kabuyoho.jp/sp/reportTarget?bcode=4073">https://kabuyoho.jp/sp/reportTarget?bcode=4073</a></td>
+<td>2026-08-12</td>
+</tr>
+<tr>
 <td>事業内容・ビジネスモデル・顧客層</td>
 <td><a href="https://note.com/tatsuya_sabato/n/naf535589c0bf">https://note.com/tatsuya_sabato/n/naf535589c0bf</a></td>
 <td>2026-08-12</td>
 </tr>
-<tr>
-<td>企業情報</td>
-<td><a href="https://www.buffett-code.com/company/4073/">https://www.buffett-code.com/company/4073/</a></td>
-<td>2026-08-12</td>
-</tr>
-<tr>
-<td>大型案件受注（4.63億円）・代表異動・コミットメントライン</td>
-<td><a href="https://s.kabutan.jp/stocks/4073/news/">https://s.kabutan.jp/stocks/4073/news/</a></td>
-<td>2026-08-12</td>
-</tr>
-<tr>
-<td>決算情報</td>
-<td><a href="https://minkabu.jp/stock/4073/settlement">https://minkabu.jp/stock/4073/settlement</a></td>
-<td>2026-08-12</td>
-</tr>
 </tbody>
 </table></div>
-<h3>未確認・要検証</h3>
+<h3>未確認・次に確かめること</h3>
 <ul>
-<li>ストック/フローの正確な構成比（決算説明資料で確認する）</li>
+<li>ストック／フローの正確な構成比（決算説明資料）</li>
 <li>7/17 開示の代表取締役異動の内容</li>
-<li>7/21 の大型案件の売上計上時期（今期か来期か）— <strong>通期予想の達成可否に直結する</strong></li>
-<li>決算短信 PDF の一次情報による数値の検算</li>
+<li>決算短信PDFの一次情報による数値の検算</li>
+<li>原価率が上がった要因（人件費か、外注費か、端末原価か）</li>
 </ul><footer>集計基準日 2026-08-12／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
