@@ -442,7 +442,9 @@ def test_bars_from_rows_does_not_fill_close():
          "low": "0.5", "close": "9.9", "volume": "10", "status": "OK",
          "value_primary": "9.9"},
     ]
-    bars = ind.bars_from_rows(rows, code="4073")
+    # このテストは「close を埋めないこと」を見るので、末尾の未確定行を
+    # 落とさない生の並びで取る（confirmed_only の既定は True）
+    bars = ind.bars_from_rows(rows, code="4073", confirmed_only=False)
     eq(len(bars), 2, "code で絞り込む")
     eq([b.date for b in bars], ["2026-08-03", "2026-08-04"], "日付昇順に並べ替える")
     is_none(bars[1].close, "close が空なら None（value_primary で埋めない）")
@@ -493,7 +495,10 @@ def test_real_data_all_indicators():
 
         # 先頭の SINGLE_SOURCE 行は close が空のまま残っている（埋めていない）
         assert closes[0] is None, f"{code}: 先頭行の終値は未採用のはず"
-        assert closes[-1] is not None, f"{code}: 最終行の終値"
+        # 最終行は「片方の取得元がまだ当日分を出していない」だけで空のことがある
+        # （minkabu は翌日に載る）。最新日そのものではなく直近に採用値があることを見る。
+        assert any(c is not None for c in closes[-5:]), \
+            f"{code}: 直近5営業日のどこにも採用値が無い"
 
         ma25 = ind.sma(closes, ind.DAILY_MA_MID_PERIODS)
         dev = ind.ma_deviation_pct(closes)
@@ -550,7 +555,9 @@ def test_real_data_no_trade_rows_are_zero_volume():
 
     # 4937 は NO_TRADE を6日含むが、20日平均売買代金は算出できる（0を含めて平均する）
     bars = ind.bars_from_rows(rows, code="4937")
-    turn = ind.avg_turnover([b.close for b in bars], [b.volume for b in bars])
+    # 採用値のある行だけで計算する（最新日は照合が成立せず空のことがある）
+    priced = [b for b in bars if b.close is not None]
+    turn = ind.avg_turnover([b.close for b in priced], [b.volume for b in priced])
     assert turn is not None and turn > 0, "NO_TRADE を含んでも売買代金は算出できる"
 
 

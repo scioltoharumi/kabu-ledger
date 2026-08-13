@@ -135,7 +135,10 @@ def test_relative_perf_is_none_when_index_missing():
     repo = S.Repo()
     bars = repo.bars_upto("6570", AS_OF)
     g = repo.index_bars("growth250")
-    assert g, "growth250 の行は存在する"
+    # 全行が照合不成立（close 空）なので、末尾の未確定行を落とすと1本も残らない。
+    # 「行が無い」も「終値が空」も、結論は同じく未計算であることを確かめる。
+    assert not [b for b in g if b.close is not None], \
+        "growth250 に採用値のある足があってはいけない（第2ソースが無い）"
     is_none(S.relative_perf_pct(bars, g, 20), "終値が空なら未計算（value_primary で埋めない）")
 
 

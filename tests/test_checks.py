@@ -97,6 +97,41 @@ def price_rows(rows, code):
     return sorted([r for r in rows if r["code"] == code], key=lambda r: r["date"])
 
 
+def latest_date(code: str | None = None) -> str:
+    """実データの最新営業日を返す。
+
+    このテスト群は実データを複製して壊す方式なので、期待値に日付を
+    べた書きすると **データが1行増えるたびに落ちる**（週次で必ず壊れる）。
+    期待値はここから引いてデータに追随させる。
+    """
+    _, rows = read_csv(ROOT / "data" / "prices" / "daily.csv")
+    if code:
+        rows = [r for r in rows if r["code"] == code]
+    return max(r["date"] for r in rows)
+
+
+def last_ok(rows, code):
+    """status が OK（2ソース照合が成立）の最後の行を返す。
+
+    最新営業日は、片方の取得元がまだ当日分を出していないために
+    SINGLE_SOURCE になることがある（minkabu は翌日に載る）。
+    「照合が成立した行」を前提にする検査は、最終行ではなくここから取る。
+    """
+    rs = [r for r in price_rows(rows, code) if r["status"] == "OK"]
+    assert rs, f"{code} に status=OK の行が無い"
+    return rs[-1]
+
+
+def close_of(row) -> float:
+    """行の価格を取る。
+
+    `close` は「2ソースが一致したときだけ入る採用値」なので、照合が
+    成立しなかった日は空になる。最終行がたまたまその状態でも壊れないよう
+    `value_primary` にフォールバックする。
+    """
+    return float(row["close"] or row["value_primary"])
+
+
 def set_price(row, value: float) -> None:
     """1行の価格系をすべて value に揃える（他の検査を巻き込まずに値だけ動かす）。"""
     for col in ("open", "high", "low", "close", "value_primary", "value_secondary"):
@@ -229,7 +264,7 @@ def test_ohlc_high_below_close():
     def mutate(d: Path) -> None:
         def fn(rows):
             r = price_rows(rows, "3851")[-1]
-            r["high"] = str(float(r["close"]) - 1)
+            r["high"] = str(close_of(r) - 1)
         edit_prices(d, fn)
     rep = run(make_data(mutate))
     expect(rep, checks.FAIL, "ohlc", "high < close")
@@ -268,12 +303,13 @@ def test_ohlc_index_is_checked():
 # =============================================================================
 
 def test_coverage_latest_day_missing_for_one_code():
+    day = latest_date()
     def mutate(d: Path) -> None:
         edit_prices(d, lambda rows: [r for r in rows
                                      if not (r["code"] == "4073"
-                                             and r["date"] == "2026-08-10")])
+                                             and r["date"] == day)])
     rep = run(make_data(mutate))
-    expect(rep, checks.FAIL, "coverage", "4073: 最新営業日 2026-08-10 の行が無い")
+    expect(rep, checks.FAIL, "coverage", f"4073: 最新営業日 {day} の行が無い")
 
 
 def test_coverage_code_completely_absent():
@@ -299,7 +335,7 @@ def test_coverage_history_hole_is_warned():
 def test_schema_ok_without_close():
     def mutate(d: Path) -> None:
         def fn(rows):
-            price_rows(rows, "3851")[-1]["close"] = ""
+            last_ok(rows, "3851")["close"] = ""
         edit_prices(d, fn)
     rep = run(make_data(mutate))
     expect(rep, checks.FAIL, "schema", "status=OK だが close が空")
@@ -319,7 +355,7 @@ def test_schema_unverified_value_promoted_to_close():
 def test_schema_mismatch_but_values_agree():
     def mutate(d: Path) -> None:
         def fn(rows):
-            r = price_rows(rows, "6570")[-1]
+            r = last_ok(rows, "6570")
             r["status"] = "MISMATCH"
             r["close"] = ""
         edit_prices(d, fn)
@@ -468,7 +504,7 @@ def test_duplicate_key():
             return rows + [dict(price_rows(rows, "3851")[-1])]
         edit_prices(d, fn)
     rep = run(make_data(mutate))
-    expect(rep, checks.FAIL, "duplicate", "3851/2026-08-10")
+    expect(rep, checks.FAIL, "duplicate", f"3851/{latest_date('3851')}")
 
 
 def test_master_unknown_code():
@@ -506,7 +542,7 @@ def test_split_acknowledged_becomes_warn():
         (d / "corporate_actions.yaml").write_text(
             "actions:\n"
             "  - code: \"3851\"\n"
-            "    date: \"2026-08-10\"\n"
+            f"    date: \"{latest_date('3851')}\"\n"
             "    kind: split\n"
             "    ratio: \"1:2\"\n"
             "    source_url: \"https://www.release.tdnet.info/example\"\n",
@@ -523,7 +559,7 @@ def test_split_acknowledged_without_source_stays_fail():
         (d / "corporate_actions.yaml").write_text(
             "actions:\n"
             "  - code: \"3851\"\n"
-            "    date: \"2026-08-10\"\n"
+            f"    date: \"{latest_date('3851')}\"\n"
             "    kind: split\n"
             "    ratio: \"1:2\"\n"
             "    source_url: \"\"\n",
@@ -536,11 +572,11 @@ def test_outlier_detected():
     def mutate(d: Path) -> None:
         def fn(rows):
             rs = price_rows(rows, "4937")
-            prev = float(rs[-1]["close"])
+            prev = close_of(rs[-1])
             set_price(rs[-1], round(prev * 1.6, 1))   # 分割比には当たらない急騰
         edit_prices(d, fn)
     rep = run(make_data(mutate))
-    expect(rep, checks.WARN, "outlier", "4937 2026-08-10")
+    expect(rep, checks.WARN, "outlier", f"4937 {latest_date('4937')}")
 
 
 # =============================================================================
@@ -669,12 +705,13 @@ def test_margin_stale_is_warned():
 # =============================================================================
 
 def test_index_missing_latest_day():
+    day = latest_date()
     def mutate(d: Path) -> None:
         p = d / "indices" / "topix.csv"
         fields, rows = read_csv(p)
-        write_csv(p, fields, [r for r in rows if r["date"] != "2026-08-10"])
+        write_csv(p, fields, [r for r in rows if r["date"] != day])
     rep = run(make_data(mutate))
-    expect(rep, checks.WARN, "index", "株価の最新営業日 2026-08-10 の行が無い")
+    expect(rep, checks.WARN, "index", f"株価の最新営業日 {day} の行が無い")
 
 
 def test_index_file_missing_is_warned():

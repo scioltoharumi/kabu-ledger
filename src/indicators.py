@@ -273,13 +273,39 @@ def _to_int(text) -> int | None:
 # 入力の正規化
 # =============================================================================
 
-def bars_from_rows(rows, code: str | None = None) -> list[Bar]:
+def drop_unconfirmed_tail(bars: list[Bar]) -> list[Bar]:
+    """末尾の未確定行（close が空）を落とす。
+
+    なぜ要るか: 取得元によって当日分が載る時刻が違う（minkabu は翌日）。
+    そのため **最新営業日は照合が成立せず close が空になるのが普通**である。
+    その行を含めたまま指標を計算すると、`sma` 等は末尾の欠測ひとつで
+    すべて None を返すため、**実データが1日進むたびに全指標が消える**。
+
+    ここで落とすのは「値を捏造する」こととは違う。**確定している最後の日
+    までで計算する**だけであり、照合を通っていない値を採用値に格上げしない
+    という原則（D7）はそのまま守られる。「いつ時点の指標か」は
+    `bars[-1].date` で分かるので、呼び出し側はそれを表示すること。
+
+    途中の欠測は落とさない（系列の連続性が壊れ、n日移動平均の意味が変わるため）。
+    """
+    out = list(bars)
+    while out and out[-1].close is None:
+        out.pop()
+    return out
+
+
+def bars_from_rows(rows, code: str | None = None,
+                   confirmed_only: bool = True) -> list[Bar]:
     """data/prices/daily.csv の行（csv.DictReader の出力等）を Bar に正規化する純関数。
 
     重要: `close` が空の行（SINGLE_SOURCE / MISMATCH / FETCH_FAILED）は close=None のまま
     にする。**value_primary で埋めない**。2ソース照合を通っていない値を採用値に格上げ
     すると、記録の意味（status の担保）が壊れるため（D7）。
-    その結果として指標が None になるのは正しい挙動であり、呼び出し側は「調査」で止める。
+
+    `confirmed_only=True`（既定）のとき、**末尾**の未確定行だけを落とす
+    （`drop_unconfirmed_tail` を参照）。系列の途中にある欠測はそのまま残すので、
+    その区間を含む指標が None になる挙動は変わらない。生の並びが要る場合は
+    `confirmed_only=False` を渡す。
 
     日付昇順に並べ替えて返す（指標はすべて時系列順を前提にする）。
     """
@@ -307,7 +333,7 @@ def bars_from_rows(rows, code: str | None = None) -> list[Bar]:
             volume=_to_int(r.get("volume")),
         ))
     bars.sort(key=lambda b: b.date)
-    return bars
+    return drop_unconfirmed_tail(bars) if confirmed_only else bars
 
 
 def to_weekly(bars: Sequence[Bar]) -> list[WeeklyBar]:

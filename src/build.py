@@ -108,34 +108,45 @@ def load_master() -> dict:
 
 
 def load_weekly_close(code: str) -> tuple[str, float | None]:
-    """daily.csv から最終営業日と採用終値を取る。無ければ (—, None)。"""
+    """その銘柄の「確定した」最終営業日と採用終値を返す。
+
+    close は2ソース照合が成立したときだけ入る採用値である。最新営業日は
+    片方の取得元がまだ当日分を出しておらず（minkabu は翌日）空のことがあり、
+    その日は指標の対象外になる（indicators.drop_unconfirmed_tail）。
+    台帳の表示もその確定日に揃える。照合を通っていない値は使わない（D7）。
+    """
     path = ROOT / "data" / "prices" / "daily.csv"
     if not path.exists():
         return "—", None
-    last_date = "—"
+    last_date = ""
     last_close: float | None = None
     with path.open(encoding="utf-8") as f:
         for row in csv.DictReader(f):
-            if row["code"] != code:
+            if row["code"] != code or not row["close"]:
                 continue
-            if row["date"] > last_date or last_date == "—":
-                last_date = row["date"]
+            if row["date"] > last_date:
                 try:
-                    last_close = float(row["close"]) if row["close"] else None
+                    last_close = float(row["close"])
+                    last_date = row["date"]
                 except ValueError:
-                    last_close = None
-    return last_date, last_close
+                    continue
+    return (last_date or "—"), last_close
 
 
 def as_of_date() -> str:
-    """集計基準日 = 株価データの最終営業日。実行時刻は使わない（D8）。"""
+    """集計基準日 = 確定している最後の営業日。実行時刻は使わない（D8）。
+
+    「確定」= close（照合を通った採用値）が入っている日。未確定の当日を
+    基準日に出すと、指標は前日で計算されているのに日付だけ新しく見え、
+    読み手を誤らせる。
+    """
     path = ROOT / "data" / "prices" / "daily.csv"
     if not path.exists():
         return "—"
     latest = ""
     with path.open(encoding="utf-8") as f:
         for row in csv.DictReader(f):
-            if row["date"] > latest:
+            if row["close"] and row["date"] > latest:
                 latest = row["date"]
     return latest or "—"
 

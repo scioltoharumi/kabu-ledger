@@ -816,10 +816,17 @@ def _real_as_of() -> str:
 
     週次取得で必ず更新されるため、固定値にすると次の実行で CI が落ちる
     （tests は weekly.yml のデプロイ判定に入っている）。
+
+    「確定した」= close（2ソース照合を通った採用値）が入っている日。
+    最新営業日は片方の取得元がまだ当日分を出しておらず照合が成立しないことが
+    あり、その行は指標の対象外になる（indicators.drop_unconfirmed_tail）。
+    judge の基準日もその確定日に揃うので、ここも close のある日で取る。
     """
     import csv
     with (ROOT / "data" / "prices" / "daily.csv").open(encoding="utf-8") as f:
-        return max(str(r["date"]) for r in csv.DictReader(f))
+        dates = [str(r["date"]) for r in csv.DictReader(f)
+                 if str(r.get("close") or "").strip()]
+    return max(dates)
 
 
 def _has_kpi(code: str) -> bool:

@@ -17,6 +17,7 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -284,7 +285,9 @@ def test_body_contains_real_values():
                     "相対パフォーマンス", "KPI差分", "ベアケース", "データ品質"):
         assert section in b, f"{section} の節が無い"
     assert "対TOPIX" in b, "相対パフォーマンスの実値"
-    assert "| 25日移動平均乖離率 | 10.05" in b, "判定に使った指標の実値が入る"
+    # 値そのものはデータが1日増えれば動く。ベタ書きせず「数値が入っていること」を見る
+    assert re.search(r"25日移動平均乖離率 \|\s*-?\d+\.\d+", b), \
+        "判定に使った指標の実値が入る"
     assert "ペイメントサービス" in b, "theses の反証条件が転記される"
 
 
