@@ -395,8 +395,18 @@ FUND_DEFAULT_PCT_METRICS = FUND_RATIO_0_100_METRICS + (
 
 # レポートの数値と採用値を突き合わせるときの許容。
 # 基本は**表示桁からの丸め幅**（「26.4億円」なら ±0.05億円）で、これに出典側の
-# 丸め差ぶんの相対スラックを足す。0.5% は「桁違い」「数字の入れ替え」を
-# 見逃さない水準（18.4 と 14.8 の差は 20%）。
+# 丸め差ぶんの相対スラックを足す。
+#
+# **この相対スラックは表示桁の許容を上書きするので、値が大きいほど検出力が落ちる。**
+# 実測: 6570 の 2026/3期 売上高 20,729 → 20,792（下2桁の入れ替え）は
+# 差 63 に対して 0.005 × 20,729 = 103.6 が勝ち、**FAIL にならない**
+# （20,729 → 22,729 まで動かせば FAIL する）。桁違いは値の大小によらず捕まえるが、
+# 「0.5% は数字の入れ替えを見逃さない水準」は**万単位の値では成立していない**。
+#
+# そこで「表示桁の丸めでは説明できないが、相対スラックには収まる」帯を
+# WARN で表に出す（黙って通さない・設計原則1）。実データ4銘柄ではこの帯は0件なので、
+# 相対スラックを外して FAIL に上げても現状はビルドを止めない。上げるかどうかは
+# 閾値の妥当性の判断そのものなので人間に委ねる（`wide_tol` を WARN に留めたのと同じ扱い）。
 REPORT_VALUE_REL_SLACK = 0.005
 
 # --- 出典URLの死活監視 ---------------------------------------------------------
@@ -818,8 +828,16 @@ def _dir_baseline(data_dir: Path, baseline_dir: Path) -> Baseline:
 # 期・日付を表す列の別名。**ヘッダに実在するものだけをキーにする。**
 # ここに無い名前しか持たないファイルは「鍵を決められない」として WARN で出す
 # （鍵が潰れると「追記しただけ」が「過去行が変更されている」に化ける）。
+#
+# `fetched_at` は**最後**に置く。期を表す列（date / period / disclosed_on）が
+# あるファイルではそちらが鍵であり、取得時刻を鍵にすると同じ日を撮り直した行が
+# 別行として通ってしまう。逆に**取得時刻しか持たないファイル**——
+# `data/verification/fetch_log.csv`（列は fetched_at / code / url / …）——では
+# これが無いと鍵が (code, url) に落ち、**同じURLを2回叩いただけで
+# 「過去行が変更されている」FAIL になる**（D51 と同じ壊れ方。裏取りは同じ銘柄の
+# 同じページを週をまたいで何度も叩くので、必ず起きる）。
 KEY_DATE_ALIASES = ("date", "period", "disclosed_on", "checked_at", "as_of",
-                    "fiscal_period", "term", "fy")
+                    "fiscal_period", "term", "fy", "fetched_at")
 
 
 def _key_columns(rel: str, cols: list[str] | None = None) -> tuple[str, ...]:
@@ -3098,6 +3116,39 @@ def _chart_prose(meta: dict) -> list[str]:
     return out
 
 
+def _chart_overlay_problems(cid: str, chart: dict) -> list[str]:
+    """図に重ねた装飾（`band` / `markers`）の書き方を見る。
+
+    値そのものは CSV から引けない手書きなので、正しさは検査できない。
+    検査できるのは **「書いたものが実際に描かれるか」** と
+    **「読者に手書きだと分かる形になっているか」** の2つだけ。
+    `chartdata._overlay_notes` が注記に「手書き（未検証）」を必ず出すので、
+    ここでは黙って落ちる書き方（描かれない band・帯を描けない type）を拾う。
+    """
+    out: list[str] = []
+    band = chart.get("band")
+    if band is None:
+        return out
+    if not isinstance(band, (list, tuple)) or len(band) != 2:
+        out.append(f"charts.{cid}.band が [下限, 上限] の2要素でない: {band!r}"
+                   "（chart.render が黙って帯を落とす）")
+        return out
+    try:
+        lo, hi = float(band[0]), float(band[1])
+    except (TypeError, ValueError):
+        out.append(f"charts.{cid}.band に数値でない値がある: {band!r}")
+        return out
+    if lo > hi:
+        out.append(f"charts.{cid}.band の上下が逆: {band!r}")
+    if str(chart.get("type", "")) != "line":
+        out.append(f"charts.{cid}.band は type: line でしか描かれない"
+                   f"（この図は type: {chart.get('type')!r}）")
+    if not str(chart.get("band_label", "") or "").strip():
+        out.append(f"charts.{cid}.band に band_label が無い"
+                   "（何を表す帯か読者に分からない）")
+    return out
+
+
 def _chart_source_problems(meta: dict) -> list[str]:
     """`charts.<id>.source.periods` の並びと、手書き図の書き方の検査。
 
@@ -3105,6 +3156,11 @@ def _chart_source_problems(meta: dict) -> list[str]:
     見せるか**は無検査だった。期を1つ差し替えると図の意味が変わる。
     手書き図に `metric:` が無いと、chartdata の注記が
     「矛盾するデータが2件ある」から「比べる相手が無い」に化けるので、それも拾う。
+
+    `band`（参考帯）も見る。**帯の数値は CSV から引けない手書き**なのに、
+    ここも chartdata も一切検査していなかった。`chart.render` は
+    `len(band) == 2` でないと黙って帯を落とすので、書いたつもりで描かれていない
+    ことに誰も気づけない。帯を描けるのは `type: line` だけである点も同じ。
     """
     out: list[str] = []
     charts = meta.get("charts") or {}
@@ -3114,6 +3170,7 @@ def _chart_source_problems(meta: dict) -> list[str]:
         chart = charts[cid] or {}
         if not isinstance(chart, dict):
             continue
+        out += _chart_overlay_problems(cid, chart)
         source = chart.get("source")
         if not isinstance(source, dict):
             if chart.get("data") and not chart.get("metric"):
@@ -3387,6 +3444,8 @@ def check_report_numbers(rep: Report, reports_dir: Path,
             continue
 
         mismatched: list[str] = []
+        # 表示桁の丸めでは説明できないが、相対スラックに隠れて FAIL にならない帯。
+        near_miss: list[str] = []
         unmatched: dict[str, list[str]] = {}
         matched = 0
         for c in claims:
@@ -3410,10 +3469,22 @@ def check_report_numbers(rep: Report, reports_dir: Path,
                     f"{c.where} {fact.metric} {period_label}: "
                     f"レポート {c.value}{c.unit_text} / "
                     f"検証済み {fact.value}{fact.unit_text}")
+            elif abs(c.base - fact.base) > claim_h + fact_h:
+                # 両者の表示桁を足しても届かない差。相対スラックが勝っているだけで、
+                # 「一致した」とは言えない（万単位の値の数字の入れ替えがここに落ちる）。
+                period_label = fact.period.label()
+                near_miss.append(
+                    f"{c.where} {fact.metric} {period_label}: "
+                    f"レポート {c.value}{c.unit_text} / "
+                    f"検証済み {fact.value}{fact.unit_text}")
 
         rep.group(FAIL, "report", target,
                   "レポートの数値が検証済みの採用値と食い違う"
                   "（転記ミスか抽出ミスのどちらか）", mismatched)
+        rep.group(WARN, "report", target,
+                  "レポートの数値が採用値と表示桁のぶんだけ食い違う"
+                  f"（相対許容 {REPORT_VALUE_REL_SLACK:.1%} に隠れて FAIL にならない水準。"
+                  "数字の入れ替えがここに落ちる）", near_miss)
         for reason in sorted(unmatched):
             rep.group(WARN, "report", target, f"未突合（{reason}）",
                       unmatched[reason])

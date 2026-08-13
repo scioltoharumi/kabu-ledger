@@ -23,9 +23,13 @@ stocks:
     market: "東証スタンダード"
     sector: TO_VERIFY
     valuation_model: per_netcash      # ゲーム: 純現金控除後PER
-    fiscal_year_end: TO_VERIFY
-    ir_url: TO_VERIFY
-    peers: TO_VERIFY
+    # data/fundamentals/3851.csv の期が FY####-03。株探と IR BANK の別サイト2件が
+    # 一致した行（status=OK・例 FY2012-03 revenue 2460）で裏付いている。
+    fiscal_year_end: "03"
+    # reports/3851.md の primary リンクと同じURL。data/link_status.csv 2026-08-13 で 200、
+    # 公式ドメイン（www.nippon1.co.jp）は株探の銘柄ページの会社リンクとも一致。
+    ir_url: "https://www.nippon1.co.jp/ir/ir.html"
+    peers: TO_VERIFY                  # 株探「比較される銘柄」の1サイトのみ。二重照合できていないので埋めない
     screen_price: 1173.0
     screen_change_pct: 3.35
     holding:                          # D15/D18。保有していなければ status: none で全項目 null
@@ -59,10 +63,15 @@ stocks:
     sector: "化学"
     valuation_model: per_margin       # 化粧品EC: PER + 営業利益率
     fiscal_year_end: "09"
-    ir_url: "https://waqoo.jp/"
-    peers: TO_VERIFY
+    # 会社トップではなくIR（決算短信・適時開示が並ぶ場所）。reports/4937.md の
+    # primary リンクと同じURLに揃える。data/link_status.csv 2026-08-13 で 200。
+    ir_url: "https://waqoo.jp/ir/"
+    peers: TO_VERIFY                  # 株探「比較される銘柄」の1サイトのみ。二重照合できていないので埋めない
     screen_price: 1921.0
     screen_change_pct: -2.39
+    # 株探の信用区分が「制度信用銘柄のうち買建(信用買い)のみができる銘柄」（4073 と同じ表示）。
+    # data/margin/4937.csv も全週 short_balance=0・RATIO_NA。D27 の扱いを適用する。
+    flags: ["制度信用: 買建のみ"]
     holding:
       status: none
       buy_price: null
@@ -74,9 +83,14 @@ stocks:
     market: "東証スタンダード"
     sector: TO_VERIFY
     valuation_model: ev_ebitda        # 設備型: 償却影響が大きくPER不適
-    fiscal_year_end: TO_VERIFY
-    ir_url: TO_VERIFY
-    peers: TO_VERIFY
+    # 過去に9月期→3月期の変更がある（data/fundamentals/6570.csv の FY2015-03 に PERIOD_CHANGED）。
+    # 変更後は FY####-03 で、株探と IR BANK の別サイト2件が一致した行
+    # （FY2015-03 / FY2016-03 revenue が status=OK）で裏付いている。
+    fiscal_year_end: "03"
+    # reports/6570.md の primary リンクと同じURL。data/link_status.csv 2026-08-13 で 200、
+    # 公式ドメイン（www.kyowa-corp.co.jp）は株探の銘柄ページの会社リンクとも一致。
+    ir_url: "https://www.kyowa-corp.co.jp/ir/"
+    peers: TO_VERIFY                  # 株探「比較される銘柄」の1サイトのみ。二重照合できていないので埋めない
     screen_price: 2799.0
     screen_change_pct: 7.57
     holding:

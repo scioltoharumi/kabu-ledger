@@ -42,8 +42,8 @@ python src/checks.py --scan-all         # 分割・外れ値を全履歴で走�
 
 ```text
 tests → fetch.py → fetch_margin.py → fetch_index.py → fetch_fundamentals.py
-      → fetch_tanshin.py → checks.py → score.py → (bear) → (verify)
-      → build.py → notify.py
+      → fetch_tanshin.py → checks.py → (checks.py --check-links) → score.py
+      → (bear) → (verify) → build.py → notify.py
 ```
 
 ```bash
@@ -108,6 +108,11 @@ python src/judge.py --indicators-only  # master.yaml を読まずに指標だけ
   （株探と みんかぶ は同一運営なので、その一致は独立した確認ではない）。
   `SINGLE_SOURCE` / `MISMATCH` の行は空のままで、生値は
   `value_primary` / `value_secondary` に残る。**`close` が空＝データが無い、ではない。**
+- 逆に **`close` が入っている＝照合が成立した、でもない**。旧 `fetch.py` は
+  売買不成立の日に照合結果を潰して主ソース値を書いており、その行が実データに7行残る
+  （`status` が `NO_TRADE` 単独）。**採用終値を数えるコードは `status` に `OK` があるかで
+  判定する**（`chartdata.adopted_close`）。`close` の有無で数えると、
+  照合していない値が図と「採用終値 N/M日」に混ざる。
 - `growth250` は第2ソースが無いため `close` が全行空。値は `value_primary` を読む。
 - 財務では**別々の勘定科目を突き合わせない**。IR BANK の BS 表の「株主資本」は
   `shareholders_equity` で、kabutan の「自己資本」（`equity`）とは別物。
@@ -125,15 +130,28 @@ python src/judge.py --indicators-only  # master.yaml を読まずに指標だけ
 ### 検証はどこまで届いているか
 
 `checks.py` はレポートの数値について「機械照合できたのは何件か」を分母つきで出す。
-4073 の実測（2026-08-13）は **21/137件**。残りの内訳は
-本文の散文88件・front matter の説明文16件・未突合12件で、
-散文と説明文は `data/verification/{code}.yaml`（別コンテキストの裏取り）が受け持つ。
+実測（2026-08-13・4銘柄）:
+
+| レポート | 機械照合 | 未突合 | 本文の散文 | front matter の説明文 |
+|---|---|---|---|---|
+| 3851 | 58/217 | 1 | 138 | 20 |
+| 4073 | 21/137 | 12 | 88 | 16 |
+| 4937 | 57/255 | 2 | 164 | 32 |
+| 6570 | 56/243 | 2 | 160 | 25 |
+
+散文と説明文は突合が届かないので `data/verification/{code}.yaml`
+（別コンテキストの裏取り）が受け持つ。**その記録があるのは 3851 と 4073 だけで、
+どちらも記録後に本文が書き換わっている**（台帳に「記録が古い」と出る）。
+4937 / 6570 は記録が無く「未検証」と出る。
+
 **「FAIL 0」は「全部確かめた」ではない。** 何を確かめていないかが台帳と WARN に出る。
 
 ### 判定を読むときに
 
 - 「買」は①〜⑤のゲートを通過したという意味しかない。
-  鉄則の全項目を確認したわけではない（何を見ていないかは `docs/formula.html` に一覧がある）。
+  鉄則の全項目を確認したわけではない。**何を見ていないかは
+  `docs/index.html` の「この台帳が見ていない鉄則」に一覧がある**
+  （`judge.UNEVALUATED_RULES` から `build.py` が生成する）。
 - 「—」は「計算できなかった」であって「ゼロだった」ではない。
 - 「?」を○にも×にも読み替えない。
 - 保有銘柄の**売り**シグナル（雲の下・逆指値抵触・基準到達×デッドクロス気味）は、

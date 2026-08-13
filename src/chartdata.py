@@ -47,6 +47,9 @@ dataset:
                 機械的に確かめて注記に出す（人の目視ではない）
   prices        data/prices/daily.csv の採用終値。**高値・安値は主ソースのみで
                 照合を通っていないため使わない**（fetch.reconcile を参照）
+
+図に重ねる装飾（`markers` / `band`）は CSV から引けない手書きなので、
+**注記に必ず「手書き（未検証）」と出す**。消す方法は用意しない。
 """
 from __future__ import annotations
 
@@ -300,8 +303,25 @@ def tanshin(code: str) -> dict:
     return out
 
 
+def adopted_close(row: dict) -> float | None:
+    """その行の採用終値。**照合が成立していない行は None**。
+
+    `close` の有無だけで判断してはならない。旧 fetch.py は売買不成立の日に
+    照合結果を潰して `NO_TRADE` 単独の status を書いていたため、実データには
+    **照合を通っていないのに `close` が入っている行が7行ある**
+    （`checks.LEGACY_NO_TRADE_STATUS` の例外・append-only なので直せない）。
+    ここで status を見ないと、その7行が図の 52週レンジに混ざる。
+    """
+    v = _num(row.get("close"))
+    if v is None:
+        return None
+    if "OK" not in flags_of(row.get("status")):
+        return None
+    return v
+
+
 def prices(code: str) -> list[tuple[str, float]]:
-    """(日付, 採用終値) を昇順で返す。**close が入っている行だけ**（照合成立）。"""
+    """(日付, 採用終値) を昇順で返す。**照合が成立した行だけ**（status に OK）。"""
     if code in _PRICE_CACHE:
         return _PRICE_CACHE[code]
     rows = _read(DATA / "prices" / "daily.csv")
@@ -309,7 +329,7 @@ def prices(code: str) -> list[tuple[str, float]]:
     for r in rows:
         if str(r.get("code", "")).strip() != code:
             continue
-        v = _num(r.get("close"))
+        v = adopted_close(r)
         if v is None:
             continue
         out.append((str(r.get("date", "")), v))
@@ -319,10 +339,14 @@ def prices(code: str) -> list[tuple[str, float]]:
 
 
 def price_days(code: str) -> tuple[int, int]:
-    """(その銘柄の総行数, うち採用終値が入っている行数)。"""
+    """(その銘柄の総行数, うち採用終値が入っている行数)。
+
+    `prices()` と同じ基準で数える。片方だけ緩いと、台帳の「採用終値 N/M日」が
+    図に使った点数より多く出る（表示の嘘）。
+    """
     rows = _read(DATA / "prices" / "daily.csv")
     mine = [r for r in rows if str(r.get("code", "")).strip() == code]
-    ok = sum(1 for r in mine if _num(r.get("close")) is not None)
+    ok = sum(1 for r in mine if adopted_close(r) is not None)
     return len(mine), ok
 
 
@@ -576,6 +600,30 @@ def _hand_note(code: str, chart: dict) -> str:
     return base + tail
 
 
+def _overlay_notes(spec: dict) -> list[str]:
+    """図に重ねた装飾のうち、CSV から引いていないものを名指しする。
+
+    `markers`（印）と `band`（参考帯）は front matter に人が書いた数値で、
+    どちらも `chartdata` の照合を1度も通っていない。**帯だけが無言だった**：
+    4937 の「0〜10%」は筆者が置いた目安なのに、図の上では検証済みの棒と
+    同じ画面に同じ確からしさで乗る（D32「表示の嘘」と同型）。
+    caption に書くかどうかを書き手の裁量に委ねず、機械が必ず出す。
+    """
+    out: list[str] = []
+    if spec.get("markers"):
+        out.append("図中の印は手書き（未検証）")
+    band = spec.get("band")
+    if isinstance(band, (list, tuple)) and len(band) == 2:
+        label = str(spec.get("band_label", "") or "").strip()
+        text = "背景の帯（" + str(band[0]) + "〜" + str(band[1]) + "）は手書き（未検証）"
+        if not label:
+            text = text + "・帯の意味を書いた band_label が無い"
+        out.append(text)
+    elif band:
+        out.append("band の書き方が [下限, 上限] でないため帯は描かれていない")
+    return out
+
+
 def _origin_note(code: str, origins: list[str]) -> str:
     """実際に使った点の出所から、図の下に出す1行を組み立てる。
 
@@ -603,7 +651,8 @@ def resolve_chart(code: str, cid: str, chart: dict) -> Resolved:
     unit = str(spec.get("unit", "") or "")
 
     if not isinstance(source, dict):
-        spec["source_note"] = _hand_note(code, chart or {})
+        bits = [_hand_note(code, chart or {})] + _overlay_notes(spec)
+        spec["source_note"] = "。".join(bits)
         return Resolved(spec=spec, origin="hand", note=spec["source_note"])
 
     dataset = str(source.get("dataset", "") or "fundamentals")
@@ -647,8 +696,7 @@ def resolve_chart(code: str, cid: str, chart: dict) -> Resolved:
         tail.append(detail)
     if missing:
         tail.append("欠測 " + "／".join(missing))
-    if spec.get("markers"):
-        tail.append("図中の印は手書き（未検証）")
+    tail += _overlay_notes(spec)
     note = head + "。" + "、".join(tail) + "。"
     spec["source_note"] = note
     return Resolved(spec=spec, origin="csv", note=note,

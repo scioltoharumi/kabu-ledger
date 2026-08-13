@@ -1,0 +1,473 @@
+# 裏取り記録（append-only）— reports/3851.md
+#
+# 手順の正: .claude/skills/kabu-ledger-verify/SKILL.md
+# 語彙の正: src/verification.py（VERDICTS / TIERS）
+#
+# レポートを書いた文脈とは別の文脈が、本文の出典URLを src/fetch_source.py で
+# 実際に再取得し、記述がその出典で裏付けられるかを1件ずつ判定した結果。
+# **過去の run は書き換えない。**新しい検証は runs の末尾に足す。
+code: "3851"
+runs:
+  - run: "2026-08-13T22:40:00+09:00"
+    report_updated: "2026-08-13"
+    report_sha256: "0c1f6dd25a94aca6f87ce08c17562dbbbb9bd3a2de90f6da609f376f3cac949c"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    note: >-
+      **この run が検証したのは sha256 0c1f6dd2… の本文である。**
+      run のあとに V30（contradicted）の始末として一行紹介を書き直したので、
+      現在の本文のハッシュはこれと一致しない（checks.py が WARN を出す）。
+      書き直した箇所が本文と整合することは resolutions が機械で確かめる。
+      次回は全 claim を拾い直した run を末尾に足すこと。
+      本文に書かれている出典URL 15件のうち 11件を src/fetch_source.py で再取得した
+      （取得の痕跡は data/verification/fetch_log.csv に残っている）。
+      残り4件（kabutan の決算ページ・IR BANK 3件）は src/fetch_fundamentals.py が
+      毎週2サイトから抜いて突き合わせているので、そちらの CSV を裏付けに使う
+      （urls_delegated）。指標（週足MA・売買代金・RSI・乖離率）は
+      python src/judge.py --indicators-only を実行して出力と突き合わせた。
+      ページ本文に指示めいた文字列は検出していない。
+
+    urls_refetched:
+      - {url: "https://www.nippon1.co.jp/company/company.html", http_status: 200}
+      - {url: "https://www.nippon1.co.jp/company/business.html", http_status: 200}
+      - {url: "https://www.nippon1.co.jp/ir/ir.html", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=3851", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=3851", http_status: 200}
+      - {url: "https://minkabu.jp/stock/3851", http_status: 200}
+      - {url: "https://kabuyoho.jp/sp/reportTarget?bcode=3851", http_status: 200}
+      - {url: "https://game.watch.impress.co.jp/docs/news/2130238.html", http_status: 200}
+      - {url: "https://automaton-media.com/articles/newsjp/20260803-458158/", http_status: 200}
+      - {url: "https://www.gamebusiness.jp/article/2026/05/15/26947.html", http_status: 200}
+      - {url: "https://gamebiz.jp/news/426001", http_status: 200}
+
+    urls_delegated:
+      - url: "https://kabutan.jp/stock/finance?code=3851"
+        to: "data/fundamentals/3851.csv"
+      - url: "https://irbank.net/E02489/results"
+        to: "data/fundamentals/3851.csv"
+      - url: "https://irbank.net/E02489/quarter"
+        to: "data/fundamentals/3851.csv"
+      - url: "https://irbank.net/E02489"
+        to: "data/fundamentals/3851.csv"
+
+    claims:
+      # --- この会社は何者か ------------------------------------------------
+      - id: V01
+        section: company
+        quote: "設立1993年、資本金5.57億円、連結従業員193名（2025年3月31日現在）。代表取締役は猿橋健蔵氏。"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/company/company.html"]
+        evidence: >-
+          会社概要ページを再取得（200・1,074字）。「■設立 1993年7月12日」
+          「■資本金 557.4百万円（2025年3月31日現在）」
+          「■従業員数 連結：193名 単体：105名（2025年3月31日現在）」
+          「■代表取締役 猿橋健蔵（サルハシケンゾウ）」をいずれも確認した。
+        action: >-
+          設立は1993年7月12日、資本金は557.4百万円と日付・小数まで出ている。
+          日付まで書くと、あとで別の年と取り違えたときに気づける
+
+      - id: V02
+        section: company
+        quote: "岐阜県各務原市の会社。"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/company/company.html"]
+        evidence: >-
+          同ページの「■事業所」欄に「【本社】 岐阜県各務原市蘇原月丘町3丁目17番
+          TEL 058-371-7275」を確認。取引金融機関も十六銀行/各務原支店ほか
+          地元の金融機関で整合する。
+
+      - id: V03
+        section: company
+        quote: "主要取引先はソニー・インタラクティブエンタテインメント、任天堂、セガゲームスなど"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/company/company.html"]
+        evidence: >-
+          同ページの「■主要取引先」欄に「株式会社ソニー・インタラクティブエンタテインメント
+          任天堂株式会社 株式会社セガゲームス　　他」を確認。
+
+      - id: V04
+        section: company
+        quote: "海外は米カリフォルニアの子会社 **NIS America** が北米・欧州向けの販売を担う。ほかにベトナム開発拠点、国内のグラフィック制作会社などを傘下に持つ。"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.nippon1.co.jp/company/company.html"
+          - "https://www.nippon1.co.jp/company/business.html"
+        evidence: >-
+          会社概要の「■子会社」欄に NIS America, Inc.（Santa Ana, CA 92707 U.S.A.）、
+          Nippon Ichi Software Vietnam Co., Ltd.（Ho Chi Minh City）、
+          株式会社名古屋グラフィックスタジオ（岐阜県各務原市）を確認。
+          事業内容ページ（2026年1月31日現在）も「連結子会社6社」と書き、
+          開発部の説明に「北米・欧州やアジアへ販売するためのローカライズ」がある。
+        action: >-
+          「NIS America が北米・欧州向けの販売を担う」という分担そのものは、
+          この2ページには明示が無い（子会社の所在地と、会社全体としての
+          海外ローカライズの記述からの読み取り）。分担を断定形で書くなら
+          有報のセグメント記述を出典に足す
+
+      # --- 財務 ------------------------------------------------------------
+      - id: V05
+        section: financials
+        quote: "### 直近5期＋今期計画（すべて2ソース照合済み）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3851.csv"]
+        evidence: >-
+          表の24マス（2022/3〜2027/3予 × 売上高・営業利益・経常利益・最終利益）は
+          すべて status に OK を含む採用値と一致する。
+          例: FY2026-03 operating_income = -409（kabutan_fy と irbank_pl_consolidated が一致）、
+          FY2027-03 operating_income_plan = 296、ordinary_income_plan = 449。
+
+      - id: V06
+        section: financials
+        quote: "**本業以外（営業外収益）が毎年122〜441百万円の幅で下支えしている**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3851.csv"]
+        evidence: >-
+          採用値（すべて status OK）の ordinary_income − operating_income を期ごとに取ると
+          FY2022-03 = 1688−1566 = +122、FY2023-03 = 941−745 = +196、
+          FY2024-03 = 842−401 = +441、FY2025-03 = −75−(−274) = +199、
+          FY2026-03 = −55−(−409) = +354、FY2027-03計画 = 449−296 = +153（百万円）。
+          最小122・最大441で本文の幅と一致する。
+        action: >-
+          前版の「毎年200〜400百万円」は6期中1期しか当てはまらなかった。
+          幅で書くときは全期を並べて確かめること
+
+      - id: V07
+        section: financials
+        quote: "**2026年3月期の差の中身は、為替差益168百万円と受取利息191百万円である**"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.gamebusiness.jp/article/2026/05/15/26947.html"]
+        evidence: >-
+          記事を再取得（200・3,206字）。「営業外収益として為替差益1億6,800万円や
+          受取利息1億9,100万円を計上したことで、経常損失は前年から約2,000万円
+          縮小しています」を確認。
+        action: >-
+          二次情報1件のみで2ソース照合を通っていない。本文もそう明記している。
+          決算短信の営業外収益明細で裏を取ること
+
+      - id: V08
+        section: company
+        quote: "**エンターテインメント事業**：売上34億8,500万円（前年同期比33.0%減）、営業利益3,800万円（同81.6%減）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.gamebusiness.jp/article/2026/05/15/26947.html"]
+        evidence: >-
+          同記事に「エンターテインメント事業全体の売上高は34億8,500万円
+          （前年同期比33.0%減）、営業利益は3,800万円（同81.6%減）」
+          「学生寮・その他事業は、売上高1億2,000万円（同24.4%増）、
+          営業損失2,100万円」を確認。
+        action: "同じく二次情報1件のみ。決算短信のセグメント情報で2つ目の取得元を作る"
+
+      - id: V09
+        section: financials
+        quote: "**定期預金の預入による支出24億1,600万円**"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.gamebusiness.jp/article/2026/05/15/26947.html"]
+        evidence: >-
+          同記事に「現金及び現金同等物の期末残高は41億8,300万円となり、
+          前年度末から約10億1,100万円減少しました。これは主に定期預金の預入による
+          支出24億1,600万円が大きく影響したものです」を確認。本文の引用と一字一致する。
+
+      - id: V10
+        section: financials
+        quote: "売上847百万円（前年同期480百万円）、営業利益−145百万円（同−174百万円）、経常利益−69百万円（同−135百万円）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3851.csv"]
+        evidence: >-
+          Q2026-04_2026-06 は revenue 847・operating_income −145・ordinary_income −69、
+          Q2025-04_2025-06 は revenue 480・operating_income −174・ordinary_income −135。
+          6件とも status に OK を含む採用値。
+
+      # --- ニュース・展望 ---------------------------------------------------
+      - id: V11
+        section: updates
+        quote: "8月3日、新作『ほの暮しの庭』の国内累計販売本数が**発売4日で10万本**を突破したと発表（7月30日発売）。"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://game.watch.impress.co.jp/docs/news/2130238.html"
+          - "https://automaton-media.com/articles/newsjp/20260803-458158/"
+        evidence: >-
+          GAME Watch（200）に「日本一ソフトウェアは8月3日、…『ほの暮しの庭』の
+          国内累計販売本数が10万本を突破したことを明らかにした」「7月30日に発売された
+          ばかり」「一部店頭では品切れも発生」。AUTOMATON（200）にも
+          「発売からわずか4日、国内だけでの素早い10万本達成」「7月30日リリース」
+          「店頭では品切れとなっている店舗もあり」。独立した2媒体が同じ内容を書いている。
+
+      - id: V12
+        section: updates
+        quote: "翌8月4日に株探が材料として配信し、株価は大幅反発"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3851"]
+        evidence: >-
+          株探のニュース一覧を再取得（200）。「26/08/04 10:57 | 材料 | 日本一ソフトが
+          大幅反発、「ほの暮しの庭」国内累計販売本数１０万本を突破」を確認。
+          同じ一覧に「26/08/07 15:30 | 開示 | 令和9年3月期 第1四半期決算短信〔日本基準〕（連結）」
+          もあり、1Qの開示日とも整合する。
+
+      - id: V13
+        section: outlook
+        quote: "『夜廻』のスタッフが手がけた田舎暮らしシミュレーションで、シリーズ化を期待する声も出ている"
+        verdict: unsupported
+        tier: secondary
+        sources:
+          - "https://game.watch.impress.co.jp/docs/news/2130238.html"
+          - "https://automaton-media.com/articles/newsjp/20260803-458158/"
+        evidence: >-
+          前半（「夜廻」シリーズのスタッフが携わる生活シミュレーション）は両記事にある。
+          後半の「シリーズ化を期待する声も出ている」は、再取得した2記事のどちらにも
+          「シリーズ化」の語が1件も出てこない。AUTOMATON が書いているのは
+          「不穏な因習村での生活が多くのプレイヤーに待ち望まれていたのかもしれない」
+          という書き手の推測までである。
+        action: "「シリーズ化を期待する声」を残すなら、その声を書いた出典を足す。無ければ落とす"
+
+      - id: V14
+        section: outlook
+        quote: "（GAME Watch／AUTOMATON／ASCII）"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: >-
+          GAME Watch と AUTOMATON は出典表にURLがあり、いずれも再取得できた。
+          しかし **ASCII のURLは本文のどこにも書かれていない**。出典表
+          （二次情報・人が読んで書いたもの）にも無い。fetch_source.py は本文に無いURLを
+          叩けないので、この媒体だけ検証できない。
+        action: "ASCII の記事URLを出典表に足すか、この括弧から ASCII を落とす"
+
+      # --- 値動きと市場の評価 ----------------------------------------------
+      - id: V15
+        section: company
+        quote: "時価総額61.1億円（株探・2026-08-13取得。本レポートの基準日である8月12日の終値1,140円と発行済5,151,100株で計算し直すと**58.7億円**）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=3851"]
+        evidence: >-
+          株探を再取得（200）。「時価総額 61.1 億円」「発行済株式数 5,151,100 株」を確認。
+          58.7億円のほうは data/prices/daily.csv の 2026-08-12 の採用終値1,140円
+          （status OK・kabutan と yahoo_jp が一致）を使った
+          5,151,100 × 1,140 = 5,872,254,000 円 ≒ 58.7億円で、式も基準日も本文に書かれている。
+        action: >-
+          株探の61.1億円は株価とともに毎日動く（再取得時の株価は1,186円で、
+          61.1億円÷5,151,100株＝約1,186円と一致する）。取得日の併記を外さないこと
+
+      - id: V16
+        section: price
+        quote: "**個人投資家（みんかぶ）** | **買い** | 目標株価 1,164円"
+        verdict: supported
+        tier: secondary
+        sources: ["https://minkabu.jp/stock/3851"]
+        evidence: >-
+          みんかぶを再取得（200）。「目標株価 1,164」「株価診断 割高」「個人予想 買い」
+          「アナリスト 対象外」を確認。本文の表の3行（個人投資家・株価診断・アナリスト）と一致する。
+        action: "目標株価と株価診断は日々動く。「2026-08-13時点」を添えると誤読が減る"
+
+      - id: V17
+        section: price
+        quote: "レーティングを出している証券会社が**0社**（強気0・中立0・弱気0）"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://kabuyoho.jp/sp/reportTarget?bcode=3851"
+          - "https://minkabu.jp/stock/3851"
+        evidence: >-
+          株予報Pro を再取得（200）。強気(5点)0人・やや強気(4点)0人・中立(3点)0人・
+          やや弱気(2点)0人・弱気(1点)0人、平均と人数は「--」、目標株価も「--」。
+          みんかぶも「アナリスト 対象外」で、独立した2つの出典が同じ結論を示している。
+
+      - id: V18
+        section: price
+        quote: "871円（下値目途709円／上値目途1,032円）"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=3851"]
+        evidence: >-
+          再取得時点（株価2026/08/13・1,186円）の株予報Pro は
+          理論株価(PBR基準)875円(0.57倍)・上値目途1,053円(0.68倍)・下値目途698円(0.45倍)。
+          本文の871／709／1,032（2026-08-12取得）から3つとも動いている。
+          「割高」という判定自体は変わっていない。
+        action: >-
+          front matter の price_range の markers（理論株価 871）も同じ値なので、
+          取得日を添えるか、毎週取り直す。理論株価は株価に連動して動く
+
+      - id: V19
+        section: financials
+        quote: "（PBR 0.74倍・株予報Pro）"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=3851"]
+        evidence: >-
+          再取得時点の株予報Pro は BPS(実績)1,547円・株価1,186円・**PBR 0.77倍**。
+          本文の0.74倍は8月12日の終値1,140円で割った値（1,140÷1,547＝0.737）に当たり、
+          株予報Proが表示していた数値そのものではない可能性がある。
+          株探も同じ再取得で PBR 0.77倍を表示している。
+        action: >-
+          「PBR 0.74倍（8/12終値1,140円÷BPS1,547円）」のように、どの株価で割った値かを
+          書くほうが安全。出典名だけ添えると、出典が別の値を出したときに食い違う
+
+      - id: V20
+        section: price
+        quote: "株探が「比較される銘柄」として挙げるのはエイチーム・マーベラス・ガンホーで"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=3851"]
+        evidence: >-
+          株探の「比較される銘柄」欄に エイチーム, マーベラス, ガンホー の3社を確認（200）。
+        action: >-
+          株予報Proの「他社比較」は 3627 テクミラＨ／3775 ガイアックス／9640 セゾンテクノロジー
+          と別の3社を挙げている。比較対象はサイトごとに違う
+
+      - id: V21
+        section: updates
+        quote: "信用の売り残が7月24日の0.6千株から7月31日に59.7千株へ急増し、**信用倍率が511倍から5.49倍→5.24倍へ**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/margin/3851.csv"]
+        evidence: >-
+          data/margin/3851.csv の3行（いずれも status OK）:
+          2026-07-24 買残306.6／売残0.6／倍率511.0、
+          2026-07-31 買残327.6／売残59.7／倍率5.49、
+          2026-08-07 買残333.1／売残63.6／倍率5.24（単位は千株）。
+          本文の「信用買い残（8月7日時点333.1千株）」とも一致する。
+
+      - id: V22
+        section: price
+        quote: "20日平均売買代金は8,469万円、**中央値は4,899万円**"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py", "data/prices/daily.csv"]
+        evidence: >-
+          python src/judge.py --indicators-only を実行（基準日 as_of 2026-08-12）。
+          3851 は avg_turnover_20d = 84,690,080 円、median_turnover_20d = 48,994,650 円。
+          いずれも本文の表記と一致する。
+
+      - id: V23
+        section: price
+        quote: "週足13週移動平均の傾き：**+1.570%/週（上向き）**"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py", "data/prices/daily.csv"]
+        evidence: >-
+          同じ実行で weekly_ma_mid_slope_pct = 1.5699720292339614（direction up）、
+          weekly_ma_long_slope_pct = 0.8676522551891568（direction up）。
+          本文の13週 +1.570%/週・26週 +0.868%/週と一致する。
+
+      - id: V24
+        section: price
+        quote: "RSI(14) 70.1、25日移動平均乖離率+19.3%"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py", "data/prices/daily.csv"]
+        evidence: >-
+          同じ実行で rsi14 = 70.12540231386899、ma_deviation_pct = 19.29677689409795。
+          本文の70.1・+19.3%と一致する。
+
+      - id: V25
+        section: price
+        quote: "直近1年の値幅は、**照合済みの終値で 776円〜1,140円**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          2025-12-22 の終値776（status OK・kabutan と minkabu が一致）、
+          2026-08-12 の終値1,140（status OK・kabutan と yahoo_jp が一致）。
+          本文の日付表の他の行（2026-06-30 825／2026-07-28 970／2026-07-29 1,062／
+          2026-08-04 1,048／2026-08-10 1,135）もすべて status OK の採用終値と一致する。
+
+      - id: V26
+        section: price
+        quote: "7月28日に出来高が前日の36倍になっている"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          2026-07-27 の出来高12,600株、2026-07-28 は451,400株。451,400÷12,600 = 35.8倍。
+          本文が併記する「1.26万株→45.1万株」とも一致する。
+        action: >-
+          出来高は終値と違って1サイト（株探）の値しか無く照合を通っていない。
+          本文はその旨を直後の括弧書きで明示している
+
+      # --- 出典の建て付け・自己申告 ------------------------------------------
+      - id: V27
+        section: sources
+        quote: "「業績予想の修正に関するお知らせ」が2025年6月20日・2026年2月13日"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/ir/ir.html"]
+        evidence: >-
+          会社のIRページを再取得（200・5,156字）。
+          「2026.02.13 業績予想の修正に関するお知らせ」「2025.06.20 業績予想の修正に関するお知らせ」
+          を確認。あわせて「業績予想の差異発生に関するお知らせ」が
+          2026.05.15・2025.11.14・2025.05.09 にあることも確認でき、本文の括弧書きと一致する。
+        action: >-
+          4073 の ir ページと違い、このIRページは開示の一覧が HTML に載っている
+          （一次情報として機能している）
+
+      - id: V28
+        section: sources
+        quote: "決算短信PDFの取り込み（一次情報との突き合わせが1件も無い状態）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/tanshin/fetch_log.csv"]
+        evidence: >-
+          data/tanshin/ にあるのは 4073.csv と fetch_log.csv だけで、3851.csv は存在しない。
+          「一次情報との突き合わせが1件も無い」という自己申告は正しい。
+
+      - id: V29
+        section: sources
+        quote: "2Q決算の発表予定日（本レポート作成時点で開示を確認できていない）"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.nippon1.co.jp/ir/ir.html"
+          - "https://kabutan.jp/stock/news?code=3851"
+        evidence: >-
+          IRページの最新は 2026.08.07 で、2Q（2026年9月中間期）の発表予定日を示す開示は無い。
+          株探のニュース一覧にも決算発表予定日の記載は無い。
+          「確認できていない」という自己申告は正しい。
+
+      - id: V30
+        section: updates
+        quote: "株価は3週間で約2割上がって52週高値にいる"
+        verdict: contradicted
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          採用終値（status OK）で計算すると、8月12日の1,140円に対して3週間前
+          （2026-07-22）の終値は900円で 1,140÷900−1 = **+26.7%**。
+          7月21日（906円）を起点にしても +25.8%、7月23日（900円）でも +26.7% で、
+          いずれも「約2割」にならない。+17.5% になるのは7月28日（970円）を起点にした
+          場合だが、それは3週間前ではなく2週間前である。
+          なお同じレポートの週次アップデートは「6月末の825円から6週間で+38%」と
+          正しく書いており、一行紹介だけが別の数字になっていた。
+        action: >-
+          起点の日付と終値を併記する。比率だけを丸めて書くと、どの期間の話か分からなくなる
+
+# ---------------------------------------------------------------------------
+# 判定の始末（resolutions）
+#
+# `contradicted`（出典と食い違う）と判定された記述を、そのあとどう始末したかの記録。
+# **判定そのものではない**ので runs には入れない。判定を上書きもしない。
+#
+#   how: removed   その一文を落とした。checks.py が「quote が本文に無い」ことを
+#                  機械で確かめてから解除する（書いただけでは解除されない）
+#   how: rewritten 書き直した。quote に**新しい本文の該当箇所**を書く。
+#                  それが現在の本文に実在することを checks.py が確かめる
+resolutions:
+  - id: V30
+    resolved_at: "2026-08-13"
+    how: rewritten
+    quote: "株価は3週間で+27%（7月22日の900円→8月12日の1,140円）上がって52週高値にいる"
+    note: >-
+      一行紹介の「3週間で約2割」を、採用終値から計算した値と起点の日付・終値に置き換えた。
+      V30 の evidence のとおり 1,140÷900−1 = +26.7% であり、「約2割」では期間と
+      上昇率のどちらを読んでも合わない。期間を変えて「約2割」を残す選択肢
+      （2週間で+17.5%）もあったが、直後の週次アップデートが6週間・6月末を基準に
+      しているので、起点を明示する形に統一した。

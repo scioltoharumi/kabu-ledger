@@ -1,0 +1,20 @@
+fetched_at,code,url,final_url,http_status,chars,sha256,note
+2026-08-13T18:40:07.477472+09:00,4937,https://netkeizai.com/articles/detail/6726,https://netkeizai.com/articles/detail/6726,200,2069,ce4372b9dc590e3c,text/html; charset=UTF-8
+2026-08-13T18:40:19.690346+09:00,4937,https://maonline.jp/news/20251113j,https://maonline.jp/news/20251113j,200,4785,7a8a9abdc72b60dc,text/html; charset=utf-8
+2026-08-13T18:40:30.335945+09:00,4937,https://www.nihon-ma.co.jp/news/20251213_4937-15/,https://www.nihon-ma.co.jp/news/20251213_4937-15/,200,7169,32837e588f9dce13,text/html;charset=utf-8
+2026-08-13T18:40:44.558117+09:00,4937,https://maonline.jp/news/20231120f,https://maonline.jp/news/20231120f,200,4484,478f1c656916c269,text/html; charset=utf-8
+2026-08-13T18:40:54.156674+09:00,4937,https://waqoo.jp/dtoc.html,https://waqoo.jp/dtoc.html,200,935,a5c811d998f168e4,text/html
+2026-08-13T18:46:50.837170+09:00,4937,https://kabutan.jp/stock/news?code=4937,https://kabutan.jp/stock/news?code=4937,200,4372,35292a54bc8f3f39,text/html; charset=UTF-8
+2026-08-13T18:47:30.136513+09:00,3851,https://kabutan.jp/stock/?code=3851,https://kabutan.jp/stock/?code=3851,200,4262,5a1ad52e078f7eda,text/html; charset=UTF-8
+2026-08-13T18:49:28.568791+09:00,3851,https://www.nippon1.co.jp/company/company.html,https://www.nippon1.co.jp/company/company.html,200,1074,b80e829ecd3f52f7,text/html; charset=UTF-8
+2026-08-13T18:49:31.804852+09:00,3851,https://www.nippon1.co.jp/company/business.html,https://www.nippon1.co.jp/company/business.html,200,930,c636b1ebdbbcfbd2,text/html; charset=UTF-8
+2026-08-13T18:49:50.025856+09:00,3851,https://minkabu.jp/stock/3851,https://minkabu.jp/stock/3851,200,5666,2e6f91335b019338,text/html; charset=utf-8
+2026-08-13T18:49:53.577860+09:00,3851,https://kabuyoho.jp/sp/reportTarget?bcode=3851,https://kabuyoho.jp/sp/reportTarget?bcode=3851,200,1799,ca73065ce104dc22,text/html; charset=UTF-8
+2026-08-13T18:50:12.952412+09:00,3851,https://game.watch.impress.co.jp/docs/news/2130238.html,https://game.watch.impress.co.jp/docs/news/2130238.html,200,10175,56d71832d7cfe3d1,text/html; charset=utf-8
+2026-08-13T18:50:23.661907+09:00,3851,https://automaton-media.com/articles/newsjp/20260803-458158/,https://automaton-media.com/articles/newsjp/20260803-458158/,200,5656,fc554a42da281daf,text/html; charset=UTF-8
+2026-08-13T18:50:33.680761+09:00,3851,https://www.gamebusiness.jp/article/2026/05/15/26947.html,https://www.gamebusiness.jp/article/2026/05/15/26947.html,200,3206,04d77e7f2004e169,text/html; charset=utf-8
+2026-08-13T18:50:37.084106+09:00,3851,https://gamebiz.jp/news/426001,https://gamebiz.jp/news/426001,200,3858,6bdfd01c09865e89,text/html; charset=UTF-8
+2026-08-13T18:50:46.797303+09:00,3851,https://kabutan.jp/stock/news?code=3851,https://kabutan.jp/stock/news?code=3851,200,4845,78448684cd107b0b,text/html; charset=UTF-8
+2026-08-13T18:51:54.652573+09:00,3851,https://www.nippon1.co.jp/ir/ir.html,https://www.nippon1.co.jp/ir/ir.html,200,5156,334197168a2d948a,text/html; charset=UTF-8
+2026-08-13T18:51:58.037009+09:00,3851,https://kabutan.jp/stock/?code=3851,https://kabutan.jp/stock/?code=3851,200,4262,d0ab9b757891dbf4,text/html; charset=UTF-8
+2026-08-13T18:53:14.981753+09:00,3851,https://www.nippon1.co.jp/company/company.html,https://www.nippon1.co.jp/company/company.html,200,1074,b80e829ecd3f52f7,text/html; charset=UTF-8

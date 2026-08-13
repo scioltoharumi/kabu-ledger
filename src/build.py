@@ -167,6 +167,10 @@ def as_of_date() -> str:
 
 # --- 一覧ページ -----------------------------------------------------------
 
+# Markdown の強調 `**…**`。改行をまたがせない（表の1セルに収まる範囲だけ拾う）。
+_STRONG_RE = re.compile(r"\*\*([^*\n]+?)\*\*")
+
+
 def first_sentence(text: str, limit: int = 78) -> str:
     """最新週の要約を1文だけ取り出す（一覧を詰まらせないため）。"""
     plain = re.sub(r"[*_`>#\-]", "", text).strip()
@@ -207,7 +211,12 @@ def render_row(stock: dict, rep: R.Report | None) -> str:
             site = ext_link(str(lk.get("url", "")), str(lk.get("label", "公式")))
             break
 
-    oneline = html.escape(R.one_liner(rep))
+    # 「一行でいうと」はレポート本文の引用ブロックなので Markdown の強調を含む。
+    # 銘柄ページ側は Markdown を通すが、一覧はエスケープしかしていなかったため
+    # `**` がそのまま画面に出ていた。**エスケープしたあとに**強調だけ戻す
+    # （順序が逆だと `<strong>` ごとエスケープされる／注入経路にもなる）。
+    oneline = _STRONG_RE.sub(r"<strong>\1</strong>",
+                             html.escape(R.one_liner(rep)))
     earn = rep.meta.get("next_earnings")
     earn_pill = ""
     if earn:
@@ -248,6 +257,22 @@ def render_row(stock: dict, rep: R.Report | None) -> str:
     )
 
 
+_ORDER_MARKS = "①②③④⑤⑥⑦⑧⑨⑩"
+
+
+def section_order_text() -> str:
+    """一覧の案内文に出す「レポートの節の並び」を `report.SECTIONS` から作る。
+
+    案内文と実際の並びが食い違うのを、手書きをやめることで構造的に防ぐ。
+    出力は SECTIONS だけで決まるので決定論的（D8）。
+    """
+    parts = []
+    for i, (_key, title) in enumerate(R.SECTIONS):
+        mark = _ORDER_MARKS[i] if i < len(_ORDER_MARKS) else f"{i + 1}."
+        parts.append(f"{mark} {title}")
+    return " → ".join(parts)
+
+
 def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     stocks = sorted(master["stocks"], key=lambda s: s["code"])
     rows = [render_row(s, reports.get(s["code"])) for s in stocks]
@@ -277,12 +302,15 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div>"
     )
 
+    # 節の並びは `report.SECTIONS` が正。ここに順序を手書きすると、並びを変えた
+    # 週に案内文だけが取り残される（「週次アップデートを最上部に」で実際に起きた）。
+    order = html.escape(section_order_text())
+
     howto = (
         "<h2>この台帳の読み方</h2>"
         "<ul>"
         "<li>銘柄名を押すと、その会社の調査レポートが開く</li>"
-        "<li>レポートは <strong>① 何の会社か → ② 財務 → ③ 展望とリスク → "
-        "④ 週ごとの動き → ⑤ 値動きと市場の評価</strong> の順に並んでいる</li>"
+        f"<li>レポートは <strong>{order}</strong> の順に並んでいる</li>"
         '<li><span class="flag">深掘り</span> が付いた銘柄は毎週すべての項目を'
         "見直している。付いていない銘柄はニュースと値動きだけ追っている</li>"
         "<li>深掘り対象を変えたいときは Claude に「4073 を深掘りして」と言えばよい</li>"
@@ -291,9 +319,40 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         "</ul>"
     )
 
-    body = intro + summary + table + howto
+    body = intro + summary + table + howto + unevaluated_block()
     (DOCS / "index.html").write_text(page("銘柄調査台帳", body, as_of, 0),
                                      encoding="utf-8")
+
+
+def unevaluated_block() -> str:
+    """鉄則のうち、このシステムが**評価していない**項目を台帳に出す。
+
+    `judge.UNEVALUATED_RULES` が正。以前は「`docs/formula.html` に自動で出る」と
+    CLAUDE.md / README.md が案内していたが、**そのファイルは一度も生成されて
+    いなかった**（`build.py` に formula の文字列が1つも無い）。
+    つまり「何を見ていないか」は判定を読む人にまったく届いておらず、
+    「①〜⑤を通過した」が「鉄則を全部かけた」と読める状態だった。
+    `judge.py` を CLI で叩いた人だけが知っている、では開示になっていない。
+    """
+    rules = J.UNEVALUATED_RULES
+    if not rules:
+        return ""
+    rows = "".join(
+        f'<tr><td data-l="観点">{html.escape(name)}</td>'
+        f'<td data-l="なぜ見ていないか">{html.escape(why)}</td></tr>'
+        for name, why in rules
+    )
+    return (
+        '<h2 id="unevaluated">この台帳が見ていない鉄則</h2>'
+        '<p class="lede">判定スタンプの「買」は、この台帳が実装しているゲートを'
+        "通過したという意味しかない。<strong>鉄則には、まだ機械が評価していない"
+        f"観点が {len(rules)} 件ある。</strong>通過しなかったのではなく、"
+        "<strong>見ていない</strong>。実装したらこの表から消える"
+        "（<code>src/judge.py</code> の <code>UNEVALUATED_RULES</code> が正）。</p>"
+        '<div class="scroll"><table><thead><tr>'
+        "<th>鉄則の観点</th><th>なぜ評価していないか</th>"
+        "</tr></thead><tbody>" + rows + "</tbody></table></div>"
+    )
 
 
 # --- 銘柄ページ -----------------------------------------------------------
@@ -432,12 +491,17 @@ def verify_rows(claims: list) -> str:
 
     記録側の `quote` は本文の**厳密な部分文字列**（checks.py が本文と突き合わせる）
     なので、表示のときだけ Markdown の強調記号を落とす。記録は書き換えない。
+
+    `evidence` / `action` は突合の対象ではなく、書き手が強調を意図して
+    `**…**` を書く。落とさずに `<strong>` に起こす（一覧の「一行でいうと」と
+    同じ扱い。エスケープしたあとに置換する）。
     """
     rows = []
     for c in claims:
         quote = html.escape(MD_MARK_RE.sub("", c.quote))
-        why = html.escape(c.evidence)
-        act = html.escape(c.action) if c.action else "—"
+        why = _STRONG_RE.sub(r"<strong>\1</strong>", html.escape(c.evidence))
+        act = (_STRONG_RE.sub(r"<strong>\1</strong>", html.escape(c.action))
+               if c.action else "—")
         srcs = []
         for s in c.sources:
             if s.startswith("http"):
