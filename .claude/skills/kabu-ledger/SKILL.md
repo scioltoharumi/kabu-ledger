@@ -256,6 +256,6 @@ date,code,metric,value,unit,definition,assumed,source_url,fetched_at
 ## 表示を直したときの完了条件
 
 `.\tools\published.ps1 -Marker <今回入れた印>` が `PUBLISHED`（exit 0）を出すまで
-「反映されました」と報告しない。push しただけでは公開されない（GitHub Pages は
-build_type: workflow で、deploy するのは weekly.yml の publish ジョブだけ）。
+「反映されました」と報告しない。**公開は push が起こす**（weekly.yml が on: push で
+テスト → build.py → deploy-pages まで無人で走る）。gh workflow run を手順に入れない。
 手順の詳細は CLAUDE.md「表示を直したときの標準手順」が正。

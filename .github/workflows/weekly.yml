@@ -15,16 +15,22 @@ name: weekly
 # 既定（トリガー時の SHA）のままだと、前のジョブが push した data/ を
 # 見ないまま build してしまう。
 
+# 契機は2つ。**どちらも無人で、人が Actions を操作する場面は無い**
+# （fudosan-appraisal の deploy.yml と同じ考え方）。
+#
+#   push  : main に何か入ったら、テスト → サイト生成 → 公開。取得はしない。
+#           週次ルーティンがレポートを直して push すれば、それだけで公開される。
+#           **`gh workflow run` を手で叩く運用にしない**（叩き忘れが
+#           「公開したつもり」を生む。実際に一度やった）
+#   cron  : 週1回、株価・信用残・指数・財務の取得と検査。こちらだけ取得を伴う
+#
+# workflow_dispatch は非常口として残すだけで、通常の手順には登場させない。
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: "0 21 * * 5"      # UTC金21:00 = JST土06:00
   workflow_dispatch:
-    inputs:
-      mode:
-        description: "full=取得あり（既定）/ site_only=取得と採点を飛ばして公開だけ"
-        type: choice
-        options: [full, site_only]
-        default: full
 
 concurrency:
   group: weekly
@@ -79,14 +85,15 @@ jobs:
 
   # --- 2. 取得と検査。ここは LLM を通さない ------------------------------
   #
-  # 取得を飛ばすときは **ステップ単位** でゲートする。data ジョブ自体に if: を付けると
+  # **push 契機のときは取得しない**（公開だけしたいので外に出ていく必要がない）。
+  # 飛ばし方は **ステップ単位**。data ジョブ自体に if: を付けると
   # needs.data.result が 'skipped' になり publish の if: が false になって、
   # 緑のまま何も公開されない run ができる（「公開されたと誤認」の完全な再現）。
+  # checks.py だけは push でも必ず走らせる（壊れた台帳を公開しないため）。
   #
   # score.py も取得と同じく飛ばす。score.py は _date.today() 依存かつ resolved/expired を
-  # 凍結するので、取得を飛ばした run では走らせない（取得前に期限が過ぎた予測を
+  # 凍結するので、push のたびに走らせない（取得前に期限が過ぎた予測を
   # 判定不能で確定させ、下の `git add predictions/` でそのまま commit される）。
-  # 条件を付けないのは checks.py と commit だけ。
   data:
     needs: test
     runs-on: ubuntu-latest
@@ -101,21 +108,21 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: 株価取得（OHLCV・2ソース照合・追記のみ）
-        if: ${{ inputs.mode != 'site_only' }}
+        if: github.event_name != 'push'
         run: python src/fetch.py
 
       - name: 信用残高の取得
-        if: ${{ inputs.mode != 'site_only' }}
+        if: github.event_name != 'push'
         run: python src/fetch_margin.py
 
       - name: 指数の取得（TOPIX / グロース250）
-        if: ${{ inputs.mode != 'site_only' }}
+        if: github.event_name != 'push'
         run: python src/fetch_index.py
 
       # レポートに書く財務数値を機械抽出し、別サイト2つの一致でだけ採用値にする。
       # 一致しなければ MISMATCH として両値を残す（推測で埋めない・D7）。
       - name: 財務数値の取得（2ソース照合）
-        if: ${{ inputs.mode != 'site_only' }}
+        if: github.event_name != 'push'
         run: python src/fetch_fundamentals.py
 
       # 決算短信PDF（一次情報）。まとめサイト（二次情報）との突き合わせ（D33）は
@@ -123,7 +130,7 @@ jobs:
       # 「直近」として出し続ける。** 取得できない週があっても後続は止めない
       # （PDF は TDnet の保持期間・ミラーの都合で落ちることがある）。
       - name: 決算短信の取得（一次情報・PDF）
-        if: ${{ inputs.mode != 'site_only' }}
+        if: github.event_name != 'push'
         run: python src/fetch_tanshin.py
         continue-on-error: true
 
@@ -134,12 +141,12 @@ jobs:
       # **失敗しても data ジョブを止めない**（外部要因でビルドを止めない）。
       # 分けないと `--check-links` が一度も走らず、link_status.csv が増えない。
       - name: 出典URLの死活確認（記録のみ・失敗しても止めない）
-        if: ${{ inputs.mode != 'site_only' }}
+        if: github.event_name != 'push'
         run: python src/checks.py --check-links --no-git
         continue-on-error: true
 
       - name: 予測の機械採点
-        if: ${{ inputs.mode != 'site_only' }}
+        if: github.event_name != 'push'
         run: python src/score.py
 
       - name: commit
@@ -183,6 +190,8 @@ jobs:
   #   「未検証」「裏が取れなかった記述」をページに出すので、読み手は誤らない
   #   （印を消す方法は用意していない）。bear/ が無ければ notify.py が
   #   Issue 本文に「未生成」と書く。下流はどちらも成立する。
+  # publish が commit する push は GITHUB_TOKEN なので、**この workflow を再起動しない**
+  # （GitHub のループ防止仕様）。push 契機を足しても無限ループにならないのはこのため。
   publish:
     needs: data
     if: ${{ always() && needs.data.result == 'success' }}

@@ -312,10 +312,14 @@ tests → fetch.py → fetch_margin.py → fetch_index.py → fetch_fundamentals
       → (bear) → (verify) → build.py → notify.py
 ```
 
-**`docs/` を push しても公開されない。** GitHub Pages は `build_type: workflow` で、
-`weekly` の `publish` ジョブ（`actions/deploy-pages`）だけがデプロイする。
-`weekly` のトリガーは cron（JST 土 06:00）と `workflow_dispatch` だけで、**push では起動しない**。
-表示を直したら `gh workflow run weekly.yml --ref main` を回すまで公開版は変わらない。
+**公開は push が起こす。ワークフローを手で叩く手順は無い。**
+`weekly.yml` は `on: push [main]` を持ち、push されるとテスト → `build.py` →
+`deploy-pages` まで無人で走る（`fudosan-appraisal/.github/workflows/deploy.yml` と同じ考え方）。
+取得（`fetch*.py` / `score.py`）は push 契機では走らず、cron のときだけ走る。
+
+**`gh workflow run` を通常手順に入れてはならない。** 叩き忘れが「公開したつもり」を生む
+（2026-08-13 に実際に起きた）。人間もルーティンも、`git push` で終わりにする。
+
 `publish` は checkout してから `build.py` を回し直すので、**直すべきは `src/` であって
 commit 済みの `docs/` ではない**（`docs/` の commit は差分を git 上に残すためのもの）。
 
@@ -328,20 +332,12 @@ commit 済みの `docs/` ではない**（`docs/` の commit は差分を git �
    ここで PUBLISHED が出るなら印が既に live にあるので別の印を選ぶ（事後検査が素通りする）。
    「印」は今回の変更で新しく入る文字列（新規 CSS クラス名・新しい見出し等）に限る。
 1. `src/` を直す（`docs/` は直さない。publish が build.py を回し直す）。
-2. `$before=(gh run list -w weekly.yml -L1 --json databaseId|ConvertFrom-Json)[0].databaseId`
-   → `git add -A` → `git commit` → `git pull --rebase origin main` → `git push`
-   ← **ここではまだ公開されていない**
-3. `gh workflow run weekly.yml --ref main -f mode=site_only`
-   ← 取得と採点を飛ばす。full は実測309秒
-4. `do { Start-Sleep 3; $id=(gh run list -w weekly.yml -L1 --json databaseId|ConvertFrom-Json)[0].databaseId } while ($id -eq $before)`
-   → `gh run watch $id --exit-status`
-   ※固定 sleep で待つと1つ前の run を watch して即 exit 0 が返り、同じ誤認を再生産する。
-5. `.\tools\published.ps1 -Marker <0 と同じ印>` が `PUBLISHED`（exit 0）を出してから初めて
-   「公開されました」と言う。STALE ならスクリプトが自動で再試行する
-   （CDN は max-age=600、クエリ文字列では迂回できない）。
+2. `git add -A` → `git commit` → `git pull --rebase origin main` → `git push`
+3. `.\tools\published.ps1 -Marker <0 と同じ印>` が `PUBLISHED`（exit 0）を出してから初めて
+   「公開されました」と言う。公開まで1分ほどかかるが、STALE のあいだは
+   スクリプトが待って再試行する（CDN は max-age=600、クエリ文字列では迂回できない）。
 
-**公開の完了条件は「ワークフローを回した」ではなく「live が main と一致し、
-今回入れた印が live に出た」。**
+**公開の完了条件は「push した」ではなく「live が main と一致し、今回入れた印が live に出た」。**
 
 `.github/` を含む push が `refusing to allow an OAuth App to create or update workflow ...`
 で弾かれたときだけ `gh auth refresh -s workflow` を実行する（認証コードは15分で失効するので、
