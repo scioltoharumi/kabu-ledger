@@ -40,6 +40,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import io
 import re
 import sys
 import time
@@ -196,11 +197,25 @@ def log_fetch(code: str, url: str, final: str, status, text: str, note: str,
         "sha256": hashlib.sha256((text or "").encode("utf-8")).hexdigest()[:16],
         "note": note,
     }
-    with target.open("a", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=FETCH_LOG_FIELDS)
-        if write_header:
-            w.writeheader()
-        w.writerow(row)
+    # **1回の write で1行を書く。** 銘柄ごとに並列で裏取りを回すと、複数プロセスが
+    # この共有ログに同時に追記する。DictWriter に直接書かせると書き込みが分割され、
+    # 行が混ざって append-only 検査が「過去行の改変」として FAIL しうる。
+    # いったんメモリ上で組み立ててから、1本の文字列として追記する。
+    buf = io.StringIO()
+    w = csv.DictWriter(buf, fieldnames=FETCH_LOG_FIELDS, lineterminator="\n")
+    if write_header:
+        w.writeheader()
+    w.writerow(row)
+    line = buf.getvalue()
+    for attempt in range(10):        # 他プロセスが掴んでいたら少し待って再試行
+        try:
+            with target.open("a", newline="", encoding="utf-8") as f:
+                f.write(line)
+            return
+        except PermissionError:
+            if attempt == 9:
+                raise
+            time.sleep(0.05 * (attempt + 1))
 
 
 def scan_injection(text: str) -> list[str]:

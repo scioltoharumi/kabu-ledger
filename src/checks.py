@@ -3386,6 +3386,104 @@ def _check_handwritten_ranges(rep: Report, target: str, meta: dict) -> None:
               "外にある（桁違い）", bad)
 
 
+_WEEK_ENTRY_RE = re.compile(r"^###\s+(\d{4}-W\d{2})\b", re.MULTILINE)
+
+
+def _week_entries(text: str) -> list[tuple[str, str]]:
+    """`## 週次アップデート` 節の `### YYYY-Www` を [(週, 本文)] に分解する。
+
+    **dict にしない。** 同じ週に2回書く（「2026-W33」と「2026-W33（続報）」）ことが
+    あり、dict だと後勝ちで潰れて、消えた側の書き換えを検出できなくなる。
+
+    節の切り出しは report.py と同じ規則（`##` 見出しで分割）に揃える。
+    ここで report をインポートしないのは、検査対象のパーサを検査に流用すると
+    **両方が同じ勘違いをしたときに素通りする**ため（独立検算）。
+    """
+    body = ""
+    for chunk in re.split(r"^##\s+(.+?)\s*$", text, flags=re.MULTILINE)[1:]:
+        if "週次アップデート" in chunk:
+            body = None            # 次のチャンクが本文
+            continue
+        if body is None:
+            body = chunk
+            break
+    if not body:
+        return []
+    parts = _WEEK_ENTRY_RE.split(body)
+    out: list[tuple[str, str]] = []
+    for i in range(1, len(parts) - 1, 2):
+        out.append((parts[i], parts[i + 1].strip()))
+    return out
+
+
+def check_report_updates_append_only(rep: Report, reports_dir: Path,
+                                     repo_root: Path) -> None:
+    """週次アップデートが append-only であることを git HEAD と突き合わせて確かめる。
+
+    なぜ要るか
+    ----------
+    「読み返したときに、この会社をどう理解してきたかの軌跡が残る」ことが
+    週次アップデートの目的（requirements §3-④）。上書きするとその目的が消える。
+    `report.py` は「並べ替えたり削ったりしない」と不変条件を書いているが、
+    **それは表示側の約束であって、書き手を縛るものが1つも無かった**。
+
+    人間が毎週レポートを承認していた間はそこが歯止めだった。
+    自動生成に切り替えるなら、歯止めを機械に移さないと外れたままになる。
+
+    見るもの: HEAD にあった週の見出しが (a) 消えていないか (b) 本文が変わっていないか。
+    新しい週の追加は当然許す。**新規レポート（HEAD に無い）は対象外**。
+    """
+    if not reports_dir.exists():
+        return
+    paths = sorted(reports_dir.glob("*.md"))
+    if not paths:
+        return
+    top = _git(["git", "rev-parse", "--show-toplevel"], repo_root)
+    if top.returncode != 0 or not top.stdout.strip():
+        # 「検証できていない」を黙って通さない（追記性検査と同じ方針）。
+        rep.warn("report", "reports/",
+                 "git 管理下でないため週次アップデートの追記性を検証できていない")
+        return
+    toplevel = Path(top.stdout.strip())
+    try:
+        prefix = reports_dir.resolve().relative_to(toplevel.resolve()).as_posix()
+    except ValueError:
+        rep.warn("report", "reports/",
+                 "reports/ がリポジトリの外にあり追記性を検証できていない")
+        return
+
+    checked = 0
+    for path in paths:
+        target = f"reports/{path.stem}.md"
+        old = _git(["git", "show", f"HEAD:{prefix}/{path.name}"], toplevel)
+        if old.returncode != 0:
+            continue                      # HEAD に無い＝新規レポート
+        before = _week_entries(old.stdout)
+        if not before:
+            continue
+        checked += 1
+        after = _week_entries(path.read_text(encoding="utf-8"))
+        # HEAD にあった (週, 本文) の組が、そのまま残っているか。
+        # 追加は自由・並び替えも許す（表示順は report.week_entries が決める）。
+        remaining = list(after)
+        for week, body in before:
+            if (week, body) in remaining:
+                remaining.remove((week, body))
+                continue
+            if any(w == week for w, _ in after):
+                rep.fail("report", target,
+                         f"週次アップデート {week} の本文が書き換わっている。"
+                         "訂正は過去週を直すのではなく、"
+                         f"新しい見出し（例 ### {week}（続報））を足して書く")
+            else:
+                rep.fail("report", target,
+                         f"週次アップデート {week} が消えている。"
+                         "過去の週は消さない（append-only）")
+    if checked == 0:
+        rep.warn("report", "reports/",
+                 "HEAD に週次アップデートを持つレポートが無く、追記性を検証していない")
+
+
 def check_report_numbers(rep: Report, reports_dir: Path,
                          facts_by_code: dict[str, list[Fact]],
                          master: dict | None = None,
@@ -4014,6 +4112,8 @@ def run_checks(data_dir: Path, baseline: Baseline | None,
     facts = check_fundamentals(rep, data_dir, master, sources, price_latest)
     check_tanshin(rep, data_dir, master, reports, facts)
     check_report_numbers(rep, reports, facts, master, rows)
+    check_report_updates_append_only(
+        rep, reports, repo_root if repo_root is not None else ROOT)
     check_verification(rep, reports, data_dir,
                        repo_root if repo_root is not None else ROOT)
     check_links(rep, reports, data_dir, sources, check_links_flag)
