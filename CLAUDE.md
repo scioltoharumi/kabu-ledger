@@ -314,6 +314,7 @@ tools/                 run_tests.py（開発用の並列ランナー。CI は使
                        kabu-ledger-report（1銘柄ぶんのレポート生成・更新）/
                        kabu-ledger-verify（記述の裏取り。別コンテキストで回す）/
                        kabu-ledger（決算の実額抽出と data/kpi/ への追記）
+.claude/workflows/     kabu-weekly-reports.js（1銘柄1エージェントの並列レポート更新）
 .github/workflows/     deploy.yml（push 契機。テスト→検査→生成→公開→起票。cron は無い）
 ```
 

@@ -1,0 +1,170 @@
+export const meta = {
+  name: 'kabu-weekly-reports',
+  description: 'kabu-ledger の銘柄レポートを1銘柄1エージェントで並列に更新し、別コンテキストで裏取りする',
+  whenToUse: '週次のレポート更新、または新規銘柄をまとめて登録したとき。args に銘柄コードの配列（省略時は master.yaml 全銘柄）',
+  phases: [
+    { title: '執筆' },
+    { title: '裏取り' },
+    { title: '検査' },
+  ],
+}
+
+// 銘柄どうしは独立している（レポートも裏取り記録も1銘柄1ファイル、共有するのは
+// master.yaml だけで、それは誰も書かない）。だから壁時間は銘柄数ではなく
+// 同時実行数で決まる。逐次だと 20 銘柄で 10 時間を超える。
+const REPO = 'kabu-ledger'
+
+// args の受け取り:
+//   ["3851","4073"]                       → この2銘柄
+//   {codes:["3851"], mode:"full"}         → モードを強制
+//   未指定                                 → master.yaml の全銘柄
+const _args = args || {}
+const CODES = Array.isArray(_args) ? _args : (_args.codes || null)
+const FORCE_MODE = Array.isArray(_args) ? null : (_args.mode || null)
+const SKIP_VERIFY = Array.isArray(_args) ? false : Boolean(_args.skipVerify)
+
+const WROTE_SCHEMA = {
+  type: 'object',
+  required: ['code', 'mode', 'wrote', 'week', 'summary'],
+  additionalProperties: false,
+  properties: {
+    code: { type: 'string' },
+    mode: { type: 'string', enum: ['初回', '深掘り', '追記のみ', 'スキップ'] },
+    wrote: { type: 'boolean', description: 'reports/{code}.md を実際に書き換えたか' },
+    week: { type: 'string', description: '追記した週キー（YYYY-Www）。書いていなければ空' },
+    summary: { type: 'string', description: '今週の要点を1〜2文' },
+    sources: { type: 'array', items: { type: 'string' }, description: '今回使った出典URL' },
+    unresolved: { type: 'array', items: { type: 'string' }, description: '確かめられなかったこと' },
+  },
+}
+
+const VERIFY_SCHEMA = {
+  type: 'object',
+  required: ['code', 'claims', 'supported', 'problems'],
+  additionalProperties: false,
+  properties: {
+    code: { type: 'string' },
+    claims: { type: 'integer' },
+    supported: { type: 'integer' },
+    problems: { type: 'array', items: { type: 'string' } },
+  },
+}
+
+const COMMON = `
+リポジトリ: ${REPO}（相対パスはこのディレクトリを基点にする）
+シェルは Windows PowerShell 5.1。&& と || は使えない。; と if ($?) を使う。
+Python を叩く前に $env:PYTHONIOENCODING = "utf-8" を設定する。
+
+**あなたは1銘柄だけを担当する。** 他の銘柄の reports/ や data/verification/ を
+読まない・書かない（並列実行で衝突する）。
+**data/ と docs/ と master.yaml は書かない。** git 操作（add/commit/push）もしない。
+`
+
+phase('執筆')
+
+const codes = CODES && CODES.length
+  ? CODES
+  : (await agent(
+      `${COMMON}\n${REPO}/data/master.yaml の stocks から証券コードだけを抜き、` +
+      `JSON 配列で返せ。他には何も書かない。例: ["3851","4073"]`,
+      { label: '銘柄一覧', phase: '執筆', effort: 'low' },
+    ).then((t) => {
+      try { return JSON.parse(String(t).match(/\[[\s\S]*\]/)[0]) } catch (e) { return [] }
+    }))
+
+if (!codes.length) {
+  log('銘柄が1件も取れなかった。master.yaml を確認すること')
+  return { error: 'no codes' }
+}
+log(`${codes.length} 銘柄を並列で処理する: ${codes.join(', ')}`)
+
+const results = await pipeline(
+  codes,
+  // --- 1. 執筆（1銘柄1エージェント） ---
+  (code) => agent(
+    `${COMMON}
+## あなたの担当: 銘柄 ${code} のレポート
+
+**必ず ${REPO}/.claude/skills/kabu-ledger-report/SKILL.md を最初に読み、その手順に従うこと。**
+このプロンプトと SKILL.md が食い違ったら SKILL.md が正。
+
+${FORCE_MODE ? `モードは "${FORCE_MODE}" を強制する。` : 'モードは SKILL.md の判定表に従って自分で決める。'}
+
+要点（詳細は SKILL.md）:
+- 過去の週次アップデートは1文字も書き換えない。追記だけする
+- **今週の見出しが既にあるなら、それも書き換えない。**別エントリ
+  （例 \`### 2026-W33（続報）\`）として足す。書くことが無ければ何も足さない
+- deep_dive が false でレポートが既にあるなら、**週次アップデート節以外は触らない**
+- 何も無かった週は「特筆すべき動きなし」と1行で残す。空白にしない
+- 全ての記述に出典URLと取得日。一次情報と二次情報を区別する
+- 数値は data/fundamentals/${code}.csv の status=OK の値が正。
+  SINGLE_SOURCE / MISMATCH をそう明示せずに断定形で書かない
+- front matter の updated を今日の日付にする
+
+終わったら ${REPO} で \`python src/checks.py\` を実行し、
+**出力のうち reports/${code}.md に関する行だけ**を見て FAIL が無いことを確かめる。
+他の銘柄の FAIL は**並列で作業中の別エージェントのもの**なので、
+直そうとしない・自分の失敗として報告しない（報告文に1行添えるだけでよい）。
+自分の銘柄で「週次アップデート ... が書き換わっている」が出たら、
+過去週を元に戻して別エントリとして書き直す（この FAIL を残したまま返してはならない）。`,
+    { label: `執筆:${code}`, phase: '執筆', schema: WROTE_SCHEMA },
+  ),
+
+  // --- 2. 裏取り（**別コンテキスト**。書いた本人にはやらせない） ---
+  (wrote, code) => {
+    if (SKIP_VERIFY || !wrote || !wrote.wrote) {
+      return { code, skipped: true, wrote }
+    }
+    return agent(
+      `${COMMON}
+## あなたの担当: 銘柄 ${code} のレポートの裏取り
+
+**あなたはこのレポートを書いていない。** 書いた本人とは別の文脈で検証するのが目的なので、
+本文の言い分を信用せず、出典を自分で取り直して判定すること。
+
+**必ず ${REPO}/.claude/skills/kabu-ledger-verify/SKILL.md を読み、その手順に従うこと。**
+出典の再取得は src/fetch_source.py を使い、結果を data/verification/${code}.yaml に
+**追記**する（過去 run を書き換えない）。
+
+裏が取れない記述は落とすか「未確認」と明示する。黙って残さない。`,
+      { label: `裏取り:${code}`, phase: '裏取り', schema: VERIFY_SCHEMA },
+    ).then((v) => ({ code, wrote, verify: v }))
+  },
+)
+
+const done = results.filter(Boolean)
+log(`執筆 ${done.length} 銘柄が完了。全体検査に入る`)
+
+phase('検査')
+
+// 全銘柄ぶんが揃ってから1回だけ。銘柄ごとに走らせると git HEAD 比較が
+// 互いの中間状態を拾う。
+const final = await agent(
+  `${COMMON}
+## あなたの担当: 全銘柄ぶんの反映後の検査
+
+${REPO} で次を順に実行し、結果をそのまま報告せよ。**直してはならない**
+（何が落ちているかを人間に見せるのが仕事。勝手に直すと原因が消える）。
+
+    $env:PYTHONIOENCODING = "utf-8"
+    python src/checks.py
+    python tools/run_tests.py
+    python src/build.py
+    powershell -ExecutionPolicy Bypass -File tools\\shot.ps1
+
+報告に必ず含めるもの:
+- checks.py の FAIL 件数と、FAIL があればその全文
+- run_tests.py で exit≠0 になったファイル名
+- shot.ps1 の FAIL / WARN 件数
+- \`git status --short\` の出力（どのファイルが変わったか）
+
+git 操作はしない。commit も push もしない。`,
+  { label: '検査:全体', phase: '検査' },
+)
+
+return {
+  codes,
+  written: done.filter((d) => d.wrote && d.wrote.wrote).map((d) => d.code || d.wrote.code),
+  reports: done,
+  check: final,
+}
