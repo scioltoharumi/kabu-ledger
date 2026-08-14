@@ -143,9 +143,16 @@ font-size:.72rem;font-weight:700}
 .viz figcaption{font-size:.78rem}
 .viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
-</style></head><body><main><h1>Waqoo（4937）</h1><p class="lede">東証グロース／レポート更新 2026-08-13<br><span class="pill pill-warn">未検証</span>本文の記述はまだ出典に当て直していない<br><a class="ext" href="https://waqoo.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E36697" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=4937" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://waqoo.jp/medical-support.html" target="_blank" rel="noopener">事業内容（メディカルサポート） ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><blockquote>
+</style></head><body><main><h1>Waqoo（4937）</h1><p class="lede">東証グロース／レポート更新 2026-08-14<br><span class="pill pill-warn">未検証</span>本文の記述はまだ出典に当て直していない<br><a class="ext" href="https://waqoo.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E36697" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=4937" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://waqoo.jp/medical-support.html" target="_blank" rel="noopener">事業内容（メディカルサポート） ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><blockquote>
 <p><strong>一行でいうと</strong>：通販化粧品「肌ナチュール」を自社の広告とECで売るD2C事業と、美容クリニック向けに患者の血液・脂肪を加工する受託事業（再生医療）の2本立て。<strong>2025年12月に、湘南美容クリニックを運営するSBCメディカルグループが株式公開買付で親会社（持分51.51%）になった。</strong> 時価総額74.7億円（株探・2026-08-13取得。8月12日の採用終値で計算すると約78.8億円）。8月7日の上方修正と株主優待でストップ高したが、<strong>普段の売買代金は中央値で1日68万円しかなく、この台帳の流動性ゲートを通っていない。</strong></p>
-</blockquote><h2>週次アップデート</h2><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W33（2026-08-10 週）</h3><p><strong>上方修正でストップ高。ただし建てられる玉がない。</strong></p>
+</blockquote><h2>週次アップデート</h2><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W33（続報）</h3><p><strong>ストップ高から反落。流動性ゲートは数値上「通過」に変わったが、中身は変わっていない。</strong></p>
+<ul>
+<li>8月13日、株価は前日比−5.2%の<strong>2,038円</strong>で引けた（8月12日2,150円→8月13日2,038円・2ソース照合済み終値）。出来高43,500株・売買代金換算で約8,865万円。8月12日（24.22万株・約5.21億円）からは大きく減ったが、平時（1日数百株）よりはまだ厚い（<code>data/prices/daily.csv</code>・2026-08-14取得）</li>
+<li>8月7日の開示（3Q決算・上方修正・株主優待）以降、<strong>新しい適時開示は確認できていない</strong>（TDnetの非公式ミラーAPI <code>webapi.yanoshin.jp/webapi/tdnet/list/4937.json</code> を2026-08-14に確認したところ、一覧の最新は8月7日の3件のまま）。<strong>下落の理由を裏付ける材料は見つかっていない。</strong> 過熱指標の高さ（RSI・移動平均乖離率）を受けた利益確定売りの可能性はあるが、断定はしない</li>
+<li>20日平均売買代金は<strong>3,313万円</strong>に上がり（前回8月10日時点は2,871万円）、この台帳のゲート（3,000万円）を<strong>数値上は上回るようになった</strong>（<code>python src/judge.py</code> 基準日2026-08-13の出力で確認）。ただし同じ期間の<strong>中央値は75万円</strong>のままで、押し上げているのは8月10日・12日・13日の3日間（合計約6.4億円）だけである。judge.py 自身も「売買代金が一部の日に集中しており、平均は流動性を過大評価している」と注記しており、<strong>実態としての建てやすさが改善したとは言えない</strong></li>
+<li>25日移動平均乖離率は<strong>30.19%</strong>（前回39.4%から縮小）、RSI(14)は<strong>76.20</strong>（前回87.7から低下）。鉄則の注意水準70%は依然超えており、過熱は和らいだだけで解消はしていない</li>
+<li>信用残の新しい週次データはまだ出ていない（直近は8月7日時点・買建189.6千株のまま。<code>data/margin/4937.csv</code>）</li>
+</ul></div><div class="upd"><h3>2026-W33（2026-08-10 週）</h3><p><strong>上方修正でストップ高。ただし建てられる玉がない。</strong></p>
 <ul>
 <li>8月7日、2026年9月期3Q決算と同時に<strong>通期予想を上方修正</strong>。売上高27.5億円（前回予想比+10.0%）、経常利益5.5億円（同+41.0%）。同時に<strong>株主優待の新設</strong>を発表（100株以上・9月末基準で、SBC湘南美容クリニックの10%割引チケット。利用期間は2027年1月1日〜11月30日）</li>
 <li>修正の理由として「<strong>湘南美容クリニック連携効果</strong>」が挙がっている（ライブドアニュース／ウエルスアドバイザー）。親会社グループとの連携が業績の押し上げ要因になっている</li>
