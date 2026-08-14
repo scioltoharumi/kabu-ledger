@@ -308,7 +308,8 @@ tests/                 test_indicators / test_judge / test_fetch / test_checks /
                        （すべて素の python で実行できる）
 tools/                 run_tests.py（開発用の並列ランナー。CI は使わない）/
                        shot.ps1（headless Edge で採寸・目視。落とし穴一覧はこの冒頭コメントが正）/
-                       published.ps1（公開到達の確認）
+                       published.ps1（公開到達の確認・Windows）/
+                       published.py（同・stdlib のみ。gh 不要。クラウドのルーティンはこちら）
 .claude/skills/        kabu-ledger-intake（スクショ契機の銘柄登録。取得の起点その1）/
                        kabu-ledger-weekly（週次更新の入口。取得の起点その2）/
                        kabu-ledger-report（1銘柄ぶんのレポート生成・更新）/

@@ -128,9 +128,14 @@ git pull --rebase origin main ; if ($?) { git push origin main }
 
 ## ⑤ 公開の確認
 
-```powershell
-.\tools\published.ps1 -Marker "<今週の週キー。例 2026-W34>"
+```bash
+python tools/published.py --marker "<今週の週キー。例 2026-W34>"
 ```
+
+**クラウドのルーティンは Linux なのでこちら（Python 版）を使う。**
+手元の Windows では `.\tools\published.ps1 -Marker "..."` でも同じ判定ができる。
+Python 版は `gh` に依存せず、手元の `HEAD:docs` の blob SHA と live の実バイトを
+突き合わせるので、**push 済みであることが前提**。
 
 `PUBLISHED`（exit 0）が出てから「更新しました」と報告する。
 **`gh workflow run` は叩かない。** push が `deploy.yml` を起こし、
