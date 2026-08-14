@@ -1,0 +1,164 @@
+name: deploy
+
+# push契機で テスト → 検査 → サイト生成 → GitHub Pages 反映 → 起票 まで無人実行。
+# **人が Actions を操作する場面は無い**（fudosan-appraisal の deploy.yml と同じ形）。
+#
+# ここで**やらないこと**: 外部からの取得（fetch*.py）と予測の採点（score.py）。
+# 取得はスケジュールで回すものではなく、**起こったことに反応して**回す:
+#
+#   スクショを貼った  → 新しい銘柄を master.yaml に登録し、その銘柄の履歴を取る
+#                        （.claude/skills/kabu-ledger-intake/）
+#   週次ルーティン     → 既存銘柄の差分取得 → レポートの週次アップデート → 裏取り
+#                        （.claude/skills/kabu-ledger-weekly/）
+#
+# どちらも最後に push する。**push がこのワークフローを起こし、公開まで走る。**
+# cron はここには無い。週次の起点はルーティン1本だけで、スケジュールを二重に持たない。
+#
+# **CI では Claude を動かさない。** 判断を伴う作業（レポートの週次追記・出典の裏取り・
+# 弱気材料の生成）はルーティンが担当し、結果を commit する。
+# CI に OAuth トークンを置かないための構成。ここに残るのは決定論的なコードだけ。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:          # 非常口。通常の手順には登場させない
+
+concurrency:
+  group: pages
+  cancel-in-progress: false   # デプロイ中のキャンセルは避ける
+
+permissions:
+  contents: write             # docs/ と stamps.json の commit に要る
+  issues: write               # notify.py の起票
+  pages: write
+  id-token: write
+
+env:
+  PYTHONIOENCODING: utf-8     # 日本語の標準出力が化けないようにする
+
+jobs:
+  # --- 1. テスト → 検査 → 生成 -------------------------------------------
+  #
+  # ★テストが落ちるとデプロイまで止まる。つまり「翌週かならず落ちるテスト」は
+  #   公開を止める仕掛けと同じである。実データの日付・値・件数をテストに
+  #   べた書きしないこと（期待値は tests/realdata.py から引く）。
+  #
+  # 下の glob は `tests/test_*.py` を1本ずつ実行する。**共用ヘルパを
+  # `test_` で始まる名前にしない**（テストとして実行され、0件パスで通ってしまう）。
+  #
+  # build.py は docs/ と **scoring/stamps.json** を出力する。
+  # stamps.json は notify の入力なので **commit する**。
+  # commit しないと notify の checkout に無く、判定変化を検出できない（F-04）。
+  #
+  # ★ルーティン（裏取り・週次追記）の成否は公開に影響しない。
+  #   回らなかった週も、build.py が data/verification/ を読んで
+  #   「未検証」「裏が取れなかった記述」をページに出すので、読み手は誤らない
+  #   （印を消す方法は用意していない）。
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0        # checks.py の append-only 検査が履歴を見る
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+
+      - name: tests
+        run: |
+          set -e
+          shopt -s nullglob
+          files=(tests/test_*.py)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "テストが1本も無い"; exit 1
+          fi
+          for f in "${files[@]}"; do
+            echo "=== $f ==="
+            python "$f"
+          done
+
+      - name: データ品質検査
+        run: python src/checks.py        # FAIL があればここで停止＝公開しない
+
+      - name: サイト生成（生成時刻を埋め込まない・差分が変化そのもの）
+        run: python src/build.py
+
+      # ルーティンが build.py を回してから push していれば、決定論的生成なので
+      # ここは「差分なし」になる。差分が出るのは push 前の再生成を忘れたときで、
+      # その場合だけ bot が追いつく。
+      #
+      # この commit は GITHUB_TOKEN による push なので、**このワークフローを
+      # 再起動しない**（GitHub のループ防止仕様）。だから無限ループにならない。
+      - name: commit（docs/ と判定スタンプ）
+        run: |
+          set -e
+          git config user.name  "kabu-ledger[bot]"
+          git config user.email "actions@github.com"
+          git add docs/ scoring/stamps.json
+          if git diff --staged --quiet; then
+            echo "台帳の差分なし"
+          else
+            git commit -m "site: $(date -u +%Y-%m-%d)"
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push origin HEAD:"${{ github.ref_name }}"
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: docs }
+
+  # --- 2. 公開 -------------------------------------------------------------
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  # --- 3. 判定が変わった銘柄だけ Issue 起票。何もなければ0件 --------------
+  #
+  # last_stamps.json を commit しないと前回状態が残らず、毎回全銘柄が
+  # 「変化」扱いになる。stamps.json が無い場合、notify.py は状態を更新せずに
+  # 終了する（F-04）。
+  notify:
+    needs: deploy
+    if: ${{ always() && needs.deploy.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}   # build が push した stamps.json を取り込む
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+
+      - name: 判定変化を検出して起票
+        run: python src/notify.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: commit（前回スタンプ）
+        if: always()                     # 起票が一部失敗しても、成功ぶんの状態は残す
+        run: |
+          set -e
+          git config user.name  "kabu-ledger[bot]"
+          git config user.email "actions@github.com"
+          # 初回や stamps.json 不在のときは last_stamps.json が作られない。
+          # `[ -f x ] && git add x` は set -e の下で「ファイル無し＝失敗」になるので使わない
+          if [ -f scoring/last_stamps.json ]; then
+            git add scoring/last_stamps.json
+          fi
+          if git diff --staged --quiet; then
+            echo "スタンプの差分なし"
+          else
+            git commit -m "stamps: $(date -u +%Y-%m-%d)"
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push origin HEAD:"${{ github.ref_name }}"
+          fi

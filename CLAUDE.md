@@ -3,7 +3,14 @@
 楽天証券のスクリーニング通過銘柄を週次で監視し、GitHub Pages に台帳として公開する。
 売買の実行判断は人間が行う。このリポジトリは候補提示と記録までを担う。
 
-公開先: GitHub Pages（`docs/`）／実行: GitHub Actions 週次（JST 土 06:00）
+公開先: GitHub Pages（`docs/`）／**公開は push が起こす**（`.github/workflows/deploy.yml`）
+
+起点は2つだけ。**どちらも人の行動から始まり、スケジュールで勝手に取得しない。**
+
+| 起点 | 入口 | やること |
+|---|---|---|
+| スクショを貼った | `.claude/skills/kabu-ledger-intake/` | 銘柄を登録し、その銘柄の履歴を取り、初回レポートを作る |
+| 週次ルーティン | `.claude/skills/kabu-ledger-weekly/` | 差分取得 → 週次アップデート → 裏取り → push |
 
 ---
 
@@ -302,26 +309,46 @@ tests/                 test_indicators / test_judge / test_fetch / test_checks /
 tools/                 run_tests.py（開発用の並列ランナー。CI は使わない）/
                        shot.ps1（headless Edge で採寸・目視。落とし穴一覧はこの冒頭コメントが正）/
                        published.ps1（公開到達の確認）
+.claude/skills/        kabu-ledger-intake（スクショ契機の銘柄登録。取得の起点その1）/
+                       kabu-ledger-weekly（週次更新の入口。取得の起点その2）/
+                       kabu-ledger-report（1銘柄ぶんのレポート生成・更新）/
+                       kabu-ledger-verify（記述の裏取り。別コンテキストで回す）/
+                       kabu-ledger（決算の実額抽出と data/kpi/ への追記）
+.github/workflows/     deploy.yml（push 契機。テスト→検査→生成→公開→起票。cron は無い）
 ```
 
 ## 実行順
 
 ```text
-tests → fetch.py → fetch_margin.py → fetch_index.py → fetch_fundamentals.py
-      → fetch_tanshin.py → checks.py → (checks.py --check-links) → score.py
-      → (bear) → (verify) → build.py → notify.py
+[ルーティン / intake が回す]                        [push が起こす・無人]
+fetch.py → fetch_margin.py → fetch_index.py
+  → fetch_fundamentals.py → fetch_tanshin.py
+  → checks.py → (--check-links) → score.py     ─┐
+  → レポート更新（並列）→ 裏取り                 │
+  → build.py → git push                        ─┴→ tests → checks.py → build.py
+                                                    → deploy-pages → notify.py
 ```
 
+**取得（`fetch*.py` / `score.py`）は CI に無い。** スケジュールで回すものではなく、
+**起こったことに反応して**回す。cron は置かない。
+
+| 起点 | 誰が | 何を取る |
+|---|---|---|
+| スクショを貼った | `kabu-ledger-intake` | 新しい銘柄の履歴（`--historical`） |
+| 週次ルーティン | `kabu-ledger-weekly` | 既存銘柄の差分 |
+
 **公開は push が起こす。ワークフローを手で叩く手順は無い。**
-`weekly.yml` は `on: push [main]` を持ち、push されるとテスト → `build.py` →
-`deploy-pages` まで無人で走る（`fudosan-appraisal/.github/workflows/deploy.yml` と同じ考え方）。
-取得（`fetch*.py` / `score.py`）は push 契機では走らず、cron のときだけ走る。
+`.github/workflows/deploy.yml` が `on: push [main]` で、push されると
+テスト → `checks.py` → `build.py` → `deploy-pages` → `notify.py` まで無人で走る
+（`fudosan-appraisal/.github/workflows/deploy.yml` と同じ形）。
 
 **`gh workflow run` を通常手順に入れてはならない。** 叩き忘れが「公開したつもり」を生む
 （2026-08-13 に実際に起きた）。人間もルーティンも、`git push` で終わりにする。
 
-`publish` は checkout してから `build.py` を回し直すので、**直すべきは `src/` であって
+`deploy.yml` は checkout してから `build.py` を回し直すので、**直すべきは `src/` であって
 commit 済みの `docs/` ではない**（`docs/` の commit は差分を git 上に残すためのもの）。
+bot の commit は `GITHUB_TOKEN` による push なので、**ワークフローを再起動しない**
+（GitHub のループ防止仕様）。だから push 契機でも無限ループにならない。
 
 ### 表示を直したときの標準手順
 

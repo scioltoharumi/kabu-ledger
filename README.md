@@ -8,7 +8,10 @@ GitHub Pages に台帳として公開する。
 
 - 運用ルール・不変条件・マスターへの確認事項: [CLAUDE.md](./CLAUDE.md)
 - 決算データの取り込み手順: [.claude/skills/kabu-ledger/SKILL.md](./.claude/skills/kabu-ledger/SKILL.md)
-- 公開先: GitHub Pages（`docs/`）／実行: GitHub Actions 週次（JST 土 06:00）
+- 公開先: GitHub Pages（`docs/`）／**公開は push が起こす**（`.github/workflows/deploy.yml`）
+- 取得の起点は2つ。**スケジュールで勝手に取りに行かない**（cron は置いていない）
+  - スクショを貼った → `.claude/skills/kabu-ledger-intake/`（新しい銘柄の履歴を取る）
+  - 週次ルーティン → `.claude/skills/kabu-ledger-weekly/`（既存銘柄の差分を取る）
 
 ---
 
@@ -73,7 +76,7 @@ python src/judge.py --indicators-only  # master.yaml を読まずに指標だけ
 `checks.py` が FAIL したら後続を実行しない。
 `bear`（ベアケース生成）と `verify`（記述の裏取り）は Should 要件なので、
 失敗しても `build.py` / `notify.py` は実行する
-（`weekly.yml` の `publish` は `data` の成否だけを見る）。
+（公開は `deploy.yml` が push を受けて行う）。
 ただし **出典と食い違うと判定された記述の始末が記録されていない**と
 `checks.py` が FAIL するので、直すまで翌週の取得・公開は動かない。
 
@@ -84,7 +87,7 @@ python src/judge.py --indicators-only  # master.yaml を読まずに指標だけ
 ### 実行環境（Windows / PowerShell）
 
 - Python から日本語を出力するので、**先に `$env:PYTHONIOENCODING = "utf-8"` を設定する**。
-  設定しないと標準出力が化ける（CI では `weekly.yml` の `env` で設定済み）。
+  設定しないと標準出力が化ける（CI では `deploy.yml` の `env` で設定済み）。
 - SSL 検査プロキシ配下では `truststore` が要る（`requirements.txt` に Windows 限定で入っている）。
   HTTPS を叩くコードは先頭で `truststore.inject_into_ssl()` を試みる。
 - 複数行のコードを `python -c` に渡すと PowerShell がパースに失敗する。

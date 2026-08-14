@@ -9,7 +9,7 @@
 #
 # 使い方（marker は「今回入れた印で、いま live に無いもの」に限る）:
 #   .\tools\published.ps1 -Marker prose-table   # push 前 → MISSING (exit 1)
-#   git push origin main                        # push が公開を起こす（weekly.yml の push 契機）
+#   git push origin main                        # push が公開を起こす（deploy.yml の push 契機）
 #   .\tools\published.ps1 -Marker prose-table   # 公開後 → PUBLISHED (exit 0)
 #
 # **ワークフローを手で叩く手順は無い。** push すれば勝手に公開される。
