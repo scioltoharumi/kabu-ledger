@@ -450,6 +450,109 @@ runs:
         action: >-
           起点の日付と終値を併記する。比率だけを丸めて書くと、どの期間の話か分からなくなる
 
+  - run: "2026-08-14T14:05:00+09:00"
+    report_updated: "2026-08-14"
+    report_sha256: "f1d78f2e074dc33a239fa43cba7fa8f9383d03237fd1bcb90577f992a468e09d"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    note: >-
+      本日追記された週次アップデート「### 2026-W33（続報）」を中心に検証した run。
+      前回 run（2026-08-13）以降、本文で新しく増えたのはこの続報1節（5行）だけで、
+      他の節・表・図の記述に変更は無い（V01〜V30 が検証した部分文字列は
+      いずれも現在の本文にそのまま残っている）。新規の5件（V31〜V35）は
+      いずれも実際に出典を再取得（`data/verification/fetch_log.csv` に痕跡あり）
+      するか、`src/judge.py --indicators-only` の再実行、または `data/prices/daily.csv`
+      `data/margin/3851.csv` の該当行を直接確認して判定した。
+      V01〜V30 は今回 run では拾い直していない（本文が変わっていないため）。
+      `checks.py --verify-only` は「最新 run が前回の claim を拾い直していない」
+      WARN をこの30件について出すが、`folded()` により判定そのものは維持される
+      （id で畳んで最新の判定を採る設計）。ページ本文・再取得した4ページの
+      いずれにも指示めいた文字列は検出していない。
+
+    urls_refetched:
+      - {url: "https://www.nippon1.co.jp/ir/ir.html", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=3851", http_status: 200}
+      - {url: "https://kabutan.jp/stock/kabuka?code=3851&ashi=day", http_status: 200}
+      - {url: "https://finance.yahoo.co.jp/quote/3851.T/history", http_status: 200}
+
+    claims:
+      # --- 続報（2026-W33） --------------------------------------------------
+      - id: V31
+        section: updates
+        quote: "8月13日の終値**1,186円**は、前営業日8月12日の1,140円（当時の直近52週高値）を4.0%上回り、**52週高値をさらに更新**した"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/prices/daily.csv"
+          - "https://kabutan.jp/stock/kabuka?code=3851&ashi=day"
+          - "https://finance.yahoo.co.jp/quote/3851.T/history"
+        evidence: >-
+          data/prices/daily.csv の2026-08-13行: close=1186・status=OK
+          （source_primary=kabutan 1186／source_secondary=yahoo_jp 1186）。
+          2026-08-12行: close=1140・status=OK。1186÷1140−1 = +4.035%≒本文の4.0%。
+          status に OK を含む直近52週（2025-08-14〜2026-08-13・242行）の終値の最大値は
+          2026-08-13の1186で、「52週高値をさらに更新」と一致する。
+          あわせて出典2件を再取得: kabutan/kabuka（200）は
+          「26/08/13 | 1,135 | 1,188 | 1,135 | 1,186 | +46 | +4.04 | 37,900」、
+          Yahoo!ファイナンス履歴（200）は「2026/8/13 | 1,135 | 1,188 | 1,135 | 1,186」
+          を表示し、いずれも終値1,186・前日比+4.04%（≒本文の4.0%）を確認できた。
+
+      - id: V32
+        section: updates
+        quote: "25日移動平均乖離率は8月12日の+19.3%から**+22.3%**へ、RSI(14)は70.1から**73.1**へ、どちらも過熱方向にさらに進んだ"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py", "data/prices/daily.csv"]
+        evidence: >-
+          python src/judge.py --indicators-only を実行（as_of 2026-08-13）。
+          3851 は ma_deviation_pct = 22.328574964931104（≒+22.3%）、
+          rsi14 = 73.09773969794088（≒73.1）。前回 run が V24 で確認した
+          8月12日時点の値（+19.3%・70.1）より両方とも大きく、
+          「さらに過熱方向に進んだ」という本文の主張と一致する。
+
+      - id: V33
+        section: updates
+        quote: "企業IRの適時開示一覧（<https://www.nippon1.co.jp/ir/ir.html>、2026-08-14確認）と株探ニュース欄（<https://kabutan.jp/stock/news?code=3851>、2026-08-14確認）を確認したが、8月7日の1Q決算発表・8月3日の「10万本突破」以降、**新しい開示・材料ニュースは出ていない**"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.nippon1.co.jp/ir/ir.html"
+          - "https://kabutan.jp/stock/news?code=3851"
+        evidence: >-
+          IRページを再取得（200・5,156字）。「IR新着情報」の先頭（最新）行は
+          「2026.08.07 2027年3月期 第1四半期決算短信」のままで、これより新しい日付の
+          開示は無い。株探ニュース欄も再取得（200・4,890字）。材料ニュース一覧の
+          先頭2件は「26/08/07 15:30｜開示｜令和9年3月期 第1四半期決算短信〔日本基準〕（連結）」
+          「26/08/07 15:30｜決算｜日本一ソフト、4-6月期(1Q)経常は赤字縮小で着地」で、
+          その次が「26/08/04 10:57｜材料｜…10万本突破」。8月7日・8月3日より後に
+          新しい開示・材料ニュースが無いという記述は、両出典とも確認できた。
+
+      - id: V34
+        section: updates
+        quote: "この日の上昇を説明する新しい材料は見当たらない。**理由は特定できていない**"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.nippon1.co.jp/ir/ir.html"
+          - "https://kabutan.jp/stock/news?code=3851"
+        evidence: >-
+          V33 と同じ2出典を確認した範囲では、8月13日の株価上昇（前日比+4.04%）を
+          説明できる新しい開示・ニュースは見当たらなかった。「理由は特定できていない」
+          という自己申告は、この2出典の範囲では正しい。ただし本検証もこの2出典しか
+          当たっておらず、SNS・掲示板等は対象外（本文の他の節と同じ扱い）。
+        action: "この2出典の外に理由がある可能性は残る。今回はそこまで確認していない"
+
+      - id: V35
+        section: updates
+        quote: "信用残は8月7日時点のまま更新なし（信用倍率5.24倍。`data/margin/3851.csv` に8月14日以降の新しい行は無い）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/margin/3851.csv"]
+        evidence: >-
+          data/margin/3851.csv の最終行は2026-08-07（long_balance=333.1・
+          short_balance=63.6・ratio=5.24・unit=千株・status=OK）で、
+          これより新しい日付の行は無い。本文の「信用倍率5.24倍」
+          「8月14日以降の新しい行は無い」と一致する。
+
 # ---------------------------------------------------------------------------
 # 判定の始末（resolutions）
 #
