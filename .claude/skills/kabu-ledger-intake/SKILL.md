@@ -66,7 +66,11 @@ description: 楽天証券スクリーニング結果のスクショから銘柄�
 - `screening` ブロックの `captured_at` / `hit_count` / `revision` も更新する
   （※現状どのコードも読んでいないが、いつ取ったスクリーニングかの記録として残す）
 
-### 4. 履歴を取る（この銘柄ぶんだけ）
+### 4. 履歴を取る
+
+**注意: `fetch*.py` に銘柄単位の指定は無く、master.yaml の全銘柄を対象に回る**
+（既存銘柄ぶんは追記0件で終わるが、`--historical` は既存銘柄の過去ページも再クロールする。
+銘柄数が増えて intake が遅くなったら銘柄指定オプションの追加を検討 → BACKLOG.md タスク8）。
 
 ```powershell
 $env:PYTHONIOENCODING = "utf-8"

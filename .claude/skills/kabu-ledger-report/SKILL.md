@@ -1,12 +1,12 @@
 ---
 name: kabu-ledger-report
-description: kabu-ledger の銘柄レポート（reports/{code}.md）を1銘柄ぶん作る／更新する。レポートが無ければ全節を書き下ろし、あれば週次アップデートを追記する（深掘り対象は全節を見直す）。「レポートを作って」「週次アップデートして」「6570のレポート」「新しい銘柄を登録して」と言われた場合、master.yaml に銘柄を足した直後、および週次バッチのレポート更新工程で必ず使用する。裏取り（kabu-ledger-verify）と決算取り込み（kabu-ledger）には使わない。並列実行の起点は .claude/workflows/weekly-reports.js。
+description: kabu-ledger の銘柄レポート（reports/{code}.md）を1銘柄ぶん作る／更新する。レポートが無ければ全節を書き下ろし、あれば週次アップデートを追記する（深掘り対象は全節を見直す）。「レポートを作って」「週次アップデートして」「6570のレポート」「新しい銘柄を登録して」と言われた場合、master.yaml に銘柄を足した直後、および週次バッチのレポート更新工程で必ず使用する。裏取り（kabu-ledger-verify）と決算取り込み（kabu-ledger）には使わない。並列実行の起点は .claude/workflows/kabu-weekly-reports.js。
 ---
 
 # kabu-ledger-report — 1銘柄ぶんのレポート生成
 
 **このスキルは1銘柄だけを担当する。** 複数銘柄は
-`.claude/workflows/weekly-reports.js` が銘柄ごとに独立したエージェントを立てる。
+`.claude/workflows/kabu-weekly-reports.js` が銘柄ごとに独立したエージェントを立てる。
 他の銘柄のファイルを読まない・書かない（並列実行で衝突する）。
 
 ## 絶対原則
