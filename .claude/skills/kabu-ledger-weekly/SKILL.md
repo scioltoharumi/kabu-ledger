@@ -96,35 +96,35 @@ python src/score.py
 
 ## ③ 裏取り（別コンテキスト）
 
+**対象は「今週、出典を伴う新しい事実主張を追記した銘柄」だけ。**
+「特筆すべき動きなし」の定型1行しか足していない銘柄は、検証対象が増えていないので
+回さない（過去の記述は過去の run が担保している）。迷ったら回す側に倒す。
+
 `.claude/skills/kabu-ledger-verify/SKILL.md` に従う。上のワークフローが
 銘柄ごとに別エージェントとして起動するので、**書いた本人が自分の記述を検証しない**。
-
 裏が取れない記述は落とすか「未確認」と明示する。黙って残さない。
 
 ## ③.5 ベアケース（弱気材料）
 
-各銘柄の弱気材料を3点ずつ `bear/{code}.yaml` に出す。**強気材料は書かない。**
+**毎週は回さない。** 対象は「deep_dive の銘柄」と「新規登録の直後」だけ
+（弱気材料3点は週単位では変わらない。毎週の再生成はコストに見合わない）。
 
-**必ず別エージェント（Task）にやらせ、次を読ませない**: `theses/`（保有理由）・
-`docs/`（台帳）・`data/master.yaml`（買値が入っている）。追認バイアスを避けるための
-隔離であり、レポートを書いた文脈の中でやると意味が消える。
-
-根拠URLと取得日を必須にし、確認できない主張は書かない。
-これは Should 要件なので、**失敗しても ④ 以降は進める**。
+やる週は: 各銘柄の弱気材料を3点ずつ `bear/{code}.yaml` に出す。強気材料は書かない。
+**必ず別エージェント（Task）にやらせ、`theses/`・`docs/`・`data/master.yaml` を
+読ませない**（追認バイアスの隔離）。根拠URLと取得日を必須にし、確認できない主張は
+書かない。Should 要件なので、**失敗しても ④ 以降は進める**。
 
 ## ④ 生成と push
 
 ```powershell
 python src/build.py
-python tools/run_tests.py           # 約45秒。CI と同じ全数を並列で
+python tools/run_tests.py           # 約25秒。CI と同じ全数を並列で
 git add -A ; if ($?) { git commit -m "週次更新 YYYY-Www" }
 git pull --rebase origin main ; if ($?) { git push origin main }
 ```
 
-`pull --rebase` が `docs/` で衝突したら、中身を読まずに `python src/build.py` →
-`Select-String -Path docs -Pattern '^<<<<<<< ' -Recurse` が0件を確認 →
-`git add docs/` → `git rebase --continue`。
-**`data/` には同じ手を使わない**（append-only。衝突したら `git rebase --abort` して人間に上げる）。
+rebase の衝突時の手順は CLAUDE.md「実行順」が正（`docs/` は build.py で再生成して
+continue・**`data/` は abort して人間に上げる**）。
 
 ## ⑤ 公開の確認
 

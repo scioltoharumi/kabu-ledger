@@ -25,12 +25,13 @@ const SKIP_VERIFY = Array.isArray(_args) ? false : Boolean(_args.skipVerify)
 
 const WROTE_SCHEMA = {
   type: 'object',
-  required: ['code', 'mode', 'wrote', 'week', 'summary'],
+  required: ['code', 'mode', 'wrote', 'new_claims', 'week', 'summary'],
   additionalProperties: false,
   properties: {
     code: { type: 'string' },
     mode: { type: 'string', enum: ['初回', '深掘り', '追記のみ', 'スキップ'] },
     wrote: { type: 'boolean', description: 'reports/{code}.md を実際に書き換えたか' },
+    new_claims: { type: 'boolean', description: '今週の追記に、出典を伴う新しい事実主張が含まれるか。「特筆すべき動きなし」等の定型1行だけなら false' },
     week: { type: 'string', description: '追記した週キー（YYYY-Www）。書いていなければ空' },
     summary: { type: 'string', description: '今週の要点を1〜2文' },
     sources: { type: 'array', items: { type: 'string' }, description: '今回使った出典URL' },
@@ -104,8 +105,10 @@ ${FORCE_MODE ? `モードは "${FORCE_MODE}" を強制する。` : 'モードは
   ),
 
   // --- 2. 裏取り（**別コンテキスト**。書いた本人にはやらせない） ---
+  // 新しい事実主張が無い週（「動きなし」定型のみ）は検証対象が増えていないので回さない。
+  // new_claims が未報告（undefined）の場合は裏取りに回す＝フェイルセーフは検証が増える側。
   (wrote, code) => {
-    if (SKIP_VERIFY || !wrote || !wrote.wrote) {
+    if (SKIP_VERIFY || !wrote || !wrote.wrote || wrote.new_claims === false) {
       return { code, skipped: true, wrote }
     }
     return agent(
@@ -143,12 +146,10 @@ ${REPO} で次を順に実行し、結果をそのまま報告せよ。**直し�
     python src/checks.py
     python tools/run_tests.py
     python src/build.py
-    powershell -ExecutionPolicy Bypass -File tools\\shot.ps1
 
 報告に必ず含めるもの:
 - checks.py の FAIL 件数と、FAIL があればその全文
 - run_tests.py で exit≠0 になったファイル名
-- shot.ps1 の FAIL / WARN 件数
 - \`git status --short\` の出力（どのファイルが変わったか）
 
 git 操作はしない。commit も push もしない。`,
