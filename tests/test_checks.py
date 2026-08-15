@@ -37,6 +37,28 @@ _REAL_SUMMARY: list[str] = []
 # ヘルパ
 # =============================================================================
 
+_BASE: Path | None = None
+
+
+def _base_data() -> Path:
+    """make_data の複製元。初回だけ実データをローカルの一時領域へ写す。
+
+    ROOT は G:（Google Drive）にあり、そこからの copytree は1回 約0.17秒 ×
+    128回 ≒ 22秒かかっていた。2段化してローカル→ローカルの複製に変える。
+    ベースは毎プロセス実データから作るので実データ性は維持される。
+    ハードリンクは使わない（edit_prices の open("w") が共有実体を壊す）。
+    """
+    global _BASE
+    if _BASE is None:
+        base = Path(tempfile.mkdtemp(prefix="kabu-base-"))
+        _TMPDIRS.append(base)
+        shutil.copytree(ROOT / "data", base / "data")
+        if (ROOT / "reports").exists():
+            shutil.copytree(ROOT / "reports", base / "reports")
+        _BASE = base
+    return _BASE
+
+
 def make_data(mutate=None) -> Path:
     """実データの data/ と reports/ を一時ディレクトリに複製し、mutate で壊す。
 
@@ -44,12 +66,13 @@ def make_data(mutate=None) -> Path:
     （`check_report_numbers`）が data/ だけでは成立しないため。
     run_checks は既定で `data_dir.parent / "reports"` を見る。
     """
+    src = _base_data()
     base = Path(tempfile.mkdtemp(prefix="kabu-checks-"))
     _TMPDIRS.append(base)
     dst = base / "data"
-    shutil.copytree(ROOT / "data", dst)
-    if (ROOT / "reports").exists():
-        shutil.copytree(ROOT / "reports", base / "reports")
+    shutil.copytree(src / "data", dst)
+    if (src / "reports").exists():
+        shutil.copytree(src / "reports", base / "reports")
     if mutate is not None:
         mutate(dst)
     return dst

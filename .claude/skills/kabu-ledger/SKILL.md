@@ -12,12 +12,8 @@ description: kabu-ledger の決算データ取り込み。決算短信・有価�
 - **Claude の仕事は「一次情報から実額を抜く」ことまで**。前年同期比・進捗率・構成比は必ずコードが計算する
 - **エンジンを介さない暗算・概算での比率提示は禁止**。「売上高 前年同期比 +32%」と書かない。書くのは「当四半期売上高 X 百万円」「前年同四半期売上高 Y 百万円」の2行で、比率はコードが出す
 - 桁の妥当性を確かめるための概算は**チャット上の点検としてのみ**行ってよい。CSV にも台帳にも残さない
-- 比率を計算するコードは**実装済み**（2026-08-12 時点）。Claude が比率を書く必要はないし、書いてはいけない
-  - 前年同期比・1Q進捗率 → `src/judge.py` の `derive_kpi_metrics()`
-  - ストック売上構成比（`stock_revenue_ratio`）→ `src/score.py` の `_kpi_pair_ratio()`
-  - `src/checks.py` は比率が CSV に書かれていたら FAIL にする（`KPI_DERIVED_METRICS`）
-  - 人間には「実額を追記した。比率はコードが計算する（`judge.derive_kpi_metrics`）」と報告する。
-    **「比率は未算出」と報告しない**（台帳には出ているので嘘になる）
+- 比率を計算するコードは**実装済み**（関数は §実装状況、式は下の derived metric 表）。`src/checks.py` は比率が CSV に書かれていたら FAIL にする（`KPI_DERIVED_METRICS`）。Claude が比率を書く必要はないし、書いてはいけない
+- 人間には「実額を追記した。比率はコードが計算する（`judge.derive_kpi_metrics`）」と報告する。**「比率は未算出」と報告しない**（台帳には出ているので嘘になる）
 
 ## 取得元(ここに書いたものだけ。自律的に追加しない)
 
@@ -33,7 +29,7 @@ description: kabu-ledger の決算データ取り込み。決算短信・有価�
 - EDINET のエンドポイント詳細を推測で組み立てない。応答が得られなければ TDnet か IR ページに切り替える
 - TDnet の一覧は直近31日程度で辿れなくなる。`source_url` には**会社 IR サイトの恒久 URL を優先**し、TDnet の PDF は代替に留める
 
-### `ir_url` が `TO_VERIFY` の銘柄(4073・3851・6570)
+### `ir_url` が `TO_VERIFY` の銘柄
 
 1. TDnet の発表日一覧、または EDINET の提出者情報から会社の公式ドメインを特定する
 2. 会社名検索の結果と突き合わせ、**2経路で一致した場合のみ**確定とする
@@ -132,7 +128,7 @@ date,code,metric,value,unit,definition,assumed,source_url,fetched_at
 | 一次情報から読み取れた | `false` | **必須**。空なら行ごと書かない(不変条件「数値は必ず `source_url` と `fetched_at` を伴う」) | 4フィールド |
 | 推定で埋めた | `true` | 推定の材料にした一次情報の URL(例: 前期短信)。それも無ければ空を許す | 5フィールド(`assumed:` 必須) |
 
-**禁止されているのは推測することではなく、推測を隠すこと。** `assumed` フラグと根拠なしのデフォルト値埋めは禁止する。逆に、フラグと根拠を付けたうえでの推定は許可されている。
+`assumed` フラグと根拠なしのデフォルト値埋めは禁止する。逆に、フラグと根拠を付けたうえでの推定は許可されている（CLAUDE.md「禁止されているのは推測することではなく、推測を隠すこと」）。
 
 `source_url` は、実際にアクセスして本文・PDF に当該数値が載っていることを確認できた場合のみ記録する。**確認できなければ空のままにする。それらしい URL を組み立てて書かない。**
 
@@ -149,7 +145,7 @@ date,code,metric,value,unit,definition,assumed,source_url,fetched_at
 7. **上限点検** — `|value| > 1e9`(百万円単位で1000兆円)なら単位の取り違え。書かない
 8. **期整合** — `definition` の `period` の決算月が `master.yaml` の `fiscal_year_end` と一致しなければ書かない
 
-`src/checks.py` は KPI CSV も検査する（列の有無・`metric` の語彙・derived metric の混入・`unit` の enum・`definition` 空・`assumed` と根拠・`source_url`/`fetched_at` の有無・桁点検・符号点検・`(code,date,metric)` の重複・追記性）。ただし **checks.py に確かめられるのは形式だけ**である。値が一次情報と一致しているか、`period` や `consolidation` が実際の短信どおりかは検査できない。この節の手順（正規化・範囲検証・人間への提示）を省略しない。
+`src/checks.py`（`check_kpi`。検査項目は現物が正）は KPI CSV の形式も検査するが、**checks.py に確かめられるのは形式だけ**である。値が一次情報と一致しているか、`period` や `consolidation` が実際の短信どおりかは検査できない。この節の手順（正規化・範囲検証・人間への提示）を省略しない。
 
 ## 動作フロー(決算の取り込み)
 
@@ -175,51 +171,23 @@ date,code,metric,value,unit,definition,assumed,source_url,fetched_at
 
 過去行を書き換えない。**訂正開示日を `date` として新しい行を追記する**。period は同じままなので、コードは「同じ period のうち最も新しい `date` の行」を採用できる。過去行を消すと append-only 検査が FAIL する。
 
-## 例: 4073 ジィ・シィ企画 2026-08-14 決算
+## 追記行のテンプレート(例: 6月決算銘柄の本決算を新規 CSV に書く場合)
 
-`master.yaml`: `code: "4073"` / `fiscal_year_end: "06"` / `next_earnings: "2026-08-14"` / `ir_url: TO_VERIFY`
-
-**この決算は 2026年6月期の本決算(通期)である。** 手順は以下になる。
-
-1. 2026-08-14 まで待つ。それ以前に着手しない
-2. `ir_url` が `TO_VERIFY` なので、TDnet の 2026-08-14 一覧(`I_list_001_20260814.html`)から「ジィ・シィ企画」の決算短信を探し、そこから会社の公式ドメインを特定する。EDINET の提出者情報でも突き合わせ、2経路一致したら `ir_url` 更新を**提案**する(書き換えない)
-3. 短信の表紙で `連結` / `単体` と会計基準を確認する
-4. サマリー情報から、当期(2026年6月期通期)と前期(2025年6月期通期)の売上高・営業利益・経常利益、および**次期(2027年6月期)の通期会社計画**を抜く
-5. テーゼ(`theses/4073.md`)がストック比率を見るので、セグメント情報からペイメントサービス(ストック)の売上高も抜く
-
-追記する行は次の10本になる。`data/kpi/4073.csv` は新規作成なのでヘッダから書く。
-
-**〈値〉と〈連結or単体〉は 2026-08-14 の開示を読んでから埋める。この例に実数を書いていないのは、まだ開示されていないからである。** `fetched_at` は実際に取得した時刻を入れる。
+〈値〉と〈連結or単体〉は短信の表紙・本表を読んでから確定させる(推測で埋めない)。`fetched_at` は実際に取得した時刻。`data/kpi/{code}.csv` が無ければヘッダから書く。
 
 ```
 date,code,metric,value,unit,definition,assumed,source_url,fetched_at
-2026-08-14,4073,operating_income,〈値〉,JPY_million,FY2026Q4cum|〈連結or単体〉|日本基準|営業利益,false,〈確認できたURL〉,〈取得時刻〉
-2026-08-14,4073,operating_income_fy_plan,〈値〉,JPY_million,FY2027Q4cum|〈連結or単体〉|日本基準|営業利益(会社予想),false,〈確認できたURL〉,〈取得時刻〉
-2026-08-14,4073,operating_income_prev_year,〈値〉,JPY_million,FY2025Q4cum|〈連結or単体〉|日本基準|営業利益,false,〈確認できたURL〉,〈取得時刻〉
-2026-08-14,4073,ordinary_income,〈値〉,JPY_million,FY2026Q4cum|〈連結or単体〉|日本基準|経常利益,false,〈確認できたURL〉,〈取得時刻〉
-2026-08-14,4073,ordinary_income_fy_plan,〈値〉,JPY_million,FY2027Q4cum|〈連結or単体〉|日本基準|経常利益(会社予想),false,〈確認できたURL〉,〈取得時刻〉
-2026-08-14,4073,ordinary_income_prev_year,〈値〉,JPY_million,FY2025Q4cum|〈連結or単体〉|日本基準|経常利益,false,〈確認できたURL〉,〈取得時刻〉
 2026-08-14,4073,revenue,〈値〉,JPY_million,FY2026Q4cum|〈連結or単体〉|日本基準|売上高,false,〈確認できたURL〉,〈取得時刻〉
 2026-08-14,4073,revenue_fy_plan,〈値〉,JPY_million,FY2027Q4cum|〈連結or単体〉|日本基準|売上高(会社予想),false,〈確認できたURL〉,〈取得時刻〉
 2026-08-14,4073,revenue_prev_year,〈値〉,JPY_million,FY2025Q4cum|〈連結or単体〉|日本基準|売上高,false,〈確認できたURL〉,〈取得時刻〉
 2026-08-14,4073,segment_revenue:payment_service,〈値〉,JPY_million,FY2026Q4cum|〈連結or単体〉|日本基準|ペイメントサービス売上高,false,〈確認できたURL〉,〈取得時刻〉
 ```
 
-- `〈連結or単体〉` と `売上高` / `営業収益` の別は短信の表紙・本表で確認して確定させる。**推測で埋めない**
+- `operating_income*` / `ordinary_income*` も同じ3変種(当期・`_prev_year`・`_fy_plan`)で作る。period の付け方は上の3行と同じ(当期 `FY2026Q4cum` / 前年 `FY2025Q4cum` / 会社予想は対象期 `FY2027Q4cum`)
+- 会計基準が IFRS だった場合、`経常利益` は存在しない。`ordinary_income*` の行を落とし、落としたことを人間に報告する。無理に営業利益を経常利益として書かない
 - 単位が千円表記なら `unit` は `JPY_thousand` にする。**百万円へ換算しない**
-- 会計基準が IFRS だった場合、`経常利益` は存在しない。3行(`ordinary_income*`)を落とし、落としたことを人間に報告する。無理に営業利益を経常利益として書かない
-- セグメント名が短信で「ペイメントサービス」でなければ、`slug` と `item_label` を実際の開示名に合わせる
-
-### この開示で「できないこと」を人間に伝える
-
-- 算出できるのは**通期の前年比**であって、スクリーニング基準の「**前年同四半期比**」ではない。両者を同じものとして扱わない
-- **1Q進捗率はこの開示からは算出できない**。分子となる 2027年6月期1Q の実績がまだ無い。次回(2026年11月頃)の1Q短信で `ordinary_income`(period `FY2027Q1cum`)が入って初めて、この日に記録した `ordinary_income_fy_plan` を分母に計算できる
-  - このとき `derive_kpi_metrics()` は 1Q進捗率を **`n/a`（該当しない）** として返す（`unknown` ではない）。直近の開示が1Q累計でないだけなので、ファンダ確認は**この条件を外して**評価を続ける。**「未計算だから調査」にはならない**
-  - 一方、売上高・経常利益の前年同期比は算出できるので、それが 30% を下回れば「調査」で止まる
-- 予測 `P-2026W33-02`(`operating_income > 0` / 期限 2026-08-21)は、この追記で `score.py` が解決できるようになる
-- 予測 `P-2026W33-01`(`stock_revenue_ratio > 0.61`)は**比率**だが、`score._kpi_pair_ratio()` が
-  `segment_revenue:payment_service ÷ revenue` として計算するので、
-  **同一開示日に両方の実額行を追記すれば解決できる**。**勝手に比率行を作って埋めない**（コードが計算する）
+- セグメント名が短信の開示名と違えば、`slug` と `item_label` を実際の開示名に合わせる
+- 通期開示から算出できるのは**通期の前年比**であって、スクリーニング基準の「前年同四半期比」ではない。両者を同じものとして扱わない
 
 ## やってはいけないこと
 
@@ -234,28 +202,14 @@ date,code,metric,value,unit,definition,assumed,source_url,fetched_at
 - 人間の承認前に commit する
 - 欠測を通過扱いにする(判定は「調査」で止める)
 
-## 実装状況(2026-08-12 時点。存在しないものを存在するかのように扱わない)
+## 実装状況
 
-| もの | 状態 | 置き場所 |
-|---|---|---|
-| 前年同期比・1Q進捗率の計算 | **実装済み** | `src/judge.py` `derive_kpi_metrics()` |
-| ストック売上構成比の計算 | **実装済み** | `src/score.py` `_kpi_pair_ratio()` |
-| KPI CSV の形式検査 | **実装済み** | `src/checks.py` `check_kpi()` |
-| `src/kpi.py` | **存在しない**。作る場合は上の2つを import して委譲する（同じ式を再実装しない） | — |
-| `data/kpi/*.csv` | **実体なし**(`.gitkeep` のみ)。4073 の 2026-08-14 が最初の1本になる | — |
-
-`checks.py` が検査できるのは形式だけで、値が一次情報と一致しているかは検査できない。
+実装の有無は `src/` の現物が正(比率計算: `judge.derive_kpi_metrics` / `score.resolve_kpi_metric`、KPI CSV の形式検査: `checks.check_kpi`)。存在しないものを存在するかのように扱わず、同じ式を再実装しない。
 
 ## 迷ったときの優先順位
 
-1. 記録の正確性 > 台帳の見た目
-2. 欠測を残す > 埋めて完全に見せる
-3. 「調査」で止める > 「買」を出す
-4. 人間に確認する > 自律的に判断する
+CLAUDE.md「判断基準」に従う。
 
 ## 表示を直したときの完了条件
 
-`.\tools\published.ps1 -Marker <今回入れた印>` が `PUBLISHED`（exit 0）を出すまで
-「反映されました」と報告しない。**公開は push が起こす**（deploy.yml が on: push で
-テスト → build.py → deploy-pages まで無人で走る）。gh workflow run を手順に入れない。
-手順の詳細は CLAUDE.md「表示を直したときの標準手順」が正。
+CLAUDE.md「表示を直したときの標準手順」が正。

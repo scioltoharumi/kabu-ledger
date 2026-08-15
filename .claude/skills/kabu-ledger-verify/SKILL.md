@@ -7,11 +7,7 @@ description: kabu-ledger の銘柄レポート（reports/{code}.md）の記述�
 
 対象は**レポート本文の言明**。数値の照合は `src/fetch_fundamentals.py` と
 `src/checks.py` が済ませている。ここが担うのは、**その照合が届かない散文**である。
-
-4073 の実測（2026-08-13）: `checks.py` が突合できたレポートの数値は 15件。
-同じ本文の散文の中には、さらに **85件の数値と、それより多い言明**がある。
-「導入180社以上」「アナリストのカバーは0社」「大型案件は来期計上」——
-どれも CSV に対応する行が無いので、突合検査からは**完全に見えない**。
+散文の数値・言明は CSV に対応する行が無く、突合検査からは**完全に見えない**。
 
 ## 絶対原則
 
@@ -69,7 +65,7 @@ GitHub Actions では `verify` ジョブが sparse-checkout で渡すものを�
 持ち越す」＝**前回の検証を根拠にする**方向に流れるのが最悪なので、
 master 非依存の `--indicators-only`（判定は出さず指標だけ）を使う。
 
-- **WebFetch を使わない。** kabutan / minkabu / irbank / buffett-code は 403 を返す（2026-08-13 実測）。
+- **WebFetch を使わない。** kabutan / minkabu / irbank / buffett-code は 403 を返す。
   「開けなかったので本文を信じる」に流れるのが最悪の失敗なので、必ず `fetch_source.py` を使う
 - PDF は `fetch_source.py` がテキスト化しない。決算短信は `data/tanshin/{code}.csv`
   （`fetch_tanshin.py` が抽出済み）を根拠にする
@@ -103,7 +99,6 @@ master 非依存の `--indicators-only`（判定は出さず指標だけ）を�
 - レポートの「出典」節は一次情報と二次情報を表で分けている。**その区分が正しいかも検証対象**。
   一次情報の欄に置かれたURLが、再取得すると目次だけで本文を持たないなら、
   それは**一次情報として機能していない**。1件の claim として `unsupported` で記録する
-  （4073 の `V24` が実例）
 - 「一次情報を引いた二次情報」は二次情報である。孫引きを一次情報の欄に置かない
 
 ## 動作フロー
@@ -182,10 +177,9 @@ runs:
 **各 run はその時点の本文の全量スナップショット**にする。本文が直った後に再検証するときも、
 全 claim を書き直した run を末尾に足す。**過去の run は1行も触らない。**
 
-なお、台帳と `checks.py` は claim を **`id` で畳んで最新の判定**を採る（2026-08-13 変更）。
-以前は最新 run だけを見ていたため、**claim 1件だけの run を足すだけで前回の指摘が全部消えた**
-（悪意は要らない。別の文を選ぶだけで起きる）。畳むようにしたので指摘は消えないが、
-拾い直さなかった claim は WARN で名指しされる。`id` は run をまたいで同じ記述に同じものを使う。
+なお、台帳と `checks.py` は claim を **`id` で畳んで最新の判定**を採る（最新 run だけを見ない。
+claim 1件だけの run を足しても前回の指摘は消えない）。拾い直さなかった claim は
+WARN で名指しされる。`id` は run をまたいで同じ記述に同じものを使う。
 
 ### `contradicted` の始末（`resolutions`）
 
@@ -211,10 +205,8 @@ resolutions:
 つまり「本文の修正を検証済みデータに当て直しただけ」の部分再検証のときだけ。
 外向きの出典に依る claim が1件でもあれば、空は FAIL になる。
 
-**`evidence` に未検証の主張を書かない。** これは実際に起きた事故である（4073 run1 の V17）。
-検証者が根拠欄に書いた「4-6月期は季節的に最も強い四半期で」という未検証の一文が、
-そのままレポート本文に取り込まれ、run2 で `contradicted` になった。
-**裏取りの記録は、裏を取ったことしか書いてはいけない。**
+**`evidence` に未検証の主張を書かない。** 根拠欄に書いた未検証の一文はレポート本文に
+取り込まれて `contradicted` の種になる。**裏取りの記録は、裏を取ったことしか書いてはいけない。**
 
 `checks.py` の `check_verification` が見るもの（`--verify-only` で単独実行できる）:
 
@@ -228,9 +220,8 @@ resolutions:
   記録の再取得URLが現在の本文に無い／最新 run が前回の claim を拾い直していない／
   **`fetch_source.py` の取得ログにその URL が無い**
 
-最後のものが新しい。`urls_refetched[].http_status: 200` は**検証者が YAML に書いた文字列**で
-あって、取得の痕跡ではない。ネットワークに一切触れずに「200 で取れた」と書いた run を
-作れてしまう。`fetch_source.py` は叩くたびに `data/verification/fetch_log.csv`
+`urls_refetched[].http_status` は**検証者が YAML に書いた自己申告**であって、
+取得の痕跡ではない。`fetch_source.py` は叩くたびに `data/verification/fetch_log.csv`
 （追記専用・`fetched_at, code, url, final_url, http_status, chars, sha256`）に残すので、
 **そのログに無いURLを「再取得した」と書くと WARN が出る**。
 

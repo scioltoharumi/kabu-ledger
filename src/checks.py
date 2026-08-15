@@ -14,9 +14,10 @@
     data/link_status.csv      出典URLの死活記録（append-only・`--check-links` のときだけ書く）
     reports/{code}.md         銘柄レポート（v2.0 の主役。**数値は人間が転記している**）
 
-    FAIL -> ビルドを止める（weekly.yml の data ジョブが停止し、後続を実行しない）
-    WARN -> 台帳に表示して続行する（F2-6）。build.py が run_checks() を直接呼んで
-            data.html に一覧を出す。`--json` は人間・CI 向けの機械可読出力。
+    FAIL -> ビルドを止める（deploy.yml の build ジョブ「データ品質検査」ステップが
+            非0終了で止まり、サイト生成・公開に進まない）
+    WARN -> 続行する（F2-6）。build.py は run_checks() を呼ばない。WARN が読まれる
+            経路は checks.py --json（CI と人間が読む機械可読出力）と素の実行の出力。
 
 --------------------------------------------------------------------------
 設計原則（破らないこと）
@@ -103,6 +104,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import functools
 import json
 import re
 import statistics
@@ -781,15 +783,85 @@ def _git(args: list[str], cwd: Path) -> subprocess.CompletedProcess:
                           encoding="utf-8", errors="replace", cwd=cwd, check=False)
 
 
-def _git_baseline(root: Path) -> Baseline | None:
-    """git 管理下なら HEAD をベースラインにする（CI はこちらを使う）。"""
+@functools.lru_cache(maxsize=None)
+def _git_toplevel(repo_root_str: str) -> str | None:
+    """`git rev-parse --show-toplevel` の結果のプロセス内キャッシュ。
+
+    キーは resolve 済みパスの文字列。テストは同じ repo_root（checks.py の ROOT）で
+    run_checks を100回以上呼ぶので、毎回 git を起動すると同じ答えに
+    プロセス起動代 約0.15秒 × 回数を払い続ける。git 管理下でなければ None。
+    """
     try:
-        top = _git(["git", "rev-parse", "--show-toplevel"], root)
+        top = _git(["git", "rev-parse", "--show-toplevel"], Path(repo_root_str))
     except (FileNotFoundError, OSError):
         return None
     if top.returncode != 0 or not top.stdout.strip():
         return None
-    toplevel = Path(top.stdout.strip())
+    return top.stdout.strip()
+
+
+def _git_cat_batch(toplevel: Path, names: list[str]) -> dict[str, str] | None:
+    """`git cat-file --batch` 1プロセスで複数オブジェクトをまとめて読む。
+
+    `git show` をファイルごとに起動するとプロセス起動代だけで
+    約0.15秒 × ファイル数かかる。stdin に `HEAD:パス` を流し込み、
+    ヘッダの objectsize バイトを正確に読んで {名前: テキスト} を事前構築する。
+
+    復号は _git と同じ utf-8 / errors="replace" 固定（text=True の既定復号は
+    Windows で cp932 になり、UTF-8 の CSV が空に化けて比較が黙って素通りする。
+    _git の docstring 参照）。バイナリセーフに size バイトを読んでから復号し、
+    改行も text=True の universal newlines と同じく CRLF / CR → LF に正規化して、
+    `git show` 単発と結果を厳密に一致させる（tests/test_git_baseline.py が
+    パリティを検査する）。
+
+    フォールバックの階層:
+      - missing 応答（HEAD に無い）→ その名前を辞書に入れない
+      - サイズ不整合・ストリーム構文の壊れ → そこまでに読めた分だけ返す
+        （どちらも呼び出し側が、辞書に無い名前だけ `git show` 1回に落とす）
+      - プロセス異常 → None（呼び出し側が全ファイル `git show` に完全フォールバック）
+    """
+    if not names:
+        return {}
+    try:
+        proc = subprocess.run(
+            ["git", "cat-file", "--batch"],
+            input="".join(f"{n}\n" for n in names).encode("utf-8"),
+            capture_output=True, cwd=toplevel, check=False)
+    except (FileNotFoundError, OSError):
+        return None
+    if proc.returncode != 0:
+        return None
+    out = proc.stdout
+    result: dict[str, str] = {}
+    pos = 0
+    for name in names:
+        nl = out.find(b"\n", pos)
+        if nl < 0:
+            return result
+        header = out[pos:nl].decode("utf-8", errors="replace").split()
+        pos = nl + 1
+        if header and header[-1] == "missing":
+            continue
+        if len(header) != 3 or not header[2].isdigit():
+            return result
+        size = int(header[2])
+        end = pos + size
+        # 本文の直後には必ず LF が来る。来ていなければ objectsize と実体が
+        # 食い違っている＝これ以降の対応（名前↔本文）を信用できない。
+        if end >= len(out) or out[end:end + 1] != b"\n":
+            return result
+        text = out[pos:end].decode("utf-8", errors="replace")
+        result[name] = text.replace("\r\n", "\n").replace("\r", "\n")
+        pos = end + 1
+    return result
+
+
+def _git_baseline(root: Path) -> Baseline | None:
+    """git 管理下なら HEAD をベースラインにする（CI はこちらを使う）。"""
+    top = _git_toplevel(str(root.resolve()))
+    if top is None:
+        return None
+    toplevel = Path(top)
     ls = _git(["git", "ls-files", "-z", "--", "data"], toplevel)
     if ls.returncode != 0:
         return None
@@ -808,8 +880,16 @@ def _git_baseline(root: Path) -> Baseline | None:
         if p.endswith(".csv") or p.startswith(f"{prefix}data/verification/"):
             files.add(p[len(prefix):])
 
+    # HEAD の対象ファイルを 1 プロセスでまとめて事前に読む。
+    # 読めなかった名前だけ従来の `git show` 単発に落とす。
+    cache = _git_cat_batch(toplevel,
+                           [f"HEAD:{prefix}{rel}" for rel in sorted(files)])
+
     def read(rel: str) -> str | None:
-        r = _git(["git", "show", f"HEAD:{prefix}{rel}"], toplevel)
+        name = f"HEAD:{prefix}{rel}"
+        if cache is not None and name in cache:
+            return cache[name]
+        r = _git(["git", "show", name], toplevel)
         return r.stdout if r.returncode == 0 else None
 
     return Baseline("git HEAD", files, read)
@@ -3438,13 +3518,13 @@ def check_report_updates_append_only(rep: Report, reports_dir: Path,
     paths = sorted(reports_dir.glob("*.md"))
     if not paths:
         return
-    top = _git(["git", "rev-parse", "--show-toplevel"], repo_root)
-    if top.returncode != 0 or not top.stdout.strip():
+    top = _git_toplevel(str(repo_root.resolve()))
+    if top is None:
         # 「検証できていない」を黙って通さない（追記性検査と同じ方針）。
         rep.warn("report", "reports/",
                  "git 管理下でないため週次アップデートの追記性を検証できていない")
         return
-    toplevel = Path(top.stdout.strip())
+    toplevel = Path(top)
     try:
         prefix = reports_dir.resolve().relative_to(toplevel.resolve()).as_posix()
     except ValueError:
@@ -3452,13 +3532,23 @@ def check_report_updates_append_only(rep: Report, reports_dir: Path,
                  "reports/ がリポジトリの外にあり追記性を検証できていない")
         return
 
+    # HEAD のレポートも 1 プロセスでまとめて読む（_git_baseline と同じ理由）。
+    # 辞書に無い名前（HEAD に無い等）だけ `git show` 単発に落とす。
+    cache = _git_cat_batch(toplevel,
+                           [f"HEAD:{prefix}/{p.name}" for p in paths])
+
     checked = 0
     for path in paths:
         target = f"reports/{path.stem}.md"
-        old = _git(["git", "show", f"HEAD:{prefix}/{path.name}"], toplevel)
-        if old.returncode != 0:
+        name = f"HEAD:{prefix}/{path.name}"
+        if cache is not None and name in cache:
+            old_text = cache[name]
+        else:
+            old = _git(["git", "show", name], toplevel)
+            old_text = old.stdout if old.returncode == 0 else None
+        if old_text is None:
             continue                      # HEAD に無い＝新規レポート
-        before = _week_entries(old.stdout)
+        before = _week_entries(old_text)
         if not before:
             continue
         checked += 1

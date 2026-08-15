@@ -632,7 +632,7 @@ def resolve_irbank_code(fetcher: Fetcher, cfg: dict, code: str,
     """証券コードから IR BANK の企業コード（E36666 等）を**一覧ページから解決する**。
 
     証券コードと企業コードは別体系で、規則的な対応も無い。推測で URL を組み立てない
-    （CLAUDE.md「未確認URLのでっち上げ禁止」）。解決したうえで、ページのタイトルに
+    （.claude/skills/kabu-ledger/SKILL.md「source_url のでっち上げ禁止」）。解決したうえで、ページのタイトルに
     証券コードと会社名の両方が含まれることを確認する（別会社を掴んでいないことの確認）。
     """
     spec = cfg.get("irbank_index") or {}

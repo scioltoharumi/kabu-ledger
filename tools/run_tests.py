@@ -1,7 +1,7 @@
 """ローカル専用の並列テストランナー（案3の実装。weekly.yml は触らない）。
 
   python tools/run_tests.py            # 全部
-  python tools/run_tests.py --shards 4 # test_checks.py の分割数
+  python tools/run_tests.py --shards 8 # test_checks.py の分割数
 
 CI は従来どおり `for f in tests/test_*.py; do python "$f"; done` を直列で回す。
 このファイルは tests/ の外に置くので CI の glob には拾われない。
@@ -46,7 +46,7 @@ sys.exit(1 if failed else 0)
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--shards", type=int, default=4)
+    ap.add_argument("--shards", type=int, default=8)
     ap.add_argument("--jobs", type=int, default=os.cpu_count() or 4)
     args = ap.parse_args()
 
@@ -60,6 +60,12 @@ def main() -> int:
                               str(ROOT), str(k), str(args.shards)]))
         else:
             jobs.append((f.name, [sys.executable, str(f)]))
+
+    # 重いジョブから投入する（全体所要は最後に走る重いジョブに律速される。
+    # 軽いテストが先にワーカーを埋めると、重い test_checks のシャードが
+    # 終盤に回って尻尾が伸びる）。sort は安定なので同順位内は辞書順のまま。
+    order = {SPLIT: 0, "test_data_advance.py": 1}
+    jobs.sort(key=lambda j: order.get(j[0].split("[")[0], 2))
 
     # 出力は **一時ファイル**に落とす。subprocess.PIPE のまま poll() で待つと、
     # 子がパイプバッファ（Windows は数KB）を埋めた時点で書き込みブロックし、
