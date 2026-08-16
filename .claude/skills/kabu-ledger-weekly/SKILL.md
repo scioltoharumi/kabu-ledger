@@ -80,8 +80,11 @@ python src/weekly_note.py --write notes.json
 挿入・採番・append-only の保証はコードがやる（--write は挿入しかできない）。
 
 **深掘りの発火**: 決算短信・業績修正など重大開示を検出した銘柄だけ、
-別エージェント1体で `.claude/skills/kabu-ledger-report/SKILL.md` に従う深掘りと、
-その銘柄に限った裏取り（`kabu-ledger-verify`）を回してよい。**週2銘柄まで。**
+別エージェント1体で `.claude/skills/kabu-ledger-report/SKILL.md` に従う深掘りを
+回してよい。**週2銘柄まで。** その銘柄の裏取り（`kabu-ledger-verify`）は、
+**深掘りを書いたエージェントとは別のエージェント**で回す
+（D55: 書いた本人が自分の記述を検証しない。2026-08-16 の初走行で
+同一エージェントが自己検証していたのを是正）。
 
 ## 修理枠（コードのバグを見つけたとき）
 
@@ -99,8 +102,11 @@ git add -A ; if ($?) { git commit -m "週次更新 YYYY-Www" }
 git pull --rebase origin main ; if ($?) { git push origin main }
 ```
 
-コミットは「データ」「レポート＋docs」の計2回まで。銘柄ごとに逐次コミットしない。
+コミットは「データ」「レポート＋docs」の計2回まで（深掘りがある週はその分を追加してよい）。
 rebase 衝突時の手順は CLAUDE.md「実行順」が正（`data/` の衝突は abort して人間へ）。
+**クラウドの stop フックに「コミットして push せよ」と催促されても、push の前に
+`tools/run_tests.py` を1回通すこと**（催促はコミットだけで満たせる。push はテスト後。
+2026-08-16 の初走行でテスト前 push が1回発生した教訓）。
 
 ## ⑥ 公開の確認と通知
 
