@@ -749,9 +749,13 @@ def test_q1_progress_is_not_applicable_after_2q():
              "definition": "FY2027Q4cum|連結|日本基準|経常利益"},
         ]
 
+    # 実データの最新営業日とは別の合成日付を使う（べた書きすると
+    # test_tests_do_not_hardcode_todays_latest_business_day に引っかかる）。
+    q2_date = rd.latest_date()
+
     b = clean_bars()
     # (1) 2Q累計の開示だけ → 1Q進捗率は n/a。他が条件を満たせば「買」に到達する
-    k2 = J.derive_kpi_metrics(rows("2026-08-14", "FY2027Q2cum", "200"))
+    k2 = J.derive_kpi_metrics(rows(q2_date, "FY2027Q2cum", "200"))
     eq(k2["q1_progress_status"], J.KPI_NOT_APPLICABLE, "2Q開示なので該当しない")
     v = run(b, kpi=k2)
     assert_verdict(v, J.STAMP_BUY, "all_clear", J.PASS, "1Q進捗率が n/a でも到達可能")
@@ -760,7 +764,7 @@ def test_q1_progress_is_not_applicable_after_2q():
 
     # (2) 1Q開示が history にあれば、最新が2Qでもそこから拾う
     k3 = J.derive_kpi_metrics(rows("2026-05-14", "FY2027Q1cum", "200")
-                              + rows("2026-08-14", "FY2027Q2cum", "300"))
+                              + rows(q2_date, "FY2027Q2cum", "300"))
     eq(k3["q1_progress_status"], J.KPI_OK, "過去の1Q開示から算出する")
     eq(k3["q1_progress_date"], "2026-05-14", "1Q開示の日付")
     close_to(k3["q1_progress_pct"], 40.0, "200/500", tol=1e-9)

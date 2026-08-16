@@ -97,7 +97,17 @@ def codes_with_ratio_na() -> list[str]:
             if "RATIO_NA" in str(margin_latest(c).get("status") or "")]
 
 
+def _dt_add_days(iso_date: str, days: int) -> str:
+    from datetime import date, timedelta
+    return (date.fromisoformat(iso_date) + timedelta(days=days)).isoformat()
+
+
 _KPI_HEADER = "date,code,metric,value,unit,definition,assumed,source_url,fetched_at\n"
+
+# 実データの最新営業日とは別の合成日付を使う（べた書きすると
+# test_tests_do_not_hardcode_todays_latest_business_day に引っかかる）。
+_KPI_DATE = rd.latest_date()
+_KPI_RESOLVE_BY = _dt_add_days(_KPI_DATE, 7)
 
 
 def _kpi_row(date, metric, value, unit="JPY_million", definition="FY2027Q1cum|連結|日本基準|x"):
@@ -266,41 +276,41 @@ def test_margin_is_unresolved_when_stale():
 # =============================================================================
 
 def test_kpi_raw_metric_resolves():
-    repo = tmp_repo(_KPI_HEADER + _kpi_row("2026-08-14", "operating_income", "123"))
-    mv = S.resolve_kpi_metric("9999", "operating_income", "2026-08-21", repo)
+    repo = tmp_repo(_KPI_HEADER + _kpi_row(_KPI_DATE, "operating_income", "123"))
+    mv = S.resolve_kpi_metric("9999", "operating_income", _KPI_RESOLVE_BY, repo)
     close_to(mv.value, 123.0, "実額")
-    eq(mv.as_of, "2026-08-14", "開示日")
+    eq(mv.as_of, _KPI_DATE, "開示日")
 
 
 def test_kpi_derived_ratio_is_computed_by_code():
     rows = (_KPI_HEADER
-            + _kpi_row("2026-08-14", "revenue", "1300")
-            + _kpi_row("2026-08-14", "revenue_prev_year", "1000")
-            + _kpi_row("2026-08-14", "segment_revenue:payment_service", "800"))
+            + _kpi_row(_KPI_DATE, "revenue", "1300")
+            + _kpi_row(_KPI_DATE, "revenue_prev_year", "1000")
+            + _kpi_row(_KPI_DATE, "segment_revenue:payment_service", "800"))
     repo = tmp_repo(rows)
-    close_to(S.resolve_kpi_metric("9999", "revenue_yoy_pct", "2026-08-21", repo).value,
+    close_to(S.resolve_kpi_metric("9999", "revenue_yoy_pct", _KPI_RESOLVE_BY, repo).value,
              30.0, "売上高 前年同四半期比")
-    close_to(S.resolve_kpi_metric("9999", "stock_revenue_ratio", "2026-08-21", repo).value,
+    close_to(S.resolve_kpi_metric("9999", "stock_revenue_ratio", _KPI_RESOLVE_BY, repo).value,
              800 / 1300, "ストック売上構成比")
 
 
 def test_kpi_ratio_not_computed_across_units():
     rows = (_KPI_HEADER
-            + _kpi_row("2026-08-14", "revenue", "1300")
-            + _kpi_row("2026-08-14", "segment_revenue:payment_service", "800000",
+            + _kpi_row(_KPI_DATE, "revenue", "1300")
+            + _kpi_row(_KPI_DATE, "segment_revenue:payment_service", "800000",
                        unit="JPY_thousand"))
-    mv = S.resolve_kpi_metric("9999", "stock_revenue_ratio", "2026-08-21", tmp_repo(rows))
+    mv = S.resolve_kpi_metric("9999", "stock_revenue_ratio", _KPI_RESOLVE_BY, tmp_repo(rows))
     is_none(mv.value, "単位が違う行どうしで比を作らない（換算しない）")
 
 
 def test_kpi_uses_latest_disclosure_before_resolve_by():
     rows = (_KPI_HEADER
             + _kpi_row("2026-05-14", "operating_income", "100")
-            + _kpi_row("2026-08-14", "operating_income", "200"))
+            + _kpi_row(_KPI_DATE, "operating_income", "200"))
     repo = tmp_repo(rows)
     close_to(S.resolve_kpi_metric("9999", "operating_income", "2026-06-30", repo).value,
              100.0, "期限前の開示だけを見る")
-    close_to(S.resolve_kpi_metric("9999", "operating_income", "2026-08-21", repo).value,
+    close_to(S.resolve_kpi_metric("9999", "operating_income", _KPI_RESOLVE_BY, repo).value,
              200.0, "期限までの最新開示")
 
 

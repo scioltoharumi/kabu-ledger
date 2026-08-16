@@ -809,10 +809,13 @@ def test_index_code_column_mismatch():
 # 9. 決算 KPI（LLM が書く唯一のデータファイル）
 # =============================================================================
 
+# 実データの最新営業日とは別の合成日付を使う（べた書きすると
+# test_tests_do_not_hardcode_todays_latest_business_day に引っかかる）。
+_KPI_DATE = rd.latest_date()
 KPI_HEADER = ",".join(checks.KPI_FIELDS)
-KPI_OK = ("2026-08-14,4073,revenue,1234,JPY_million,"
+KPI_OK = (f"{_KPI_DATE},4073,revenue,1234,JPY_million,"
           "FY2026Q4cum|連結|日本基準|売上高,false,"
-          "https://example.com/tanshin.pdf,2026-08-14T18:30:00+09:00")
+          f"https://example.com/tanshin.pdf,{_KPI_DATE}T18:30:00+09:00")
 
 
 def _write_kpi(d: Path, *lines: str) -> None:
@@ -827,63 +830,63 @@ def test_kpi_valid_row_passes():
 
 def test_kpi_derived_metric_is_rejected():
     """比率が CSV に書かれている＝LLM が計算している（F8-4 の違反）。"""
-    bad = ("2026-08-14,4073,revenue_yoy_pct,32.0,pct,"
+    bad = (f"{_KPI_DATE},4073,revenue_yoy_pct,32.0,pct,"
            "FY2026Q4cum|連結|日本基準|売上高,false,"
-           "https://example.com/t.pdf,2026-08-14T18:30:00+09:00")
+           f"https://example.com/t.pdf,{_KPI_DATE}T18:30:00+09:00")
     rep = run(make_data(lambda d: _write_kpi(d, KPI_OK, bad)))
     expect(rep, checks.FAIL, "kpi", "比率が CSV に書かれている")
 
 
 def test_kpi_assumed_without_basis_is_rejected():
     """推測すること自体は許可。**隠すこと**が禁止（D17）。"""
-    bad = ("2026-08-14,4073,ordinary_income,50,JPY_million,"
-           "FY2026Q4cum|連結|日本基準|経常利益,true,,2026-08-14T18:30:00+09:00")
+    bad = (f"{_KPI_DATE},4073,ordinary_income,50,JPY_million,"
+           f"FY2026Q4cum|連結|日本基準|経常利益,true,,{_KPI_DATE}T18:30:00+09:00")
     rep = run(make_data(lambda d: _write_kpi(d, bad)))
     expect(rep, checks.FAIL, "kpi", "assumed=true だが definition に根拠")
 
 
 def test_kpi_assumed_with_basis_is_warned_only():
-    ok = ("2026-08-14,4073,ordinary_income,50,JPY_million,"
+    ok = (f"{_KPI_DATE},4073,ordinary_income,50,JPY_million,"
           "FY2026Q4cum|連結|日本基準|経常利益|assumed:前期短信から按分,true,,"
-          "2026-08-14T18:30:00+09:00")
+          f"{_KPI_DATE}T18:30:00+09:00")
     rep = run(make_data(lambda d: _write_kpi(d, ok)))
     expect_none(rep, checks.FAIL, "kpi")
     expect(rep, checks.WARN, "kpi", "推測で埋めた値（assumed=true）")
 
 
 def test_kpi_missing_source_url_is_rejected():
-    bad = ("2026-08-14,4073,revenue,1234,JPY_million,"
-           "FY2026Q4cum|連結|日本基準|売上高,false,,2026-08-14T18:30:00+09:00")
+    bad = (f"{_KPI_DATE},4073,revenue,1234,JPY_million,"
+           f"FY2026Q4cum|連結|日本基準|売上高,false,,{_KPI_DATE}T18:30:00+09:00")
     rep = run(make_data(lambda d: _write_kpi(d, bad)))
     expect(rep, checks.FAIL, "kpi", "source_url または fetched_at が空")
 
 
 def test_kpi_empty_definition_is_rejected():
-    bad = ("2026-08-14,4073,revenue,1234,JPY_million,,false,"
-           "https://example.com/t.pdf,2026-08-14T18:30:00+09:00")
+    bad = (f"{_KPI_DATE},4073,revenue,1234,JPY_million,,false,"
+           f"https://example.com/t.pdf,{_KPI_DATE}T18:30:00+09:00")
     rep = run(make_data(lambda d: _write_kpi(d, bad)))
     expect(rep, checks.FAIL, "kpi", "definition が空")
 
 
 def test_kpi_unit_out_of_enum_is_rejected():
-    bad = ("2026-08-14,4073,revenue,1234,百万円,"
+    bad = (f"{_KPI_DATE},4073,revenue,1234,百万円,"
            "FY2026Q4cum|連結|日本基準|売上高,false,"
-           "https://example.com/t.pdf,2026-08-14T18:30:00+09:00")
+           f"https://example.com/t.pdf,{_KPI_DATE}T18:30:00+09:00")
     rep = run(make_data(lambda d: _write_kpi(d, bad)))
     expect(rep, checks.FAIL, "kpi", "unit が定義外")
 
 
 def test_kpi_negative_revenue_is_rejected():
-    bad = ("2026-08-14,4073,revenue,-1234,JPY_million,"
+    bad = (f"{_KPI_DATE},4073,revenue,-1234,JPY_million,"
            "FY2026Q4cum|連結|日本基準|売上高,false,"
-           "https://example.com/t.pdf,2026-08-14T18:30:00+09:00")
+           f"https://example.com/t.pdf,{_KPI_DATE}T18:30:00+09:00")
     rep = run(make_data(lambda d: _write_kpi(d, bad)))
     expect(rep, checks.FAIL, "kpi", "売上高系が負")
 
 
 def test_kpi_duplicate_key_is_rejected():
     rep = run(make_data(lambda d: _write_kpi(d, KPI_OK, KPI_OK)))
-    expect(rep, checks.FAIL, "duplicate", "4073/2026-08-14/revenue")
+    expect(rep, checks.FAIL, "duplicate", f"4073/{_KPI_DATE}/revenue")
 
 
 # =============================================================================

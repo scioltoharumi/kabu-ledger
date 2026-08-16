@@ -292,7 +292,9 @@ def test_body_contains_real_values():
 
 
 def test_body_reports_missing_data_as_missing():
-    b = _body("4073")
+    # 4073 は deep_dive 更新に合わせて bear/4073.yaml が生成済みのため、
+    # ベアケース「未生成」を確かめるにはまだ生成していない別銘柄を使う。
+    b = _body("3851")
     assert "未計算の指標:" in b, "取れていない指標を列挙する（空欄で流さない）"
     assert "1Q進捗率" in b, "決算が無いことが未計算として出る"
     assert "KPI未取得" in b or "未取得" in b, "KPI が無いことを書く"
