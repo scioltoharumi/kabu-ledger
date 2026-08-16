@@ -1,0 +1,342 @@
+code: "6570"
+runs:
+  - run: "2026-08-16T11:57:34+09:00"
+    report_updated: "2026-08-16"
+    report_sha256: "a805afa1791339244f5ebcf7887f3642e43f4820740d0adb6308e7f14a43a158"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    urls_refetched:
+      - {url: "https://kabutan.jp/stock/?code=6570", http_status: 200}
+      - {url: "https://kabutan.jp/stock/finance?code=6570", http_status: 200}
+      - {url: "https://minkabu.jp/stock/6570", http_status: 403}
+      - {url: "https://kabuyoho.jp/sp/reportTarget?bcode=6570", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=6570", http_status: 200}
+      - {url: "https://kabutan.jp/news/marketnews/?b=n202608100568", http_status: 200}
+      - {url: "https://www.nihon-ma.co.jp/news/20251112_6570-1/", http_status: 200}
+      - {url: "https://www.strike.co.jp/ma_news/detail.html?id=20251112a", http_status: 200}
+      - {url: "https://www.kyowa-corp.co.jp/company/history", http_status: 200}
+      - {url: "https://www.kyowa-corp.co.jp/business", http_status: 200}
+      - {url: "https://www.nikkei.com/nkd/company/?scode=6570", http_status: 200}
+      - {url: "https://www.kyowa-corp.co.jp/ir/", http_status: 200}
+      - {url: "https://irbank.net/E33822", http_status: 200}
+    urls_delegated:
+      - {url: "https://kabutan.jp/stock/finance?code=6570", to: "data/fundamentals/6570.csv"}
+      - {url: "https://irbank.net/E33822/results", to: "data/fundamentals/6570.csv"}
+      - {url: "https://irbank.net/E33822/quarter", to: "data/fundamentals/6570.csv"}
+      - {url: "https://kabutan.jp/stock/?code=6570", to: "data/margin/6570.csv"}
+    claims:
+      - id: V01
+        section: company
+        quote: "時価総額192億円"
+        verdict: unverifiable
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=6570"]
+        evidence: "再取得（200）。ページは常に最新値を表示するライブページで、8/13時点のスナップショットを保存していない。今回（2026-08-16取得、8/14終値3,095円ベース）は「時価総額 | 188 億円」「発行済株式数 | 6,080,130 株」。188億円÷6,080,130株≈3,093円で8/14終値3,095円と整合しており計算方法自体はおかしくないが、本文が主張する『8/13取得・192億円』という値そのものは再取得では再現できない。"
+        action: "時価総額のような日々変わる値は、取得のたびに『◯月◯日時点』の注記だけでなく、再取得しても照合できない旨をどこかで明示するとよい"
+
+      - id: V02
+        section: company
+        quote: "8月12日の採用終値で計算すると約180.6億円"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv の 2026-08-12 行は close=2970.0・status=OK（kabutan/yahoo_jp 一致）。6,080,130×2,970=18,057,986,100円＝約180.6億円で、本文の掛け算（本文中の『6,080,130×2,970＝18,057,986,100円』）も一致する。"
+
+      - id: V03
+        section: company
+        quote: "発行済株式数6,080,130株"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=6570"]
+        evidence: "再取得（200）本文に「発行済株式数 | 6,080,130 株」がそのまま存在（2026-08-16取得時点でも同値。株式分割等が無い限り変わらない項目）。"
+
+      - id: V04
+        section: company
+        quote: "今期の予想配当は1株40円（前期25円）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/finance?code=6570"]
+        evidence: "再取得（200）本文の業績テーブルに「連 予 2027.03 | 26,870 | 2,000 | 1,992 | 1,219 | 203.8 | 40 |」（今期予想配当40円）と「連 2026.03 | 20,729 | 1,757 | 1,741 | 1,122 | 188.1 | 25 |」（前期実績配当25円）が存在。"
+
+      - id: V05
+        section: company
+        quote: "東証スタンダード上場、業種分類は「サービス業」。2018年に新規上場。"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=6570"]
+        evidence: "再取得（200）本文に「東証Ｓ」（東証スタンダードの略）「業績 | サービス業」「業種 | サービス業」「テーマ | …2018年のIPO…」がそれぞれ存在。"
+
+      - id: V06
+        section: company
+        quote: "買収した YAZアミューズメント・シティエンタテインメント（2019年1月に吸収合併）の店舗は、2020年4月〜2021年4月に「アピナ」へ名称統一されている"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.kyowa-corp.co.jp/company/history"]
+        evidence: "再取得（200）沿革本文に「2019年1月: 株式会社YAZアミューズメント・株式会社シティエンタテインメントの子会社2社を吸収合併」、「2020年4月: ゲームシティプラス川越店→アピナ川越店 等」「2021年4月: YAZ から アピナ に名称変更（磐田店・四日市店・浜松店ほか）」が存在し、日付・内容とも一致。"
+
+      - id: V07
+        section: company
+        quote: "2026年2月1日付で全株式（60株・議決権100.0%）を取得"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.nihon-ma.co.jp/news/20251112_6570-1/"]
+        evidence: "再取得（200）本文に「取得株式数 | 60株」「異動後の所有株式数 | 60株（議決権所有割合：100.0％）」「株式譲渡 実行日：2026年2月1日（予定）」が存在。更新日は2025年11月12日。"
+
+      - id: V08
+        section: company
+        quote: "買収時点（2025年3月期）の道楽の売上は974百万円、営業利益18百万円、純資産82百万円"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.strike.co.jp/ma_news/detail.html?id=20251112a"]
+        evidence: "再取得（200）本文に「同社は売上高9億7400万円、営業利益1800万円、純資産8200万円（2025年3月期）」が存在し、974/18/82百万円と一致。日本M&Aセンターの記事（nihon-ma.co.jp、再取得済み）にはこの財務3項目に相当する記載が無いことも確認した（本文の『2つの出典が一致した値ではない』という指摘は妥当）。"
+
+      - id: V09
+        section: financials
+        quote: "株探 3,003百万円／IR BANK 304百万円"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6570.csv"]
+        evidence: "data/fundamentals/6570.csv の FY2017-03,6570,ordinary_income 行: status=MISMATCH, source_primary=kabutan_record_fy value_primary=3003, source_secondary=irbank_pl_consolidated value_secondary=304。本文の数値と完全一致。"
+
+      - id: V10
+        section: financials
+        quote: "26/3期で株探5,897／IR BANK 5,690百万円"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6570.csv"]
+        evidence: "data/fundamentals/6570.csv の FY2026-03,6570,equity 行: status=MISMATCH, source_primary=kabutan_bs value_primary=5897, source_secondary=irbank_bs value_secondary=5690。本文の数値と完全一致。"
+
+      - id: V11
+        section: financials
+        quote: "ROE は株探20.84%／IR BANK 19.03%、ROA は6.59%／6.03%"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6570.csv"]
+        evidence: "data/fundamentals/6570.csv の FY2026-03 行: roe status=MISMATCH（kabutan_fy_profit=20.84 / irbank_pl_consolidated=19.03）、roa status=MISMATCH（kabutan_fy_profit=6.59 / irbank_pl_consolidated=6.03）。本文の数値と完全一致。"
+
+      - id: V12
+        section: financials
+        quote: "717→1,082→1,294→1,757百万円と4期連続で増えている"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6570.csv"]
+        evidence: "data/fundamentals/6570.csv の operating_income: FY2023-03=717(OK) / FY2024-03=1082(OK|ROUNDING) / FY2025-03=1294(OK|ROUNDING) / FY2026-03=1757(OK|ROUNDING)。いずれも2ソース照合済み採用値で本文の数列と一致。"
+
+      - id: V13
+        section: financials
+        quote: "今期の会社予想2,000百万円は前期比+13.8%にとどまり"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6570.csv"]
+        evidence: "data/fundamentals/6570.csv の FY2027-03,6570,operating_income_plan=2000(OK)。再取得したkabutan財務ページにも『前期比 | +29.6 | +13.8 | +14.4 | +8.6 | +8.3』の行があり、営業益の前期比+13.8%が一致。"
+
+      - id: V14
+        section: financials
+        quote: "前期8.48%に対して今期計画7.44%"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6570.csv"]
+        evidence: "data/fundamentals/6570.csv: FY2026-03,operating_margin=8.48(OK)、FY2027-03,operating_margin_plan=7.44(OK)。本文の数値と一致。"
+
+      - id: V15
+        section: financials
+        quote: "1.53倍→1.13倍へ改善している"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6570.csv"]
+        evidence: "data/fundamentals/6570.csv の interest_bearing_debt_ratio（有利子負債倍率）: FY2024-03=1.5279(OK)→FY2025-03=1.2129(OK)→FY2026-03=1.1257(OK)。再取得したkabutan財務ページの表でも『有利子負債倍率 | 1.53 | 1.21 | 1.13』と同じ並び。"
+
+      - id: V16
+        section: price
+        quote: "目標株価 1,775円（現値より約4割下）"
+        verdict: unverifiable
+        tier: secondary
+        sources: ["https://minkabu.jp/stock/6570"]
+        evidence: "再取得を試みたが http_status=403（Forbidden）。到達できず、本文の数値の裏付けも反証もできない。"
+        action: "みんかぶは恒常的に403を返す取得元。目標株価・PBR・PSRなど、みんかぶにしか無い数値は当面『未検証』のまま扱う。別の一次/二次情報（決算説明資料のアナリスト予想欄など）に置き換えられないか検討する"
+
+      - id: V17
+        section: price
+        quote: "PSR 0.92倍・PBR 3.25倍"
+        verdict: unverifiable
+        tier: secondary
+        sources: ["https://minkabu.jp/stock/6570"]
+        evidence: "再取得を試みたが http_status=403（Forbidden）。V16と同じ理由で到達不能。"
+        action: "V16と同じ（みんかぶ403問題）"
+
+      - id: V18
+        section: price
+        quote: "強気0・中立0・弱気0"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=6570"]
+        evidence: "再取得（200）本文に「強気(5点) | 0 人」「やや強気(4点) | 0 人」「中立(3点) | 0 人」「やや弱気(2点) | 0 人」「弱気(1点) | 0 人」「平均 | -- | 人数 | -- 人」が存在。全カテゴリ0人で本文の『0社』と整合。"
+
+      - id: V19
+        section: price
+        quote: "1,894円（下値目途1,301円／上値目途2,487円）"
+        verdict: unverifiable
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=6570"]
+        evidence: "再取得（200）できたが、株予報Proの理論株価・上値/下値目途は当日の株価・BPSから逐次計算されるライブ値で履歴を保存していない。今回（2026-08-16取得、8/14終値3,095円・BPS実績1,048円ベース）は理論株価(PBR基準)1,939円・下値目途1,242円・上値目途2,636円と、本文の1,894/1,301/2,487円とは異なる（値が動いたこと自体は自然だが、本文が主張する時点の値は再現できない）。"
+        action: "この種のライブ計算値は取得日ごとにdata/へ保存しないと再検証できない。日次スナップショットの保存を検討"
+
+      - id: V20
+        section: outlook
+        quote: "会社計画ベースのPERは約14.6倍"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "data/fundamentals/6570.csv"]
+        evidence: "2970円（2026-08-12 採用終値・OK）÷203.82円（FY2027-03 eps_plan・OK）＝14.57…≈約14.6倍。本文の計算根拠（8/12終値・会社予想EPS）と整合する。"
+
+      - id: V21
+        section: price
+        quote: "RSIが8割超えでないか | 88.7"
+        verdict: unverifiable
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: "`python src/judge.py --indicators-only` を実行すると6570の as_of は2026-08-13（直近のstatus=OK終値の日）で rsi14=90.37…。8/12を基準にした88.7は指標ツールの現在のライブ計算では再現できない（ツールに過去日付を指定するオプションが無く、日々の指標スナップショットも保存されていないため）。8/13時点の値がさらに高い90.37であることは、株価続伸という事実と整合する方向ではある。"
+        action: "指標（RSI・移動平均乖離率・出来高代金）を日次でdata/に記録するか、judge.pyに--as-ofを持たせないと、時点依存の指標claimは今後も検証できない"
+
+      - id: V22
+        section: price
+        quote: "移動平均乖離率が7〜8%超えでないか | +42.6%（25日）"
+        verdict: unverifiable
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: "`python src/judge.py --indicators-only` の6570 ma_deviation_pct=48.11…（as_of 2026-08-13）。8/12時点の42.6%とは一致しない。理由・限界はV21と同じ（as_ofが動いてしまい過去の値を再現できない）。"
+        action: "V21と同じ"
+
+      - id: V23
+        section: price
+        quote: "週足13週移動平均の傾き：**+3.710%/週（上向き）**"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: "`python src/judge.py --indicators-only` の6570 weekly_ma_mid_slope_pct=3.7096577491490854（weekly_ma_mid_direction=up）。丸めると+3.710%/週で本文と一致。週足指標は直近1営業日の追加では変わらないため、日足のRSI等と違い再現できた。"
+
+      - id: V24
+        section: price
+        quote: "20日平均売買代金は4,683万円、**中央値は1,029万円**"
+        verdict: unverifiable
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: "`python src/judge.py --indicators-only` の6570 avg_turnover_20d=64,705,065円（約6,471万円）・median_turnover_20d=12,250,000円（約1,225万円）（as_of 2026-08-13）。本文の4,683万円／1,029万円とは一致しない。8/13の出来高114,900株・終値3,160円という高水準の1日が20日窓に入ったことで平均・中央値とも押し上げられたとみられ、V21/V22と同根のas_ofドリフトと考えられる。"
+        action: "V21と同じ。この項目は『流動性ゲート（3,000万円）は平均で通過するが中央値は下回る』という結論に関わるため、特に日次記録の必要性が高い"
+
+      - id: V25
+        section: updates
+        quote: "支配株主等に関する事項について」を開示"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=6570"]
+        evidence: "再取得（200）開示情報一覧に「26/06/29 14:10 | 開示 | 支配株主等に関する事項について」が存在。日付・件名とも本文と一致。"
+
+      - id: V26
+        section: updates
+        quote: "7月3日「アピナ小山駅前店・トレーディングカードピット小山駅前店」、7月31日「クレーンパラダイス諏訪店」、8月1日「アピナ高梁店」「トレカ道楽横浜西口店」、8月12日「MOOOSH SQUISHY SoLaDo原宿店」"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=6570"]
+        evidence: "再取得（200）開示情報一覧に「26/08/12 …MOOOSH SQUISHY SoLaDo原宿店…オープン」「26/08/03 …トレカ道楽横浜西口店…8月１日（土）オープン」「26/08/03 …アピナ高梁店…8月１日（土）オープン」「26/07/30 …クレーンパラダイス諏訪店…7月31日（金）オープン」「26/07/03 …アピナ小山駅前店・トレーディングカードピット小山駅前店…7月３日（金）オープン」がすべて存在し、店名・日付とも本文と一致。"
+
+      - id: V27
+        section: outlook
+        quote: "「トレンドは明確で出来高を伴っているか」（I-06）は、本システムがまだ判定していない観点である"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: "src/judge.py の UNEVALUATED_RULES（955-965行目）に (\"トレンドは明確で出来高を伴っているか（I-06）\", \"出来高は流動性ゲートと3か月前比にしか使っておらず、「上昇に出来高が伴っているか」は判定していない\") というエントリが実在。本文の要約は内容と一致。"
+
+      - id: V28
+        section: updates
+        quote: "現在値3,095円・前日比-65円/-2.06%・始値3,020円・高値3,180円[10:47]・安値2,970円[14:06]・売買高51,500株"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.nikkei.com/nkd/company/?scode=6570"]
+        evidence: "再取得（200）本文に「現在値(15:30)：3,095円」「前日比：－65(－2.06％)」「始値 (9:03) 3,020円」「高値 (10:47) 3,180円」「安値 (14:06) 2,970円」「売買高 51,500株」が存在し、値・時刻とも一致。"
+
+      - id: V29
+        section: updates
+        quote: "irbank.netのトップページも403で到達できなかった"
+        verdict: contradicted
+        tier: secondary
+        sources: ["https://irbank.net/E33822"]
+        evidence: "再取得（fetch_source.py）した結果 http_status=200（3705文字、沿革・事業内容などの本文を含む正常ページ）。data/verification/fetch_log.csv にも今回の200が記録された一方、これ以前にこの銘柄からこのURLへのfetch_source.py経由のアクセス記録は無く、403だったことを裏付ける取得ログも無い。今回の再取得では『到達できなかった』という記述と食い違う結果になった。"
+        action: "一時的な403だった可能性はあるが、本文は時刻を明記せず断定形で書かれている。次回更新時に再度irbank.net/E33822を叩いて再現するか、『◯時◯分時点で403』のように時点を明記する形に直すことを検討"
+
+      - id: V30
+        section: updates
+        quote: "翌8月14日の取得で株探とyahoo_jpの2ソースが一致し、採用値（`status=OK`）に変わった"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv の 2026-08-13,6570 行: close=3160.0, status=OK, source_primary=kabutan(3160.0), source_secondary=yahoo_jp(3160.0), fetched_at=2026-08-14T13:46:39。本文の記述と一致。"
+
+      - id: V31
+        section: updates
+        quote: "kabutanが未反映でyahoo_jpの値のみ**（`status=SINGLE_SOURCE`）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv の 2026-08-14,6570 行: close=（空）, status=SINGLE_SOURCE, source_primary=yahoo_jp(3095.0), source_secondary=（空）, fetched_at=2026-08-16T11:07:51。本文の記述と一致。"
+
+      - id: V32
+        section: price
+        quote: "8月12日の終値2,970円が、そのまま52週の高値になっている"
+        verdict: superseded
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "front matter の price_range チャートcaptionにある記述。data/prices/daily.csv を2025-08-13以降でOK行に絞ると、直近52週の最高値は2026-08-13の3160.0円（status=OK、8/12の2970.0円より高い）で、8/12は最高値ではなくなっている。この記述は front matter 記載当時（8/12時点）は正しかったが、続報・続報2で追記された8/13の新値（本台帳内でも既にOK化済み）によって既に超えられており、『8月12日時点』と明記しないと現状の本文全体としては誤りに読める。"
+        action: "front matterのcaptionは週次アップデートと同期していない（追記のみモードの制約）。次回の全節見直し時に、価格レンジの図と本文キャプションを直近のOK終値（3160円・8/13）に合わせて更新するか、『8月12日時点』の注記を足す"
+
+      - id: V33
+        section: updates
+        quote: "信用残は8月7日時点（買い残85.8千株・信用倍率9.13倍）から更新なし"
+        verdict: supported
+        tier: dataset
+        sources: ["data/margin/6570.csv"]
+        evidence: "data/margin/6570.csv の最新行は 2026-08-07,6570,85.8,9.4,9.13,千株,OK。本文の買い残85.8千株・信用倍率9.13倍と一致し、これより新しい行は無い（更新なしという記述と整合）。"
+
+      - id: V34
+        section: sources
+        quote: "この銘柄は決算短信PDF（一次情報）の取り込みがまだ無く、**一次情報との突き合わせは行えていない**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/tanshin"]
+        evidence: "data/tanshin/6570.csv は存在しない（ls で確認）。本文の自己申告『決算短信PDFの取り込みがまだ無い』は事実と一致する。"
+
+      - id: V35
+        section: sources
+        quote: "IR情報（決算短信・説明資料・適時開示）"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://www.kyowa-corp.co.jp/ir/"]
+        evidence: "再取得（200、276文字）。本文はナビゲーションの見出し（『最新IR情報』『IRライブラリ』『決算短信』『決算説明資料』『適時開示情報』等のメニュー項目名）のみで、実際の決算短信・説明資料・適時開示の中身（日付・数値・PDFリンク）は含まれていない＝目次だけ。SKILL.mdの『一次の欄のURLが再取得すると目次だけなら unsupported』に該当する。"
+        action: "出典表の『一次情報』欄で、このURLが実際にどの一次情報を裏付けているかを明示するか、tierをsecondaryへ見直すか検討。本文中では『IRニュース・適時開示・IRカレンダーの各ページはJavaScriptで描画されており静的取得では確認できない』と別途書かれており、この制約自体は276文字という薄い取得結果と整合している"
+
+  - run: "2026-08-16T13:10:00+09:00"
+    report_updated: "2026-08-16"
+    report_sha256: "2e234d72847da36e4561865650a295805b3cd68872699ab6dfc62125ca8c4e46"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3・再判定のみ）"
+    urls_refetched:
+      - {url: "https://irbank.net/E33822", http_status: 200}
+    urls_delegated: []
+    claims:
+      - id: V29
+        section: updates
+        quote: "irbank.netのトップページも403で到達できなかった"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://irbank.net/E33822"]
+        evidence: >-
+          直前run（2026-08-16T11:57:34+09:00）でcontradicted判定した記述。
+          この本文は「### 2026-W33（続報2）」内にあり、append-only制約
+          （過去週の本文は書き換えない）のため文面自体は変更できない。
+          「### 2026-W33（続報3）」を新設し、2026-08-16T13:05頃の再取得で
+          https://irbank.net/E33822 がhttp_status=200で到達できること、
+          403だったことを裏付ける取得ログが無いことを明記して、この記述を
+          根拠として引き継がない旨を追記した。到達可否はサイト側の状態に
+          左右される時点依存の事実であり、contradicted（記述が誤り）ではなく
+          superseded（取得時点で状況が変わりうる）として再判定する。
+        action: "次回このURLを再度叩いて到達可否を確認し、恒常的に403でないことを再確認する"
+
