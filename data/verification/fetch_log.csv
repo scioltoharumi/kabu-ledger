@@ -135,3 +135,11 @@ fetched_at,code,url,final_url,http_status,chars,sha256,note
 2026-08-16T18:05:39.029633+09:00,4073,https://kabutan.jp/stock/news?code=4073&b=k202608140170,https://kabutan.jp/stock/news?code=4073&b=k202608140170,200,5925,08d4dfc2130ef4f6,text/html; charset=UTF-8
 2026-08-16T18:05:45.850925+09:00,4073,https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/,https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/,200,161,087e75b543e45bef,text/html; charset=UTF-8
 2026-08-16T18:05:49.943192+09:00,4073,https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/,https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/,200,145,1809f97462dfce33,text/html; charset=UTF-8
+2026-08-16T18:07:54.037261+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4374,3b833418bd2c3a6a,text/html; charset=UTF-8
+2026-08-16T18:11:24.448465+09:00,4073,https://www.release.tdnet.info/inbs/140120260814520281.pdf,https://www.release.tdnet.info/inbs/140120260814520281.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-16T18:11:28.218106+09:00,4073,https://www.release.tdnet.info/inbs/140120260814520282.pdf,https://www.release.tdnet.info/inbs/140120260814520282.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-16T18:11:31.962755+09:00,4073,https://www.release.tdnet.info/inbs/140120260717596017.pdf,https://www.release.tdnet.info/inbs/140120260717596017.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-16T18:11:37.422710+09:00,4073,https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/,https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/,200,161,087e75b543e45bef,text/html; charset=UTF-8
+2026-08-16T18:11:41.394299+09:00,4073,https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/,https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/,200,145,1809f97462dfce33,text/html; charset=UTF-8
+2026-08-16T18:11:45.663208+09:00,4073,https://kabutan.jp/stock/news?code=4073&b=k202608140170,https://kabutan.jp/stock/news?code=4073&b=k202608140170,200,5925,08d4dfc2130ef4f6,text/html; charset=UTF-8
+2026-08-16T18:11:51.654009+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4374,3b833418bd2c3a6a,text/html; charset=UTF-8

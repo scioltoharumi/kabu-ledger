@@ -1115,6 +1115,220 @@ runs:
           FY2026実績を含めて「4-6月期が最大だったのは直近5年で3年」に
           直すか、集計対象年を明示する（「本決算前の直近4年で2年」等）
 
+  # --- run 4 --------------------------------------------------------------
+  # 2026-08-14に同時開示された「資本金及び資本準備金の額の減少並びに剰余金の
+  # 処分に関するお知らせ」「株式の立会外分売に関するお知らせ」、および
+  # 2026-07-17開示「代表取締役の異動及び役員人事に関するお知らせ」を織り込んだ
+  # deep_dive更新（今回新しく書いた／書き直した記述のみを対象にした部分検証）。
+  # run1〜3は1行も書き換えていない。
+  - run: "2026-08-16T18:15:00+09:00"
+    report_updated: "2026-08-16"
+    report_sha256: "3bef6adf7b24050c7a9140716c9148702d00ff05f2405a79044492d1ed0c119d"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    note: >-
+      今回のレポート更新で新しく書いた／書き直した記述だけを対象にした部分検証。
+      run3以前の記述はこの run では拾い直していない（前回同様のclaimは
+      run3を参照）。対象は3件のTDnet適時開示PDF（資本金・資本準備金の減少と
+      剰余金の処分／株式の立会外分売／代表取締役の異動）で、いずれも
+      fetch_source.pyは到達性のみ確認（PDFはテキスト化されない）。
+      本文の記述はこのセッションでPDFを直接ダウンロードしてReadツールで
+      本文を読み、そこに書かれている文字列と本文記述を突き合わせて判定した
+      （fetch_source.pyのgrepでは中身を検証できないため）。3件とも通常の
+      適時開示PDFで、指示めいた文字列（D9）は人手の確認でも検出されなかった。
+      発行済株式数2,539,060株はkabutan（二次情報）を本runで再取得して確認。
+
+    urls_refetched:
+      - {url: "https://www.release.tdnet.info/inbs/140120260814520281.pdf", http_status: 200}
+      - {url: "https://www.release.tdnet.info/inbs/140120260814520282.pdf", http_status: 200}
+      - {url: "https://www.release.tdnet.info/inbs/140120260717596017.pdf", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=4073&b=k202608140170", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=4073", http_status: 200}
+
+    claims:
+      # --- 資本金・資本準備金の減少／剰余金の処分（財務） ----------------------
+      - id: V45
+        section: financials
+        quote: "2026年6月期末時点でマイナス411,913,950円の繰越利益剰余金（欠損）を埋めること"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520281.pdf"]
+        evidence: >-
+          PDF本文（1ページ目「1. 資本金及び資本準備金の額の減少並びに剰余金の
+          処分の目的」）に「当社は、2026年６月期末において繰越利益剰余金は
+          マイナス411,913,950円となっております。現在生じている繰越利益剰余金の
+          欠損を填補し」と一致する記載を確認。
+
+      - id: V46
+        section: financials
+        quote: "資本金を440,872,250円から340,872,250円減らして100,000,000円に、資本準備金を324,472,250円のうち69,521,700円減らし、あわせて410,393,950円をその他資本剰余金に振り替えたうえで"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520281.pdf"]
+        evidence: >-
+          PDF本文「2. 資本金及び資本準備金の額の減少の内容」に「資本金の額
+          440,872,250円のうち、340,872,250円」「資本準備金の額 324,472,250円の
+          うち、69,521,700円」「増加する資本剰余金の額 その他資本剰余金
+          410,393,950円」を確認。440,872,250−340,872,250=100,000,000で
+          本文の「100,000,000円に」も算出値と一致する。
+
+      - id: V47
+        section: financials
+        quote: "処理後の繰越利益剰余金はマイナス1,520,000円まで縮む見込み"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520281.pdf"]
+        evidence: >-
+          PDF本文「3. 剰余金の処分の内容」に「振替後の繰越利益剰余金の額は
+          マイナス1,520,000円となります」と一致する記載を確認。
+
+      - id: V48
+        section: financials
+        quote: "純資産額に変更を生ずるものではなく、発行済株式総数にも変更はございませんので、1株当たりの純資産額に変更はありません。また、株主の皆様のご所有株式数に影響を与えるものではありません"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520281.pdf"]
+        evidence: >-
+          PDF本文に「なお、本件は、貸借対照表の純資産の部における勘定科目の
+          振替処理であり、当社の純資産額に変更を生ずるものではなく、発行済
+          株式総数にも変更はございませんので、１株当たりの純資産額に変更は
+          ありません。また、株主の皆様のご所有株式数に影響を与えるものでは
+          ありません。」と完全に一致する一文を確認。
+
+      - id: V49
+        section: financials
+        quote: "本件が当社の業績に与える影響はありません"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520281.pdf"]
+        evidence: 'PDF本文「5. 今後の見通し」に「本件が当社の業績に与える影響はありません。」と一致する記載を確認。'
+
+      - id: V50
+        section: financials
+        quote: "2026年9月25日の定時株主総会での決議を経て、2026年10月31日に効力発生の予定（未確定）"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520281.pdf"]
+        evidence: >-
+          PDF本文の日程表に「(2) 定時株主総会決議日 2026年９月25日（予定）」
+          「(5) 効力発生日 2026年10月31日（予定）」を確認。株主総会承認が
+          条件（5.今後の見通し）であることも本文の「未確定」という留保と整合する。
+
+      - id: V61
+        section: financials
+        quote: "決算短信の繰越利益剰余金は−411,913,950円（一次情報）で、採用値とほぼ整合する（定義の取り方による数百万円の差とみられる）"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.release.tdnet.info/inbs/140120260814520281.pdf"
+          - "data/fundamentals/4073.csv"
+        evidence: >-
+          PDF本文の−411,913,950円（V45参照）と、data/fundamentals/4073.csvの
+          FY2026-06 retained_earnings=−410（JPY_million、status OK、
+          kabutan_bs=−410・irbank_bs=−410で一致）を比較すると、差は約1.9百万円
+          （−411.9百万円 vs −410百万円）。同じ会社・同じ期の値としては近く、
+          本文の「ほぼ整合」「数百万円の差」という記述と整合する。
+
+      # --- 株式の立会外分売（値動きと市場の評価） ------------------------------
+      - id: V52
+        section: price
+        quote: "60,000株（発行済株式数（kabutan調べ・二次情報・2026-08-12時点2,539,060株）に対し約2.4%相当）"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://www.release.tdnet.info/inbs/140120260814520282.pdf"
+          - "https://kabutan.jp/stock/?code=4073"
+        evidence: >-
+          PDF本文「1．分売予定株式数 60,000 株」を確認。kabutan
+          （本runで再取得・200）は「発行済株式数 | 2,539,060 株」と表示
+          （取得日は2026-08-16で、本文が示す2026-08-12時点の値とは数日ずれるが
+          発行済株式数は分売前で変わっていないとみられる）。60,000/2,539,060
+          =2.363%で「約2.4%」と整合する。
+
+      - id: V53
+        section: price
+        quote: "買付顧客1人につき1,000株"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520282.pdf"]
+        evidence: 'PDF本文「４．買付申込数量の限度 買付顧客１人につき 1,000 株（売買単位：100株）」と一致する記載を確認。'
+
+      - id: V54
+        section: price
+        quote: "主要株主の株式会社コミューンが保有する当社株式"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520282.pdf"]
+        evidence: >-
+          PDF本文に「本立会外分売に関して、当社の主要株主である株式会社
+          コミューンが保有する当社株式について売却するものであり」と一致する
+          記載を確認。コミューンの現在の保有株数・比率はPDF本文に無く、
+          本文もその点は「未確認」としている（action参照）。
+        action: "コミューンの保有株数・比率、4073との関係（設立時株主か等）は開示文に無い。決算説明資料や有報の大株主欄など別の一次情報が要る"
+
+      - id: V55
+        section: price
+        quote: "当社株式の分布状況の改善および流動性の向上"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520282.pdf"]
+        evidence: 'PDF本文「６．実施の目的 一定数量の売却意向があり、当社として検討した結果、当社株式の分布状況の改善 および流動性の向上を目的とするものです。」と一致する記載を確認。'
+
+      - id: V56
+        section: price
+        quote: "約定結果によっては、当社の主要株主の異動が発生する可能性があります"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520282.pdf"]
+        evidence: 'PDF本文に「約定結果によっては、当社の主要株主の異動が発生する可能性があります。主要株主異動の発生を認識した場合には、速やかにお知らせいたします。」と一致する記載を確認。'
+
+      # --- 代表取締役の異動及び役員人事（リスク表） -----------------------------
+      - id: V57
+        section: outlook
+        quote: "2024年9月から代表取締役2名体制だったのを"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260717596017.pdf"]
+        evidence: >-
+          PDF本文「（２）異動の理由」に「当社は 2024 年９月より代表取締役２名
+          体制で経営を執行してまいりましたが」と一致する記載を確認。
+
+      - id: V58
+        section: outlook
+        quote: "丸山英幸氏（現・代表取締役副社長経営管理本部長）が取締役経営管理本部長へ異動し、代表取締役から外れる"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260717596017.pdf"]
+        evidence: >-
+          PDF本文「１．代表取締役の異動（１）異動の内容」の表に「氏名 丸山
+          英幸／新役職名 取締役 経営管理本部長／現役職名 代表取締役副社長
+          経営管理本部長」を確認。旧V27（run3）が「丸山氏が代表取締役副社長
+          として名を連ねている」ことのみを裏付けていたのに対し、本開示は
+          その逆方向（副社長職から取締役への異動）を明記しており、本文の
+          記述はこのPDFの内容と一致する（run3時点でこのPDFは到達性のみ
+          確認・本文未読だった）。
+
+      - id: V59
+        section: outlook
+        quote: "代表取締役1名での経営体制が整ったこと」「経営判断の迅速化"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260717596017.pdf"]
+        evidence: >-
+          PDF本文に「代表取締役１名での経営体制が整いましたことと、より
+          一層の経営判断の迅速化を図るため」と一致する記載を確認。
+
+      - id: V60
+        section: outlook
+        quote: "髙木洋介氏（代表取締役社長）が単独の代表取締役になる見込み"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260717596017.pdf"]
+        evidence: >-
+          PDF本文に「この異動により当社代表取締役は、代表取締役社長髙木洋介
+          の１名となります。」と一致する記載を確認。
+
 # ---------------------------------------------------------------------------
 # 判定の始末（resolutions）
 #
