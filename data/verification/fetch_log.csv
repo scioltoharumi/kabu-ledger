@@ -132,3 +132,6 @@ fetched_at,code,url,final_url,http_status,chars,sha256,note
 2026-08-16T12:19:42.224977+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4335,c693bbe659da385a,text/html; charset=UTF-8
 2026-08-16T12:19:48.128446+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4335,c693bbe659da385a,text/html; charset=UTF-8
 2026-08-16T12:19:52.387195+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4335,c693bbe659da385a,text/html; charset=UTF-8
+2026-08-16T18:05:39.029633+09:00,4073,https://kabutan.jp/stock/news?code=4073&b=k202608140170,https://kabutan.jp/stock/news?code=4073&b=k202608140170,200,5925,08d4dfc2130ef4f6,text/html; charset=UTF-8
+2026-08-16T18:05:45.850925+09:00,4073,https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/,https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/,200,161,087e75b543e45bef,text/html; charset=UTF-8
+2026-08-16T18:05:49.943192+09:00,4073,https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/,https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/,200,145,1809f97462dfce33,text/html; charset=UTF-8
