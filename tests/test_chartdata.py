@@ -332,6 +332,30 @@ def test_cross_check_excludes_other_period_columns():
         sb.close()
 
 
+def test_cross_check_ignores_a_later_disclosure_of_a_different_period():
+    """通期の短信が出た後も、3Q累計の突き合わせは3Q累計どうしで行うこと。
+
+    実例（4073）: 3Q累計短信のあとに通期短信が出ると、data/tanshin/{code}.csv に
+    同じ metric 名（revenue 等）で違う期の行が並ぶ。metric 名だけで突き合わせると、
+    通期の実績（2252）が3Q累計の観測値（1493）と比べられて必ず食い違う。
+    """
+    sb = Sandbox()
+    try:
+        sb.fundamentals("9999", [
+            frow("C2025-07_2026-03", "revenue", None, "SINGLE_SOURCE",
+                 sources_all="kabutan_ytd3q=1493")])
+        sb.tanshin("9999", [
+            trow("2026-05-15", "revenue", 1493, definition="FY2026Q3cum|単体|日本基準|売上高"),
+            trow("2026-05-16", "revenue", 2252, definition="FY2026Q4cum|単体|日本基準|売上高"),
+        ])
+        agree, disagree, nopair, other = CD.cross_check_tanshin(
+            "9999", "C2025-07_2026-03")
+        eq(agree, ["revenue"], "3Q累計どうしは一致")
+        eq(disagree, [], "通期の実績は比較対象から外れる（別の期）")
+    finally:
+        sb.close()
+
+
 # =============================================================================
 # 株価レンジ（採用終値だけ）
 # =============================================================================

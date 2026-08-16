@@ -54,6 +54,7 @@ dataset:
 from __future__ import annotations
 
 import csv
+import re
 from dataclasses import dataclass, field
 from datetime import date as _date, timedelta
 from pathlib import Path
@@ -140,6 +141,43 @@ METRIC_SUFFIX = (
 
 # 「別の期の数値」を表す接尾辞。同じ期どうしの突き合わせの対象にしない。
 CROSS_SKIP_SUFFIX = ("_fy_plan", "_prev_year", "_prev_fy")
+
+_TANSHIN_PERIOD_RE = re.compile(r"^FY(\d{4})Q([1-4])(?:cum|only)$")
+_FUND_FY_RE = re.compile(r"^FY(\d{4})-(\d{2})$")
+_FUND_SPAN_RE = re.compile(r"^([QHC])(\d{4})-(\d{2})_(\d{4})-(\d{2})$")
+
+
+def _cross_bucket(text: str) -> tuple | None:
+    """期の表記を (年度末年, 四半期数, 累計か) に正規化する。
+
+    決算短信の期表記（"FY2026Q3cum"）と fundamentals の期キー
+    （"C2025-07_2026-03"）は同じ期を指せても文字列が違う。読めなければ
+    None（＝比べない）。1銘柄が複数の開示（3Q・通期…）を持つようになると、
+    metric 名だけで突き合わせた行は違う期どうしを比べて必ず食い違う。
+    """
+    t = str(text or "").strip()
+    m = _TANSHIN_PERIOD_RE.match(t)
+    if m:
+        return (int(m.group(1)), int(m.group(2)), "cum" in t)
+    m = _FUND_SPAN_RE.match(t)
+    if m:
+        tag = m.group(1)
+        if tag == "Q":
+            return None   # 単独四半期は累計と比べない（別の量）
+        start = int(m.group(2)) * 12 + int(m.group(3))
+        end = int(m.group(4)) * 12 + int(m.group(5))
+        months = end - start + 1
+        if months <= 0:
+            return None
+        # 決算期末（年度が終わる月）＝期首から11か月後。fetch_fundamentals の
+        # 期キー生成（`_ym_from_index(start + 11)` 相当）と同じ考え方。
+        fy_index = start + 11
+        fy_year = (fy_index - 1) // 12
+        return (fy_year, months // 3, True)
+    m = _FUND_FY_RE.match(t)
+    if m:
+        return (int(m.group(1)), 4, True)   # 通期＝4Q累計
+    return None
 
 
 def metric_ja(metric: str) -> str:
@@ -758,12 +796,18 @@ def cross_check_tanshin(code: str, cross_period: str) -> tuple[list, list, list,
     other: list[str] = []
     if not cross_period:
         return agree, disagree, nopair, other
+    target_bucket = _cross_bucket(cross_period)
     fund = fundamentals(code)
     for fact in tanshin(code)["facts"]:
         if fact.value is None:
             continue
         if any(fact.metric.endswith(s) for s in CROSS_SKIP_SUFFIX):
             other.append(fact.metric)
+            continue
+        # 短信は複数の開示（3Q累計・通期…）が同じ metric 名で並ぶ。
+        # 自分の期が cross_period と同じ期を指していない行は比べない
+        # （通期の実績を3Q累計の観測値と突き合わせると必ず食い違う）。
+        if target_bucket is not None and _cross_bucket(fact.label) != target_bucket:
             continue
         key = (fact.metric, cross_period)
         obs = fund["observed"].get(key) or []

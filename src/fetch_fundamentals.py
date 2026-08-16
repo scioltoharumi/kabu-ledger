@@ -706,10 +706,13 @@ def reconcile(code: str, observations: list, required_sites: int,
 
         disagreed = False
         exact = True
+        disagreeing_pair = None
         for i in range(len(obs)):
             for j in range(i + 1, len(obs)):
                 if not agree(obs[i], obs[j]):
                     disagreed = True
+                    if disagreeing_pair is None:
+                        disagreeing_pair = (obs[i], obs[j])
                 elif abs(obs[i].value - obs[j].value) > FLOAT_EPS:
                     exact = False
 
@@ -732,8 +735,15 @@ def reconcile(code: str, observations: list, required_sites: int,
             if any(extra in o.flags for o in obs):
                 flags.append(extra)
 
-        primary = obs[0]
-        secondary = obs[1] if len(obs) > 1 else None
+        # MISMATCH のときは、実際に食い違っている組を主副として残す。
+        # obs[0]/obs[1] を機械的に取ると、3ソース目が食い違っているだけの行で
+        # 先頭2件がたまたま一致し「MISMATCH なのに主副が一致」という
+        # 矛盾した表示になる（checks.py の schema 検査がこれを検出する）。
+        if disagreed and disagreeing_pair is not None:
+            primary, secondary = disagreeing_pair
+        else:
+            primary = obs[0]
+            secondary = obs[1] if len(obs) > 1 else None
         parts = ["%s=%s" % (o.source, fmt(o.value)) for o in obs]
         # 照合に使った許容幅（＝一番粗い表示の解像度）。
         # 「どこまでの差なら同じ数字と見なしたか」を行そのものに残す。

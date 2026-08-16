@@ -2882,7 +2882,8 @@ def _tanshin_cross(rep: Report, target: str, data_dir: Path, code: str,
     採用値ではない。まとめサイト側が1サイトしか持たない期でも、
     一次情報と一致すればそれ自体が独立した2つの出所の一致になる。
     """
-    if not parse_period(cross_period):
+    target_period = parse_period(cross_period)
+    if not target_period:
         rep.warn("tanshin", target,
                  f"tanshin_cross_period を期として読めない（{cross_period!r}）。"
                  "一次情報と二次情報の突き合わせを行っていない")
@@ -2920,6 +2921,12 @@ def _tanshin_cross(rep: Report, target: str, data_dir: Path, code: str,
         raw_metric = str(r.get("metric") or "").strip()
         # 前年同期・前期末・通期計画は**別の期の数値**。この期の照合に混ぜない。
         if raw_metric.endswith(("_prev_year", "_prev_fy", "_fy_plan")):
+            continue
+        # 短信は複数の開示（Q3累計・通期など）が同じ metric 名で並ぶ。
+        # definition 先頭の期を見て、この cross_period と同じ期の行だけを比べる
+        # （でないと通期の実績値が3Q累計の観測値と突き合わされ、必ず食い違う）。
+        row_period = parse_period(str(r.get("definition") or "").split("|", 1)[0])
+        if row_period is None or not row_period.matches(target_period):
             continue
         value = _f(r.get("value"))
         if value is None:

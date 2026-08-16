@@ -218,6 +218,22 @@ def test_one_disagreeing_source_among_three_blocks_adoption():
     eq(rows[0]["value"], "", "採用値は空")
 
 
+def test_mismatch_primary_secondary_is_a_disagreeing_pair():
+    """先頭2件が偶然一致していても、MISMATCH の主副は食い違う組を指すこと。
+
+    実例（4073 FY2026-06 eps）: kabutan_fy=27.8 と kabutan_fy_profit=27.8 は
+    一致するが、3件目の irbank_pl=27.69 が食い違う。obs[0]/obs[1] を機械的に
+    取ると status=MISMATCH なのに value_primary==value_secondary という
+    矛盾した行になり、checks.py の schema 検査が FAIL する。
+    """
+    rows = FF.reconcile("9999", [obs("kabutan_fy", "kabutan", 27.8, 0.01, 0),
+                                 obs("kabutan_fy_profit", "kabutan", 27.8, 0.01, 1),
+                                 obs("irbank_pl", "irbank", 27.69, 0.01, 2)], 2, "t")
+    eq(flags_of(rows[0]), {"MISMATCH"}, "1件でも食い違えば MISMATCH")
+    assert rows[0]["value_primary"] != rows[0]["value_secondary"], \
+        "MISMATCH の主副が一致していては何と食い違ったのか分からない"
+
+
 def test_extra_flags_survive_reconcile():
     rows = FF.reconcile("9999", [
         obs("a", "s1", 5.46, 0.01, 0, metric="interest_bearing_debt_ratio",
