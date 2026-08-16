@@ -114,6 +114,27 @@ index:
   on_mismatch: "MISMATCH"
   on_all_fail: "FETCH_FAILED"
 
+# 週次ニュース見出し（レポート素材）。src/fetch_news.py が読む。
+#
+# 見出しは「素材」であって採用値ではない（2ソース照合の対象外）。data/ には書かず、
+# 週次レポート更新の入力として JSON で渡すだけ（fetch_news.py の docstring 参照）。
+#
+# セレクタは 2026-08-16 に実地調査して確定した（推測ではない）。
+#   一覧は table.s_news_list。各行 = [td.news_time > time（datetime 属性が ISO8601）,
+#   区分 div.newslist_ctg（開示/決算/材料/テク/注目/市況 など。閉じた語彙ではないので
+#   コード側は文字列のまま渡す。無い行は null）, 見出しリンク]。
+#   リンクは記事が相対（/stock/news?code=...&b=...）、開示PDFが絶対 → base_url で絶対化。
+#   1ページ15件・新しい順。取得は承認済みのこの URL 1ページのみ（ページングを追わない。
+#   直近7日で15件を超える週は古い側が欠けるが、素材なので欠けを許容する）
+news:
+  chain:
+    - id: kabutan_news
+      operator: minkabu_infonoid    # 株探・みんかぶ と同一運営（price.chain の kabutan と同じ）
+      url: "https://kabutan.jp/stock/news?code={code}"
+      table_selector: "table.s_news_list"
+      base_url: "https://kabutan.jp/"
+      rows_per_page: 15
+
 # 財務数値（決算・財務・CF・比率）。src/fetch_fundamentals.py が読む。
 #
 # レポート（reports/{code}.md）の数値は、これまで人間が表を目で読んで転記していた。

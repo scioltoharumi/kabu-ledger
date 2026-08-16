@@ -89,18 +89,22 @@
 - `data/` 検証済みデータ（append-only）。`master.yaml` = 銘柄マスタ・閾値・保有情報
 - `reports/{code}.md` 銘柄レポート（主役）。`theses/` `predictions/` は人間が書く
 - `docs/` Pages 出力。**直接編集しない**（build.py が生成。CI が上書きする）
-- `src/` 取得・検査・判定・生成 ／ `tests/` 素の python で動く test_*.py ／
+- `src/` 取得・検査・判定・生成（fetch_news=見出し収集・weekly_note=週次追記の機械化）／
+  `tests/` 素の python で動く test_*.py ／
   `tools/` run_tests.py・shot.ps1・published.ps1/.py
 - `.claude/skills/` intake・weekly・report・verify・kabu-ledger（決算取込）
 
 ## 実行順
 
 ```text
-fetch*.py → checks.py → score.py → レポート更新（並列）→ 裏取り → build.py → push
+fetch*.py → checks.py → score.py → fetch_news.py
+  → weekly_note.py（機械追記＋一筆）→ build.py → push
 →（CI・無人）tests → checks → build → deploy-pages → notify
 ```
 
 - 取得はルーティンと intake だけが行う（CI・cron には無い）
+- 裏取り（verify）は初回レポートと deep_dive のときだけ。週次エントリは
+  data 由来の事実＋出典URL付き見出し＋解釈のみで構成し、検証対象を発生させない
 - **`gh workflow run` を通常手順に入れない。** push だけで公開まで走る
 - 直すのは `src/`。commit 済み `docs/` を直接直さない
 - `.github/` を含む push が弾かれたときだけ `gh auth refresh -s workflow`

@@ -1,7 +1,7 @@
 export const meta = {
   name: 'kabu-weekly-reports',
-  description: 'kabu-ledger の銘柄レポートを1銘柄1エージェントで並列に更新し、別コンテキストで裏取りする',
-  whenToUse: '週次のレポート更新、または新規銘柄をまとめて登録したとき。args に銘柄コードの配列（省略時は master.yaml 全銘柄）',
+  description: 'kabu-ledger の銘柄レポートを1銘柄1エージェントで並列に生成し、別コンテキストで裏取りする（初回登録・deep_dive 用）',
+  whenToUse: '新規銘柄の初回レポート一括生成（intake が mode:"初回" で呼ぶ）、または deep_dive をまとめて回すとき。週次の定例更新には使わない（kabu-ledger-weekly v2 が weekly_note.py で機械追記する）。args に銘柄コードの配列',
   phases: [
     { title: '執筆' },
     { title: '裏取り' },

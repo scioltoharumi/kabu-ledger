@@ -6,3 +6,8 @@ __pycache__/
 # `!decisions/.gitkeep` は git の仕様上効かない（親ディレクトリを除外すると
 # 中身は再包含できない）ので書かない。ディレクトリ自体を追跡しないのが D6 の意図。
 decisions/
+# 週次v2 の中間ファイル（fetch_news / weekly_note の入出力）。
+# 素材のスナップショットであって記録ではない。git add -A で拾わせない。
+/news.json
+/facts.json
+/notes.json
