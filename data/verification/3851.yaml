@@ -553,6 +553,448 @@ runs:
           これより新しい日付の行は無い。本文の「信用倍率5.24倍」
           「8月14日以降の新しい行は無い」と一致する。
 
+  - run: "2026-08-16T15:30:00+09:00"
+    report_updated: "2026-08-16"
+    report_sha256: "be9561019945ead57b8d1bc1e64b2db254e560ede702893623f05a649cb8165e"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    note: >-
+      本文の全量スナップショットとして claim を28件切り出した run。
+      今週追記された「### 2026-W33（続報2）」（V36〜V43）を優先しつつ、
+      既存の会社概要・財務・出典節から代表的な claim を選び直して
+      新規に出典を再取得・データ照合した（id は前回までと同じ記述には
+      同じ番号を再利用し、新規の記述にだけ V36 以降の新しい番号を振った）。
+      本日8件のURLを再取得した（うち minkabu.jp のみ 403 で到達不能。
+      data/verification/fetch_log.csv に痕跡あり）。財務・キャッシュフローの
+      表は data/fundamentals/3851.csv の採用値と1マスずつ突き合わせ、
+      信用残・株価は data/margin/3851.csv・data/prices/daily.csv の該当行を、
+      指標は python src/judge.py --indicators-only の出力を突き合わせた。
+      `data/master.yaml` は絶対原則の隔離により開いていない
+      （V42はこの理由で unverifiable にした）。再取得した8ページ・
+      IRページ全文のいずれにも指示めいた文字列は検出していない。
+
+    urls_refetched:
+      - {url: "https://finance.yahoo.co.jp/quote/3851.T/history", http_status: 200}
+      - {url: "https://www.nippon1.co.jp/ir/ir.html", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=3851", http_status: 200}
+      - {url: "https://www.nippon1.co.jp/company/company.html", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=3851", http_status: 200}
+      - {url: "https://www.gamebusiness.jp/article/2026/05/15/26947.html", http_status: 200}
+      - {url: "https://kabuyoho.jp/sp/reportTarget?bcode=3851", http_status: 200}
+      - {url: "https://minkabu.jp/stock/3851", http_status: 403}
+
+    urls_delegated:
+      - url: "https://kabutan.jp/stock/finance?code=3851"
+        to: "data/fundamentals/3851.csv"
+      - url: "https://irbank.net/E02489/results"
+        to: "data/fundamentals/3851.csv"
+      - url: "https://irbank.net/E02489/quarter"
+        to: "data/fundamentals/3851.csv"
+      - url: "https://irbank.net/E02489"
+        to: "data/fundamentals/3851.csv"
+
+    claims:
+      # --- 2026-W33（続報2）：新規追記 -------------------------------------
+      - id: V36
+        section: updates
+        quote: "**8月14日は小反落。新しい材料は無く、過熱はわずかに緩んだ。**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://www.nippon1.co.jp/ir/ir.html", "https://kabutan.jp/stock/news?code=3851"]
+        evidence: >-
+          この見出しの3要素（小反落・新しい材料が無い・過熱がわずかに緩んだ）を
+          それぞれ V37〜V40 で個別に確認した。参考値ベースで-0.5%の下落
+          （小反落）、IR・株探ニュースとも8月7日以降の新規開示なし
+          （新しい材料は無い）で、いずれも本文の要約と整合する。
+          「過熱がわずかに緩んだ」は参考値（終値1,180円、未採用）に基づく
+          推測で、採用値のRSI・乖離率は8月14日分がSINGLE_SOURCEのため
+          実際には更新されていない（8月13日時点の値のまま。
+          src/judge.py --indicators-only の as_of は依然として2026-08-13）。
+
+      - id: V37
+        section: updates
+        quote: "`data/prices/daily.csv` に8月14日分の行が追加されたが、**株探（kabutan）側がまだ反映しておらずyahoo_jpのみの取得**のため`status=SINGLE_SOURCE`で、採用終値（close）は欠測（空欄）のまま記録されている。"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          data/prices/daily.csv の2026-08-14行:
+          open=1198.0, high=1206.0, low=1166.0, close=（空欄）, volume=52000,
+          status=SINGLE_SOURCE, source_primary=yahoo_jp, value_primary=1180.0,
+          source_secondary=（空欄）, value_secondary=（空欄）。
+          close 列が空欄で採用値になっていないこと、source_secondary が
+          空欄（kabutan側が未反映）であることをいずれも確認した。
+
+      - id: V38
+        section: updates
+        quote: "参考値（**未採用・1ソースのみ**、桁の目安として読む）は始値1,198円・高値1,206円・安値1,166円・終値1,180円・出来高52,000株（出典 <https://finance.yahoo.co.jp/quote/3851.T/history>、取得日2026-08-16）。"
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.yahoo.co.jp/quote/3851.T/history", "data/prices/daily.csv"]
+        evidence: >-
+          Yahoo!ファイナンス履歴ページを再取得（200・5,084字）。
+          「2026/8/14 | 1,198 | 1,206 | 1,166 | 1,180 | 52,000 | 1,180 | 18.04 | 0.76」
+          を確認。5つの数値（始値1,198・高値1,206・安値1,166・終値1,180・
+          出来高52,000）はいずれも一致する。data/prices/daily.csv の
+          2026-08-14行の value_primary（yahoo_jp）とも一致する。
+
+      - id: V39
+        section: updates
+        quote: "直近の採用値（2ソース照合済み）である8月13日終値1,186円と比べると、参考値ベースでは-0.5%の小幅な下落"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          8月13日行: close=1186・status=OK（採用値）。8月14日の参考値
+          （yahoo_jp）1180円との比は 1180÷1186−1 = −0.5059%≒本文の−0.5%。
+
+      - id: V40
+        section: updates
+        quote: "企業IRの適時開示一覧を確認したが、8月14日以降の新しい開示は無い（<https://www.nippon1.co.jp/ir/ir.html>、取得日2026-08-16確認）。1Q決算（8/7）・「10万本突破」（8/3）以降、新しい材料ニュースは見当たらない"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.nippon1.co.jp/ir/ir.html"
+          - "https://kabutan.jp/stock/news?code=3851"
+        evidence: >-
+          IRページを再取得（200・5,156字）。「IR新着情報」の先頭は
+          「2026.08.07　2027年3月期 第1四半期決算短信」のままで、これより
+          新しい日付の開示は無い。株探ニュース欄も再取得（200・4,821字）。
+          材料ニュースの先頭は「26/08/07 15:30｜開示｜…」「26/08/07 15:30｜決算｜…」
+          「26/08/04 10:57｜材料｜…10万本突破」で、8月7日・8月3日より後の
+          新しい開示・材料ニュースは無い。
+
+      - id: V41
+        section: updates
+        quote: "`data/fundamentals/3851.csv`・`data/margin/3851.csv` とも今週の取得で新規行の追記は無かった（信用残は8月7日時点のまま、財務データも直近の採用値から変わらず）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3851.csv", "data/margin/3851.csv"]
+        evidence: >-
+          data/margin/3851.csv の最終行は2026-08-07（fetched_at 2026-08-13）で、
+          これより新しい行は無い。data/fundamentals/3851.csv の全行の
+          fetched_at も2026-08-13T11:40:46が最新で、8月14日以降に追記された
+          行は無い。「今週の取得で新規行の追記は無かった」と一致する。
+
+      - id: V42
+        section: updates
+        quote: "`data/master.yaml` の3851の項目に `next_earnings`（決算発表予定日）の記載は無く、2Q決算の日程開示はまだ確認できていない"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: >-
+          この claim の前半（master.yaml の3851項目に next_earnings の記載が
+          無いこと）は、kabu-ledger-verify の絶対原則により
+          `data/master.yaml` を開けないため確認できない（追認バイアス隔離。
+          reports/theses/docs/bear と並んで開かない対象）。
+          後半（2Q決算の日程開示が確認できていないこと）は V40 と同じ
+          IR・株探の再取得で裏付けが取れる（新しい開示は無い）が、
+          全体としては master.yaml 側の記述を検証できないため claim 全体を
+          unverifiable とする。
+        action: "master.yaml側の事実は、隔離の対象外の別工程（本文執筆者側や機械チェック）で確認すること"
+
+      - id: V43
+        section: updates
+        quote: "参考値ベースの-0.5%という値幅自体は小さく、これだけで「反落トレンドに転じた」とは言えない。**株価が動いた理由は特定できていない**（新しい材料が無いままの小幅な調整、とも、単なる値動きのノイズとも読める）"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.nippon1.co.jp/ir/ir.html"
+          - "https://kabutan.jp/stock/news?code=3851"
+        evidence: >-
+          V40と同じ2出典を確認した範囲では、8月14日の値動き（参考値ベース
+          -0.5%）を説明できる新しい開示・材料ニュースは見当たらなかった。
+          「理由は特定できていない」という自己申告は、この2出典の範囲では
+          正しい。ただし本検証もこの2出典しか当たっておらず、SNS・掲示板等
+          は対象外。
+
+      # --- 既存の記述（本文は変わっていないが、この run で出典を再取得・
+      #     データを再照合し、id を再利用して記録し直した） -----------------
+      - id: V01
+        section: company
+        quote: "設立1993年、資本金5.57億円、連結従業員193名（2025年3月31日現在）。代表取締役は猿橋健蔵氏。"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/company/company.html"]
+        evidence: >-
+          会社概要ページを再取得（200・1,074字）。「■設立 1993年7月12日」
+          「■資本金 557.4百万円（2025年3月31日現在）」
+          「■従業員数 連結：193名 単体：105名（2025年3月31日現在）」
+          「■代表取締役 猿橋健蔵（サルハシケンゾウ）」をいずれも確認した。
+          前回run（8/13）と数値の変化なし。
+
+      - id: V03
+        section: company
+        quote: "主要取引先はソニー・インタラクティブエンタテインメント、任天堂、セガゲームスなど"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/company/company.html"]
+        evidence: >-
+          同ページの「■主要取引先」欄に「株式会社ソニー・インタラクティブエンタテインメント
+          任天堂株式会社 株式会社セガゲームス　　他」を再確認（変化なし）。
+
+      - id: V04
+        section: company
+        quote: "海外は米カリフォルニアの子会社 **NIS America** が北米・欧州向けの販売を担う。ほかにベトナム開発拠点、国内のグラフィック制作会社などを傘下に持つ。"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/company/company.html"]
+        evidence: >-
+          会社概要の「■子会社」欄を再取得すると、NIS America, Inc.
+          （Santa Ana, CA 92707 U.S.A.）、株式会社STUDIO ToOeuf、
+          Nippon Ichi Software Vietnam Co., Ltd.（Ho Chi Minh City）、
+          株式会社楽しみチーム、株式会社システムソフト・ベータ、
+          株式会社名古屋グラフィックスタジオ（岐阜県各務原市）の6社で、
+          前回確認した「連結子会社6社」と一致する。NIS America・Vietnam・
+          名古屋グラフィックスタジオは本文の記述どおり存在する。
+        action: >-
+          「NIS America が北米・欧州向けの販売を担う」という分担そのものは
+          このページに明示が無い（前回runと同じ留保）。有報のセグメント
+          記述を出典に足すこと
+
+      - id: V05
+        section: financials
+        quote: "### 直近5期＋今期計画（すべて2ソース照合済み）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3851.csv"]
+        evidence: >-
+          表の24マス全件を data/fundamentals/3851.csv の採用値（status に
+          OK を含む行）と突き合わせた。FY2022-03〜FY2026-03の
+          revenue/operating_income/ordinary_income/net_income、および
+          FY2027-03計画の4指標、いずれも本文の数値と一致する
+          （例: FY2022-03 revenue=5716・operating_income=1566、
+          FY2027-03 revenue_plan=4784・operating_income_plan=296・
+          ordinary_income_plan=449・net_income_plan=331）。
+
+      - id: V06
+        section: financials
+        quote: "**本業以外（営業外収益）が毎年122〜441百万円の幅で下支えしている**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3851.csv"]
+        evidence: >-
+          採用値の ordinary_income − operating_income を期ごとに再計算:
+          FY2022-03=1688−1566=+122、FY2023-03=941−745=+196、
+          FY2024-03=842−401=+441、FY2025-03=−75−(−274)=+199、
+          FY2026-03=−55−(−409)=+354、FY2027-03計画=449−296=+153。
+          最小122・最大441で本文の幅と一致（前回runと同じ結果）。
+
+      - id: V07
+        section: financials
+        quote: "**2026年3月期の差の中身は、為替差益168百万円と受取利息191百万円である**"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.gamebusiness.jp/article/2026/05/15/26947.html"]
+        evidence: >-
+          記事を再取得（200・3,169字）。「営業外収益として為替差益1億6,800万円や
+          受取利息1億9,100万円を計上したことで、経常損失は前年から約2,000万円
+          縮小しています」を確認（前回runと同一文面）。
+        action: "二次情報1件のみ。決算短信の営業外収益明細で裏を取ること（前回runと同じ留保）"
+
+      - id: V08
+        section: company
+        quote: "**エンターテインメント事業**：売上34億8,500万円（前年同期比33.0%減）、営業利益3,800万円（同81.6%減）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.gamebusiness.jp/article/2026/05/15/26947.html"]
+        evidence: >-
+          同記事（再取得・200）に「エンターテインメント事業全体の売上高は
+          34億8,500万円（前年同期比33.0%減）、営業利益は3,800万円
+          （同81.6%減）」「学生寮・その他事業は、売上高1億2,000万円
+          （同24.4%増）、営業損失2,100万円」を確認（前回runと同一文面）。
+
+      - id: V09
+        section: financials
+        quote: "**定期預金の預入による支出24億1,600万円**"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.gamebusiness.jp/article/2026/05/15/26947.html"]
+        evidence: >-
+          同記事（再取得・200）に「現金及び現金同等物の期末残高は
+          41億8,300万円となり、前年度末から約10億1,100万円減少しました。
+          これは主に定期預金の預入による支出24億1,600万円が大きく
+          影響したものです」を確認（前回runと同一文面）。
+
+      - id: V10
+        section: financials
+        quote: "売上847百万円（前年同期480百万円）、営業利益−145百万円（同−174百万円）、経常利益−69百万円（同−135百万円）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3851.csv"]
+        evidence: >-
+          Q2026-04_2026-06: revenue=847・operating_income=−145・
+          ordinary_income=−69。Q2025-04_2025-06: revenue=480・
+          operating_income=−174・ordinary_income=−135。6件とも
+          status に OK を含む採用値で、変化なし。
+
+      - id: V15
+        section: company
+        quote: "時価総額61.1億円（株探・2026-08-13取得。本レポートの基準日である8月12日の終値1,140円と発行済5,151,100株で計算し直すと**58.7億円**）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=3851", "data/prices/daily.csv"]
+        evidence: >-
+          株探を再取得（200）すると「時価総額 60.8 億円」「発行済株式数
+          5,151,100 株」（株価が1,180円前後まで動いたため61.1億円からさらに
+          動いている＝時価総額が株価連動で動くという前回runの指摘どおり）。
+          発行済株式数5,151,100株は変化なし。58.7億円のほうは
+          data/prices/daily.csv の2026-08-12行（close=1140・status=OK）を使い
+          5,151,100×1,140=5,872,254,000円≒58.7億円で、式・基準日とも本文と一致。
+
+      - id: V17
+        section: price
+        quote: "レーティングを出している証券会社が**0社**（強気0・中立0・弱気0）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=3851"]
+        evidence: >-
+          株予報Pro を再取得（200）。強気(5点)0人・やや強気(4点)0人・
+          中立(3点)0人・やや弱気(2点)0人・弱気(1点)0人、平均「--」、
+          目標株価「--」を確認（前回runと同じ結果）。
+          みんかぶ（もう一方の独立ソース）は今回403で到達できず、
+          この claim はkabuyoho単独での確認になる。
+
+      - id: V19
+        section: financials
+        quote: "（PBR 0.74倍・株予報Pro）"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=3851"]
+        evidence: >-
+          2026-08-16 再取得時点（株価2026/08/14・1,180円）の株予報Pro は
+          PBR 0.76倍。本文の0.74倍は8月12日の終値1,140円で割った値
+          （1,140÷1,547≈0.737）に当たり、株予報Proが今この瞬間に表示する
+          数値そのものではない（前回runでも同じ指摘。株価連動でさらに動いた）。
+        action: >-
+          「PBR 0.74倍（8/12終値1,140円÷BPS1,546.17円）」のように、
+          どの株価で割った値かを明記するほうが安全（前回runと同じ提案）
+
+      - id: V21
+        section: updates
+        quote: "信用の売り残が7月24日の0.6千株から7月31日に59.7千株へ急増し、**信用倍率が511倍から5.49倍→5.24倍へ**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/margin/3851.csv"]
+        evidence: >-
+          data/margin/3851.csv の該当3行（status OK）:
+          2026-07-24 買残306.6／売残0.6／倍率511.0、
+          2026-07-31 買残327.6／売残59.7／倍率5.49、
+          2026-08-07 買残333.1／売残63.6／倍率5.24（単位千株）。
+          8月7日以降、新しい行の追加は無く（V41でも確認）変化なし。
+
+      - id: V22
+        section: price
+        quote: "20日平均売買代金は8,469万円、**中央値は4,899万円**"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py", "data/prices/daily.csv"]
+        evidence: >-
+          python src/judge.py --indicators-only を再実行。as_of は
+          2026-08-13のまま（8/14行がSINGLE_SOURCEのため進んでいない）で、
+          avg_turnover_20d=86,223,985円・median_turnover_20d=48,994,650円。
+          本文の8,469万円は前回run（as_of 2026-08-12）時点の値
+          （avg_turnover_20d=84,690,080円）で、window が1日進んだことで
+          平均は約1.8%動いている。中央値4,899万円（48,994,650円）は
+          前回runの計算値と一致し、変わっていない。いずれにせよ流動性
+          ゲート（3,000万円）を平均・中央値とも上回る結論に変わりはない。
+
+      - id: V23
+        section: price
+        quote: "週足13週移動平均の傾き：**+1.570%/週（上向き）**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          src/judge.py に as_of 指定オプションが無いため8月12日時点の値を
+          今回再計算はできないが、data/prices/daily.csv の2026-08-12行
+          （close=1140・status=OK）は前回run（2026-08-13実行、
+          weekly_ma_mid_slope_pct=1.5699720292339614）から変化していない
+          （append-only）ため、前回runの計算結果がそのまま有効と判断した。
+
+      - id: V24
+        section: price
+        quote: "RSI(14) 70.1、25日移動平均乖離率+19.3%"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          V23と同じ理由（as_of指定不可・元データ不変）で、前回run
+          （2026-08-13実行、rsi14=70.12540231386899、
+          ma_deviation_pct=19.29677689409795）の計算結果がそのまま有効。
+          なお本日 as_of=2026-08-13 で再実行した最新値は
+          rsi14=73.09773969794088・ma_deviation_pct=22.328574964931104で、
+          これは本文の続報（V32=73.1・+22.3%）と一致し、8/12時点の数値
+          （70.1・+19.3%）とは別物であることも確認した。
+
+      - id: V27
+        section: sources
+        quote: "「業績予想の修正に関するお知らせ」が2025年6月20日・2026年2月13日"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/ir/ir.html"]
+        evidence: >-
+          IRページを全文再取得（200・5,156字）。「IR新着情報」の一覧で
+          「2026.02.13　業績予想の修正に関するお知らせ」
+          「2025.06.20　業績予想の修正に関するお知らせ」を確認。
+          あわせて「業績予想の差異発生に関するお知らせ」が
+          2026.05.15・2025.11.14・2025.05.09にあることも本文の括弧書きと
+          一致した。
+
+      - id: V28
+        section: sources
+        quote: "決算短信PDFの取り込み（一次情報との突き合わせが1件も無い状態）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/tanshin/fetch_log.csv"]
+        evidence: >-
+          data/tanshin/ に存在するのは 4073.csv と fetch_log.csv のみで、
+          3851.csv は今回も存在しない。「一次情報との突き合わせが1件も無い」
+          という自己申告は今回も正しい。
+
+      - id: V29
+        section: sources
+        quote: "2Q決算の発表予定日（本レポート作成時点で開示を確認できていない）"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.nippon1.co.jp/ir/ir.html"
+          - "https://kabutan.jp/stock/news?code=3851"
+        evidence: >-
+          V40と同じ再取得で確認。IRページの最新開示は2026.08.07のままで、
+          2Q（2026年9月中間期）の発表予定日を示す開示は無い。株探ニュース
+          欄にも決算発表予定日の記載は無い。「確認できていない」という
+          自己申告は今回も正しい。
+
+      # --- 新規：財務の余力・キャッシュフローの表（前回runでは個別claim化
+      #     していなかった） -------------------------------------------------
+      - id: V44
+        section: financials
+        quote: "| 2026/3期 | 69.4 | 11,267 | 5,281 | 4,183 | 1,546.17 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3851.csv"]
+        evidence: >-
+          FY2024-03〜FY2026-03の3期分、equity_ratio・total_assets・
+          retained_earnings・cash_equivalents・bps の5指標×3期＝15マスを
+          data/fundamentals/3851.csv の採用値（status OK|ROUNDING含む）と
+          突き合わせた。例: FY2026-03 equity_ratio=69.4／
+          total_assets=11267／retained_earnings=5281／
+          cash_equivalents=4183／bps=1546.17。FY2024-03（73.6/10818/5744/4603/1578.66）・
+          FY2025-03（69.6/11154/5562/5195/1533.44）もすべて一致した。
+
+      - id: V45
+        section: financials
+        quote: "| 2026/3期 | 49 | −1,222 | −41 | −1,173 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3851.csv"]
+        evidence: >-
+          FY2024-03〜FY2026-03の営業CF・投資CF・財務CF・フリーCFを
+          data/fundamentals/3851.csv の採用値と突き合わせた。
+          FY2026-03: operating_cf=49／investing_cf=−1222／financing_cf=−41／
+          free_cf=−1173。FY2024-03（794/−1043/78/−249）・
+          FY2025-03（404/−225/471/179）もすべて本文の表と一致した。
+
 # ---------------------------------------------------------------------------
 # 判定の始末（resolutions）
 #
