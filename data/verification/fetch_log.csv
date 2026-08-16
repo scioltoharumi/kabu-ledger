@@ -123,3 +123,12 @@ fetched_at,code,url,final_url,http_status,chars,sha256,note
 2026-08-16T11:51:08.001605+09:00,6570,https://kabutan.jp/stock/?code=6570,https://kabutan.jp/stock/?code=6570,200,4253,c1e62f692a0badae,text/html; charset=UTF-8
 2026-08-16T11:51:17.217574+09:00,6570,https://www.kyowa-corp.co.jp/ir/,https://www.kyowa-corp.co.jp/ir/,200,276,81c81ef9f8833db4,text/html
 2026-08-16T11:51:23.002269+09:00,6570,https://irbank.net/E33822,https://irbank.net/E33822,200,4616,52aa6aebf32f3ffd,text/html; charset=UTF-8
+2026-08-16T12:18:59.319760+09:00,4073,https://kabutan.jp/stock/finance?code=4073,https://kabutan.jp/stock/finance?code=4073,200,9011,ee93a5db5035844c,text/html; charset=UTF-8
+2026-08-16T12:19:05.239445+09:00,4073,https://kabutan.jp/stock/finance?code=4073,https://kabutan.jp/stock/finance?code=4073,200,9011,ee93a5db5035844c,text/html; charset=UTF-8
+2026-08-16T12:19:12.083017+09:00,4073,https://kabutan.jp/stock/finance?code=4073,https://kabutan.jp/stock/finance?code=4073,200,9011,ee93a5db5035844c,text/html; charset=UTF-8
+2026-08-16T12:19:22.298005+09:00,4073,https://irbank.net/E36666/results,https://irbank.net/E36666/results,200,11325,3c0a797ec29ad6df,text/html; charset=UTF-8
+2026-08-16T12:19:29.998633+09:00,4073,https://irbank.net/E36666/results,https://irbank.net/E36666/results,200,11325,3c0a797ec29ad6df,text/html; charset=UTF-8
+2026-08-16T12:19:36.996693+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4335,c693bbe659da385a,text/html; charset=UTF-8
+2026-08-16T12:19:42.224977+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4335,c693bbe659da385a,text/html; charset=UTF-8
+2026-08-16T12:19:48.128446+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4335,c693bbe659da385a,text/html; charset=UTF-8
+2026-08-16T12:19:52.387195+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4335,c693bbe659da385a,text/html; charset=UTF-8
