@@ -71,7 +71,11 @@ _PATCH_TARGETS = (
 # 実リポジトリを指したままで構わないモジュール（読むだけ・Path 定数を持たない）。
 _UNPATCHED_OK = {"checks", "fetch", "fetch_fundamentals", "fetch_index",
                  "fetch_margin", "fetch_tanshin", "notify", "revise",
-                 "score", "chart", "indicators", "style", "yamlio"}
+                 "score", "chart", "indicators", "style", "yamlio",
+                 # estimate は読み取り専用で、パスを使う全 API が root= 注入可
+                 # （build.py / checks.py は呼び出し時に root を渡す）。
+                 # ROOT 定数は CLI の既定値にすぎない
+                 "estimate"}
 
 
 # =============================================================================

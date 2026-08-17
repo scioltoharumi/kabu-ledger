@@ -1,0 +1,51 @@
+# 次期売上・利益のフェルミ推定（追記型・過去版は消さない）
+# 手順の正: .claude/skills/kabu-ledger-estimate/SKILL.md
+# 計算・感応度・実績比較は src/estimate.py が行う。ここに書くのは分解と値の選定だけ。
+models:
+  - as_of: "2026-08-17"
+    period: "FY2027-03"
+    status: draft
+    note: "初版。FY2026-03実績（data/fundamentals/6570.csv のOK値）と2027年3月期1Q決算短信のセグメント注記（2026-08-10開示）から組んだ。推定売上は会社計画26,870百万円を約+18%上回るが、これは1Q実績（売上+69.4%・営業利益進捗38%）の年率換算に対して8/10据え置きの会社計画が保守的に見えるためで、当てにいかずギャップのまま残す"
+    revenue:
+      unit: JPY_million
+      segments:
+        - name: "アミューズメント施設運営"
+          expr: "stores * sales_per_store"
+          vars:
+            stores:
+              value: 80
+              basis: assumed
+              note: "期中平均店舗数。1Q末76店・1Q中3出店（短信）から期初は73店、7〜8月もアピナ小山駅前・クレーンパラダイス諏訪・アピナ高梁と出店が継続（reports/6570.md 週次記録）しており、下期も同ペースの出店を見込んで期中平均80店と置いた"
+            sales_per_store:
+              value: 280
+              basis: assumed
+              note: "店舗あたり年間売上（百万円）。1Qセグメント売上5,085百万円（短信）÷1Q平均約74.5店（期初73店と1Q末76店の平均）＝四半期68.3百万円の単純年率換算×4で273。1Qは例年最も弱い四半期（前年は1Qが通期売上の21%）のため季節性ぶんを約+3%上乗せして280と置いた"
+        - name: "アミューズメント機器販売"
+          expr: "q1_revenue * annualize"
+          vars:
+            q1_revenue:
+              value: 292.533
+              basis: disclosed
+              source: "https://www.release.tdnet.info/inbs/140120260810516597.pdf（2027年3月期1Q決算短信・セグメント情報等の注記。取得日2026-08-16）"
+              note: "1Qセグメント売上292,533千円（前年同期比+244.1%）"
+            annualize:
+              value: 4.0
+              basis: assumed
+              note: "案件ごとにまとまって入る受注型で四半期の季節性を判断する材料が無いため単純年率換算（×4）と置いた。1Qの+244.1%が続く保証は無いが、縮むと置く根拠も無い"
+        - name: "その他（道楽・ブルーム・広告等）"
+          expr: "q1_revenue * annualize"
+          vars:
+            q1_revenue:
+              value: 2005.692
+              basis: disclosed
+              source: "https://www.release.tdnet.info/inbs/140120260810516597.pdf（2027年3月期1Q決算短信・セグメント情報等の注記。取得日2026-08-16）"
+              note: "1Qセグメント売上2,005,692千円（前年同期比+704.5%）。道楽の新規連結とブルームの伸びが混在"
+            annualize:
+              value: 4.0
+              basis: assumed
+              note: "道楽は2026年2月1日連結でFY2027は4四半期とも寄与する初年度のため、前年比の段差は通年で続く。トレカ相場とスクイーズの季節性を判断する材料が無いため、1Q水準の継続（×4）と置いた"
+    profit:
+      op_margin:
+        value: 0.09
+        basis: assumed
+        note: "FY2026-03実績8.48%（data/fundamentals/6570.csv のOK値）と1Q実績10.2%（営業利益756÷売上7,383百万円・短信）の間の9.0%と置いた。会社計画7.44%は出店先行費用による利益率低下を見込むが、1Qですでに計画を大きく上回り、高利益率の「その他」（1Qセグメント利益率16.0%）が通期寄与するため計画より高く、トレカ相場と出店費用のリスクを引いて1Q実績よりは低く見た"

@@ -88,11 +88,14 @@
 
 - `data/` 検証済みデータ（append-only）。`master.yaml` = 銘柄マスタ・閾値・保有情報
 - `reports/{code}.md` 銘柄レポート（主役）。`theses/` `predictions/` は人間が書く
+- `estimates/{code}.yaml` 次期売上・利益のフェルミ推定（追記型・過去版は消さない。
+  値の選定は basis 明示で Claude 起案→人間確認、計算・感度は `src/estimate.py`）
 - `docs/` Pages 出力。**直接編集しない**（build.py が生成。CI が上書きする）
 - `src/` 取得・検査・判定・生成（fetch_news=見出し収集・weekly_note=週次追記の機械化）／
   `tests/` 素の python で動く test_*.py ／
   `tools/` run_tests.py・shot.ps1・published.ps1/.py
-- `.claude/skills/` intake・weekly・report・verify・kabu-ledger（決算取込）
+- `.claude/skills/` intake・weekly・report・verify・kabu-ledger（決算取込）・
+  estimate（フェルミ推定。週次では回さない）
 
 ## 実行順
 

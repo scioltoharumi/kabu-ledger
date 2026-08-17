@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import chart as C
 import chartdata as CD
+import estimate as EST
 import judge as J
 import report as R
 import verification as VF
@@ -821,6 +822,180 @@ def render_verification(rep: R.Report, charts: dict) -> str:
     return "".join(parts)
 
 
+# --- 次期売上・利益推定（フェルミ。計算は estimate.py＝コードが行う） --------
+
+_BASIS_PILL = {
+    "actual": '<span class="pill pill-good">実績</span>',
+    "disclosed": '<span class="pill">開示（一次）</span>',
+    "assumed": '<span class="pill pill-warn">推定</span>',
+}
+
+
+def _fmt_m(v) -> str:
+    return f"{v:,.0f}" if v is not None else "—"
+
+
+def _est_source(src: str) -> str:
+    src = str(src or "")
+    if src.startswith("http"):
+        return ext_link(src.split("（")[0].strip(), "出典")
+    return f"<code>{html.escape(src)}</code>" if src else ""
+
+
+def render_estimate(code: str) -> str:
+    """「次期売上・利益推定」の折りたたみ。
+
+    値の選定は人間/LLM（basis を必ず明示）、計算・感度・比較は estimate.py。
+    的中を競う頁ではなく、仮定（推定ピル）を疑うための頁。
+    """
+    data = EST.load_estimate(code, root=ROOT)
+    if data is None:
+        inner = ('<p class="none">推定モデルは未作成。'
+                 "「この銘柄の推定モデルを組んで」と Claude に言えば起案できる"
+                 "（手順は <code>.claude/skills/kabu-ledger-estimate/</code>）。</p>")
+        return fold("次期売上・利益推定", "まだ作成していない", inner)
+    if data.get("errors"):
+        errs = "".join(f"<li>{html.escape(e)}</li>" for e in data["errors"])
+        inner = ('<p class="none"><span class="pill pill-danger">読めない</span> '
+                 f"推定ファイルに形式エラーがある:</p><ul>{errs}</ul>")
+        return fold("次期売上・利益推定", "形式エラー", inner)
+
+    models = data["models"]
+    m = models[-1]
+    period = html.escape(str(m.get("period", "")))
+    out = EST.outputs(m)
+    sens = EST.sensitivity(m)
+    comp = EST.comparisons(code, str(m.get("period", "")), root=ROOT)
+
+    confirmed = str(m.get("status", "draft")) == "confirmed"
+    status_pill = ('<span class="pill pill-good">マスター確認済み</span>' if confirmed
+                   else '<span class="pill pill-warn">未確定（マスター未確認の下書き）</span>')
+
+    lede = (f'<p class="lede">{status_pill} 対象期 <b>{period}</b>・'
+            f'起案 {html.escape(str(m.get("as_of", "")))}。'
+            "検証済みデータと<strong>明示した仮定</strong>から機械計算した概算であり、"
+            "会社計画でも的中予想でもない。"
+            "<span class=\"pill pill-warn\">推定</span> の付いた変数を疑うための頁。</p>")
+
+    # --- タイル ---
+    op = out.get("operating_income")
+    rev = out.get("revenue_total")
+    tiles = [_tile("推定売上", f'{_fmt_m(rev)}<span class="k-unit">百万円</span>',
+                   f"対象期 {m.get('period', '')}"),
+             _tile("推定営業利益", f'{_fmt_m(op)}<span class="k-unit">百万円</span>',
+                   f"営業利益率 {out.get('op_margin', 0) * 100:.1f}%（仮定）")]
+    plan_op = (comp.get("plan") or {}).get("operating_income")
+    if plan_op:
+        pct = (op / plan_op - 1) * 100
+        cls = "chg-pos" if pct >= 0 else "chg-neg"
+        tiles.append(_tile("会社計画比（営業利益）",
+                           f'<span class="{cls}">{pct:+.1f}%</span>',
+                           f"会社計画 {_fmt_m(plan_op)} 百万円"))
+    if sens:
+        top = sens[0]
+        tiles.append(_tile("最も効く変数",
+                           f'<span class="k-value-sm">{html.escape(str(top.get("var", "")))}</span>',
+                           f"+10%で営業利益 {top.get('delta_op_pct', 0):+.1f}%"))
+    body = lede + '<div class="kpi">' + "".join(tiles) + "</div>"
+
+    # --- 前期実績・会社計画・推定・実績の比較 ---
+    prev = comp.get("prev_actual") or {}
+    plan = comp.get("plan") or {}
+    act = comp.get("actual") or {}
+    has_actual = any(v is not None for v in act.values())
+    head_cells = "<th>指標</th><th>前期実績</th><th>会社計画</th><th>当台帳推定</th>"
+    if has_actual:
+        head_cells += "<th>実績（答え合わせ）</th><th>推定誤差</th>"
+    rows = []
+    for label, key, est_v in (("売上", "revenue", rev),
+                              ("営業利益", "operating_income", op)):
+        row = (f"<tr><td>{label}</td><td class=\"num\">{_fmt_m(prev.get(key))}</td>"
+               f"<td class=\"num\">{_fmt_m(plan.get(key))}</td>"
+               f"<td class=\"num\"><strong>{_fmt_m(est_v)}</strong></td>")
+        if has_actual:
+            a = act.get(key)
+            err = (f"{(est_v / a - 1) * 100:+.1f}%" if (a and est_v is not None) else "—")
+            row += f'<td class="num">{_fmt_m(a)}</td><td class="num">{err}</td>'
+        rows.append(row + "</tr>")
+    body += ("<h3>会社計画・実績との比較（百万円）</h3>"
+             '<div class="scroll"><table class="prose-table"><thead><tr>'
+             + head_cells + "</tr></thead><tbody>" + "".join(rows)
+             + "</tbody></table></div>")
+
+    # --- 計算の分解（セグメント） ---
+    seg_rows = "".join(
+        f'<tr><td>{html.escape(str(s.get("name", "")))}</td>'
+        f'<td class="num">{html.escape(str(s.get("expr_filled", "")))}</td>'
+        f'<td class="num"><strong>{_fmt_m(s.get("value"))}</strong></td></tr>'
+        for s in out.get("segments", []))
+    body += ("<h3>計算の分解</h3>"
+             '<div class="scroll"><table class="prose-table est-vars"><thead><tr>'
+             "<th>セグメント</th><th>式（値を代入）</th><th>売上（百万円）</th>"
+             "</tr></thead><tbody>" + seg_rows + "</tbody></table></div>")
+
+    # --- 変数と根拠 ---
+    var_rows = []
+    for s in m.get("revenue", {}).get("segments", []):
+        sname = html.escape(str(s.get("name", "")))
+        for vn, vd in (s.get("vars") or {}).items():
+            vd = vd or {}
+            var_rows.append(
+                f"<tr><td>{sname}</td><td><code>{html.escape(str(vn))}</code></td>"
+                f'<td class="num">{html.escape(str(vd.get("value", "")))} '
+                f'{html.escape(str(vd.get("unit", "")))}</td>'
+                f'<td>{_BASIS_PILL.get(str(vd.get("basis", "")), "")}</td>'
+                f'<td>{html.escape(str(vd.get("note", "")))} '
+                f'{_est_source(vd.get("source", ""))}</td></tr>')
+    om = m.get("profit", {}).get("op_margin") or {}
+    var_rows.append(
+        f"<tr><td>全社</td><td><code>op_margin</code></td>"
+        f'<td class="num">{html.escape(str(om.get("value", "")))}</td>'
+        f'<td>{_BASIS_PILL.get(str(om.get("basis", "")), "")}</td>'
+        f'<td>{html.escape(str(om.get("note", "")))} '
+        f'{_est_source(om.get("source", ""))}</td></tr>')
+    body += ("<h3>変数と根拠</h3>"
+             '<div class="scroll"><table class="prose-table"><thead><tr>'
+             "<th>セグメント</th><th>変数</th><th>値</th><th>根拠</th><th>メモ・出典</th>"
+             "</tr></thead><tbody>" + "".join(var_rows) + "</tbody></table></div>")
+
+    # --- 感度（何が重要な変数か） ---
+    sens_rows = "".join(
+        f'<tr><td><code>{html.escape(str(x.get("var", "")))}</code></td>'
+        f'<td>{html.escape(str(x.get("segment", "")))}</td>'
+        f'<td class="num">{x.get("delta_op_pct", 0):+.1f}%</td></tr>'
+        for x in sens[:6])
+    body += ("<h3>感度 — この推定を最も動かす変数</h3>"
+             '<p class="lede">各変数を +10% したときの営業利益の変化。'
+             "上にある変数ほど、根拠を厚く確かめる価値がある。</p>"
+             '<div class="scroll"><table class="prose-table"><thead><tr>'
+             "<th>変数</th><th>セグメント</th><th>営業利益への影響</th>"
+             "</tr></thead><tbody>" + sens_rows + "</tbody></table></div>")
+
+    # --- 変遷（過去版は消さない） ---
+    hist_rows = []
+    for hm in models:
+        try:
+            ho = EST.outputs(hm)
+            hr, hop = _fmt_m(ho.get("revenue_total")), _fmt_m(ho.get("operating_income"))
+        except Exception:  # noqa: BLE001 — 過去版の形式劣化でページを壊さない
+            hr = hop = "—"
+        hist_rows.append(
+            f'<tr><td>{html.escape(str(hm.get("as_of", "")))}</td>'
+            f'<td>{html.escape(str(hm.get("period", "")))}</td>'
+            f'<td class="num">{hr}</td><td class="num">{hop}</td>'
+            f'<td>{html.escape(str(hm.get("note", "")))}</td></tr>')
+    body += ("<h3>推定の変遷</h3>"
+             '<p class="lede">過去の版は書き換えずに残す。'
+             "数値感がどう変わってきたかが学習の履歴になる。</p>"
+             '<div class="scroll"><table class="prose-table"><thead><tr>'
+             "<th>起案日</th><th>対象期</th><th>売上</th><th>営業利益</th><th>何を変えたか</th>"
+             "</tr></thead><tbody>" + "".join(hist_rows) + "</tbody></table></div>")
+
+    status_ja = "確認済み" if confirmed else "未確定"
+    hint = f"対象 {m.get('period', '')}・{status_ja}・変数 {len(var_rows)} 個"
+    return fold("次期売上・利益推定", hint, body)
+
+
 def build_stock_page(rep: R.Report, as_of: str) -> None:
     (DOCS / "stock").mkdir(parents=True, exist_ok=True)
     name = html.escape(rep.name)
@@ -853,6 +1028,7 @@ def build_stock_page(rep: R.Report, as_of: str) -> None:
         upd_hint = "まだ記録なし"
     body += fold("週次アップデート", upd_hint,
                  render_updates(rep, "", charts))
+    body += render_estimate(rep.code)
 
     company = "".join(
         render_section(rep, key, title, charts)

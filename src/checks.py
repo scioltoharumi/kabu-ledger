@@ -1057,6 +1057,23 @@ def _recorded_revision(old: dict, new: dict, header: list[str],
     return want + ": " + "／".join(reasons)
 
 
+def check_estimates(rep: Report, repo_root: Path) -> None:
+    """次期売上・利益推定（estimates/*.yaml）の形式検査。
+
+    書けたつもりで計算できない・描かれない推定を公開させない（図の
+    「書いたのに描かれない書き方」検査と同じ趣旨）。値の妥当性は検査しない
+    —— それは人間の確認（status: confirmed）の仕事。
+    """
+    est_dir = repo_root / "estimates"
+    if not est_dir.exists():
+        return
+    import estimate as _est
+    for path in sorted(est_dir.glob("*.yaml")):
+        rel = f"estimates/{path.name}"
+        for msg in _est.validate_file(path):
+            rep.fail("estimates", rel, msg)
+
+
 def check_revisions(rep: Report, data_dir: Path) -> None:
     """訂正台帳そのものの検査。**記録だけあって実体が無い**状態を許さない。"""
     path = data_dir / "revisions.csv"
@@ -4216,6 +4233,7 @@ def run_checks(data_dir: Path, baseline: Baseline | None,
     check_links(rep, reports, data_dir, sources, check_links_flag)
     check_stamps(rep, data_dir, master)
     check_revisions(rep, data_dir)
+    check_estimates(rep, repo_root if repo_root is not None else ROOT)
     return rep
 
 
