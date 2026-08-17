@@ -75,7 +75,8 @@ padding:.75rem .9rem .7rem;box-shadow:var(--shadow)}
 .kpi-tile .k-label{display:block;font-size:.72rem;font-weight:700;
 color:var(--dim);letter-spacing:.05em;margin-bottom:.15rem}
 .kpi-tile .k-value{display:block;font-size:1.45rem;font-weight:700;
-line-height:1.3;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+line-height:1.3;font-variant-numeric:tabular-nums;letter-spacing:.01em;
+white-space:nowrap}
 .kpi-tile .k-sub{display:block;font-size:.72rem;color:var(--dim);margin-top:.1rem;
 overflow-wrap:anywhere}
 .kpi-tile .k-value-sm{font-size:1.02rem;padding:.2rem 0 .15rem}
@@ -107,6 +108,10 @@ font-weight:700;background:var(--soft);color:var(--dim);margin-right:.4rem}
 border-radius:6px}
 .num{font-variant-numeric:tabular-nums;
 font-family:ui-monospace,"SF Mono",Menlo,monospace}
+/* 数値セルは桁の途中で折り返さない（.prose-table の overflow-wrap:anywhere が
+   数字にも効いて「1桁ずつ縦に落ちる」のを防ぐ。幅が足りない表は .scroll が
+   横スクロールで受ける） */
+td.num,th.num{white-space:nowrap;overflow-wrap:normal}
 /* 週次アップデートの1エントリ＝1カード。長い時系列を面で区切る */
 .upd{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--accent);
 border-radius:6px;padding:1rem 1.2rem;margin:1.1rem 0;box-shadow:var(--shadow)}
@@ -157,6 +162,8 @@ details.sec .sec-hint{font-size:.76rem;color:var(--dim);font-weight:400}
 details.sec>.sec-body{padding:.2rem 1.2rem 1.3rem}
 details.sec>.sec-body>h2:first-child{margin-top:1.4rem}
 details.sec>summary:hover .sec-title{color:var(--accent)}
+/* 推定フォールド内の表は、狭い画面で潰して桁を折るより横スクロールさせる */
+.est .scroll table{min-width:34rem}
 
 /* 読み取りの手がかり（図の下に置く短い注記） */
 .readout{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;

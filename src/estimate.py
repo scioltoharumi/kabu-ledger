@@ -39,6 +39,11 @@ ROOT = Path(__file__).resolve().parents[1]
 
 _BASIS = ("actual", "disclosed", "assumed")
 _STATUS = ("draft", "confirmed")
+MARKET_UNIT = "JPY_million"                        # market_forecast の数値は百万円固定
+
+# 感応度の op_margin 行に必ず添える注記（sensitivity の trivial=True）。
+TRIVIAL_NOTE = ("乗法モデルなので定義上つねに +10%。売上側の変数との大小比較には"
+                "意味が無い（率の水準そのものを疑うこと）")
 _PERIOD_RE = re.compile(r"^FY(\d{4})-(\d{2})$")   # fundamentals の period 表記と同じ
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
@@ -111,10 +116,16 @@ def _eval(node: ast.expr, vals: dict[str, float]) -> float:
 
 
 def _fmt(v) -> str:
-    """代入表示用の数値表記（21060 -> '21,060'・0.083 -> '0.083'）。"""
+    """代入表示用の数値表記（21060 -> '21,060'・0.083 -> '0.083'）。
+
+    整数判定は float 誤差に耐えるようにする。二進小数では 80×280 が
+    22399.999999999996 になり得て、`is_integer()` だけで見ると '22,400.0' と
+    小数点が1つ生えた表示になる（数値は同じなのに版によって見た目が変わる）。
+    """
     f = float(v)
-    if f.is_integer():
-        return f"{int(f):,}"
+    r = round(f)
+    if abs(f - r) <= max(1e-9, abs(f) * 1e-12):
+        return f"{int(r):,}"
     return f"{round(f, 4):,}"
 
 
@@ -232,26 +243,78 @@ def validate_model(model) -> list[str]:
     return errors
 
 
-def _doc_errors(path: Path) -> tuple[list, list[str]]:
-    """ファイル全体を (models, エラー一覧) に読む。"""
+def _market_errors(mf, model_units=()) -> list[str]:
+    """ファイル先頭の market_forecast:（市場予想・任意）の検証。
+
+    数値を載せるなら出典必須。数値が無いなら「無い理由」の note 必須
+    （カバー0社であること自体が情報なので、黙って省略させない）。
+
+    数値があるときは、さらに次も見る。表示側（build.render_estimate）が
+    当台帳推定と同じ表に百万円で並べ、乖離率まで出すため、ここを素通りさせると
+    「単位も出所も違う数どうしの引き算」が黙って画面に出る:
+      - name（誰の予想か）が無い匿名のコンセンサスは検証しようがない
+      - 売上がマイナスはあり得ない（営業利益は赤字があるので許す）
+      - モデルの revenue.unit が百万円でないなら、並べた時点で桁が違う
+    """
+    if mf is None:
+        return []
+    if not isinstance(mf, dict):
+        return ["market_forecast は辞書"
+                "（name / revenue / operating_income / source / note）で書く"]
+    errs: list[str] = []
+    has_num = False
+    for k in ("revenue", "operating_income"):
+        v = mf.get(k)
+        if v is None:
+            continue
+        has_num = True
+        if not isinstance(v, (int, float)) or isinstance(v, bool):
+            errs.append(f"market_forecast.{k} は数値（百万円）で書く")
+        elif k == "revenue" and v < 0:
+            errs.append(f"market_forecast.revenue が負: {v!r}（売上に負は無い）")
+    if has_num:
+        if not str(mf.get("source") or "").strip():
+            errs.append("market_forecast: 数値を載せるなら source（URL＋取得日）が必須")
+        if not str(mf.get("name") or "").strip():
+            errs.append("market_forecast: 数値を載せるなら name（誰の予想か）が必須")
+        bad_units = [u for u in dict.fromkeys(model_units) if u != MARKET_UNIT]
+        if bad_units:
+            errs.append(
+                f"market_forecast の数値は{MARKET_UNIT}（百万円）固定だが、"
+                f"revenue.unit が {' / '.join(bad_units)} のモデルがある"
+                "（同じ表に並べると桁が違う。単位を揃えるか数値を載せない）")
+    elif not str(mf.get("note") or "").strip():
+        errs.append("market_forecast: 数値が無いなら note（無い理由）が必須")
+    return errs
+
+
+def _doc_errors(path: Path) -> tuple[dict, list, list[str]]:
+    """ファイル全体を (doc, models, エラー一覧) に読む。"""
     try:
         data = Y.safe_load(path.read_text(encoding="utf-8"))
     except yaml.YAMLError as e:
-        return [], [f"{path.name}: YAML を解析できない: {e}"]
+        return {}, [], [f"{path.name}: YAML を解析できない: {e}"]
     if not isinstance(data, dict) or not isinstance(data.get("models"), list):
-        return [], [f"{path.name}: 先頭に models:（モデルのリスト）が必要"]
+        return {}, [], [f"{path.name}: 先頭に models:（モデルのリスト）が必要"]
     models = data["models"]
     if not models:
-        return [], [f"{path.name}: models が空（少なくとも1モデル必要）"]
+        return data, [], [f"{path.name}: models が空（少なくとも1モデル必要）"]
     errors: list[str] = []
+    units: list[str] = []
     for i, model in enumerate(models):
         errors += [f"{path.name} models[{i}]: {e}" for e in validate_model(model)]
-    return models, errors
+        if isinstance(model, dict) and isinstance(model.get("revenue"), dict):
+            unit = str(model["revenue"].get("unit") or "").strip()
+            if unit:
+                units.append(unit)
+    errors += [f"{path.name}: {e}"
+               for e in _market_errors(data.get("market_forecast"), units)]
+    return data, models, errors
 
 
 def validate_file(path) -> list[str]:
     """checks.py から呼ぶ用。ファイル内の全モデルの検証エラーを返す（空 = 有効）。"""
-    return _doc_errors(Path(path))[1]
+    return _doc_errors(Path(path))[2]
 
 
 def load_estimate(code: str, root=ROOT) -> dict | None:
@@ -259,8 +322,9 @@ def load_estimate(code: str, root=ROOT) -> dict | None:
     path = Path(root) / "estimates" / f"{code}.yaml"
     if not path.exists():
         return None
-    models, errors = _doc_errors(path)
-    return {"models": models, "errors": errors}
+    data, models, errors = _doc_errors(path)
+    return {"models": models, "errors": errors,
+            "market_forecast": data.get("market_forecast")}
 
 
 # =============================================================================
@@ -294,6 +358,12 @@ def sensitivity(model) -> list[dict]:
     """各変数（op_margin 含む）を +10% したときの営業利益の変化率。影響の大きい順。
 
     並びは決定的: |変化率| 降順 → セグメント名 → 変数名（D8。同率でも順が揺れない）。
+
+    `trivial` は「その行の数字が発見ではない」印。営業利益 = 売上合計 × op_margin
+    という乗法モデルでは op_margin を +10% すれば営業利益は定義上つねに +10% になり、
+    必ず（またはタイで）先頭に来る。これを売上側の変数と同じ表で並べると
+    「最も効く変数は op_margin」という当たり前の結論を発見のように読ませてしまうため、
+    表示側が区別できるよう印を付ける（TRIVIAL_NOTE を添えて出す）。
     """
     base = outputs(model)
     base_oi = base["operating_income"]
@@ -311,8 +381,9 @@ def sensitivity(model) -> list[dict]:
                 delta = _delta_pct(new_total * margin, base_oi)
             except ZeroDivisionError:              # +10% で分母が 0 になる端
                 delta = None
-            rows.append({"var": name, "segment": seg["name"], "delta_op_pct": delta})
-    rows.append({"var": "op_margin", "segment": None,
+            rows.append({"var": name, "segment": seg["name"], "delta_op_pct": delta,
+                         "trivial": False})
+    rows.append({"var": "op_margin", "segment": None, "trivial": True,
                  "delta_op_pct": _delta_pct(base["revenue_total"] * margin * 1.1,
                                             base_oi)})
     rows.sort(key=lambda r: (r["delta_op_pct"] is None,
@@ -353,16 +424,24 @@ def _prev_period(period: str) -> str:
     return f"FY{int(m.group(1)) - 1}-{m.group(2)}"
 
 
-def comparisons(code: str, period: str, root=ROOT) -> dict:
+def comparisons(code: str, period: str, root=ROOT, unit=None) -> dict:
     """会社計画・前期実績・当期実績を data/fundamentals/{code}.csv から引く。
 
     **status に OK を含む行だけ** を使う（採用終値と同じ規律・D53。value の有無や
     SINGLE_SOURCE の value_primary で判定しない）。append-only なので同じ
     period×metric が複数あれば後の行（最新）を採る。無い値は None（決算が届いたら
     actual が埋まる）。
+
+    `unit` を渡すと fundamentals の unit 列と突き合わせ、**違う単位の行は採らない**。
+    推定モデルは百万円（revenue.unit）で組むのに fundamentals 側は metric ごとに
+    unit を持つ（JPY / pct / x もある）ため、突き合わせないと「百万円の推定」と
+    「円の実績」を黙って同じ表に並べ、乖離率まで計算してしまう。除外した行は
+    戻り値の `unit_mismatch` に残す（黙って落とさない）。
     """
     prev = _prev_period(period)
     rows = _read_csv(Path(root) / "data" / "fundamentals" / f"{code}.csv")
+    want = str(unit or "").strip()
+    mismatch: list[str] = []
 
     def pick(per: str, metric: str) -> float | None:
         got = None
@@ -371,12 +450,17 @@ def comparisons(code: str, period: str, root=ROOT) -> dict:
                 continue
             if "OK" not in _flags(r.get("status")):
                 continue
+            row_unit = str(r.get("unit") or "").strip()
+            if want and row_unit and row_unit != want:
+                mismatch.append(f"{per} {metric}: fundamentals の unit={row_unit} が"
+                                f"モデルの unit={want} と違うため比較から除外した")
+                continue
             v = _num(r.get("value"))
             if v is not None:
                 got = v                            # 後の行 = 最新の採用値
         return got
 
-    return {
+    out = {
         "plan": {"revenue": pick(period, "revenue_plan"),
                  "operating_income": pick(period, "operating_income_plan")},
         "prev_actual": {"revenue": pick(prev, "revenue"),
@@ -384,6 +468,9 @@ def comparisons(code: str, period: str, root=ROOT) -> dict:
         "actual": {"revenue": pick(period, "revenue"),
                    "operating_income": pick(period, "operating_income")},
     }
+    out["unit"] = want or None
+    out["unit_mismatch"] = list(dict.fromkeys(mismatch))   # 並びは決定的（D8）
+    return out
 
 
 # =============================================================================
@@ -426,14 +513,17 @@ def _print_code(code: str, root: Path) -> int:
         label = row["var"] if row["segment"] is None else \
             f"{row['var']}（{row['segment']}）"
         pct = "—" if row["delta_op_pct"] is None else f"{row['delta_op_pct']:+.2f}%"
-        print(f"  {label}: {pct}")
+        tail = f"  ※{TRIVIAL_NOTE}" if row.get("trivial") else ""
+        print(f"  {label}: {pct}{tail}")
 
-    comp = comparisons(code, model["period"], root=root)
+    comp = comparisons(code, model["period"], root=root, unit=unit)
     fund = Path(root) / "data" / "fundamentals" / f"{code}.csv"
     print(f"\n実績比較（{model['period']} ／ status に OK を含む採用値のみ・"
-          f"単位は fundamentals の unit 列に従う）:")
+          f"単位 {unit} の行だけ採用）:")
     if not fund.exists():
         print(f"  （data/fundamentals/{code}.csv が無い）")
+    for warn in comp["unit_mismatch"]:
+        print(f"  ⚠ {warn}")
     for key, label in (("plan", "会社計画"), ("prev_actual", "前期実績"),
                        ("actual", "当期実績")):
         rev = _fmt_or_dash(comp[key]["revenue"])
@@ -455,7 +545,7 @@ def _print_all(root: Path) -> int:
         return 0
     failed = 0
     for path in files:
-        models, errors = _doc_errors(path)
+        _doc, models, errors = _doc_errors(path)
         if errors:
             failed += 1
             print(f"NG  {path.name}（{len(errors)}件）")

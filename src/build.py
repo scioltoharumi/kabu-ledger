@@ -211,7 +211,7 @@ def kpi_tiles(code: str) -> str:
     if window:
         lo, hi = min(window), max(window)
         tiles.append(_tile("52週レンジ",
-                           f'{lo:,.0f}<span class="k-unit">〜</span>{hi:,.0f}',
+                           f'<span class="k-value-sm">{lo:,.0f} 〜 {hi:,.0f}</span>',
                            "採用終値ベース・円"))
 
     passed, claims, present, stale = verify_stat(code)
@@ -835,6 +835,46 @@ def _fmt_m(v) -> str:
     return f"{v:,.0f}" if v is not None else "—"
 
 
+def _rel_pct(value, base):
+    """base に対する value の乖離率（%）。比べられないときは None。
+
+    分母は **絶対値**（estimate._delta_pct と同じ規律）。会社計画・市場予想・実績の
+    営業利益は赤字＝負になり得て、`value / base - 1` のままだと符号が反転する
+    （計画 -50 に対し推定 +100 が「-300%」と、上振れなのに赤く出る）。
+    0 と None は「比べない」に倒す（0 除算と、ゼロ計画の無限大表示を出さない）。
+    """
+    if value is None or base is None or base == 0:
+        return None
+    return (value - base) / abs(base) * 100.0
+
+
+def _pct_span(pct) -> str:
+    """乖離率を色つきで。None は '—'（符号も色も付けない）。"""
+    if pct is None:
+        return "—"
+    cls = "chg-pos" if pct >= 0 else "chg-neg"
+    return f'<span class="{cls}">{pct:+.1f}%</span>'
+
+
+def _est_sens_row(x: dict) -> str:
+    """感度表の1行。estimate.sensitivity の行をそのまま受ける。
+
+    - segment は op_margin（全社）のとき None。`str()` すると "None" と表示される
+    - delta_op_pct は +10% で分母が 0 になる端や営業利益 0 のとき None になり得て、
+      書式指定（:+.1f）に渡すと TypeError でページ生成ごと落ちる
+    - trivial（op_margin）は自明な +10% だと分かる形で出す
+    """
+    seg = x.get("segment")
+    seg_html = html.escape(str(seg)) if seg else "全社"
+    d = x.get("delta_op_pct")
+    d_html = "—" if d is None else f"{d:+.1f}%"
+    if x.get("trivial"):
+        seg_html += ' <span class="pill pill-warn">定義上</span>'
+        d_html += f'<br><span class="k-sub">{html.escape(EST.TRIVIAL_NOTE)}</span>'
+    return (f'<tr><td><code>{html.escape(str(x.get("var", "")))}</code></td>'
+            f'<td>{seg_html}</td><td class="num">{d_html}</td></tr>')
+
+
 def _est_source(src: str) -> str:
     src = str(src or "")
     if src.startswith("http"):
@@ -865,7 +905,8 @@ def render_estimate(code: str) -> str:
     period = html.escape(str(m.get("period", "")))
     out = EST.outputs(m)
     sens = EST.sensitivity(m)
-    comp = EST.comparisons(code, str(m.get("period", "")), root=ROOT)
+    unit = str((m.get("revenue") or {}).get("unit") or "")
+    comp = EST.comparisons(code, str(m.get("period", "")), root=ROOT, unit=unit)
 
     confirmed = str(m.get("status", "draft")) == "confirmed"
     status_pill = ('<span class="pill pill-good">マスター確認済み</span>' if confirmed
@@ -885,17 +926,26 @@ def render_estimate(code: str) -> str:
              _tile("推定営業利益", f'{_fmt_m(op)}<span class="k-unit">百万円</span>',
                    f"営業利益率 {out.get('op_margin', 0) * 100:.1f}%（仮定）")]
     plan_op = (comp.get("plan") or {}).get("operating_income")
-    if plan_op:
-        pct = (op / plan_op - 1) * 100
-        cls = "chg-pos" if pct >= 0 else "chg-neg"
-        tiles.append(_tile("会社計画比（営業利益）",
-                           f'<span class="{cls}">{pct:+.1f}%</span>',
+    plan_pct = _rel_pct(op, plan_op)
+    if plan_pct is not None:
+        tiles.append(_tile("会社計画比（営業利益）", _pct_span(plan_pct),
                            f"会社計画 {_fmt_m(plan_op)} 百万円"))
-    if sens:
-        top = sens[0]
-        tiles.append(_tile("最も効く変数",
-                           f'<span class="k-value-sm">{html.escape(str(top.get("var", "")))}</span>',
-                           f"+10%で営業利益 {top.get('delta_op_pct', 0):+.1f}%"))
+    mf = data.get("market_forecast") or {}
+    mf_op = mf.get("operating_income")
+    mf_pct = _rel_pct(op, mf_op if isinstance(mf_op, (int, float)) else None)
+    if mf_pct is not None:
+        tiles.append(_tile("市場予想比（営業利益）", _pct_span(mf_pct),
+                           f"{mf.get('name', '市場予想')} {_fmt_m(mf_op)} 百万円"))
+    # 最も効く変数は **売上側から** 選ぶ。op_margin は乗法モデルで定義上つねに +10% で
+    # 必ず先頭に来るため、そのまま出すと「最も効くのは op_margin」という自明な結論を
+    # 発見のように読ませてしまう（estimate.sensitivity の trivial 印で外す）。
+    top = next((r for r in sens if not r.get("trivial")
+                and r.get("delta_op_pct") is not None), None)
+    if top is not None:
+        tiles.append(_tile(
+            "最も効く変数（売上側）",
+            f'<span class="k-value-sm">{html.escape(str(top.get("var", "")))}</span>',
+            f"+10%で営業利益 {top['delta_op_pct']:+.1f}%"))
     body = lede + '<div class="kpi">' + "".join(tiles) + "</div>"
 
     # --- 前期実績・会社計画・推定・実績の比較 ---
@@ -903,24 +953,44 @@ def render_estimate(code: str) -> str:
     plan = comp.get("plan") or {}
     act = comp.get("actual") or {}
     has_actual = any(v is not None for v in act.values())
-    head_cells = "<th>指標</th><th>前期実績</th><th>会社計画</th><th>当台帳推定</th>"
+    has_mf_num = any(isinstance(mf.get(k), (int, float))
+                     for k in ("revenue", "operating_income"))
+    head_cells = ("<th>指標</th><th>前期実績</th><th>会社計画</th>"
+                  "<th>市場予想</th><th>当台帳推定</th><th>市場予想比</th>")
     if has_actual:
         head_cells += "<th>実績（答え合わせ）</th><th>推定誤差</th>"
     rows = []
     for label, key, est_v in (("売上", "revenue", rev),
                               ("営業利益", "operating_income", op)):
+        mv = mf.get(key)
+        mv_num = mv if isinstance(mv, (int, float)) else None
+        mf_diff = _pct_span(_rel_pct(est_v, mv_num))
         row = (f"<tr><td>{label}</td><td class=\"num\">{_fmt_m(prev.get(key))}</td>"
                f"<td class=\"num\">{_fmt_m(plan.get(key))}</td>"
-               f"<td class=\"num\"><strong>{_fmt_m(est_v)}</strong></td>")
+               f"<td class=\"num\">{_fmt_m(mv_num)}</td>"
+               f"<td class=\"num\"><strong>{_fmt_m(est_v)}</strong></td>"
+               f"<td class=\"num\">{mf_diff}</td>")
         if has_actual:
             a = act.get(key)
-            err = (f"{(est_v / a - 1) * 100:+.1f}%" if (a and est_v is not None) else "—")
+            err_pct = _rel_pct(est_v, a)
+            err = "—" if err_pct is None else f"{err_pct:+.1f}%"
             row += f'<td class="num">{_fmt_m(a)}</td><td class="num">{err}</td>'
         rows.append(row + "</tr>")
-    body += ("<h3>会社計画・実績との比較（百万円）</h3>"
-             '<div class="scroll"><table class="prose-table"><thead><tr>'
+    mf_note = ""
+    for warn in comp.get("unit_mismatch") or []:
+        mf_note += ('<p class="lede"><span class="pill pill-danger">単位不一致</span> '
+                    f"{html.escape(warn)}</p>")
+    if mf and not has_mf_num:
+        mf_note += (f'<p class="lede">市場予想: '
+                    f"{html.escape(str(mf.get('note', '')))}</p>")
+    elif mf and mf.get("source"):
+        mf_note += (f'<p class="lede">市場予想の出所: '
+                    f"{html.escape(str(mf.get('name', '')))} "
+                    f"{_est_source(mf.get('source'))}</p>")
+    body += ("<h3>会社計画・市場予想・実績との比較（百万円）</h3>"
+             '<div class="scroll"><table class="prose-table est-mkt"><thead><tr>'
              + head_cells + "</tr></thead><tbody>" + "".join(rows)
-             + "</tbody></table></div>")
+             + "</tbody></table></div>" + mf_note)
 
     # --- 計算の分解（セグメント） ---
     seg_rows = "".join(
@@ -959,14 +1029,13 @@ def render_estimate(code: str) -> str:
              "</tr></thead><tbody>" + "".join(var_rows) + "</tbody></table></div>")
 
     # --- 感度（何が重要な変数か） ---
-    sens_rows = "".join(
-        f'<tr><td><code>{html.escape(str(x.get("var", "")))}</code></td>'
-        f'<td>{html.escape(str(x.get("segment", "")))}</td>'
-        f'<td class="num">{x.get("delta_op_pct", 0):+.1f}%</td></tr>'
-        for x in sens[:6])
+    sens_rows = "".join(_est_sens_row(x) for x in sens[:6])
     body += ("<h3>感度 — この推定を最も動かす変数</h3>"
              '<p class="lede">各変数を +10% したときの営業利益の変化。'
-             "上にある変数ほど、根拠を厚く確かめる価値がある。</p>"
+             "上にある変数ほど、根拠を厚く確かめる価値がある。"
+             "ただし <code>op_margin</code> だけは別扱い——"
+             "営業利益 = 売上合計 × op_margin なので +10% は定義上つねに +10% になり、"
+             "売上側の変数と大小を比べても意味が無い。</p>"
              '<div class="scroll"><table class="prose-table"><thead><tr>'
              "<th>変数</th><th>セグメント</th><th>営業利益への影響</th>"
              "</tr></thead><tbody>" + sens_rows + "</tbody></table></div>")
@@ -993,7 +1062,7 @@ def render_estimate(code: str) -> str:
 
     status_ja = "確認済み" if confirmed else "未確定"
     hint = f"対象 {m.get('period', '')}・{status_ja}・変数 {len(var_rows)} 個"
-    return fold("次期売上・利益推定", hint, body)
+    return fold("次期売上・利益推定", hint, f'<div class="est">{body}</div>')
 
 
 def build_stock_page(rep: R.Report, as_of: str) -> None:

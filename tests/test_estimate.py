@@ -328,6 +328,111 @@ def test_load_validate_and_cli() -> None:
         sb.close()
 
 
+def test_fmt_survives_float_artifacts() -> None:
+    """二進小数の誤差で '22,400.0' のような小数点が生えないこと。"""
+    eq(E._fmt(22400.000000000004), "22,400", "整数に極めて近い値")
+    eq(E._fmt(22399.999999999996), "22,400", "整数に極めて近い値（下から）")
+    eq(E._fmt(2000.0), "2,000", "ちょうど整数")
+    eq(E._fmt(-1757.0), "-1,757", "負の整数")
+    eq(E._fmt(0.09), "0.09", "小数はそのまま")
+    eq(E._fmt(1170.132), "1,170.132", "有意な小数は潰さない")
+    # 0.1 を足し込む古典的な誤差（0.30000000000000004）は 0.3 に見せる
+    eq(E._fmt(0.1 + 0.2), "0.3", "丸めで吸収する範囲の誤差")
+
+
+def test_sensitivity_marks_trivial_op_margin() -> None:
+    """op_margin の +10% は乗法モデルで定義上つねに +10%。印が付くこと。"""
+    rows = E.sensitivity(make_model())
+    trivial = [r for r in rows if r.get("trivial")]
+    eq(len(trivial), 1, "trivial は op_margin の1行だけ")
+    eq(trivial[0]["var"], "op_margin", "trivial が付く変数")
+    near(trivial[0]["delta_op_pct"], 10.0, "定義上 +10%")
+    assert all("trivial" in r for r in rows), "全行に trivial キーがあること"
+    # 売上側の変数からトップを選べる（表示側が自明な行を外して選ぶ経路）
+    top = next(r for r in rows if not r["trivial"])
+    eq(top["var"], "sales_per_store", "売上側で最も効く変数（施設 2,000 / 通販 1,500）")
+    eq(top["segment"], "施設運営", "売上側トップのセグメント")
+
+
+def test_comparisons_rejects_unit_mismatch() -> None:
+    """モデルの unit と違う単位の fundamentals 行を黙って比較に使わないこと。"""
+    sb = Sandbox()
+    try:
+        rows = [frow("FY2024-03", "revenue", 1000, "OK"),
+                frow("FY2025-03", "revenue_plan", 1200, "OK"),
+                # 単位が違う行（例: 円で入った営業利益）。OK でも採ってはいけない
+                {**frow("FY2024-03", "operating_income", 100000000, "OK"),
+                 "unit": "JPY"}]
+        sb.fundamentals("9999", rows)
+        comp = E.comparisons("9999", "FY2025-03", root=sb.root, unit="JPY_million")
+        eq(comp["prev_actual"]["revenue"], 1000.0, "同じ単位の行は採る")
+        eq(comp["prev_actual"]["operating_income"], None,
+           "単位違い（JPY）の行を百万円の推定と並べてはいけない")
+        assert any("JPY" in w for w in comp["unit_mismatch"]), \
+            f"除外を黙って落とした: {comp['unit_mismatch']}"
+        eq(comp["unit"], "JPY_million", "採用単位を返す")
+        # unit を渡さなければ従来どおり（後方互換）
+        old = E.comparisons("9999", "FY2025-03", root=sb.root)
+        eq(old["prev_actual"]["operating_income"], 100000000.0, "unit 未指定なら素通し")
+        eq(old["unit_mismatch"], [], "unit 未指定なら警告も出ない")
+    finally:
+        sb.close()
+
+
+def test_market_forecast_validation() -> None:
+    """market_forecast: 数値を載せるなら誰の予想か・単位・符号まで見る。"""
+    sb = Sandbox()
+    try:
+        head = ("market_forecast:\n  revenue: 26870\n  operating_income: 2000\n"
+                '  source: "https://example.invalid/consensus（2026-08-17取得）"\n')
+        # name が無い匿名のコンセンサス → NG
+        errs = E.validate_file(sb.yaml("7777", head + ESTIMATE_YAML))
+        assert any("name" in e for e in errs), f"匿名の市場予想を通した: {errs}"
+        # name を足せば通る
+        errs = E.validate_file(sb.yaml("7776", head + '  name: "合成社"\n' + ESTIMATE_YAML))
+        eq(errs, [], f"正しい market_forecast を弾いた: {errs}")
+        # 売上が負 → NG
+        bad = head.replace("revenue: 26870", "revenue: -100")
+        errs = E.validate_file(sb.yaml("7775", bad + '  name: "合成社"\n' + ESTIMATE_YAML))
+        assert any("負" in e for e in errs), f"負の売上予想を通した: {errs}"
+        # モデルの unit が百万円でない → 同じ表に並べられないので NG
+        other_unit = ESTIMATE_YAML.replace("unit: JPY_million", "unit: JPY_thousand")
+        errs = E.validate_file(
+            sb.yaml("7774", head + '  name: "合成社"\n' + other_unit))
+        assert any("JPY_thousand" in e for e in errs), f"単位の食い違いを通した: {errs}"
+        # 数値が無いなら note 必須（従来どおり）
+        errs = E.validate_file(sb.yaml("7773", 'market_forecast:\n  name: "—"\n'
+                                       + ESTIMATE_YAML))
+        assert any("note" in e for e in errs), f"理由なしの空予想を通した: {errs}"
+    finally:
+        sb.close()
+
+
+def test_build_display_math() -> None:
+    """表示側（build）の ±% と感度行。分母が 0・負・None でも壊れないこと。"""
+    import build as B
+
+    eq(B._rel_pct(120, 100), 20.0, "正の分母")
+    eq(B._rel_pct(80, 100), -20.0, "正の分母（下振れ）")
+    # 赤字計画に対する上振れが「マイナス」に化けないこと（分母は絶対値）
+    eq(B._rel_pct(100, -50), 300.0, "負の分母でも上振れは +")
+    eq(B._rel_pct(-100, -50), -100.0, "負の分母で下振れは -")
+    eq(B._rel_pct(100, 0), None, "分母 0 は比べない")
+    eq(B._rel_pct(100, None), None, "分母 None は比べない")
+    eq(B._rel_pct(None, 100), None, "分子 None は比べない")
+    eq(B._pct_span(None), "—", "比べられないときは — で色を付けない")
+    assert "chg-pos" in B._pct_span(1.0) and "chg-neg" in B._pct_span(-1.0), "色の向き"
+
+    # 感度行: segment=None が "None" と出ない・delta=None で落ちない
+    row = B._est_sens_row({"var": "op_margin", "segment": None,
+                           "delta_op_pct": 10.0, "trivial": True})
+    assert ">None<" not in row, f"segment の None がそのまま出た: {row}"
+    assert "全社" in row and "定義上" in row, f"op_margin 行の表示: {row}"
+    row = B._est_sens_row({"var": "x", "segment": "施設運営",
+                           "delta_op_pct": None, "trivial": False})
+    assert "—" in row and "施設運営" in row, f"delta None の行: {row}"
+
+
 def main() -> int:
     tests = [
         ("2セグメントの outputs（合計・営業利益・代入表示）", test_outputs_two_segments),
@@ -339,6 +444,12 @@ def main() -> int:
          test_comparisons_uses_only_ok_rows),
         ("未定義変数・ゼロ除算・非数値が検証エラー", test_undefined_var_and_zero_division),
         ("load_estimate / validate_file / CLI の入出力", test_load_validate_and_cli),
+        ("_fmt は float 誤差で小数点を生やさない", test_fmt_survives_float_artifacts),
+        ("sensitivity は自明な op_margin に印を付ける",
+         test_sensitivity_marks_trivial_op_margin),
+        ("comparisons は単位違いの行を採らない", test_comparisons_rejects_unit_mismatch),
+        ("market_forecast の検証（name・符号・単位）", test_market_forecast_validation),
+        ("表示側の ±% と感度行（0・負・None）", test_build_display_math),
     ]
     failed = []
     for name, fn in tests:

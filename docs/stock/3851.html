@@ -64,7 +64,8 @@ padding:.75rem .9rem .7rem;box-shadow:var(--shadow)}
 .kpi-tile .k-label{display:block;font-size:.72rem;font-weight:700;
 color:var(--dim);letter-spacing:.05em;margin-bottom:.15rem}
 .kpi-tile .k-value{display:block;font-size:1.45rem;font-weight:700;
-line-height:1.3;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+line-height:1.3;font-variant-numeric:tabular-nums;letter-spacing:.01em;
+white-space:nowrap}
 .kpi-tile .k-sub{display:block;font-size:.72rem;color:var(--dim);margin-top:.1rem;
 overflow-wrap:anywhere}
 .kpi-tile .k-value-sm{font-size:1.02rem;padding:.2rem 0 .15rem}
@@ -96,6 +97,10 @@ font-weight:700;background:var(--soft);color:var(--dim);margin-right:.4rem}
 border-radius:6px}
 .num{font-variant-numeric:tabular-nums;
 font-family:ui-monospace,"SF Mono",Menlo,monospace}
+/* 数値セルは桁の途中で折り返さない（.prose-table の overflow-wrap:anywhere が
+   数字にも効いて「1桁ずつ縦に落ちる」のを防ぐ。幅が足りない表は .scroll が
+   横スクロールで受ける） */
+td.num,th.num{white-space:nowrap;overflow-wrap:normal}
 /* 週次アップデートの1エントリ＝1カード。長い時系列を面で区切る */
 .upd{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--accent);
 border-radius:6px;padding:1rem 1.2rem;margin:1.1rem 0;box-shadow:var(--shadow)}
@@ -146,6 +151,8 @@ details.sec .sec-hint{font-size:.76rem;color:var(--dim);font-weight:400}
 details.sec>.sec-body{padding:.2rem 1.2rem 1.3rem}
 details.sec>.sec-body>h2:first-child{margin-top:1.4rem}
 details.sec>summary:hover .sec-title{color:var(--accent)}
+/* 推定フォールド内の表は、狭い画面で潰して桁を折るより横スクロールさせる */
+.est .scroll table{min-width:34rem}
 
 /* 読み取りの手がかり（図の下に置く短い注記） */
 .readout{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;
@@ -206,7 +213,7 @@ font-size:.72rem;font-weight:700}
 .viz figcaption{font-size:.78rem}
 .viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
-</style></head><body><main><h1>日本一ソフトウェア（3851）</h1><p class="lede">東証スタンダード／レポート更新 2026-08-16<br><span class="pill pill-warn">記録が古い</span><a href="#verify">本文がこの検証のあとに書き換えられている（件数は現在の本文に適用できない）</a><br><a class="ext" href="https://www.nippon1.co.jp/ir/ir.html" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E02489" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=3851" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://www.nippon1.co.jp/company/company.html" target="_blank" rel="noopener">会社概要 ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">1,186<span class="k-unit">円</span></span><span class="k-sub">2026-08-13・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+4.0%</span></span><span class="k-sub">2026-08-12 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value">776<span class="k-unit">〜</span>1,186</span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">記録が古い</span></span><span class="k-sub">本文が更新されてから未実施</span></div></div><blockquote>
+</style></head><body><main><h1>日本一ソフトウェア（3851）</h1><p class="lede">東証スタンダード／レポート更新 2026-08-16<br><span class="pill pill-warn">記録が古い</span><a href="#verify">本文がこの検証のあとに書き換えられている（件数は現在の本文に適用できない）</a><br><a class="ext" href="https://www.nippon1.co.jp/ir/ir.html" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E02489" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=3851" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://www.nippon1.co.jp/company/company.html" target="_blank" rel="noopener">会社概要 ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">1,186<span class="k-unit">円</span></span><span class="k-sub">2026-08-13・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+4.0%</span></span><span class="k-sub">2026-08-12 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">776 〜 1,186</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">記録が古い</span></span><span class="k-sub">本文が更新されてから未実施</span></div></div><blockquote>
 <p><strong>一行でいうと</strong>：岐阜県各務原市のゲームソフトメーカー。『魔界戦記ディスガイア』『夜廻』などの自社IPを企画・開発し、北米子会社 NIS America を通じて海外にも売っている。時価総額59億円（8/12終値ベース）で、株価は1株あたり純資産の7割強。<strong>2026年3月期は売上が3割減って営業赤字4.09億円まで沈んだが、7月30日発売の新作『ほの暮しの庭』が発売4日で10万本売れ、株価は3週間で+27%（7月22日の900円→8月12日の1,140円）上がって52週高値にいる。</strong></p>
 </blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W33・全 4 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W33（続報）</h3><p><strong>52週高値をさらに更新。ただし新しい材料は見当たらず、過熱度だけが進んだ。</strong></p>
 <ul>
