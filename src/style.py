@@ -164,6 +164,33 @@ details.sec>.sec-body>h2:first-child{margin-top:1.4rem}
 details.sec>summary:hover .sec-title{color:var(--accent)}
 /* 推定フォールド内の表は、狭い画面で潰して桁を折るより横スクロールさせる */
 .est .scroll table{min-width:34rem}
+/* 変数カード（推定）。表に長文メモを並べると他列が潰れて変数名が縦に折れる。
+   メモ・出典はカードの中に畳み、クリックで開く */
+.var-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));
+gap:.6rem;margin:1rem 0}
+details.var{margin:0;padding:0;border:1px solid var(--rule);border-radius:8px;
+background:var(--card)}
+details.var>summary{list-style:none;cursor:pointer;padding:.6rem .75rem .55rem;
+display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;margin:0}
+details.var>summary::-webkit-details-marker{display:none}
+details.var>summary::after{content:"▾";color:var(--dim);font-size:.72rem;
+margin-left:auto}
+details.var[open]>summary::after{content:"▴"}
+details.var[open]>summary{margin:0}
+details.var code{white-space:nowrap;overflow-wrap:normal;background:none;
+padding:0;font-size:.78rem;color:var(--dim)}
+details.var .v-seg{font-size:.68rem;color:var(--dim);width:100%;line-height:1.4}
+details.var .v-val{font-weight:700;font-variant-numeric:tabular-nums;
+font-size:1.08rem;white-space:nowrap}
+details.var>div{margin:0 .75rem .6rem;padding-top:.5rem;font-size:.8rem;
+color:var(--dim);line-height:1.75;border-top:1px dashed var(--rule);
+overflow-wrap:anywhere}
+/* PC では推定フォールドだけ本文列（52rem）より広く使う */
+@media(min-width:1140px){
+details.sec.sec-wide{width:min(76rem,calc(100vw - 5rem));position:relative;
+left:50%;transform:translateX(-50%)}
+details.sec.sec-wide .est .kpi{grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))}
+}
 
 /* 読み取りの手がかり（図の下に置く短い注記） */
 .readout{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;

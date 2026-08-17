@@ -475,15 +475,17 @@ def render_updates(rep: R.Report, title: str, charts: dict) -> str:
     return "".join(parts)
 
 
-def fold(title: str, hint: str, inner: str) -> str:
+def fold(title: str, hint: str, inner: str, wide: bool = False) -> str:
     """銘柄ページの大分類。既定は閉じておく（開閉は読み手の操作。JSは使わない）。
 
     閉じていても、中身の存在と量は summary の hint で必ず伝える
-    （「見えない＝無い」に見せない）。
+    （「見えない＝無い」に見せない）。wide は PC で本文列より広く使う
+    （表・タイル主体のグループ用。散文主体のグループには使わない）。
     """
     if not inner.strip():
         return ""
-    return ('<details class="sec">'
+    cls = "sec sec-wide" if wide else "sec"
+    return (f'<details class="{cls}">'
             f'<summary><span class="sec-title">{html.escape(title)}</span>'
             f'<span class="sec-hint">{html.escape(hint)}</span></summary>'
             f'<div class="sec-body">{inner}</div></details>')
@@ -1003,30 +1005,32 @@ def render_estimate(code: str) -> str:
              "<th>セグメント</th><th>式（値を代入）</th><th>売上（百万円）</th>"
              "</tr></thead><tbody>" + seg_rows + "</tbody></table></div>")
 
-    # --- 変数と根拠 ---
-    var_rows = []
+    # --- 変数と根拠（カード。長文のメモ・出典はクリックで開く） ---
+    def _var_card(seg_name: str, vn: str, vd: dict) -> str:
+        vd = vd or {}
+        unit = html.escape(str(vd.get("unit", "") or ""))
+        unit_html = f" {unit}" if unit else ""
+        note = html.escape(str(vd.get("note", "")))
+        src = _est_source(vd.get("source", ""))
+        detail = f"{note} {src}".strip() or "（メモなし）"
+        return ('<details class="var">'
+                f'<summary><span class="v-seg">{html.escape(seg_name)}</span>'
+                f'<code>{html.escape(str(vn))}</code>'
+                f'<span class="v-val">{html.escape(str(vd.get("value", "")))}'
+                f"{unit_html}</span>"
+                f'{_BASIS_PILL.get(str(vd.get("basis", "")), "")}</summary>'
+                f"<div>{detail}</div></details>")
+
+    cards = []
     for s in m.get("revenue", {}).get("segments", []):
-        sname = html.escape(str(s.get("name", "")))
         for vn, vd in (s.get("vars") or {}).items():
-            vd = vd or {}
-            var_rows.append(
-                f"<tr><td>{sname}</td><td><code>{html.escape(str(vn))}</code></td>"
-                f'<td class="num">{html.escape(str(vd.get("value", "")))} '
-                f'{html.escape(str(vd.get("unit", "")))}</td>'
-                f'<td>{_BASIS_PILL.get(str(vd.get("basis", "")), "")}</td>'
-                f'<td>{html.escape(str(vd.get("note", "")))} '
-                f'{_est_source(vd.get("source", ""))}</td></tr>')
+            cards.append(_var_card(str(s.get("name", "")), str(vn), vd))
     om = m.get("profit", {}).get("op_margin") or {}
-    var_rows.append(
-        f"<tr><td>全社</td><td><code>op_margin</code></td>"
-        f'<td class="num">{html.escape(str(om.get("value", "")))}</td>'
-        f'<td>{_BASIS_PILL.get(str(om.get("basis", "")), "")}</td>'
-        f'<td>{html.escape(str(om.get("note", "")))} '
-        f'{_est_source(om.get("source", ""))}</td></tr>')
+    cards.append(_var_card("全社", "op_margin", om))
     body += ("<h3>変数と根拠</h3>"
-             '<div class="scroll"><table class="prose-table"><thead><tr>'
-             "<th>セグメント</th><th>変数</th><th>値</th><th>根拠</th><th>メモ・出典</th>"
-             "</tr></thead><tbody>" + "".join(var_rows) + "</tbody></table></div>")
+             '<p class="lede">カードを押すと、その値の置き方（メモ・出典）が開く。'
+             '<span class="pill pill-warn">推定</span> の変数から疑うこと。</p>'
+             '<div class="var-grid">' + "".join(cards) + "</div>")
 
     # --- 感度（何が重要な変数か） ---
     sens_rows = "".join(_est_sens_row(x) for x in sens[:6])
@@ -1061,8 +1065,9 @@ def render_estimate(code: str) -> str:
              "</tr></thead><tbody>" + "".join(hist_rows) + "</tbody></table></div>")
 
     status_ja = "確認済み" if confirmed else "未確定"
-    hint = f"対象 {m.get('period', '')}・{status_ja}・変数 {len(var_rows)} 個"
-    return fold("次期売上・利益推定", hint, f'<div class="est">{body}</div>')
+    hint = f"対象 {m.get('period', '')}・{status_ja}・変数 {len(cards)} 個"
+    return fold("次期売上・利益推定", hint, f'<div class="est">{body}</div>',
+                wide=True)
 
 
 def build_stock_page(rep: R.Report, as_of: str) -> None:
