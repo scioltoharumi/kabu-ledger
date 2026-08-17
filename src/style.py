@@ -140,6 +140,24 @@ padding:.5rem .8rem;background:var(--card)}
 details summary{cursor:pointer;font-size:.88rem;font-weight:700;color:var(--dim)}
 details[open] summary{margin-bottom:.4rem}
 
+/* 銘柄ページの2大セクション（週次アップデート／会社概要）。既定は閉。
+   #verify 等へのアンカーは、現行ブラウザが details を自動展開して届く */
+details.sec{margin:1.6rem 0;padding:0;border:1px solid var(--rule);
+border-radius:8px;background:var(--card);box-shadow:var(--shadow)}
+details.sec>summary{list-style:none;cursor:pointer;margin:0;
+padding:1.05rem 1.2rem;display:flex;align-items:baseline;gap:.6rem;
+flex-wrap:wrap;color:var(--ink)}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::before{content:"▸";color:var(--accent);
+font-size:1.05rem;line-height:1}
+details.sec[open]>summary::before{content:"▾"}
+details.sec[open]>summary{margin:0;border-bottom:1px solid var(--rule)}
+details.sec .sec-title{font-size:1.12rem;font-weight:700}
+details.sec .sec-hint{font-size:.76rem;color:var(--dim);font-weight:400}
+details.sec>.sec-body{padding:.2rem 1.2rem 1.3rem}
+details.sec>.sec-body>h2:first-child{margin-top:1.4rem}
+details.sec>summary:hover .sec-title{color:var(--accent)}
+
 /* 読み取りの手がかり（図の下に置く短い注記） */
 .readout{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;
 font-size:.82rem;color:var(--dim)}
@@ -184,6 +202,8 @@ table{font-size:.8rem}th,td{padding:.45rem .5rem}
 .kpi{grid-template-columns:repeat(2,1fr);gap:.55rem}
 .kpi-tile .k-value{font-size:1.25rem}
 .upd{padding:.85rem 1rem}
+details.sec>summary{padding:.85rem .9rem}
+details.sec>.sec-body{padding:.2rem .9rem 1rem}
 /* 一覧表はスマホでカード状に積む（横スクロールさせない） */
 .list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
 .list-table thead{display:none}

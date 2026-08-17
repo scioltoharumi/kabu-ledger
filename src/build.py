@@ -397,7 +397,9 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         "<h2>この台帳の読み方</h2>"
         "<ul>"
         "<li>銘柄名を押すと、その会社の調査レポートが開く</li>"
-        f"<li>レポートは <strong>{order}</strong> の順に並んでいる</li>"
+        "<li>レポートは<strong>「週次アップデート」と「会社概要」の2つ</strong>に"
+        "畳んである。見出しを押すと開く</li>"
+        f"<li>節は <strong>{order}</strong> の順に並んでいる</li>"
         '<li><span class="flag">深掘り</span> が付いた銘柄は毎週すべての項目を'
         "見直している。付いていない銘柄はニュースと値動きだけ追っている</li>"
         "<li>深掘り対象を変えたいときは Claude に「4073 を深掘りして」と言えばよい</li>"
@@ -454,19 +456,36 @@ def render_section(rep: R.Report, key: str, title: str, charts: dict) -> str:
 
 
 def render_updates(rep: R.Report, title: str, charts: dict) -> str:
-    """週次アップデートは新しい週を上に。過去の記述は残したまま並べる。"""
+    """週次アップデートは新しい週を上に。過去の記述は残したまま並べる。
+
+    見出し（h2）は付けない。銘柄ページでは折りたたみ（fold）の summary が
+    グループ名を兼ねるため。
+    """
     entries = rep.week_entries()
     if not entries:
         return ""
-    parts = [f"<h2>{html.escape(title)}</h2>"]
-    parts.append('<p class="lede">新しい週を上に置いている。'
-                 "過去の記述は書き換えず、そのまま残している。</p>")
+    parts = ['<p class="lede">新しい週を上に置いている。'
+             "過去の記述は書き換えず、そのまま残している。</p>"]
     for head, body_md in entries:
         parts.append('<div class="upd">')
         parts.append(f"<h3>{html.escape(head)}</h3>")
         parts.append(to_html(body_md, charts))
         parts.append("</div>")
     return "".join(parts)
+
+
+def fold(title: str, hint: str, inner: str) -> str:
+    """銘柄ページの大分類。既定は閉じておく（開閉は読み手の操作。JSは使わない）。
+
+    閉じていても、中身の存在と量は summary の hint で必ず伝える
+    （「見えない＝無い」に見せない）。
+    """
+    if not inner.strip():
+        return ""
+    return ('<details class="sec">'
+            f'<summary><span class="sec-title">{html.escape(title)}</span>'
+            f'<span class="sec-hint">{html.escape(hint)}</span></summary>'
+            f'<div class="sec-body">{inner}</div></details>')
 
 
 # --- 検証状況（この銘柄の数値がどこまで確かめられているか） -----------------
@@ -823,10 +842,25 @@ def build_stock_page(rep: R.Report, as_of: str) -> None:
     )
     lead_md = strip_title(rep.lead)
     body = head + kpi_tiles(rep.code) + to_html(lead_md, charts)
-    for key, title in R.SECTIONS:
-        body += render_section(rep, key, title, charts)
-    body += render_verify(rep)
-    body += render_verification(rep, charts)
+
+    # 大きく2つに畳む（既定は閉）: 週次アップデート／会社概要。
+    # 検証の記録（裏取り・数値の検証状況）は会社概要の末尾に含める。
+    entries = rep.week_entries()
+    if entries:
+        latest_key = entries[0][0].split("（")[0]
+        upd_hint = f"最新 {latest_key}・全 {len(entries)} 件"
+    else:
+        upd_hint = "まだ記録なし"
+    body += fold("週次アップデート", upd_hint,
+                 render_updates(rep, "", charts))
+
+    company = "".join(
+        render_section(rep, key, title, charts)
+        for key, title in R.SECTIONS if key != "updates")
+    company += render_verify(rep)
+    company += render_verification(rep, charts)
+    sec_titles = "・".join(t for k, t in R.SECTIONS if k != "updates")
+    body += fold("会社概要", f"{sec_titles}・検証の記録", company)
 
     title = f"{rep.name}（{rep.code}）"
     (DOCS / "stock" / f"{rep.code}.html").write_text(
