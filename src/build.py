@@ -150,6 +150,85 @@ def load_weekly_close(code: str) -> tuple[str, float | None]:
     return (last_date or "—"), last_close
 
 
+def load_adopted_series(code: str) -> list[tuple[str, float]]:
+    """その銘柄の採用終値（status に OK がある行だけ）を日付昇順で返す。
+
+    `close` の有無で数えない（D53。判定は `chartdata.adopted_close` に一本化し、
+    LEGACY_NO_TRADE の7行が混ざらないようにする）。
+    """
+    path = ROOT / "data" / "prices" / "daily.csv"
+    if not path.exists():
+        return []
+    rows: list[tuple[str, float]] = []
+    with path.open(encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if row.get("code") != code:
+                continue
+            v = CD.adopted_close(row)
+            if v is not None:
+                rows.append((row["date"], v))
+    rows.sort()
+    return rows
+
+
+def _tile(label: str, value_html: str, sub: str) -> str:
+    return ('<div class="kpi-tile">'
+            f'<span class="k-label">{html.escape(label)}</span>'
+            f'<span class="k-value">{value_html}</span>'
+            f'<span class="k-sub">{html.escape(sub)}</span></div>')
+
+
+def kpi_tiles(code: str) -> str:
+    """銘柄ページ冒頭の KPI タイル。値はすべて検証済みデータ由来（D8 決定論）。
+
+    - 終値・レンジは採用終値（2ソース照合成立日）だけで組む。D53
+    - 前日比は「直前の採用日」との比較（暦日の前日ではない）。sub に日付を明示
+    - 騰落の色は図と同じ意味づけ（青=上・赤=下）。符号も必ず出す
+    """
+    series = load_adopted_series(code)
+    if not series:
+        return ""
+    last_date, last_close = series[-1]
+
+    tiles = [_tile("採用終値",
+                   f'{last_close:,.0f}<span class="k-unit">円</span>',
+                   f"{last_date}・2ソース照合済み")]
+
+    if len(series) >= 2:
+        prev_date, prev_close = series[-2]
+        if prev_close:
+            pct = (last_close - prev_close) / prev_close * 100
+            cls = "chg-pos" if pct >= 0 else "chg-neg"
+            tiles.append(_tile("前採用日比",
+                               f'<span class="{cls}">{pct:+.1f}%</span>',
+                               f"{prev_date} 比"))
+
+    # 52週 = 最新採用日から遡って365日（実行日は使わない。D8）
+    y, m, d = (int(x) for x in last_date.split("-"))
+    since = f"{y - 1:04d}-{m:02d}-{d:02d}"
+    window = [c for dt, c in series if dt >= since]
+    if window:
+        lo, hi = min(window), max(window)
+        tiles.append(_tile("52週レンジ",
+                           f'{lo:,.0f}<span class="k-unit">〜</span>{hi:,.0f}',
+                           "採用終値ベース・円"))
+
+    passed, claims, present, stale = verify_stat(code)
+    if not present:
+        tiles.append(_tile("記述の裏取り",
+                           '<span class="k-value-sm">未検証</span>', "記録なし"))
+    elif stale:
+        tiles.append(_tile("記述の裏取り",
+                           '<span class="k-value-sm">記録が古い</span>',
+                           "本文が更新されてから未実施"))
+    else:
+        tiles.append(_tile("記述の裏取り",
+                           f'{passed}<span class="k-unit">/{claims}</span>',
+                           "裏付けあり／全記述"))
+
+    return '<div class="kpi">' + "".join(tiles) + "</div>"
+
+
 def as_of_date() -> str:
     """集計基準日 = 確定している最後の営業日。実行時刻は使わない（D8）。
 
@@ -253,8 +332,8 @@ def render_row(stock: dict, rep: R.Report | None) -> str:
         f'<span class="sub">{html.escape(code)}／{market}／{earn_pill}'
         f"{verify_pill_html}</span>"
         f'<span class="one">{oneline}</span></td>'
-        f'<td data-l="終値" class="num">{close_txt}<span class="sub">'
-        f"{html.escape(date)}</span></td>"
+        f'<td data-l="終値" class="num"><span class="price">{close_txt}</span>'
+        f'<span class="sub">{html.escape(date)}</span></td>'
         f'<td data-l="今週"><span class="sub">{week_head}</span>{week_txt}</td>'
         f"</tr>"
     )
@@ -293,10 +372,15 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     )
 
     summary = (
-        f'<p class="readout"><span>登録 <b>{len(stocks)}</b> 銘柄</span>'
-        f'<span>レポートあり <b>{len(reports)}</b></span>'
-        f'<span>深掘り中 <b>{n_deep}</b></span>'
-        f'<span>基準日 <b>{html.escape(as_of)}</b></span></p>'
+        '<div class="kpi">'
+        + _tile("登録", f'{len(stocks)}<span class="k-unit">銘柄</span>',
+                "スクリーニング通過ぶん")
+        + _tile("レポートあり", f"{len(reports)}", "調査済みの銘柄数")
+        + _tile("深掘り中", f"{n_deep}", "毎週全節を見直す対象")
+        + _tile("基準日",
+                f'<span class="k-value-sm">{html.escape(as_of)}</span>',
+                "確定している最後の営業日")
+        + "</div>"
     )
 
     table = (
@@ -738,7 +822,7 @@ def build_stock_page(rep: R.Report, as_of: str) -> None:
         + nav(1)
     )
     lead_md = strip_title(rep.lead)
-    body = head + to_html(lead_md, charts)
+    body = head + kpi_tiles(rep.code) + to_html(lead_md, charts)
     for key, title in R.SECTIONS:
         body += render_section(rep, key, title, charts)
     body += render_verify(rep)

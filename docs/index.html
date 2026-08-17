@@ -1,87 +1,122 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>銘柄調査台帳</title><style>
-:root{--paper:#fdfdfc;--ink:#1c1c1a;--dim:#6b6b66;--rule:#d8d6d0;--soft:#f4f2ed;
---accent:#23548c;--warn:#8a5a00;--danger:#9a3324;--good:#1f6f43;--flag:#7a4f9a}
+:root{--paper:#f4f3ef;--card:#ffffff;--ink:#1c1c1a;--dim:#63625c;--rule:#dedcd4;
+--soft:#f2f0ea;--accent:#23548c;--accent-soft:#eef3f9;--warn:#8a5a00;
+--danger:#9a3324;--good:#1f6f43;--flag:#7a4f9a;
+--pos:#1d5fae;--neg:#b32e2e;
+--shadow:0 1px 2px rgba(28,28,26,.05)}
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);margin:0;padding:2rem 1.25rem 4rem;
 font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
 line-height:1.85;font-size:15.5px;-webkit-text-size-adjust:100%}
 main{max-width:52rem;margin:0 auto}
 h1{font-size:1.7rem;font-weight:700;letter-spacing:.02em;margin:0 0 .4rem;line-height:1.35}
-h2{font-size:1.15rem;font-weight:700;margin:3rem 0 .8rem;padding-bottom:.4rem;
-border-bottom:2px solid var(--ink)}
+h2{font-size:1.15rem;font-weight:700;margin:3rem 0 1rem;padding:.15rem 0 .15rem .7rem;
+border-left:4px solid var(--accent);border-bottom:0;line-height:1.5}
 h3{font-size:1rem;font-weight:700;margin:2rem 0 .4rem;color:var(--ink)}
 h4{font-size:.92rem;font-weight:700;margin:1.4rem 0 .3rem;color:var(--dim)}
 p{margin:.7rem 0}
 .lede{color:var(--dim);margin:0 0 1.5rem;font-size:.92rem}
-nav{font-size:.85rem;margin:0 0 2.5rem;padding-bottom:.8rem;
-border-bottom:1px solid var(--rule);color:var(--dim)}
-nav a{margin-right:1.2rem;display:inline-block}
-.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:1rem 0}
+nav{font-size:.85rem;margin:0 0 2rem;color:var(--dim)}
+nav a{display:inline-block;margin-right:.5rem;padding:.18rem .75rem;
+background:var(--card);border:1px solid var(--rule);border-radius:999px;
+text-decoration:none;color:var(--dim)}
+nav a:hover{color:var(--ink);border-color:var(--ink)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:1rem 0;
+background:var(--card);border:1px solid var(--rule);border-radius:6px;
+box-shadow:var(--shadow)}
 .scroll table{margin:0}
 table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.88rem}
-th,td{text-align:left;padding:.5rem .65rem;border-bottom:1px solid var(--rule);
+th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--rule);
 vertical-align:top}
-thead th{font-weight:700;color:var(--dim);font-size:.78rem;letter-spacing:.04em;
-white-space:nowrap;border-bottom:2px solid var(--rule)}
+thead th{font-weight:700;color:var(--dim);font-size:.76rem;letter-spacing:.04em;
+white-space:nowrap;background:var(--soft);border-bottom:1px solid var(--rule)}
+tbody tr:last-child td{border-bottom:0}
+/* ゼブラ。行を目で追いやすくする（一覧表はホバー色があるので除外） */
+table:not(.list-table) tbody tr:nth-child(even) td{background:#faf9f6}
 /* 1列目を折り返さないのは、日付・コードのような短い見出し列だけを想定している。
    本文が入る列にかかると表が画面外まで伸び、他の列が押し出されて行が縦に潰れる。
    本文を持つ表（一覧・Markdown 由来）は .prose-table を付けて折り返させる。 */
 td:first-child{white-space:nowrap}
 .prose-table td{white-space:normal;overflow-wrap:anywhere}
-blockquote{margin:1.2rem 0;padding:.8rem 1rem;background:var(--soft);
-border-left:3px solid var(--accent);font-size:.92rem}
+blockquote{margin:1.2rem 0;padding:.9rem 1.1rem;background:var(--accent-soft);
+border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.92rem}
 blockquote p{margin:.3rem 0}
 ul,ol{margin:.7rem 0;padding-left:1.4rem}
 li{margin:.35rem 0}
 code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.85em;
 background:var(--soft);padding:.08rem .32rem;border-radius:2px;overflow-wrap:anywhere}
 pre{background:var(--soft);padding:.9rem;overflow-x:auto;font-size:.82rem;
-line-height:1.6;border-radius:3px}
+line-height:1.6;border-radius:6px}
 pre code{background:none;padding:0}
-a{color:inherit;text-decoration:underline;text-underline-offset:2px;
-text-decoration-color:var(--rule)}
-a:hover{text-decoration-color:var(--ink)}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;
+text-decoration-color:var(--rule);overflow-wrap:anywhere}
+a:hover{text-decoration-color:var(--accent)}
 hr{border:0;border-top:1px solid var(--rule);margin:2.5rem 0}
 footer{margin-top:4rem;padding-top:1rem;border-top:1px solid var(--rule);
 color:var(--dim);font-size:.78rem}
 
+/* KPI タイル。重要数値を大きく・囲って出す（値はすべて data/ 由来。
+   採用値でないものはラベルに（参考）等を必ず併記する） */
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));
+gap:.7rem;margin:1.3rem 0 1.8rem}
+.kpi-tile{background:var(--card);border:1px solid var(--rule);border-radius:8px;
+padding:.75rem .9rem .7rem;box-shadow:var(--shadow)}
+.kpi-tile .k-label{display:block;font-size:.72rem;font-weight:700;
+color:var(--dim);letter-spacing:.05em;margin-bottom:.15rem}
+.kpi-tile .k-value{display:block;font-size:1.45rem;font-weight:700;
+line-height:1.3;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.kpi-tile .k-sub{display:block;font-size:.72rem;color:var(--dim);margin-top:.1rem;
+overflow-wrap:anywhere}
+.kpi-tile .k-value-sm{font-size:1.02rem;padding:.2rem 0 .15rem}
+.k-unit{font-size:.8rem;font-weight:700;color:var(--dim);margin-left:.1rem}
+/* 騰落の色。図（.viz）と同じ意味づけ＝青が改善・赤が悪化（符号も必ず併記する。
+   色だけに意味を持たせない） */
+.chg-pos{color:var(--pos)}
+.chg-neg{color:var(--neg)}
+
 /* 銘柄カード（一覧） */
-.card{border:1px solid var(--rule);border-radius:4px;padding:1.1rem 1.2rem;
-margin:1.1rem 0;background:#fff}
+.card{border:1px solid var(--rule);border-radius:8px;padding:1.1rem 1.2rem;
+margin:1.1rem 0;background:var(--card);box-shadow:var(--shadow)}
 .card h3{margin:0 0 .1rem;font-size:1.1rem}
 .card .meta{color:var(--dim);font-size:.78rem;margin:0 0 .7rem}
 .card .oneline{font-size:.95rem;margin:.5rem 0 .8rem}
-.card .week{background:var(--soft);padding:.6rem .8rem;border-radius:3px;
+.card .week{background:var(--soft);padding:.6rem .8rem;border-radius:6px;
 font-size:.86rem;margin:.6rem 0 0}
 .card .week .wk{font-weight:700;font-size:.78rem;color:var(--dim);
 display:block;margin-bottom:.2rem}
-.flag{display:inline-block;padding:.08rem .5rem;border-radius:2px;font-size:.72rem;
+.flag{display:inline-block;padding:.08rem .55rem;border-radius:999px;font-size:.72rem;
 font-weight:700;color:#fff;background:var(--flag);margin-left:.4rem;
 vertical-align:middle}
-.pill{display:inline-block;padding:.08rem .5rem;border-radius:2px;font-size:.72rem;
+.pill{display:inline-block;padding:.08rem .55rem;border-radius:999px;font-size:.72rem;
 font-weight:700;background:var(--soft);color:var(--dim);margin-right:.4rem}
-.pill-warn{background:#fbf1dd;color:var(--warn)}
-.pill-danger{background:#f7e9e6;color:var(--danger)}
-.pill-good{background:#e6f0e9;color:var(--good)}
+.pill-warn{background:#f8ecd4;color:var(--warn)}
+.pill-danger{background:#f7e5e1;color:var(--danger)}
+.pill-good{background:#e2efe6;color:var(--good)}
 .none{color:var(--dim);font-size:.9rem;padding:1rem;background:var(--soft);
-border-radius:3px}
+border-radius:6px}
 .num{font-variant-numeric:tabular-nums;
 font-family:ui-monospace,"SF Mono",Menlo,monospace}
-.upd{border-left:2px solid var(--rule);padding-left:1rem;margin:1.5rem 0}
-.upd h3{margin-top:0}
+/* 週次アップデートの1エントリ＝1カード。長い時系列を面で区切る */
+.upd{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--accent);
+border-radius:6px;padding:1rem 1.2rem;margin:1.1rem 0;box-shadow:var(--shadow)}
+.upd h3{display:inline-block;margin:0 0 .5rem;font-size:.8rem;font-weight:700;
+color:var(--accent);background:var(--accent-soft);padding:.12rem .7rem;
+border-radius:999px}
+.upd h4{margin-top:1rem}
 
 /* 図。色は dataviz のバリデータで検証済み（light 面 #fdfdfc 上で全項目 PASS）。
    黒字=青 / 赤字=赤。「黒字=緑」は赤緑色覚で赤との ΔE が 4.1 しかなく採らない。 */
-.viz{margin:1.6rem 0;
+.viz{margin:1.6rem 0;background:var(--card);border:1px solid var(--rule);
+border-radius:8px;padding:1rem 1rem .8rem;box-shadow:var(--shadow);
 --viz-pos:#2a78d6;--viz-neg:#d03b3b;--viz-grid:#e1e0d9;--viz-axis:#c3c2b7;
---viz-ink:#0b0b0b;--viz-muted:#898781;--viz-surface:#fdfdfc}
+--viz-ink:#0b0b0b;--viz-muted:#898781;--viz-surface:#ffffff}
 .viz svg{width:100%;height:auto;display:block;overflow:visible}
 .viz figcaption{color:var(--dim);font-size:.82rem;margin-top:.5rem;line-height:1.7}
 /* 図の出所。検証済みか手書きかを図と一緒に必ず見せる（同じ見た目で並べない） */
 .viz-src{color:var(--dim);font-size:.74rem;line-height:1.6;margin:.45rem 0 0;
 padding:.35rem .55rem;background:var(--soft);border-left:2px solid var(--good);
 border-radius:2px;overflow-wrap:anywhere}
-.viz-src-hand{border-left-color:var(--warn);background:#fbf1dd;color:var(--warn)}
+.viz-src-hand{border-left-color:var(--warn);background:#f8ecd4;color:var(--warn)}
 .viz-tick{fill:#898781;font-size:12px;font-family:inherit}
 .viz-value{fill:#0b0b0b;font-size:13px;font-weight:700;font-family:inherit}
 .viz-bar rect,.viz-dot circle{transition:opacity .12s ease}
@@ -89,8 +124,8 @@ border-radius:2px;overflow-wrap:anywhere}
 .viz-bar,.viz-dot{cursor:default}
 
 /* 折りたたみ（裏取りで「裏付けが取れた記述」を畳む。JSは使わない） */
-details{margin:1rem 0;border:1px solid var(--rule);border-radius:3px;
-padding:.5rem .8rem;background:#fff}
+details{margin:1rem 0;border:1px solid var(--rule);border-radius:6px;
+padding:.5rem .8rem;background:var(--card)}
 details summary{cursor:pointer;font-size:.88rem;font-weight:700;color:var(--dim)}
 details[open] summary{margin-bottom:.4rem}
 
@@ -102,18 +137,22 @@ font-size:.82rem;color:var(--dim)}
 /* 一覧表（銘柄が増えても詰まらないように） */
 .list-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
 .list-table th{font-size:.75rem;color:var(--dim);text-align:left;
-padding:.4rem .5rem;border-bottom:2px solid var(--rule);white-space:nowrap}
-.list-table td{padding:.7rem .5rem;border-bottom:1px solid var(--rule);
+padding:.5rem .6rem;border-bottom:1px solid var(--rule);white-space:nowrap;
+background:var(--soft)}
+.list-table td{padding:.85rem .6rem;border-bottom:1px solid var(--rule);
 vertical-align:top}
-.list-table tr:hover td{background:var(--soft)}
-.list-table .nm{font-weight:700;font-size:.98rem}
-.list-table .sub{color:var(--dim);font-size:.76rem;display:block;margin-top:.1rem}
-.list-table .one{color:var(--ink);font-size:.85rem;line-height:1.65;
-display:block;margin-top:.35rem}
+.list-table tr:hover td{background:#f8f7f3}
+.list-table .nm{font-weight:700;font-size:1.02rem}
+.list-table .nm a{color:var(--ink);text-decoration-color:var(--rule)}
+.list-table .sub{color:var(--dim);font-size:.76rem;display:block;margin-top:.15rem}
+.list-table .one{color:var(--dim);font-size:.84rem;line-height:1.7;
+display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;
+overflow:hidden;margin-top:.4rem}
+.list-table .price{font-size:1.15rem;font-weight:700}
 /* nowrap にすると、中の長いURLが分割不能トークンになってスマホ幅で
    ページ自体を横スクロールさせる（tools\shot.ps1 の採寸で 623px > 500px）。 */
 .ext{font-size:.72rem;color:var(--dim);text-decoration:none;
-border:1px solid var(--rule);border-radius:3px;padding:.02rem .3rem;
+border:1px solid var(--rule);border-radius:999px;padding:.02rem .45rem;
 margin-left:.35rem;white-space:normal;overflow-wrap:anywhere;
 max-width:100%;display:inline-block}
 .ext:hover{border-color:var(--ink);color:var(--ink)}
@@ -121,7 +160,7 @@ max-width:100%;display:inline-block}
    長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */
 @media(min-width:641px){
 .list-table{table-layout:fixed}
-.list-table th:nth-child(2),.list-table td:nth-child(2){width:7rem}
+.list-table th:nth-child(2),.list-table td:nth-child(2){width:7.5rem}
 .list-table th:nth-child(3),.list-table td:nth-child(3){width:11rem}
 .list-table td:nth-child(2) .sub{white-space:nowrap}
 }
@@ -131,16 +170,20 @@ body{padding:1.25rem .85rem 3rem;font-size:15px}
 h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:2.2rem}
 table{font-size:.8rem}th,td{padding:.45rem .5rem}
 .card{padding:.9rem 1rem}
+.kpi{grid-template-columns:repeat(2,1fr);gap:.55rem}
+.kpi-tile .k-value{font-size:1.25rem}
+.upd{padding:.85rem 1rem}
 /* 一覧表はスマホでカード状に積む（横スクロールさせない） */
 .list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
 .list-table thead{display:none}
-.list-table tr{border:1px solid var(--rule);border-radius:4px;
-padding:.7rem .8rem;margin:.7rem 0;background:#fff}
+.list-table tr{border:1px solid var(--rule);border-radius:8px;
+padding:.7rem .8rem;margin:.7rem 0;background:var(--card);box-shadow:var(--shadow)}
 .list-table td{border:0;padding:.15rem 0}
 .list-table td[data-l]::before{content:attr(data-l) "　";color:var(--dim);
 font-size:.72rem;font-weight:700}
 .list-table tr:hover td{background:transparent}
+.viz{padding:.7rem .7rem .6rem}
 .viz figcaption{font-size:.78rem}
 .viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
-</style></head><body><main><h1>銘柄調査台帳</h1><p class="lede">楽天証券スクリーニング「成長株0606」を通過した銘柄について、<strong>その会社が何をしている会社なのか</strong>を調べて記録する。スクリーニング通過は入口であって結論ではない。毎週の動きを積み重ねて理解を深めることを目的にしている。</p><nav><a href="index.html">台帳</a><a href="data.html">データの出どころ</a></nav><p class="readout"><span>登録 <b>4</b> 銘柄</span><span>レポートあり <b>4</b></span><span>深掘り中 <b>1</b></span><span>基準日 <b>2026-08-13</b></span></p><div class="scroll"><table class="list-table prose-table"><thead><tr><th>銘柄</th><th>終値</th><th>今週の動き</th></tr></thead><tbody><tr><td data-l="銘柄"><span class="nm"><a href="stock/3851.html">日本一ソフトウェア</a><a class="ext" href="https://www.nippon1.co.jp/ir/ir.html" target="_blank" rel="noopener">IR情報 ↗</a></span><span class="sub">3851／東証スタンダード／<span class="pill pill-warn">裏取りの記録が古い</span></span><span class="one">岐阜県各務原市のゲームソフトメーカー。『魔界戦記ディスガイア』『夜廻』などの自社IPを企画・開発し、北米子会社 NIS America を通じて海外にも売っている。時価総額59億円（8/12終値ベース）で、株価は1株あたり純資産の7割強。<strong>2026年3月期は売上が3割減って営業赤字4.09億円まで沈んだが、7月30日発売の新作『ほの暮しの庭』が発売4日で10万本売れ、株価は3週間で+27%（7月22日の900円→8月12日の1,140円）上がって52週高値にいる。</strong></span></td><td data-l="終値" class="num">1,186<span class="sub">2026-08-13</span></td><td data-l="今週"><span class="sub">2026-W33</span>52週高値をさらに更新。</td></tr><tr><td data-l="銘柄"><span class="nm"><a href="stock/4073.html">ジィ・シィ企画</a><span class="flag">深掘り</span><a class="ext" href="https://www.gck.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a></span><span class="sub">4073／東証グロース／<span class="pill pill-warn">決算 2026-08-14</span><span class="pill pill-warn">裏取り 37/54</span></span><span class="one">中堅〜大手の小売チェーン向けに、レジとカード会社をつなぐ決済システムを作って運用している千葉の会社。時価総額13.6億円の小型株。<strong>2026年6月期は黒字転換したが、会社予想には届かなかった。焦点は2027年6月期の会社計画（営業利益109百万円）を達成できるかに移っている。</strong></span></td><td data-l="終値" class="num">542<span class="sub">2026-08-13</span></td><td data-l="今週"><span class="sub">2026-W33</span>8/14、本決算発表予定日。</td></tr><tr><td data-l="銘柄"><span class="nm"><a href="stock/4937.html">Waqoo</a><a class="ext" href="https://waqoo.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a></span><span class="sub">4937／東証グロース／<span class="pill pill-warn">裏取りの記録が古い</span></span><span class="one">通販化粧品「肌ナチュール」を自社の広告とECで売るD2C事業と、美容クリニック向けに患者の血液・脂肪を加工する受託事業（再生医療）の2本立て。<strong>2025年12月に、湘南美容クリニックを運営するSBCメディカルグループが株式公開買付で親会社（持分51.51%）になった。</strong> 時価総額74.7億円（株探・2026-08-13取得。8月12日の採用終値で計算すると約78.8億円）。8月7日の上方修正と株主優待でストップ高したが、<strong>普段の売買代金は中央値で1日68万円しかなく、この台帳の流動性ゲートを通っていない。</strong></span></td><td data-l="終値" class="num">2,038<span class="sub">2026-08-13</span></td><td data-l="今週"><span class="sub">2026-W33</span>ストップ高から反落。</td></tr><tr><td data-l="銘柄"><span class="nm"><a href="stock/6570.html">共和コーポレーション</a><a class="ext" href="https://www.kyowa-corp.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a></span><span class="sub">6570／東証スタンダード／<span class="pill pill-warn">裏取り 36/61</span></span><span class="one">長野県から全国へ広げたアミューズメント施設「アピナ」（2026年6月末時点76店舗）を運営し、クレーンゲームの景品需要で伸びている会社。ゲーム機器の販売と、ホテル・商業施設への機器の設置受託も手がける。時価総額は約192.1億円（2026-08-13の採用終値3,160円×発行済株式6,080,130株。株数は決算短信原文でも確認済み）。<strong>売上は4年で倍増し、2026年8月10日発表の1Q決算は売上+69.4%・営業利益3.2倍・経常利益3.4倍（決算短信原文で確認）。株価は週間+50.3%上げて52週高値3,160円にいる。</strong> 買収したトレカ買取店（道楽）とスクイーズ玩具の子会社（ブルーム）が上乗せしており、決算短信のセグメント情報を計算すると、1Q営業利益の増加額のうち約6割がこの「その他」区分によるものと読める（詳細は「財務の推移と健全性」節）。</span></td><td data-l="終値" class="num">3,160<span class="sub">2026-08-13</span></td><td data-l="今週"><span class="sub">2026-W33</span>続伸で3営業日+50.4%、8月13日終値3,160円は2ソース照合済みの新高値。</td></tr></tbody></table></div><h2>この台帳の読み方</h2><ul><li>銘柄名を押すと、その会社の調査レポートが開く</li><li>レポートは <strong>① 週次アップデート → ② この会社は何者か → ③ 財務の推移と健全性 → ④ 今後の展望とリスク → ⑤ 値動きと市場の評価 → ⑥ 出典</strong> の順に並んでいる</li><li><span class="flag">深掘り</span> が付いた銘柄は毎週すべての項目を見直している。付いていない銘柄はニュースと値動きだけ追っている</li><li>深掘り対象を変えたいときは Claude に「4073 を深掘りして」と言えばよい</li><li>銘柄名の横の小さなリンクは会社の公式サイト。各レポートの末尾には、使ったすべての出典 URL を載せている</li></ul><h2 id="unevaluated">この台帳が見ていない鉄則</h2><p class="lede">判定スタンプの「買」は、この台帳が実装しているゲートを通過したという意味しかない。<strong>鉄則には、まだ機械が評価していない観点が 4 件ある。</strong>通過しなかったのではなく、<strong>見ていない</strong>。実装したらこの表から消える（<code>src/judge.py</code> の <code>UNEVALUATED_RULES</code> が正）。</p><div class="scroll"><table class="prose-table"><thead><tr><th>鉄則の観点</th><th>なぜ評価していないか</th></tr></thead><tbody><tr><td data-l="観点">季節性の要因を検討したか（I-15）</td><td data-l="なぜ見ていないか">数年分の日足が要る。現在の保有履歴は1年分で、季節性の推定に足りない</td></tr><tr><td data-l="観点">同業他社の決算に引っ張られていないか（I-16）</td><td data-l="なぜ見ていないか">master.yaml の peers が TO_VERIFY のままで、ピアの株価・決算日を持っていない</td></tr><tr><td data-l="観点">トレンドは明確で出来高を伴っているか（I-06）</td><td data-l="なぜ見ていないか">出来高は流動性ゲートと3か月前比にしか使っておらず、「上昇に出来高が伴っているか」は判定していない</td></tr><tr><td data-l="観点">マクロ（CPI・投資部門別売買動向・海外投資家）（I-18）</td><td data-l="なぜ見ていないか">外部指標を取得していない。指数は TOPIX / グロース250 の株価のみ</td></tr></tbody></table></div><footer>集計基準日 2026-08-13／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
+</style></head><body><main><h1>銘柄調査台帳</h1><p class="lede">楽天証券スクリーニング「成長株0606」を通過した銘柄について、<strong>その会社が何をしている会社なのか</strong>を調べて記録する。スクリーニング通過は入口であって結論ではない。毎週の動きを積み重ねて理解を深めることを目的にしている。</p><nav><a href="index.html">台帳</a><a href="data.html">データの出どころ</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">登録</span><span class="k-value">4<span class="k-unit">銘柄</span></span><span class="k-sub">スクリーニング通過ぶん</span></div><div class="kpi-tile"><span class="k-label">レポートあり</span><span class="k-value">4</span><span class="k-sub">調査済みの銘柄数</span></div><div class="kpi-tile"><span class="k-label">深掘り中</span><span class="k-value">1</span><span class="k-sub">毎週全節を見直す対象</span></div><div class="kpi-tile"><span class="k-label">基準日</span><span class="k-value"><span class="k-value-sm">2026-08-13</span></span><span class="k-sub">確定している最後の営業日</span></div></div><div class="scroll"><table class="list-table prose-table"><thead><tr><th>銘柄</th><th>終値</th><th>今週の動き</th></tr></thead><tbody><tr><td data-l="銘柄"><span class="nm"><a href="stock/3851.html">日本一ソフトウェア</a><a class="ext" href="https://www.nippon1.co.jp/ir/ir.html" target="_blank" rel="noopener">IR情報 ↗</a></span><span class="sub">3851／東証スタンダード／<span class="pill pill-warn">裏取りの記録が古い</span></span><span class="one">岐阜県各務原市のゲームソフトメーカー。『魔界戦記ディスガイア』『夜廻』などの自社IPを企画・開発し、北米子会社 NIS America を通じて海外にも売っている。時価総額59億円（8/12終値ベース）で、株価は1株あたり純資産の7割強。<strong>2026年3月期は売上が3割減って営業赤字4.09億円まで沈んだが、7月30日発売の新作『ほの暮しの庭』が発売4日で10万本売れ、株価は3週間で+27%（7月22日の900円→8月12日の1,140円）上がって52週高値にいる。</strong></span></td><td data-l="終値" class="num"><span class="price">1,186</span><span class="sub">2026-08-13</span></td><td data-l="今週"><span class="sub">2026-W33</span>52週高値をさらに更新。</td></tr><tr><td data-l="銘柄"><span class="nm"><a href="stock/4073.html">ジィ・シィ企画</a><span class="flag">深掘り</span><a class="ext" href="https://www.gck.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a></span><span class="sub">4073／東証グロース／<span class="pill pill-warn">決算 2026-08-14</span><span class="pill pill-warn">裏取り 37/54</span></span><span class="one">中堅〜大手の小売チェーン向けに、レジとカード会社をつなぐ決済システムを作って運用している千葉の会社。時価総額13.6億円の小型株。<strong>2026年6月期は黒字転換したが、会社予想には届かなかった。焦点は2027年6月期の会社計画（営業利益109百万円）を達成できるかに移っている。</strong></span></td><td data-l="終値" class="num"><span class="price">542</span><span class="sub">2026-08-13</span></td><td data-l="今週"><span class="sub">2026-W33</span>8/14、本決算発表予定日。</td></tr><tr><td data-l="銘柄"><span class="nm"><a href="stock/4937.html">Waqoo</a><a class="ext" href="https://waqoo.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a></span><span class="sub">4937／東証グロース／<span class="pill pill-warn">裏取りの記録が古い</span></span><span class="one">通販化粧品「肌ナチュール」を自社の広告とECで売るD2C事業と、美容クリニック向けに患者の血液・脂肪を加工する受託事業（再生医療）の2本立て。<strong>2025年12月に、湘南美容クリニックを運営するSBCメディカルグループが株式公開買付で親会社（持分51.51%）になった。</strong> 時価総額74.7億円（株探・2026-08-13取得。8月12日の採用終値で計算すると約78.8億円）。8月7日の上方修正と株主優待でストップ高したが、<strong>普段の売買代金は中央値で1日68万円しかなく、この台帳の流動性ゲートを通っていない。</strong></span></td><td data-l="終値" class="num"><span class="price">2,038</span><span class="sub">2026-08-13</span></td><td data-l="今週"><span class="sub">2026-W33</span>ストップ高から反落。</td></tr><tr><td data-l="銘柄"><span class="nm"><a href="stock/6570.html">共和コーポレーション</a><a class="ext" href="https://www.kyowa-corp.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a></span><span class="sub">6570／東証スタンダード／<span class="pill pill-warn">裏取り 36/61</span></span><span class="one">長野県から全国へ広げたアミューズメント施設「アピナ」（2026年6月末時点76店舗）を運営し、クレーンゲームの景品需要で伸びている会社。ゲーム機器の販売と、ホテル・商業施設への機器の設置受託も手がける。時価総額は約192.1億円（2026-08-13の採用終値3,160円×発行済株式6,080,130株。株数は決算短信原文でも確認済み）。<strong>売上は4年で倍増し、2026年8月10日発表の1Q決算は売上+69.4%・営業利益3.2倍・経常利益3.4倍（決算短信原文で確認）。株価は週間+50.3%上げて52週高値3,160円にいる。</strong> 買収したトレカ買取店（道楽）とスクイーズ玩具の子会社（ブルーム）が上乗せしており、決算短信のセグメント情報を計算すると、1Q営業利益の増加額のうち約6割がこの「その他」区分によるものと読める（詳細は「財務の推移と健全性」節）。</span></td><td data-l="終値" class="num"><span class="price">3,160</span><span class="sub">2026-08-13</span></td><td data-l="今週"><span class="sub">2026-W33</span>続伸で3営業日+50.4%、8月13日終値3,160円は2ソース照合済みの新高値。</td></tr></tbody></table></div><h2>この台帳の読み方</h2><ul><li>銘柄名を押すと、その会社の調査レポートが開く</li><li>レポートは <strong>① 週次アップデート → ② この会社は何者か → ③ 財務の推移と健全性 → ④ 今後の展望とリスク → ⑤ 値動きと市場の評価 → ⑥ 出典</strong> の順に並んでいる</li><li><span class="flag">深掘り</span> が付いた銘柄は毎週すべての項目を見直している。付いていない銘柄はニュースと値動きだけ追っている</li><li>深掘り対象を変えたいときは Claude に「4073 を深掘りして」と言えばよい</li><li>銘柄名の横の小さなリンクは会社の公式サイト。各レポートの末尾には、使ったすべての出典 URL を載せている</li></ul><h2 id="unevaluated">この台帳が見ていない鉄則</h2><p class="lede">判定スタンプの「買」は、この台帳が実装しているゲートを通過したという意味しかない。<strong>鉄則には、まだ機械が評価していない観点が 4 件ある。</strong>通過しなかったのではなく、<strong>見ていない</strong>。実装したらこの表から消える（<code>src/judge.py</code> の <code>UNEVALUATED_RULES</code> が正）。</p><div class="scroll"><table class="prose-table"><thead><tr><th>鉄則の観点</th><th>なぜ評価していないか</th></tr></thead><tbody><tr><td data-l="観点">季節性の要因を検討したか（I-15）</td><td data-l="なぜ見ていないか">数年分の日足が要る。現在の保有履歴は1年分で、季節性の推定に足りない</td></tr><tr><td data-l="観点">同業他社の決算に引っ張られていないか（I-16）</td><td data-l="なぜ見ていないか">master.yaml の peers が TO_VERIFY のままで、ピアの株価・決算日を持っていない</td></tr><tr><td data-l="観点">トレンドは明確で出来高を伴っているか（I-06）</td><td data-l="なぜ見ていないか">出来高は流動性ゲートと3か月前比にしか使っておらず、「上昇に出来高が伴っているか」は判定していない</td></tr><tr><td data-l="観点">マクロ（CPI・投資部門別売買動向・海外投資家）（I-18）</td><td data-l="なぜ見ていないか">外部指標を取得していない。指数は TOPIX / グロース250 の株価のみ</td></tr></tbody></table></div><footer>集計基準日 2026-08-13／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
