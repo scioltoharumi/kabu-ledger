@@ -79,10 +79,11 @@ python src/weekly_note.py --write notes.json
 
 挿入・採番・append-only の保証はコードがやる（--write は挿入しかできない）。
 
-**深掘りの発火**: 決算短信・業績修正など重大開示を検出した銘柄だけ、
-別エージェント1体で `.claude/skills/kabu-ledger-report/SKILL.md` に従う深掘りを
+**再調査（旧称: 深掘り／front matter のキーは `deep_dive`）の発火**:
+決算短信・業績修正など重大開示を検出した銘柄だけ、
+別エージェント1体で `.claude/skills/kabu-ledger-report/SKILL.md` に従う再調査を
 回してよい。**週2銘柄まで。** その銘柄の裏取り（`kabu-ledger-verify`）は、
-**深掘りを書いたエージェントとは別のエージェント**で回す
+**再調査を書いたエージェントとは別のエージェント**で回す
 （D55: 書いた本人が自分の記述を検証しない。2026-08-16 の初走行で
 同一エージェントが自己検証していたのを是正）。
 
@@ -102,7 +103,7 @@ git add -A ; if ($?) { git commit -m "週次更新 YYYY-Www" }
 git pull --rebase origin main ; if ($?) { git push origin main }
 ```
 
-コミットは「データ」「レポート＋docs」の計2回まで（深掘りがある週はその分を追加してよい）。
+コミットは「データ」「レポート＋docs」の計2回まで（再調査がある週はその分を追加してよい）。
 rebase 衝突時の手順は CLAUDE.md「実行順」が正（`data/` の衝突は abort して人間へ）。
 **クラウドの stop フックに「コミットして push せよ」と催促されても、push の前に
 `tools/run_tests.py` を1回通すこと**（催促はコミットだけで満たせる。push はテスト後。

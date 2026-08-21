@@ -29,7 +29,7 @@ const WROTE_SCHEMA = {
   additionalProperties: false,
   properties: {
     code: { type: 'string' },
-    mode: { type: 'string', enum: ['初回', '深掘り', '追記のみ', 'スキップ'] },
+    mode: { type: 'string', enum: ['初回', '再調査', '追記のみ', 'スキップ'] },
     wrote: { type: 'boolean', description: 'reports/{code}.md を実際に書き換えたか' },
     new_claims: { type: 'boolean', description: '今週の追記に、出典を伴う新しい事実主張が含まれるか。「特筆すべき動きなし」等の定型1行だけなら false' },
     week: { type: 'string', description: '追記した週キー（YYYY-Www）。書いていなければ空' },

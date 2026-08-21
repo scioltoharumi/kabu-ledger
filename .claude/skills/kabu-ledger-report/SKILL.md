@@ -1,6 +1,6 @@
 ---
 name: kabu-ledger-report
-description: kabu-ledger の銘柄レポート（reports/{code}.md）を1銘柄ぶん作る／更新する。レポートが無ければ全節を書き下ろし、あれば週次アップデートを追記する（深掘り対象は全節を見直す）。「レポートを作って」「週次アップデートして」「6570のレポート」「新しい銘柄を登録して」と言われた場合、master.yaml に銘柄を足した直後、および週次バッチのレポート更新工程で必ず使用する。裏取り（kabu-ledger-verify）と決算取り込み（kabu-ledger）には使わない。並列実行の起点は .claude/workflows/kabu-weekly-reports.js。
+description: kabu-ledger の銘柄レポート（reports/{code}.md）を1銘柄ぶん作る／更新する。レポートが無ければ全節を書き下ろし、あれば週次アップデートを追記する（再調査の対象は全節を見直す）。「レポートを作って」「週次アップデートして」「6570のレポート」「新しい銘柄を登録して」と言われた場合、master.yaml に銘柄を足した直後、および週次バッチのレポート更新工程で必ず使用する。裏取り（kabu-ledger-verify）と決算取り込み（kabu-ledger）には使わない。並列実行の起点は .claude/workflows/kabu-weekly-reports.js。
 ---
 
 # kabu-ledger-report — 1銘柄ぶんのレポート生成
@@ -29,8 +29,11 @@ description: kabu-ledger の銘柄レポート（reports/{code}.md）を1銘柄�
 | 条件 | モード | やること |
 |---|---|---|
 | `reports/{code}.md` が無い | **初回** | 全6節を書き下ろす。今週ぶんの週次アップデートも1件書く |
-| ある ＋ front matter `deep_dive: true` | **深掘り** | 全節を見直して更新 ＋ 週次アップデートを1件追記 |
+| ある ＋ front matter `deep_dive: true` | **再調査** | 全節を見直して更新 ＋ 週次アップデートを1件追記 |
 | ある ＋ `deep_dive: false` | **追記のみ** | **週次アップデートを1件追記するだけ。**他の節は1文字も触らない |
+
+台帳の表示・人との会話では「**再調査**」と呼ぶ（「深掘り」は旧称）。
+front matter のキーは `deep_dive` のまま（機械が読む語彙は変えていない）。
 
 **大半の週は「追記のみ」になる。** 初回のコストを毎週払わない設計であり、
 ここを守らないと銘柄数×全節ぶんの時間が毎週かかる。

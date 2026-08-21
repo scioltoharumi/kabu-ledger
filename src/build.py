@@ -287,7 +287,7 @@ def render_row(stock: dict, rep: R.Report | None) -> str:
             f"</tr>"
         )
 
-    flag = '<span class="flag">深掘り</span>' if rep.deep_dive else ""
+    flag = '<span class="flag">再調査</span>' if rep.deep_dive else ""
     site = ""
     for lk in rep.links:
         if lk.get("primary"):
@@ -377,7 +377,7 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         + _tile("登録", f'{len(stocks)}<span class="k-unit">銘柄</span>',
                 "スクリーニング通過ぶん")
         + _tile("レポートあり", f"{len(reports)}", "調査済みの銘柄数")
-        + _tile("深掘り中", f"{n_deep}", "毎週全節を見直す対象")
+        + _tile("再調査", f"{n_deep}", "全節を見直しなおす対象")
         + _tile("基準日",
                 f'<span class="k-value-sm">{html.escape(as_of)}</span>',
                 "確定している最後の営業日")
@@ -401,9 +401,9 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         "<li>レポートは<strong>「週次アップデート」と「会社概要」の2つ</strong>に"
         "畳んである。見出しを押すと開く</li>"
         f"<li>節は <strong>{order}</strong> の順に並んでいる</li>"
-        '<li><span class="flag">深掘り</span> が付いた銘柄は毎週すべての項目を'
+        '<li><span class="flag">再調査</span> が付いた銘柄は毎週すべての項目を'
         "見直している。付いていない銘柄はニュースと値動きだけ追っている</li>"
-        "<li>深掘り対象を変えたいときは Claude に「4073 を深掘りして」と言えばよい</li>"
+        "<li>再調査の対象を変えたいときは Claude に「4073 を再調査して」と言えばよい</li>"
         "<li>銘柄名の横の小さなリンクは会社の公式サイト。"
         "各レポートの末尾には、使ったすべての出典 URL を載せている</li>"
         "</ul>"
@@ -1075,7 +1075,7 @@ def build_stock_page(rep: R.Report, as_of: str) -> None:
     name = html.escape(rep.name)
     code = html.escape(rep.code)
     market = html.escape(str(rep.meta.get("market", "")))
-    flag = '<span class="flag">深掘り中</span>' if rep.deep_dive else ""
+    flag = '<span class="flag">再調査</span>' if rep.deep_dive else ""
 
     charts = CD.resolve_charts(rep.code, rep.charts)
 
