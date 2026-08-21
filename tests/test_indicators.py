@@ -4,7 +4,8 @@
   - 期待値は「手計算できる小さい系列」で固定する。ライブラリの出力を写さない。
     一目均衡表と RSI は定義から手で追える形の系列を使い、途中値もコメントに残す。
   - 期間不足・欠測で None が返ることを、指標ごとに確認する（通過扱いにしない担保）。
-  - 実データ（data/prices/daily.csv・4銘柄×269営業日）で全指標が算出できることを確認する。
+  - 実データ（data/prices/daily.csv）で全指標が算出できることを確認する。銘柄数・営業日数は
+    書かない（週次で増えるうえ、新規登録した銘柄は履歴が短い）。
 
 実行:
   $env:PYTHONIOENCODING = "utf-8"; python tests/test_indicators.py
@@ -496,9 +497,19 @@ def test_real_data_all_indicators():
     # 営業日の網羅は**生の行**で見る。確定足（bars_from_rows の既定）で数えると、
     # 「最新営業日の照合が一部の銘柄でだけ成立した」ふつうの状態で本数がずれ、
     # データが1日進むたびに落ちる。取得漏れの検出は checks.py の coverage の担当。
-    day_counts = {c: len({r["date"] for r in rows if r["code"] == c}) for c in codes}
-    eq(len(set(day_counts.values())), 1,
-       f"全銘柄の営業日数が揃っていない: {day_counts}")
+    #
+    # ★本数の一致は要求しない。**新しく登録した銘柄は履歴が短い**（intake の
+    #   `fetch.py --historical` は登録日から遡るので、先に登録済みの銘柄より
+    #   始まりが遅い）。2026-08-21 に 150A を登録した時点で、本数の一致を
+    #   求めるこの検査は落ちた。ここで確かめたいのは「途中が抜けていないこと」
+    #   なので、**全銘柄の日付が全体の営業日の連続した末尾になっている**ことを見る。
+    #   途中の穴（＝取得漏れ）はこの形を必ず壊す。
+    all_days = sorted({r["date"] for r in rows})
+    for c in codes:
+        days = sorted({r["date"] for r in rows if r["code"] == c})
+        eq(days, all_days[-len(days):],
+           f"{c}: 営業日が全体の連続した末尾になっていない"
+           f"（{len(days)}日 / 全体 {len(all_days)}日・途中に穴がある疑い）")
 
     for code in codes:
         bars = ind.bars_from_rows(rows, code=code)

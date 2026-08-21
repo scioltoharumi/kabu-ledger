@@ -21,6 +21,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import types
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -301,17 +302,44 @@ def test_body_reports_missing_data_as_missing():
     assert "未生成" in b, "ベアケースが無いことを書く"
 
 
+def _code_with_undefined_margin_ratio() -> str | None:
+    """信用倍率が「値は無いが判定は決着している」銘柄を実データから探す。
+
+    以前はここを 4073 にべた書きしていた（制度信用が買建のみで売り残が常に0）。
+    ところが 2026-08-14 の信用残で 4073 に売り残が 2.8千株 立ち、倍率が
+    算出できるようになった時点でこのテストは落ちた。**どの銘柄がその状態かは
+    週次データで変わる**ので、銘柄名ではなく状態で選ぶ。
+    """
+    import judge as J
+    for v in J.judge_all():
+        if (v.metrics.get("margin_ratio") is None
+                and v.metrics.get("margin_state") != J.UNKNOWN):
+            return v.code
+    return None
+
+
 def test_body_does_not_call_a_decided_metric_unknown():
     """値が None でも判定として決着している指標を「未計算」と書かない。
 
-    4073 は制度信用が買建のみで売り残が常に0。倍率は構造的に定義できないが、
-    「過熱の材料から外す」という判定はついている。ここを「未計算」と書くと、
-    台帳の「未計算の指標」欄と食い違って見える。
+    売り残が0の銘柄では信用倍率が構造的に定義できないが、「過熱の材料から外す」
+    あるいは「買い一辺倒なので過熱側」という判定はついている。ここを「未計算」と
+    書くと、台帳の「未計算の指標」欄と食い違って見える。
     """
-    b = _body("4073")
+    code = _code_with_undefined_margin_ratio()
+    if code is None:
+        # 該当銘柄が1つも無い週でも、規則そのものは確かめる（no-op にしない）
+        stub = types.SimpleNamespace(
+            metrics={"margin_ratio": None, "margin_state": "fail",
+                     "margin_detail": "テスト: 売り残0で信用倍率が定義できない"},
+            unknowns=[], cautions=[])
+        table = N.metric_table(stub)
+        assert "| 信用倍率 | 定義不能:" in table, table
+        return
+    b = _body(code)
     assert "| 信用倍率 | 定義不能:" in b, b[:2000]
-    assert "信用倍率" not in b.split("未計算の指標:")[1].split("\n")[0], \
-        "未計算の一覧に信用倍率を入れない"
+    if "未計算の指標:" in b:
+        assert "信用倍率" not in b.split("未計算の指標:")[1].split("\n")[0], \
+            "未計算の一覧に信用倍率を入れない"
 
 
 def test_body_has_no_wall_clock():
