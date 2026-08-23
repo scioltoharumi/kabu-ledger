@@ -128,6 +128,22 @@ border-radius:2px;overflow-wrap:anywhere}
 .viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
 .viz-bar,.viz-dot{cursor:default}
 
+/* 検証状態の記号バッジ（✓=2ソース照合済み ※=未照合参考 †=一次情報から直接）。
+   意味は title 属性（ブラウザ標準 tooltip）と about.html の凡例が持つ。
+   上付き風に小さく出す。色: 照合済み=青（.chg-pos と同系）・参考=橙（警告系）・
+   一次情報=グレー。色だけに意味を持たせない（記号そのものが常に見える） */
+.vm{font-size:.7em;font-weight:700;vertical-align:super;line-height:1;
+padding:0 .06em;cursor:help}
+.vm-ok{color:var(--pos)}
+.vm-ref{color:var(--warn)}
+.vm-pri{color:var(--dim)}
+
+/* 週次アップデートの古い週の折りたたみ。カード（.upd）より一段控えめにして
+   「畳んであるだけで消えてはいない」ことを見せる */
+details.upd-old{background:var(--soft);border-style:dashed;
+box-shadow:none;padding:.5rem .8rem}
+details.upd-old>summary{font-weight:400}
+
 /* 折りたたみ（裏取りで「裏付けが取れた記述」を畳む。JSは使わない） */
 details{margin:1rem 0;border:1px solid var(--rule);border-radius:6px;
 padding:.5rem .8rem;background:var(--card)}
@@ -240,7 +256,7 @@ font-size:.72rem;font-weight:700}
 .viz figcaption{font-size:.78rem}
 .viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
-</style></head><body><main><h1>JSH（150A）</h1><p class="lede">東証グロース／レポート更新 2026-08-21<br><span class="pill pill-warn">未検証</span>本文の記述はまだ出典に当て直していない<br><a class="ext" href="https://www.jsh-japan.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E39184" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=150A" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://webapi.yanoshin.jp/webapi/tdnet/list/150A.json" target="_blank" rel="noopener">適時開示（TDnet 非公式ミラー） ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">801<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+10.6%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">336 〜 801</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">未検証</span></span><span class="k-sub">記録なし</span></div></div><blockquote>
+</style></head><body><main><h1>JSH（150A）</h1><p class="lede">東証グロース／レポート更新 2026-08-21<br><span class="pill pill-warn">未検証</span>本文の記述はまだ出典に当て直していない<br><a class="ext" href="https://www.jsh-japan.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E39184" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=150A" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://webapi.yanoshin.jp/webapi/tdnet/list/150A.json" target="_blank" rel="noopener">適時開示（TDnet 非公式ミラー） ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">801<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+10.6%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">336 〜 801</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">様子見(過熱)</span></span><span class="k-sub">src/judge.py の機械判定</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">未検証</span></span><span class="k-sub">記録なし</span></div></div><blockquote>
 <p><strong>一行でいうと</strong>：屋内型水耕栽培農園「コルディアーレ農園」を使って、地方の障がい者を都市部の企業が雇うのを支える会社（地方創生事業）と、精神疾患を主対象とする訪問看護（在宅医療事業）の2本立て。<strong>利益は事実上ぜんぶ地方創生事業が出しており、在宅医療はまだ赤字。</strong>2026年7月15日の上方修正＋初の中期計画、8月13日の1Q黒字転換・初配3円・上限100万株の自社株買いで、株価は6月11日の336円から8月20日の801円へ<strong>2.4倍</strong>になった。時価総額は約45億円（発行済5,666,100株×8月20日の採用終値801円）。<strong>流動性ゲートは通過するが、7月15日より前の20営業日は1日の売買代金が中央値46万円しかなかった。</strong>判定は「様子見(過熱)」（25日移動平均乖離率45.67%）。</p>
 </blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W34・全 1 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W34（2026-08-17 週）</h3><p><strong>決算翌週も上げ続け、8月20日の801円が52週高値。判定は「様子見(過熱)」。</strong></p>
 <ul>
@@ -253,9 +269,9 @@ font-size:.72rem;font-weight:700}
   買い残は7/24の1,122.1千株から3週で4割減っている</li>
 <li>開示: <strong>この週の新規開示は無し。</strong> 適時開示（TDnet 非公式ミラー・2026-08-21 確認）の最新は8月13日の5件のまま</li>
 <li>ニュース: 08/14 ＪＳＨがカイ気配スタート、１００万株を上限とする自社株買いと配当予想の増額修正を好感
-  <a href="https://kabutan.jp/stock/news?code=150A&amp;b=n202608140465">https://kabutan.jp/stock/news?code=150A&amp;b=n202608140465</a></li>
+  <a class="ext" href="https://kabutan.jp/stock/news?code=150A&amp;b=n202608140465" target="_blank" rel="noopener">株探 ↗</a></li>
 <li>ニュース: 08/18 本日の【ストップ高／ストップ安】 引け　S高＝8銘柄　S安＝0銘柄（8月18日）
-  <a href="https://kabutan.jp/stock/news?code=150A&amp;b=n202608180867">https://kabutan.jp/stock/news?code=150A&amp;b=n202608180867</a></li>
+  <a class="ext" href="https://kabutan.jp/stock/news?code=150A&amp;b=n202608180867" target="_blank" rel="noopener">株探 ↗</a></li>
 </ul>
 <p>（解釈）8月13日の1Q決算・初配・自社株買いで8月14日に値幅制限いっぱいの619円まで買われ、
 <strong>その翌週も上げが止まらなかった</strong>。8月14日と8月18日はいずれも前日終値ちょうど+100円で引けており、
@@ -892,17 +908,17 @@ FY2026-03 <code>eps</code> に status OK で入っている）。</p>
 <h3>一次情報</h3>
 <ul>
 <li>2027年3月期 第1四半期決算短信〔日本基準〕(連結)（2026-08-13）
-  <a href="https://www.release.tdnet.info/inbs/140120260812517623.pdf">https://www.release.tdnet.info/inbs/140120260812517623.pdf</a></li>
+  <a class="ext" href="https://www.release.tdnet.info/inbs/140120260812517623.pdf" target="_blank" rel="noopener">TDnet ↗</a></li>
 <li>2027年3月期 第1四半期決算説明資料（2026-08-13）
-  <a href="https://www.release.tdnet.info/inbs/140120260812517598.pdf">https://www.release.tdnet.info/inbs/140120260812517598.pdf</a></li>
+  <a class="ext" href="https://www.release.tdnet.info/inbs/140120260812517598.pdf" target="_blank" rel="noopener">TDnet ↗</a></li>
 <li>第11期連結業績予想修正と中期事業計画開示に関するお知らせ（2026-07-15）
-  <a href="https://www.release.tdnet.info/inbs/140120260710591497.pdf">https://www.release.tdnet.info/inbs/140120260710591497.pdf</a></li>
+  <a class="ext" href="https://www.release.tdnet.info/inbs/140120260710591497.pdf" target="_blank" rel="noopener">TDnet ↗</a></li>
 <li>当社事業の主要月次数値の開示（2026-08-05）
-  <a href="https://www.release.tdnet.info/inbs/140120260804508670.pdf">https://www.release.tdnet.info/inbs/140120260804508670.pdf</a></li>
+  <a class="ext" href="https://www.release.tdnet.info/inbs/140120260804508670.pdf" target="_blank" rel="noopener">TDnet ↗</a></li>
 <li>株式会社JSH IR情報（2026-08-21 取得・HTTP 200）
-  <a href="https://www.jsh-japan.jp/ir/">https://www.jsh-japan.jp/ir/</a></li>
+  <a class="ext" href="https://www.jsh-japan.jp/ir/" target="_blank" rel="noopener">jsh-japan.jp ↗</a></li>
 <li>株式会社JSH IRカレンダー（2026-08-21 取得）
-  <a href="https://www.jsh-japan.jp/ir/calendar/">https://www.jsh-japan.jp/ir/calendar/</a></li>
+  <a class="ext" href="https://www.jsh-japan.jp/ir/calendar/" target="_blank" rel="noopener">jsh-japan.jp ↗</a></li>
 </ul>
 <blockquote>
 <p><strong>注意</strong>：TDnet のPDFは概ね1か月で公開が終了する。2026年5月15日開示の
@@ -951,18 +967,18 @@ FY2026-03 <code>eps</code> に status OK で入っている）。</p>
 <ul>
 <li>取得元の定義は <code>data/sources.yaml</code>。<strong>AIに取得元を探させない設計</strong>なので、
   ここに書いてある経路以外からは数値を入れていない</li>
-<li>株価ページ: <a href="https://kabutan.jp/stock/kabuka?code=150A&amp;ashi=day">https://kabutan.jp/stock/kabuka?code=150A&amp;ashi=day</a> ／
-  <a href="https://finance.yahoo.co.jp/quote/150A.T/history">https://finance.yahoo.co.jp/quote/150A.T/history</a></li>
-<li>財務ページ: <a href="https://kabutan.jp/stock/finance?code=150A">https://kabutan.jp/stock/finance?code=150A</a> ／ <a href="https://irbank.net/E39184/results">https://irbank.net/E39184/results</a></li>
-<li>信用残: <a href="https://kabutan.jp/stock/?code=150A">https://kabutan.jp/stock/?code=150A</a></li>
-<li>ニュース見出し（<code>src/fetch_news.py</code>・採用値ではない）: <a href="https://kabutan.jp/stock/news?code=150A">https://kabutan.jp/stock/news?code=150A</a></li>
+<li>株価ページ: <a class="ext" href="https://kabutan.jp/stock/kabuka?code=150A&amp;ashi=day" target="_blank" rel="noopener">株探 ↗</a> ／
+  <a class="ext" href="https://finance.yahoo.co.jp/quote/150A.T/history" target="_blank" rel="noopener">finance.yahoo.co.jp ↗</a></li>
+<li>財務ページ: <a class="ext" href="https://kabutan.jp/stock/finance?code=150A" target="_blank" rel="noopener">株探 ↗</a> ／ <a class="ext" href="https://irbank.net/E39184/results" target="_blank" rel="noopener">IR BANK ↗</a></li>
+<li>信用残: <a class="ext" href="https://kabutan.jp/stock/?code=150A" target="_blank" rel="noopener">株探 ↗</a></li>
+<li>ニュース見出し（<code>src/fetch_news.py</code>・採用値ではない）: <a class="ext" href="https://kabutan.jp/stock/news?code=150A" target="_blank" rel="noopener">株探 ↗</a></li>
 </ul>
 <h3>二次情報（人が読んで書いたもの・未照合）</h3>
 <ul>
 <li>企業勤務だけど職場は農園…批判集めた「障害者雇用代行ビジネス」の現在地（弁護士ドットコムニュース・2023-10-12 掲載／2026-08-21 取得）
-  <a href="https://www.bengo4.com/c_5/n_16619/">https://www.bengo4.com/c_5/n_16619/</a></li>
+  <a class="ext" href="https://www.bengo4.com/c_5/n_16619/" target="_blank" rel="noopener">bengo4.com ↗</a></li>
 <li>ＪＳＨ (150A) 新規上場（IPO）情報（みんかぶ・2026-08-21 取得）
-  <a href="https://minkabu.jp/stock/150A/ipo">https://minkabu.jp/stock/150A/ipo</a></li>
+  <a class="ext" href="https://minkabu.jp/stock/150A/ipo" target="_blank" rel="noopener">みんかぶ ↗</a></li>
 </ul>
 <h3>未確認・次に確かめること</h3>
 <ol>

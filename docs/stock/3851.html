@@ -128,6 +128,22 @@ border-radius:2px;overflow-wrap:anywhere}
 .viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
 .viz-bar,.viz-dot{cursor:default}
 
+/* 検証状態の記号バッジ（✓=2ソース照合済み ※=未照合参考 †=一次情報から直接）。
+   意味は title 属性（ブラウザ標準 tooltip）と about.html の凡例が持つ。
+   上付き風に小さく出す。色: 照合済み=青（.chg-pos と同系）・参考=橙（警告系）・
+   一次情報=グレー。色だけに意味を持たせない（記号そのものが常に見える） */
+.vm{font-size:.7em;font-weight:700;vertical-align:super;line-height:1;
+padding:0 .06em;cursor:help}
+.vm-ok{color:var(--pos)}
+.vm-ref{color:var(--warn)}
+.vm-pri{color:var(--dim)}
+
+/* 週次アップデートの古い週の折りたたみ。カード（.upd）より一段控えめにして
+   「畳んであるだけで消えてはいない」ことを見せる */
+details.upd-old{background:var(--soft);border-style:dashed;
+box-shadow:none;padding:.5rem .8rem}
+details.upd-old>summary{font-weight:400}
+
 /* 折りたたみ（裏取りで「裏付けが取れた記述」を畳む。JSは使わない） */
 details{margin:1rem 0;border:1px solid var(--rule);border-radius:6px;
 padding:.5rem .8rem;background:var(--card)}
@@ -240,22 +256,22 @@ font-size:.72rem;font-weight:700}
 .viz figcaption{font-size:.78rem}
 .viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
-</style></head><body><main><h1>日本一ソフトウェア（3851）</h1><p class="lede">東証スタンダード／レポート更新 2026-08-21<br><span class="pill pill-warn">記録が古い</span><a href="#verify">本文がこの検証のあとに書き換えられている（件数は現在の本文に適用できない）</a><br><a class="ext" href="https://www.nippon1.co.jp/ir/ir.html" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E02489" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=3851" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://www.nippon1.co.jp/company/company.html" target="_blank" rel="noopener">会社概要 ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">1,254<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+3.2%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">776 〜 1,254</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">記録が古い</span></span><span class="k-sub">本文が更新されてから未実施</span></div></div><blockquote>
+</style></head><body><main><h1>日本一ソフトウェア（3851）</h1><p class="lede">東証スタンダード／レポート更新 2026-08-21<br><span class="pill pill-warn">記録が古い</span><a href="#verify">本文がこの検証のあとに書き換えられている（件数は現在の本文に適用できない）</a><br><a class="ext" href="https://www.nippon1.co.jp/ir/ir.html" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E02489" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=3851" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://www.nippon1.co.jp/company/company.html" target="_blank" rel="noopener">会社概要 ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">1,254<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+3.2%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">776 〜 1,254</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">様子見(過熱)</span></span><span class="k-sub">src/judge.py の機械判定</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">記録が古い</span></span><span class="k-sub">本文が更新されてから未実施</span></div></div><blockquote>
 <p><strong>一行でいうと</strong>：岐阜県各務原市のゲームソフトメーカー。『魔界戦記ディスガイア』『夜廻』などの自社IPを企画・開発し、北米子会社 NIS America を通じて海外にも売っている。時価総額59億円（8/12終値ベース）で、株価は1株あたり純資産の7割強。<strong>2026年3月期は売上が3割減って営業赤字4.09億円まで沈んだが、7月30日発売の新作『ほの暮しの庭』が発売4日で10万本売れ、株価は3週間で+27%（7月22日の900円→8月12日の1,140円）上がって52週高値にいる。</strong></p>
 </blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W34・全 5 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W34（2026-08-17 週）</h3><p><strong>大株主の保有比率低下を開示。株価は週間+6.27%で底堅い</strong></p>
 <ul>
 <li>株価: 週間 +6.3%（1180→1254円・採用終値ベース、照合成立 4日、週内 1158〜1254円）</li>
 <li>出来高: 前週比 +35.1%（今週 408,900株／前週 302,600株）（参考・未照合）／信用倍率: 5.2倍（買残 417.3千株・売残 80.3千株、08/14時点）（参考）</li>
 <li>判定: 「様子見(過熱)」／開示: なし</li>
-<li>ニュース: 08/21 日本一ソフトについて、STM HERITAGE PTE. LTD.は保有割合が減少したと報告 [変更報告書No.2] <a href="https://kabutan.jp/stock/news?code=3851&amp;b=n202608210879">https://kabutan.jp/stock/news?code=3851&amp;b=n202608210879</a>（取得日 2026-08-21）</li>
+<li>ニュース: 08/21 日本一ソフトについて、STM HERITAGE PTE. LTD.は保有割合が減少したと報告 [変更報告書No.2] <a class="ext" href="https://kabutan.jp/stock/news?code=3851&amp;b=n202608210879" target="_blank" rel="noopener">株探 ↗</a>（取得日 2026-08-21）</li>
 </ul>
 <p>（解釈）STM HERITAGE PTE. LTD.の保有割合減少を報告する変更報告書No.2が提出された（kabutan、2026-08-21）。減少幅・保有目的は見出しからは分からず、継続保有か売却かは未確認
 株価は1,180円→1,254円で週間+6.27%、信用倍率5.2倍（OK）で需給は特段過熱していない</p>
 <p><strong>次週に見ること</strong>: ① 変更報告書の詳細（減少幅・保有目的）を確認できれば追記</p></div><div class="upd"><h3>2026-W33（続報）</h3><p><strong>52週高値をさらに更新。ただし新しい材料は見当たらず、過熱度だけが進んだ。</strong></p>
 <ul>
-<li>8月13日の終値<strong>1,186円</strong>は、前営業日8月12日の1,140円（当時の直近52週高値）を4.0%上回り、<strong>52週高値をさらに更新</strong>した（2ソース照合済み採用値。<code>data/prices/daily.csv</code>。出典 <a href="https://kabutan.jp/stock/kabuka?code=3851&amp;ashi=day">https://kabutan.jp/stock/kabuka?code=3851&amp;ashi=day</a>・<a href="https://finance.yahoo.co.jp/quote/3851.T/history">https://finance.yahoo.co.jp/quote/3851.T/history</a>、取得日2026-08-14）</li>
+<li>8月13日の終値<strong>1,186円</strong>は、前営業日8月12日の1,140円（当時の直近52週高値）を4.0%上回り、<strong>52週高値をさらに更新</strong>した（2ソース照合済み採用値。<code>data/prices/daily.csv</code>。出典 <a class="ext" href="https://kabutan.jp/stock/kabuka?code=3851&amp;ashi=day" target="_blank" rel="noopener">株探 ↗</a>・<a class="ext" href="https://finance.yahoo.co.jp/quote/3851.T/history" target="_blank" rel="noopener">finance.yahoo.co.jp ↗</a>、取得日2026-08-14）</li>
 <li>25日移動平均乖離率は8月12日の+19.3%から<strong>+22.3%</strong>へ、RSI(14)は70.1から<strong>73.1</strong>へ、どちらも過熱方向にさらに進んだ（<code>src/indicators.py</code> で算出。鉄則の目安「7〜8%超えたら怪しい」を一段と超えている）</li>
-<li>企業IRの適時開示一覧（<a href="https://www.nippon1.co.jp/ir/ir.html">https://www.nippon1.co.jp/ir/ir.html</a>、2026-08-14確認）と株探ニュース欄（<a href="https://kabutan.jp/stock/news?code=3851">https://kabutan.jp/stock/news?code=3851</a>、2026-08-14確認）を確認したが、8月7日の1Q決算発表・8月3日の「10万本突破」以降、<strong>新しい開示・材料ニュースは出ていない</strong>。この日の上昇を説明する新しい材料は見当たらない。<strong>理由は特定できていない</strong></li>
+<li>企業IRの適時開示一覧（<a class="ext" href="https://www.nippon1.co.jp/ir/ir.html" target="_blank" rel="noopener">nippon1.co.jp ↗</a>、2026-08-14確認）と株探ニュース欄（<a class="ext" href="https://kabutan.jp/stock/news?code=3851" target="_blank" rel="noopener">株探 ↗</a>、2026-08-14確認）を確認したが、8月7日の1Q決算発表・8月3日の「10万本突破」以降、<strong>新しい開示・材料ニュースは出ていない</strong>。この日の上昇を説明する新しい材料は見当たらない。<strong>理由は特定できていない</strong></li>
 <li>信用残は8月7日時点のまま更新なし（信用倍率5.24倍。<code>data/margin/3851.csv</code> に8月14日以降の新しい行は無い）</li>
 </ul>
 <p><strong>次週に見ること</strong>：①この乖離率・RSIの伸びが続くか、反落するか（新しい材料が無いまま伸びているので、材料無しの反落もありうる） ②2Q決算の日程開示 ③『ほの暮しの庭』の販売本数続報</p></div><div class="upd"><h3>2026-W33（続報3）</h3><p><strong>材料なしの続伸で、出来高は前週比マイナス</strong></p>
@@ -266,10 +282,10 @@ font-size:.72rem;font-weight:700}
 </ul>
 <p>（解釈）週足終値は1,057円→1,186円（+12.2%）。出来高は前週比-28.5%で、直近7日のニュース見出しも0件のため、材料の裏付けが薄いまま値幅だけが先行した週と読める。
 信用倍率5.24倍（買い残333.1千株）は前週から大きくは動いていない模様で、需給面の急変は今週の値動きの説明にはなっていない可能性がある。</p>
-<p><strong>次週に見ること</strong>: ① 材料なしでの続伸のため、出来高を伴う反落の有無を確認 ② 決算発表予定日を確認</p></div><div class="upd"><h3>2026-W33（続報2）</h3><p><strong>8月14日は小反落。新しい材料は無く、過熱はわずかに緩んだ。</strong></p>
+<p><strong>次週に見ること</strong>: ① 材料なしでの続伸のため、出来高を伴う反落の有無を確認 ② 決算発表予定日を確認</p></div><details class="upd-old"><summary>それ以前の週次アップデート（2件）</summary><div class="upd"><h3>2026-W33（続報2）</h3><p><strong>8月14日は小反落。新しい材料は無く、過熱はわずかに緩んだ。</strong></p>
 <ul>
-<li><code>data/prices/daily.csv</code> に8月14日分の行が追加されたが、<strong>株探（kabutan）側がまだ反映しておらずyahoo_jpのみの取得</strong>のため<code>status=SINGLE_SOURCE</code>で、採用終値（close）は欠測（空欄）のまま記録されている。参考値（<strong>未採用・1ソースのみ</strong>、桁の目安として読む）は始値1,198円・高値1,206円・安値1,166円・終値1,180円・出来高52,000株（出典 <a href="https://finance.yahoo.co.jp/quote/3851.T/history">https://finance.yahoo.co.jp/quote/3851.T/history</a>、取得日2026-08-16）。直近の採用値（2ソース照合済み）である8月13日終値1,186円と比べると、参考値ベースでは-0.5%の小幅な下落</li>
-<li>企業IRの適時開示一覧を確認したが、8月14日以降の新しい開示は無い（<a href="https://www.nippon1.co.jp/ir/ir.html">https://www.nippon1.co.jp/ir/ir.html</a>、取得日2026-08-16確認）。1Q決算（8/7）・「10万本突破」（8/3）以降、新しい材料ニュースは見当たらない</li>
+<li><code>data/prices/daily.csv</code> に8月14日分の行が追加されたが、<strong>株探（kabutan）側がまだ反映しておらずyahoo_jpのみの取得</strong>のため<code>status=SINGLE_SOURCE</code>で、採用終値（close）は欠測（空欄）のまま記録されている。参考値（<strong>未採用・1ソースのみ</strong>、桁の目安として読む）は始値1,198円・高値1,206円・安値1,166円・終値1,180円・出来高52,000株（出典 <a class="ext" href="https://finance.yahoo.co.jp/quote/3851.T/history" target="_blank" rel="noopener">finance.yahoo.co.jp ↗</a>、取得日2026-08-16）。直近の採用値（2ソース照合済み）である8月13日終値1,186円と比べると、参考値ベースでは-0.5%の小幅な下落</li>
+<li>企業IRの適時開示一覧を確認したが、8月14日以降の新しい開示は無い（<a class="ext" href="https://www.nippon1.co.jp/ir/ir.html" target="_blank" rel="noopener">nippon1.co.jp ↗</a>、取得日2026-08-16確認）。1Q決算（8/7）・「10万本突破」（8/3）以降、新しい材料ニュースは見当たらない</li>
 <li><code>data/fundamentals/3851.csv</code>・<code>data/margin/3851.csv</code> とも今週の取得で新規行の追記は無かった（信用残は8月7日時点のまま、財務データも直近の採用値から変わらず）</li>
 <li><code>data/master.yaml</code> の3851の項目に <code>next_earnings</code>（決算発表予定日）の記載は無く、2Q決算の日程開示はまだ確認できていない</li>
 <li>参考値ベースの-0.5%という値幅自体は小さく、これだけで「反落トレンドに転じた」とは言えない。<strong>株価が動いた理由は特定できていない</strong>（新しい材料が無いままの小幅な調整、とも、単なる値動きのノイズとも読める）</li>
@@ -282,7 +298,7 @@ font-size:.72rem;font-weight:700}
 <li><strong>この10万本は1Qの数字には1本も入っていない</strong>。7月30日発売なので、計上されるのは2Q（7-9月）から。1Qの赤字と新作の好調を同じ期の話として混ぜないこと</li>
 <li>需給に変化。信用の売り残が7月24日の0.6千株から7月31日に59.7千株へ急増し、<strong>信用倍率が511倍から5.49倍→5.24倍へ</strong>。上がったところを売り建てている参加者が出てきた</li>
 </ul>
-<p><strong>次週に見ること</strong>：①『ほの暮しの庭』のその後の販売本数と海外展開 ②信用売り残がさらに増えるか ③25日移動平均線からの乖離（8月12日時点で+19.3%）が縮むか ④2Q決算の日程開示</p></div></div></details><details class="sec"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">まだ作成していない</span></summary><div class="sec-body"><p class="none">推定モデルは未作成。「この銘柄の推定モデルを組んで」と Claude に言えば起案できる（手順は <code>.claude/skills/kabu-ledger-estimate/</code>）。</p></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p>岐阜県各務原市の会社。設立1993年、資本金5.57億円、連結従業員193名（2025年3月31日現在）。代表取締役は猿橋健蔵氏。</p>
+<p><strong>次週に見ること</strong>：①『ほの暮しの庭』のその後の販売本数と海外展開 ②信用売り残がさらに増えるか ③25日移動平均線からの乖離（8月12日時点で+19.3%）が縮むか ④2Q決算の日程開示</p></div></details></div></details><details class="sec"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">まだ作成していない</span></summary><div class="sec-body"><p class="none">推定モデルは未作成。「この銘柄の推定モデルを組んで」と Claude に言えば起案できる（手順は <code>.claude/skills/kabu-ledger-estimate/</code>）。</p></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p>岐阜県各務原市の会社。設立1993年、資本金5.57億円、連結従業員193名（2025年3月31日現在）。代表取締役は猿橋健蔵氏。</p>
 <h3>何をして稼いでいるか</h3>
 <p><strong>家庭用ゲーム機（PlayStation 5・Nintendo Switch）向けのゲームソフトを、自分で企画して自分で作り、自分の名前で売っている会社</strong>である。受託開発が中心の下請けではなく、著作権を自社で持つ「自社IP（知的財産）」を積み上げてきたタイプのメーカーにあたる。</p>
 <p>代表作は『魔界戦記ディスガイア』シリーズ、『夜廻』『深夜廻』、『風雨来記』シリーズ、『ルフランの地下迷宮と魔女ノ旅団』など。主要取引先はソニー・インタラクティブエンタテインメント、任天堂、セガゲームスなど、ゲーム機のプラットフォームを持つ側である。</p>
@@ -761,23 +777,23 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>会社概要・所在地・設立・資本金・従業員数・子会社・主要取引先</td>
-<td><a href="https://www.nippon1.co.jp/company/company.html">https://www.nippon1.co.jp/company/company.html</a></td>
+<td><a class="ext" href="https://www.nippon1.co.jp/company/company.html" target="_blank" rel="noopener">nippon1.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>IR情報（決算短信・株式情報）、および<strong>適時開示の一覧</strong>（「業績予想の修正に関するお知らせ」2025.06.20・2026.02.13、「業績予想の差異発生に関するお知らせ」2025.05.09・2025.11.14・2026.05.15 の開示日）</td>
-<td><a href="https://www.nippon1.co.jp/ir/ir.html">https://www.nippon1.co.jp/ir/ir.html</a></td>
+<td><a class="ext" href="https://www.nippon1.co.jp/ir/ir.html" target="_blank" rel="noopener">nippon1.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>事業内容</td>
-<td><a href="https://www.nippon1.co.jp/company/business.html">https://www.nippon1.co.jp/company/business.html</a></td>
+<td><a class="ext" href="https://www.nippon1.co.jp/company/business.html" target="_blank" rel="noopener">nippon1.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 </tbody>
 </table></div>
 <blockquote>
-<p>※ 決算短信PDFはまだ機械で読み取っていない。<strong>2027年3月期1Q（8/7開示）から取り込むこと。</strong> 取り込めば、この表の数値と一次情報を機械で突き合わせられるようになる。</p>
+<p><span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span> 決算短信PDFはまだ機械で読み取っていない。<strong>2027年3月期1Q（8/7開示）から取り込むこと。</strong> 取り込めば、この表の数値と一次情報を機械で突き合わせられるようになる。</p>
 </blockquote>
 <h3>二次情報（機械で突き合わせているもの）</h3>
 <div class="scroll"><table class="prose-table">
@@ -791,17 +807,17 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>通期・四半期の業績推移、財務指標、キャッシュフロー</td>
-<td><a href="https://irbank.net/E02489/results">https://irbank.net/E02489/results</a></td>
+<td><a class="ext" href="https://irbank.net/E02489/results" target="_blank" rel="noopener">IR BANK ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>四半期推移</td>
-<td><a href="https://irbank.net/E02489/quarter">https://irbank.net/E02489/quarter</a></td>
+<td><a class="ext" href="https://irbank.net/E02489/quarter" target="_blank" rel="noopener">IR BANK ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>業績推移・財務・キャッシュフロー</td>
-<td><a href="https://kabutan.jp/stock/finance?code=3851">https://kabutan.jp/stock/finance?code=3851</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/finance?code=3851" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 </tbody>
@@ -819,42 +835,42 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>株価・時価総額・信用残・比較銘柄・事業概要</td>
-<td><a href="https://kabutan.jp/stock/?code=3851">https://kabutan.jp/stock/?code=3851</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/?code=3851" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>材料ニュースの一覧（1Q決算・10万本突破）</td>
-<td><a href="https://kabutan.jp/stock/news?code=3851">https://kabutan.jp/stock/news?code=3851</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/news?code=3851" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>株価診断・個人予想・目標株価・PSR</td>
-<td><a href="https://minkabu.jp/stock/3851">https://minkabu.jp/stock/3851</a></td>
+<td><a class="ext" href="https://minkabu.jp/stock/3851" target="_blank" rel="noopener">みんかぶ ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>アナリストレーティング・理論株価・BPS・PER</td>
-<td><a href="https://kabuyoho.jp/sp/reportTarget?bcode=3851">https://kabuyoho.jp/sp/reportTarget?bcode=3851</a></td>
+<td><a class="ext" href="https://kabuyoho.jp/sp/reportTarget?bcode=3851" target="_blank" rel="noopener">kabuyoho.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>『ほの暮しの庭』が発売4日で10万本突破</td>
-<td><a href="https://game.watch.impress.co.jp/docs/news/2130238.html">https://game.watch.impress.co.jp/docs/news/2130238.html</a></td>
+<td><a class="ext" href="https://game.watch.impress.co.jp/docs/news/2130238.html" target="_blank" rel="noopener">game.watch.impress.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>同上（発売日7月30日・品切れ発生）</td>
-<td><a href="https://automaton-media.com/articles/newsjp/20260803-458158/">https://automaton-media.com/articles/newsjp/20260803-458158/</a></td>
+<td><a class="ext" href="https://automaton-media.com/articles/newsjp/20260803-458158/" target="_blank" rel="noopener">automaton-media.com ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>2026年3月期の<strong>セグメント別内訳</strong>（エンターテインメント34.85億円／学生寮・その他1.20億円）、<strong>営業外収益の内訳</strong>（為替差益168・受取利息191百万円）、<strong>現金同等物の減少要因</strong>（定期預金の預入24.16億円）、減収・営業赤字拡大の理由</td>
-<td><a href="https://www.gamebusiness.jp/article/2026/05/15/26947.html">https://www.gamebusiness.jp/article/2026/05/15/26947.html</a></td>
+<td><a class="ext" href="https://www.gamebusiness.jp/article/2026/05/15/26947.html" target="_blank" rel="noopener">gamebusiness.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>同上（新作4本投入・NIS Americaの海外展開）</td>
-<td><a href="https://gamebiz.jp/news/426001">https://gamebiz.jp/news/426001</a></td>
+<td><a class="ext" href="https://gamebiz.jp/news/426001" target="_blank" rel="noopener">gamebiz.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 </tbody>

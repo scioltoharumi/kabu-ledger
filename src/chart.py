@@ -16,7 +16,9 @@
 from __future__ import annotations
 
 import html
+import re
 from dataclasses import dataclass
+from datetime import date as _date
 
 # --- 色（CSS 変数名。実体は style.py 側で light/dark を切り替える） ---
 POS = "var(--viz-pos)"
@@ -356,6 +358,178 @@ def range_pos(low: float, high: float, current: float, unit: str = "円",
     return _wrap("".join(parts), W, H, caption, source_note)
 
 
+# --- 時系列イベント（採用終値の折れ線に出来事を重ねる） ---------------------
+
+def _dfmt(day: str) -> str:
+    """ISO 日付を短い表示（"2026-06-24" → "26/6/24"）にする。読めなければそのまま。"""
+    try:
+        d = _date.fromisoformat(day)
+    except ValueError:
+        return day
+    return f"{d.year % 100}/{d.month}/{d.day}"
+
+
+def timeline(data: list[dict], events: list[dict], unit: str = "円",
+             caption: str = "", source_note: str = "") -> str:
+    """折れ線（採用終値）＋イベント点。ラベルは上下交互に置いて重なりを避ける。
+
+    x は日付に比例させる（等間隔だと休場・欠測で時間の感覚が歪む）。
+    日付を1つでも読めなければ等間隔に落とす（描けないよりよい）。
+    events は chartdata が配置済み（date / label / value / note）のものを受け取る。
+    """
+    pts = [(str(d.get("label", "")), float(d["value"])) for d in data
+           if d.get("value") is not None]
+    if not pts:
+        return ""
+
+    W, H = 720, 300
+    pad_l, pad_r, pad_t, pad_b = 54, 16, 34, 48
+    plot_w = W - pad_l - pad_r
+    plot_h = H - pad_t - pad_b
+
+    vals = [v for _, v in pts]
+    lo, hi = min(vals), max(vals)
+    pad_v = (hi - lo) * 0.15 or 1
+    lo, hi = lo - pad_v, hi + pad_v
+    span = (hi - lo) or 1.0
+
+    def y_of(v: float) -> float:
+        return pad_t + plot_h * ((hi - v) / span)
+
+    try:
+        ords = {day: _date.fromisoformat(day).toordinal() for day, _ in pts}
+    except ValueError:
+        ords = {}
+    days = [day for day, _ in pts]
+    if ords and max(ords.values()) > min(ords.values()):
+        o0, o1 = min(ords.values()), max(ords.values())
+
+        def x_of(day: str) -> float:
+            o = ords.get(day)
+            if o is None:
+                try:
+                    o = _date.fromisoformat(day).toordinal()
+                except ValueError:
+                    o = o0
+            return pad_l + plot_w * (min(max(o, o0), o1) - o0) / (o1 - o0)
+    else:
+        denom = max(len(days) - 1, 1)
+
+        def x_of(day: str) -> float:
+            # 等間隔モード。イベントの日は「その日以前の最後の点」に置く。
+            j = 0
+            for i, d2 in enumerate(days):
+                if d2 <= day:
+                    j = i
+            return pad_l + plot_w * j / denom
+
+    parts: list[str] = []
+
+    # 目盛（上下の端）
+    for v in (hi - pad_v, lo + pad_v):
+        y = y_of(v)
+        parts.append(f'<line x1="{pad_l}" y1="{y:.1f}" x2="{W - pad_r}" '
+                     f'y2="{y:.1f}" stroke="{GRID}" stroke-width="1"/>')
+        parts.append(f'<text x="{pad_l - 8}" y="{y + 4:.1f}" text-anchor="end" '
+                     f'class="viz-tick">{html.escape(_fmt(v, unit))}</text>')
+
+    d = " ".join(
+        ("M" if i == 0 else "L") + f"{x_of(day):.1f},{y_of(v):.1f}"
+        for i, (day, v) in enumerate(pts))
+    parts.append(f'<path d="{d}" fill="none" stroke="{POS}" stroke-width="2" '
+                 f'stroke-linejoin="round" stroke-linecap="round"/>')
+
+    # x ラベルは両端の日付だけ（毎日の点に文字を置かない）
+    parts.append(f'<text x="{pad_l}" y="{H - pad_b + 20}" text-anchor="start" '
+                 f'class="viz-tick">{html.escape(_dfmt(days[0]))}</text>')
+    parts.append(f'<text x="{W - pad_r}" y="{H - pad_b + 20}" text-anchor="end" '
+                 f'class="viz-tick">{html.escape(_dfmt(days[-1]))}</text>')
+
+    # イベント点。ラベルは上下交互（偶数番目=上・奇数番目=下）で重なりを避ける。
+    for i, ev in enumerate(events or []):
+        if ev.get("value") is None:
+            continue
+        v = float(ev["value"])
+        day = str(ev.get("date", ""))
+        label = str(ev.get("label", ""))
+        x, y = x_of(day), y_of(v)
+        tip = f"{_dfmt(day)} {label}: {_fmt(v, unit)}"
+        note = str(ev.get("note", "") or "")
+        if note:
+            tip += f" — {note}"
+        above = i % 2 == 0
+        ly = (y - 34) if above else (y + 24)
+        ly = max(ly, pad_t + 10) if above else min(ly, H - pad_b - 18)
+        # 引き出し線（点とラベルのつながりを色に頼らず示す）
+        parts.append(f'<line x1="{x:.1f}" y1="{(y - 8) if above else (y + 8):.1f}" '
+                     f'x2="{x:.1f}" y2="{(ly + 4) if above else (ly - 12):.1f}" '
+                     f'stroke="{MUTED}" stroke-width="1"/>')
+        parts.append(f'<g class="viz-dot"><title>{html.escape(tip)}</title>'
+                     f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5.5" fill="{POS}" '
+                     f'stroke="var(--viz-surface)" stroke-width="2"/></g>')
+        tx = min(max(x, pad_l + 30), W - pad_r - 30)
+        parts.append(f'<text x="{tx:.1f}" y="{ly:.1f}" text-anchor="middle" '
+                     f'class="viz-value">{html.escape(label)}</text>')
+        parts.append(f'<text x="{tx:.1f}" y="{ly + 14:.1f}" text-anchor="middle" '
+                     f'class="viz-tick">{html.escape(_dfmt(day))}</text>')
+
+    return _wrap("".join(parts), W, H, caption, source_note)
+
+
+# --- 定性図（数値を持たない構造図） ----------------------------------------
+
+# chartdata._DIAGRAM_DIGIT_RE と同じ線引き（全角数字も数字）。
+_DIGIT_RE = re.compile(r"[0-9０-９]")
+
+
+def diagram(steps: list[dict], caption: str = "", source_note: str = "") -> str:
+    """横並びのボックス＋矢印。**数字が1文字でも入っていたら描かない**。
+
+    数値は検証済みデータ由来の図でしか出さない（D30/D31）。chartdata 側でも
+    拒否するが、render 単体で呼ばれても嘘を描かないようここでも落とす
+    （照合を通らない値を表示側でもう一度落とす、の流儀）。
+    """
+    items: list[tuple[str, str]] = []
+    for s in steps or []:
+        if not isinstance(s, dict):
+            return ""
+        label = str(s.get("label", "") or "").strip()
+        note = str(s.get("note", "") or "").strip()
+        if not label or _DIGIT_RE.search(label + note):
+            return ""
+        items.append((label, note))
+    if not items:
+        return ""
+
+    n = len(items)
+    W, H = 720, 128
+    pad, gap = 14, 30
+    bw = (W - pad * 2 - gap * (n - 1)) / n
+    y, bh = 26, 76
+    cy = y + bh / 2
+    parts: list[str] = []
+    for i, (label, note) in enumerate(items):
+        x = pad + i * (bw + gap)
+        if i:
+            ax0, ax1 = x - gap + 5, x - 5
+            parts.append(f'<line x1="{ax0:.1f}" y1="{cy:.1f}" '
+                         f'x2="{ax1 - 6:.1f}" y2="{cy:.1f}" '
+                         f'stroke="{MUTED}" stroke-width="2"/>')
+            parts.append(f'<path d="M{ax1:.1f},{cy:.1f} l-8,-5 l0,10 z" '
+                         f'fill="{MUTED}"/>')
+        parts.append(f'<rect x="{x:.1f}" y="{y}" width="{bw:.1f}" height="{bh}" '
+                     f'rx="8" fill="{GRID}" opacity="0.45" stroke="{AXIS}"/>')
+        tx = x + bw / 2
+        ty = cy - 4 if note else cy + 5
+        parts.append(f'<text x="{tx:.1f}" y="{ty:.1f}" text-anchor="middle" '
+                     f'class="viz-value">{html.escape(label)}</text>')
+        if note:
+            parts.append(f'<text x="{tx:.1f}" y="{cy + 18:.1f}" '
+                         f'text-anchor="middle" class="viz-tick">'
+                         f'{html.escape(note)}</text>')
+    return _wrap("".join(parts), W, H, caption, source_note)
+
+
 # --- ディスパッチ ---------------------------------------------------------
 
 def render(spec: dict) -> str:
@@ -382,6 +556,11 @@ def render(spec: dict) -> str:
         return progress(float(spec["done"]), float(spec["target"]), unit,
                         spec.get("done_label", "実績"),
                         spec.get("rest_label", "残り"), caption, note)
+    if kind == "timeline":
+        return timeline(spec.get("data", []), spec.get("events", []),
+                        unit or "円", caption, note)
+    if kind == "diagram":
+        return diagram(spec.get("steps", []), caption, note)
     if kind == "range":
         need = ("low", "high", "current")
         if any(spec.get(k) is None for k in need):

@@ -128,6 +128,22 @@ border-radius:2px;overflow-wrap:anywhere}
 .viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
 .viz-bar,.viz-dot{cursor:default}
 
+/* 検証状態の記号バッジ（✓=2ソース照合済み ※=未照合参考 †=一次情報から直接）。
+   意味は title 属性（ブラウザ標準 tooltip）と about.html の凡例が持つ。
+   上付き風に小さく出す。色: 照合済み=青（.chg-pos と同系）・参考=橙（警告系）・
+   一次情報=グレー。色だけに意味を持たせない（記号そのものが常に見える） */
+.vm{font-size:.7em;font-weight:700;vertical-align:super;line-height:1;
+padding:0 .06em;cursor:help}
+.vm-ok{color:var(--pos)}
+.vm-ref{color:var(--warn)}
+.vm-pri{color:var(--dim)}
+
+/* 週次アップデートの古い週の折りたたみ。カード（.upd）より一段控えめにして
+   「畳んであるだけで消えてはいない」ことを見せる */
+details.upd-old{background:var(--soft);border-style:dashed;
+box-shadow:none;padding:.5rem .8rem}
+details.upd-old>summary{font-weight:400}
+
 /* 折りたたみ（裏取りで「裏付けが取れた記述」を畳む。JSは使わない） */
 details{margin:1rem 0;border:1px solid var(--rule);border-radius:6px;
 padding:.5rem .8rem;background:var(--card)}
@@ -240,7 +256,7 @@ font-size:.72rem;font-weight:700}
 .viz figcaption{font-size:.78rem}
 .viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
-</style></head><body><main><h1>共和コーポレーション（6570）</h1><p class="lede">東証スタンダード／レポート更新 2026-08-21<br><span class="pill pill-warn">記録が古い</span><a href="#verify">本文がこの検証のあとに書き換えられている（件数は現在の本文に適用できない）</a><br><a class="ext" href="https://www.kyowa-corp.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E33822" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://www.kyowa-corp.co.jp/business" target="_blank" rel="noopener">事業内容 ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">3,970<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+13.1%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">1,077 〜 3,970</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">記録が古い</span></span><span class="k-sub">本文が更新されてから未実施</span></div></div><blockquote>
+</style></head><body><main><h1>共和コーポレーション（6570）</h1><p class="lede">東証スタンダード／レポート更新 2026-08-21<br><span class="pill pill-warn">記録が古い</span><a href="#verify">本文がこの検証のあとに書き換えられている（件数は現在の本文に適用できない）</a><br><a class="ext" href="https://www.kyowa-corp.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E33822" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://www.kyowa-corp.co.jp/business" target="_blank" rel="noopener">事業内容 ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">3,970<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+13.1%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">1,077 〜 3,970</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">様子見(過熱)</span></span><span class="k-sub">src/judge.py の機械判定</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">記録が古い</span></span><span class="k-sub">本文が更新されてから未実施</span></div></div><blockquote>
 <p><strong>一行でいうと</strong>：長野県から全国へ広げたアミューズメント施設「アピナ」（2026年6月末時点76店舗）を運営し、クレーンゲームの景品需要で伸びている会社。ゲーム機器の販売と、ホテル・商業施設への機器の設置受託も手がける。時価総額は約192.1億円（2026-08-13の採用終値3,160円×発行済株式6,080,130株。株数は決算短信原文でも確認済み）。<strong>売上は4年で倍増し、2026年8月10日発表の1Q決算は売上+69.4%・営業利益3.2倍・経常利益3.4倍（決算短信原文で確認）。株価は週間+50.3%上げて52週高値3,160円にいる。</strong> 買収したトレカ買取店（道楽）とスクイーズ玩具の子会社（ブルーム）が上乗せしており、決算短信のセグメント情報を計算すると、1Q営業利益の増加額のうち約6割がこの「その他」区分によるものと読める（詳細は「財務の推移と健全性」節）。</p>
 </blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W34・全 6 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W34（2026-08-17 週）</h3><p><strong>材料の開示・報道は見当たらず、週間+28.27%で急伸。理由は特定できていない</strong></p>
 <ul>
@@ -263,19 +279,19 @@ font-size:.72rem;font-weight:700}
 <li>株価: 週間 +50.3%（2102→3160円・採用終値ベース、照合成立 3日、週内 2602〜3160円）</li>
 <li>出来高: 前週比 +1768.6%（今週 416,700株／前週 22,300株）（参考・未照合）／信用倍率: 9.13倍（買残 85.8千株・売残 9.4千株、08/07時点）（参考）</li>
 <li>判定: 「様子見(過熱)」／開示: なし</li>
-<li>ニュース: 08/10 共和コーポ、4-6月期(1Q)経常は3.4倍増益で着地 <a href="https://kabutan.jp/stock/news?code=6570&amp;b=k202608100017">https://kabutan.jp/stock/news?code=6570&amp;b=k202608100017</a></li>
-<li>ニュース: 08/10 共和コーポが後場急伸、記念株主優待と第1四半期大幅増収増益を好感 <a href="https://kabutan.jp/stock/news?code=6570&amp;b=n202608100568">https://kabutan.jp/stock/news?code=6570&amp;b=n202608100568</a></li>
-<li>ニュース: 08/10 創立40周年記念株主優待の実施に関するお知らせ <a href="https://kabutan.jp/disclosures/pdf/20260810/140120260810516625/">https://kabutan.jp/disclosures/pdf/20260810/140120260810516625/</a></li>
+<li>ニュース: 08/10 共和コーポ、4-6月期(1Q)経常は3.4倍増益で着地 <a class="ext" href="https://kabutan.jp/stock/news?code=6570&amp;b=k202608100017" target="_blank" rel="noopener">株探 ↗</a></li>
+<li>ニュース: 08/10 共和コーポが後場急伸、記念株主優待と第1四半期大幅増収増益を好感 <a class="ext" href="https://kabutan.jp/stock/news?code=6570&amp;b=n202608100568" target="_blank" rel="noopener">株探 ↗</a></li>
+<li>ニュース: 08/10 創立40周年記念株主優待の実施に関するお知らせ <a class="ext" href="https://kabutan.jp/disclosures/pdf/20260810/140120260810516625/" target="_blank" rel="noopener">株探 ↗</a></li>
 </ul>
 <p>（解釈）週足終値は2,102円→3,160円（+50.33%）。checks.py が8/10（+23.8%・9.0σ）、8/12（+14.1%・5.4σ）を統計的な外れ値として検出しており、通常のレンジを大きく超える値動きの週だった。
 8/10付の見出しで1Q（4-6月期）経常が3.4倍増益で着地したと伝えられ、同日に創立40周年記念の株主優待実施も発表されている。両材料が重なったことが急騰の背景と読める。信用倍率9.13倍（買い残85.8千株）は前週比で大きくは動いていない模様。</p>
-<p><strong>次週に見ること</strong>: ① 1Q決算の増益内容・通期計画との整合を確認（deep_dive 対象） ② 急騰後の過熱解消（出来高・値幅）を注視</p></div><div class="upd"><h3>2026-W33（続報3）</h3><p><strong>別コンテキストの裏取りで見つかった1件を訂正する（続報2の本文は書き換えない）。</strong></p>
+<p><strong>次週に見ること</strong>: ① 1Q決算の増益内容・通期計画との整合を確認（deep_dive 対象） ② 急騰後の過熱解消（出来高・値幅）を注視</p></div><details class="upd-old"><summary>それ以前の週次アップデート（3件）</summary><div class="upd"><h3>2026-W33（続報3）</h3><p><strong>別コンテキストの裏取りで見つかった1件を訂正する（続報2の本文は書き換えない）。</strong></p>
 <ul>
 <li>続報2の反落理由の材料探しで irbank.net のページに到達できなかったと書いたが、2026-08-16の裏取り（<code>data/verification/6570.yaml</code> V29）で再取得したところ<code>https://irbank.net/E33822</code>はhttp_status=200で正常に到達できた。到達できなかったことを裏付ける取得ログも見当たらない。一時的な問題だった可能性はあるが、この記述を根拠として引き継がないこと</li>
 </ul></div><div class="upd"><h3>2026-W33（続報2）</h3><p><strong>急騰3営業日のあと、8月14日は反落。ただし未照合の参考値。</strong></p>
 <ul>
 <li>8月14日の株価は、当台帳の定期取得では<strong>kabutanが未反映でyahoo_jpの値のみ</strong>（<code>status=SINGLE_SOURCE</code>）。終値としての採用値は無く、<code>data/prices/daily.csv</code> 上は <code>close</code> 欄が空のまま。yahoo_jp基準の参考値は<strong>3,095円</strong>で、前日8月13日の採用終値3,160円から<strong>-2.06%</strong>。日中の高値3,180円・安値2,970円も参考値（<code>data/prices/daily.csv</code>、fetched_at 2026-08-16T11:07:51+09:00）</li>
-<li>同じ8月14日の値（現在値3,095円・前日比-65円/-2.06%・始値3,020円・高値3,180円[10:47]・安値2,970円[14:06]・売買高51,500株）は日本経済新聞のページでも同水準で確認できた（<a href="https://www.nikkei.com/nkd/company/?scode=6570">https://www.nikkei.com/nkd/company/?scode=6570</a>、取得日2026-08-16）。二次情報どうしは近い値だが、当台帳の照合ルール上はkabutanとの一致が必要で、この値を2ソース照合済みの扱いにはしていない</li>
+<li>同じ8月14日の値（現在値3,095円・前日比-65円/-2.06%・始値3,020円・高値3,180円[10:47]・安値2,970円[14:06]・売買高51,500株）は日本経済新聞のページでも同水準で確認できた（<a class="ext" href="https://www.nikkei.com/nkd/company/?scode=6570" target="_blank" rel="noopener">日経 ↗</a>、取得日2026-08-16）。二次情報どうしは近い値だが、当台帳の照合ルール上はkabutanとの一致が必要で、この値を2ソース照合済みの扱いにはしていない</li>
 <li>反落の理由を探したが、8月13日以降の新規開示・決算修正・その他材料は見つからなかった。企業IR公式ページのIRニュース一覧・IRカレンダーはJavaScript／画像での描画のため静的取得では中身を確認できず（前回エントリと同じ制約が継続）、irbank.netのトップページも403で到達できなかった。日本経済新聞の関連ニュース欄でも直近は7月24日付の記事が最新で、8月13日以降の新規ニュースは見当たらない（取得日2026-08-16）。<strong>理由は特定できていない。</strong> 3営業日で+50.4%上げた直後の反落であり、過熱の反動（利益確定売り）の可能性はあるが、これは根拠のない推測にとどまる（<code>assumed: true</code>）</li>
 <li>信用残は8月7日時点（買い残85.8千株・信用倍率9.13倍）から更新なし。財務数値も8月13日時点から更新なし（<code>data/margin/6570.csv</code>・<code>data/fundamentals/6570.csv</code> とも今回の取得で新規行の追加なし）</li>
 <li><code>data/master.yaml</code> を確認したが、6570には <code>next_earnings</code> の項目自体が設定されていない（他の一部銘柄には設定がある）。2Q決算の発表予定日は企業IRページからも今回確認できず、引き続き未確認のまま</li>
@@ -289,7 +305,7 @@ font-size:.72rem;font-weight:700}
 <li><strong>通期予想は据え置き</strong>（売上26,870・営業2,000・経常1,992・純利益1,219百万円）。1Qだけで営業利益の進捗率は約38%に達している</li>
 <li>出店も続いている。7月3日「アピナ小山駅前店・トレーディングカードピット小山駅前店」、7月31日「クレーンパラダイス諏訪店」、8月1日「アピナ高梁店」「トレカ道楽横浜西口店」、8月12日「MOOOSH SQUISHY SoLaDo原宿店」</li>
 </ul>
-<p><strong>次週に見ること</strong>：①2Qでの通期計画の上方修正があるか ②信用買い残（8/7時点85.8千株・信用倍率9.13倍）の整理 ③出店ペースと、それに伴う投資キャッシュフロー ④トレカ相場の動向（道楽の粗利に直結する）</p></div></div></details><details class="sec sec-wide"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">対象 FY2027-03・確認済み・変数 7 個</span></summary><div class="sec-body"><div class="est"><p class="lede"><span class="pill pill-good">マスター確認済み</span> 対象期 <b>FY2027-03</b>・起案 2026-08-17。検証済みデータと<strong>明示した仮定</strong>から機械計算した概算であり、会社計画でも的中予想でもない。<span class="pill pill-warn">推定</span> の付いた変数を疑うための頁。</p><div class="kpi"><div class="kpi-tile"><span class="k-label">推定売上</span><span class="k-value">32,433<span class="k-unit">百万円</span></span><span class="k-sub">対象期 FY2027-03</span></div><div class="kpi-tile"><span class="k-label">推定営業利益</span><span class="k-value">3,308<span class="k-unit">百万円</span></span><span class="k-sub">営業利益率 10.2%（仮定）</span></div><div class="kpi-tile"><span class="k-label">会社計画比（営業利益）</span><span class="k-value"><span class="chg-pos">+65.4%</span></span><span class="k-sub">会社計画 2,000 百万円</span></div><div class="kpi-tile"><span class="k-label">最も効く変数（売上側）</span><span class="k-value"><span class="k-value-sm">annualize</span></span><span class="k-sub">+10%で営業利益 +7.2%</span></div></div><h3>会社計画・市場予想・実績との比較（百万円）</h3><div class="scroll"><table class="prose-table est-mkt"><thead><tr><th>指標</th><th>前期実績</th><th>会社計画</th><th>市場予想</th><th>当台帳推定</th><th>市場予想比</th></tr></thead><tbody><tr><td>売上</td><td class="num">20,729</td><td class="num">26,870</td><td class="num">—</td><td class="num"><strong>32,433</strong></td><td class="num">—</td></tr><tr><td>営業利益</td><td class="num">1,757</td><td class="num">2,000</td><td class="num">—</td><td class="num"><strong>3,308</strong></td><td class="num">—</td></tr></tbody></table></div><p class="lede">市場予想: アナリストカバー0社（レーティングを出している証券会社が無いことを reports/6570.md の裏取りで確認済み・2026-08-13取得）。機関のコンセンサス予想は 存在しないため、比較対象は会社計画のみ</p><h3>計算の分解</h3><div class="scroll"><table class="prose-table est-vars"><thead><tr><th>セグメント</th><th>式（値を代入）</th><th>売上（百万円）</th></tr></thead><tbody><tr><td>アミューズメント施設運営</td><td class="num">5,085.352 × 4.57 = 23,240.0586</td><td class="num"><strong>23,240</strong></td></tr><tr><td>アミューズメント機器販売</td><td class="num">292.533 × 4 = 1,170.132</td><td class="num"><strong>1,170</strong></td></tr><tr><td>その他（道楽・ブルーム・広告等）</td><td class="num">2,005.692 × 4 = 8,022.768</td><td class="num"><strong>8,023</strong></td></tr></tbody></table></div><h3>変数と根拠</h3><p class="lede">カードを押すと、その値の置き方（メモ・出典）が開く。<span class="pill pill-warn">推定</span> の変数から疑うこと。</p><div class="var-grid"><details class="var"><summary><span class="v-seg">アミューズメント施設運営</span><code>q1_revenue</code><span class="v-val">5085.352</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上5,085,352千円（前年同期比+26.4%）。初版は店舗数から積み上げていたが、短信が施設運営セグメントの売上を実額で開示している以上、まず実額を置いて換算係数だけを仮定にするほうが仮定の数が減る <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">アミューズメント施設運営</span><code>annualize</code><span class="v-val">4.57</span><span class="pill pill-warn">推定</span></summary><div>1Q売上から通期への換算係数。道楽連結前の3期は1Qが通期売上に占める比率が21.50%（FY2023-03）・22.14%（FY2024-03）・22.02%（FY2025-03）で平均21.89%、その逆数が4.57（data/fundamentals/6570.csv の四半期売上のOK値から算出）。この比率には夏（7-9月）と冬から春（1-3月）が強い季節性と、期中の出店による成長の両方が入っている。したがって店舗数の増加率を別の変数として掛けると成長を二重に数えるため、この版では店舗数の変数を置かない。FY2026-03（21.02%＝係数4.76）は道楽の2026年2月連結で4Qが膨らみ比率が下がるため平均から外した。今期の施設運営の出店は1Q中3店に加え7〜8月にアピナ小山駅前・クレーンパラダイス諏訪・アピナ高梁の3店で、過去平均並みのペースにある（reports/6570.md 週次記録）</div></details><details class="var"><summary><span class="v-seg">アミューズメント機器販売</span><code>q1_revenue</code><span class="v-val">292.533</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上292,533千円（前年同期比+244.1%） <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">アミューズメント機器販売</span><code>annualize</code><span class="v-val">4.0</span><span class="pill pill-warn">推定</span></summary><div>案件ごとにまとまって入る受注型で四半期の季節性を判断する材料が無いため単純年率換算（×4）と置いた。施設運営に掛けた4.57は同社の四半期売上3期ぶんから実測した係数であり、内訳の四半期推移が開示されていないこのセグメントには持ち込まない（測れない季節性を推測で上乗せしない）。1Qの+244.1%が続く保証は無いが、縮むと置く根拠も無い</div></details><details class="var"><summary><span class="v-seg">その他（道楽・ブルーム・広告等）</span><code>q1_revenue</code><span class="v-val">2005.692</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上2,005,692千円（前年同期比+704.5%）。道楽の新規連結とブルームの伸びが混在 <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">その他（道楽・ブルーム・広告等）</span><code>annualize</code><span class="v-val">4.0</span><span class="pill pill-warn">推定</span></summary><div>道楽は2026年2月1日連結でFY2027は4四半期とも寄与する初年度のため、前年比の段差は通年で続く。道楽連結後の四半期が1期しか無く季節性を測れないため、1Q水準の継続（×4）と置いた。施設運営だけ4.57で当セグメントが4.0なのは方針の揺れではなく『実測できた季節性だけ入れる』という一貫した扱い。買取・物販なので実際には年末年始が強い可能性があり、その場合この×4は過小になる。逆にトレカ相場が崩れれば過大になる（感応度でいちばん効く売上側の変数がここ）</div></details><details class="var"><summary><span class="v-seg">全社</span><code>op_margin</code><span class="v-val">0.102</span><span class="pill pill-warn">推定</span></summary><div>推定売上のセグメント構成で組み直した。1Qのセグメント利益率は施設運営10.64%（541,231÷5,085,352千円）・機器販売29.06%（85,000÷292,533）・その他15.99%（320,688÷2,005,692）と大きく開いており、単一の率を総売上に掛ける近似は構成が変わるほど歪む。この版の推定売上の構成（施設運営71.7%・機器販売3.6%・その他24.7%）に各セグメント利益率を当て、全社調整額（1Q -190,617千円＝連結営業利益756,302千円−3区分合計946,919千円）を年換算×4して引くと10.28%になり、これを切り捨てて10.2%と置いた。初版の9.0%はFY2026-03実績8.48%（その他がほぼ無かった期）と1Q実績10.24%の間を取った値で、その他が通期売上の約1/4を占めるこの構成を映していなかった。なお当てた利益率は1Q（例年もっとも利益率の低い四半期。FY2026-03は1Q 5.46%に対し通期8.48%）の値なので、置き方としてはむしろ低めに出る。下振れ要因は出店の先行費用とトレカ相場、上振れ要因は下期の季節性</div></details></div><h3>感度 — この推定を最も動かす変数</h3><p class="lede">各変数を +10% したときの営業利益の変化。上にある変数ほど、根拠を厚く確かめる価値がある。ただし <code>op_margin</code> だけは別扱い——営業利益 = 売上合計 × op_margin なので +10% は定義上つねに +10% になり、売上側の変数と大小を比べても意味が無い。</p><div class="scroll"><table class="prose-table"><thead><tr><th>変数</th><th>セグメント</th><th>営業利益への影響</th></tr></thead><tbody><tr><td><code>op_margin</code></td><td>全社 <span class="pill pill-warn">定義上</span></td><td class="num">+10.0%<br><span class="k-sub">乗法モデルなので定義上つねに +10%。売上側の変数との大小比較には意味が無い（率の水準そのものを疑うこと）</span></td></tr><tr><td><code>annualize</code></td><td>アミューズメント施設運営</td><td class="num">+7.2%</td></tr><tr><td><code>q1_revenue</code></td><td>アミューズメント施設運営</td><td class="num">+7.2%</td></tr><tr><td><code>annualize</code></td><td>その他（道楽・ブルーム・広告等）</td><td class="num">+2.5%</td></tr><tr><td><code>q1_revenue</code></td><td>その他（道楽・ブルーム・広告等）</td><td class="num">+2.5%</td></tr><tr><td><code>annualize</code></td><td>アミューズメント機器販売</td><td class="num">+0.4%</td></tr></tbody></table></div><h3>推定の変遷</h3><p class="lede">過去の版は書き換えずに残す。数値感がどう変わってきたかが学習の履歴になる。</p><div class="scroll"><table class="prose-table"><thead><tr><th>起案日</th><th>対象期</th><th>売上</th><th>営業利益</th><th>何を変えたか</th></tr></thead><tbody><tr><td>2026-08-17</td><td>FY2027-03</td><td class="num">31,593</td><td class="num">2,843</td><td>初版。FY2026-03実績（data/fundamentals/6570.csv のOK値）と2027年3月期1Q決算短信のセグメント注記（2026-08-10開示）から組んだ。推定売上は会社計画26,870百万円を約+18%上回るが、これは1Q実績（売上+69.4%・営業利益進捗38%）の年率換算に対して8/10据え置きの会社計画が保守的に見えるためで、当てにいかずギャップのまま残す</td></tr><tr><td>2026-08-17</td><td>FY2027-03</td><td class="num">32,433</td><td class="num">3,308</td><td>論理レビュー反映（初版の差し替え。初版はそのまま残す）: ①施設運営の分解を stores × sales_per_store から 1Q実額×年率換算に変えた——初版は施設運営セグメントの売上を『総店舗数』で割って『総店舗数』に掛けており、7〜8月の新規6店のうち3店（トレーディングカードピット小山駅前・トレカ道楽横浜西口・MOOOSH SQUISHY SoLaDo原宿）が『その他』セグメントの店である以上、その他の出店を施設運営の増収として数える形になっていた ②年率換算の係数を四半期実績からの実測値に置き直した——初版は『1Qは通期売上の21%』を根拠に挙げながら+3%しか上乗せしておらず、根拠と値が合っていなかった（21%なら+19%相当） ③op_margin を推定売上のセグメント構成で組み直した（9.0%→10.2%）。推定売上は会社計画26,870百万円を約+21%、営業利益は2,000百万円を約+65%上回る。8/10据え置きの会社計画に対する乖離は当てにいかずギャップのまま残す</td></tr></tbody></table></div></div></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p>東証スタンダード上場、業種分類は「サービス業」。2018年に新規上場。発行済株式数6,080,130株（自己株式99,343株を含む。株探・2026-08-13取得に加え、2026年8月10日開示の2027年3月期第1四半期決算短信〔一次情報〕本文の「期末発行済株式数」欄でも同数を確認・2026-08-16取得）。直近の採用終値（2026-08-13、kabutan／yahoo_jpの2ソース照合済み）3,160円で計算すると、時価総額は約192.1億円（6,080,130×3,160＝19,213,210,800円）。株探が8月13日に表示していた192億円（同日ザラ場中の参考値）とほぼ一致する。今期の予想配当は1株40円（前期25円）。決算短信本文では中間20円・期末20円の内訳が示されている（一次情報で確認）。</p>
+<p><strong>次週に見ること</strong>：①2Qでの通期計画の上方修正があるか ②信用買い残（8/7時点85.8千株・信用倍率9.13倍）の整理 ③出店ペースと、それに伴う投資キャッシュフロー ④トレカ相場の動向（道楽の粗利に直結する）</p></div></details></div></details><details class="sec sec-wide"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">対象 FY2027-03・確認済み・変数 7 個</span></summary><div class="sec-body"><div class="est"><p class="lede"><span class="pill pill-good">マスター確認済み</span> 対象期 <b>FY2027-03</b>・起案 2026-08-17。検証済みデータと<strong>明示した仮定</strong>から機械計算した概算であり、会社計画でも的中予想でもない。<span class="pill pill-warn">推定</span> の付いた変数を疑うための頁。</p><div class="kpi"><div class="kpi-tile"><span class="k-label">推定売上</span><span class="k-value">32,433<span class="k-unit">百万円</span></span><span class="k-sub">対象期 FY2027-03</span></div><div class="kpi-tile"><span class="k-label">推定営業利益</span><span class="k-value">3,308<span class="k-unit">百万円</span></span><span class="k-sub">営業利益率 10.2%（仮定）</span></div><div class="kpi-tile"><span class="k-label">会社計画比（営業利益）</span><span class="k-value"><span class="chg-pos">+65.4%</span></span><span class="k-sub">会社計画 2,000 百万円</span></div><div class="kpi-tile"><span class="k-label">最も効く変数（売上側）</span><span class="k-value"><span class="k-value-sm">annualize</span></span><span class="k-sub">+10%で営業利益 +7.2%</span></div></div><h3>会社計画・市場予想・実績との比較（百万円）</h3><div class="scroll"><table class="prose-table est-mkt"><thead><tr><th>指標</th><th>前期実績</th><th>会社計画</th><th>市場予想</th><th>当台帳推定</th><th>市場予想比</th></tr></thead><tbody><tr><td>売上</td><td class="num">20,729</td><td class="num">26,870</td><td class="num">—</td><td class="num"><strong>32,433</strong></td><td class="num">—</td></tr><tr><td>営業利益</td><td class="num">1,757</td><td class="num">2,000</td><td class="num">—</td><td class="num"><strong>3,308</strong></td><td class="num">—</td></tr></tbody></table></div><p class="lede">市場予想: アナリストカバー0社（レーティングを出している証券会社が無いことを reports/6570.md の裏取りで確認済み・2026-08-13取得）。機関のコンセンサス予想は 存在しないため、比較対象は会社計画のみ</p><h3>計算の分解</h3><div class="scroll"><table class="prose-table est-vars"><thead><tr><th>セグメント</th><th>式（値を代入）</th><th>売上（百万円）</th></tr></thead><tbody><tr><td>アミューズメント施設運営</td><td class="num">5,085.352 × 4.57 = 23,240.0586</td><td class="num"><strong>23,240</strong></td></tr><tr><td>アミューズメント機器販売</td><td class="num">292.533 × 4 = 1,170.132</td><td class="num"><strong>1,170</strong></td></tr><tr><td>その他（道楽・ブルーム・広告等）</td><td class="num">2,005.692 × 4 = 8,022.768</td><td class="num"><strong>8,023</strong></td></tr></tbody></table></div><h3>変数と根拠</h3><p class="lede">カードを押すと、その値の置き方（メモ・出典）が開く。<span class="pill pill-warn">推定</span> の変数から疑うこと。</p><div class="var-grid"><details class="var"><summary><span class="v-seg">アミューズメント施設運営</span><code>q1_revenue</code><span class="v-val">5085.352</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上5,085,352千円（前年同期比+26.4%）。初版は店舗数から積み上げていたが、短信が施設運営セグメントの売上を実額で開示している以上、まず実額を置いて換算係数だけを仮定にするほうが仮定の数が減る <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">アミューズメント施設運営</span><code>annualize</code><span class="v-val">4.57</span><span class="pill pill-warn">推定</span></summary><div>1Q売上から通期への換算係数。道楽連結前の3期は1Qが通期売上に占める比率が21.50%（FY2023-03）・22.14%（FY2024-03）・22.02%（FY2025-03）で平均21.89%、その逆数が4.57（data/fundamentals/6570.csv の四半期売上のOK値から算出）。この比率には夏（7-9月）と冬から春（1-3月）が強い季節性と、期中の出店による成長の両方が入っている。したがって店舗数の増加率を別の変数として掛けると成長を二重に数えるため、この版では店舗数の変数を置かない。FY2026-03（21.02%＝係数4.76）は道楽の2026年2月連結で4Qが膨らみ比率が下がるため平均から外した。今期の施設運営の出店は1Q中3店に加え7〜8月にアピナ小山駅前・クレーンパラダイス諏訪・アピナ高梁の3店で、過去平均並みのペースにある（reports/6570.md 週次記録）</div></details><details class="var"><summary><span class="v-seg">アミューズメント機器販売</span><code>q1_revenue</code><span class="v-val">292.533</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上292,533千円（前年同期比+244.1%） <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">アミューズメント機器販売</span><code>annualize</code><span class="v-val">4.0</span><span class="pill pill-warn">推定</span></summary><div>案件ごとにまとまって入る受注型で四半期の季節性を判断する材料が無いため単純年率換算（×4）と置いた。施設運営に掛けた4.57は同社の四半期売上3期ぶんから実測した係数であり、内訳の四半期推移が開示されていないこのセグメントには持ち込まない（測れない季節性を推測で上乗せしない）。1Qの+244.1%が続く保証は無いが、縮むと置く根拠も無い</div></details><details class="var"><summary><span class="v-seg">その他（道楽・ブルーム・広告等）</span><code>q1_revenue</code><span class="v-val">2005.692</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上2,005,692千円（前年同期比+704.5%）。道楽の新規連結とブルームの伸びが混在 <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">その他（道楽・ブルーム・広告等）</span><code>annualize</code><span class="v-val">4.0</span><span class="pill pill-warn">推定</span></summary><div>道楽は2026年2月1日連結でFY2027は4四半期とも寄与する初年度のため、前年比の段差は通年で続く。道楽連結後の四半期が1期しか無く季節性を測れないため、1Q水準の継続（×4）と置いた。施設運営だけ4.57で当セグメントが4.0なのは方針の揺れではなく『実測できた季節性だけ入れる』という一貫した扱い。買取・物販なので実際には年末年始が強い可能性があり、その場合この×4は過小になる。逆にトレカ相場が崩れれば過大になる（感応度でいちばん効く売上側の変数がここ）</div></details><details class="var"><summary><span class="v-seg">全社</span><code>op_margin</code><span class="v-val">0.102</span><span class="pill pill-warn">推定</span></summary><div>推定売上のセグメント構成で組み直した。1Qのセグメント利益率は施設運営10.64%（541,231÷5,085,352千円）・機器販売29.06%（85,000÷292,533）・その他15.99%（320,688÷2,005,692）と大きく開いており、単一の率を総売上に掛ける近似は構成が変わるほど歪む。この版の推定売上の構成（施設運営71.7%・機器販売3.6%・その他24.7%）に各セグメント利益率を当て、全社調整額（1Q -190,617千円＝連結営業利益756,302千円−3区分合計946,919千円）を年換算×4して引くと10.28%になり、これを切り捨てて10.2%と置いた。初版の9.0%はFY2026-03実績8.48%（その他がほぼ無かった期）と1Q実績10.24%の間を取った値で、その他が通期売上の約1/4を占めるこの構成を映していなかった。なお当てた利益率は1Q（例年もっとも利益率の低い四半期。FY2026-03は1Q 5.46%に対し通期8.48%）の値なので、置き方としてはむしろ低めに出る。下振れ要因は出店の先行費用とトレカ相場、上振れ要因は下期の季節性</div></details></div><h3>感度 — この推定を最も動かす変数</h3><p class="lede">各変数を +10% したときの営業利益の変化。上にある変数ほど、根拠を厚く確かめる価値がある。ただし <code>op_margin</code> だけは別扱い——営業利益 = 売上合計 × op_margin なので +10% は定義上つねに +10% になり、売上側の変数と大小を比べても意味が無い。</p><div class="scroll"><table class="prose-table"><thead><tr><th>変数</th><th>セグメント</th><th>営業利益への影響</th></tr></thead><tbody><tr><td><code>op_margin</code></td><td>全社 <span class="pill pill-warn">定義上</span></td><td class="num">+10.0%<br><span class="k-sub">乗法モデルなので定義上つねに +10%。売上側の変数との大小比較には意味が無い（率の水準そのものを疑うこと）</span></td></tr><tr><td><code>annualize</code></td><td>アミューズメント施設運営</td><td class="num">+7.2%</td></tr><tr><td><code>q1_revenue</code></td><td>アミューズメント施設運営</td><td class="num">+7.2%</td></tr><tr><td><code>annualize</code></td><td>その他（道楽・ブルーム・広告等）</td><td class="num">+2.5%</td></tr><tr><td><code>q1_revenue</code></td><td>その他（道楽・ブルーム・広告等）</td><td class="num">+2.5%</td></tr><tr><td><code>annualize</code></td><td>アミューズメント機器販売</td><td class="num">+0.4%</td></tr></tbody></table></div><h3>推定の変遷</h3><p class="lede">過去の版は書き換えずに残す。数値感がどう変わってきたかが学習の履歴になる。</p><div class="scroll"><table class="prose-table"><thead><tr><th>起案日</th><th>対象期</th><th>売上</th><th>営業利益</th><th>何を変えたか</th></tr></thead><tbody><tr><td>2026-08-17</td><td>FY2027-03</td><td class="num">31,593</td><td class="num">2,843</td><td>初版。FY2026-03実績（data/fundamentals/6570.csv のOK値）と2027年3月期1Q決算短信のセグメント注記（2026-08-10開示）から組んだ。推定売上は会社計画26,870百万円を約+18%上回るが、これは1Q実績（売上+69.4%・営業利益進捗38%）の年率換算に対して8/10据え置きの会社計画が保守的に見えるためで、当てにいかずギャップのまま残す</td></tr><tr><td>2026-08-17</td><td>FY2027-03</td><td class="num">32,433</td><td class="num">3,308</td><td>論理レビュー反映（初版の差し替え。初版はそのまま残す）: ①施設運営の分解を stores × sales_per_store から 1Q実額×年率換算に変えた——初版は施設運営セグメントの売上を『総店舗数』で割って『総店舗数』に掛けており、7〜8月の新規6店のうち3店（トレーディングカードピット小山駅前・トレカ道楽横浜西口・MOOOSH SQUISHY SoLaDo原宿）が『その他』セグメントの店である以上、その他の出店を施設運営の増収として数える形になっていた ②年率換算の係数を四半期実績からの実測値に置き直した——初版は『1Qは通期売上の21%』を根拠に挙げながら+3%しか上乗せしておらず、根拠と値が合っていなかった（21%なら+19%相当） ③op_margin を推定売上のセグメント構成で組み直した（9.0%→10.2%）。推定売上は会社計画26,870百万円を約+21%、営業利益は2,000百万円を約+65%上回る。8/10据え置きの会社計画に対する乖離は当てにいかずギャップのまま残す</td></tr></tbody></table></div></div></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p>東証スタンダード上場、業種分類は「サービス業」。2018年に新規上場。発行済株式数6,080,130株（自己株式99,343株を含む。株探・2026-08-13取得に加え、2026年8月10日開示の2027年3月期第1四半期決算短信〔一次情報〕本文の「期末発行済株式数」欄でも同数を確認・2026-08-16取得）。直近の採用終値（2026-08-13、kabutan／yahoo_jpの2ソース照合済み）3,160円で計算すると、時価総額は約192.1億円（6,080,130×3,160＝19,213,210,800円）。株探が8月13日に表示していた192億円（同日ザラ場中の参考値）とほぼ一致する。今期の予想配当は1株40円（前期25円）。決算短信本文では中間20円・期末20円の内訳が示されている（一次情報で確認）。</p>
 <p>2026年6月末（第1四半期会計期間末）時点の総店舗数は<strong>76店舗</strong>で、当四半期中に3店舗を新規出店した（愛知県の「アピナ太田川店」など。決算短信で確認）。7月以降も出店が続いている（詳細は週次アップデート参照）。</p>
 <h3>何をして稼いでいるか — 事業は4本</h3>
 <div class="scroll"><table class="prose-table">
@@ -901,38 +917,38 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>IR情報（決算短信・説明資料・適時開示）</td>
-<td><a href="https://www.kyowa-corp.co.jp/ir/">https://www.kyowa-corp.co.jp/ir/</a></td>
+<td><a class="ext" href="https://www.kyowa-corp.co.jp/ir/" target="_blank" rel="noopener">kyowa-corp.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>事業内容（アミューズメント施設運営／ゲーム機器販売／管理委託／総合広告業・店装事業）</td>
-<td><a href="https://www.kyowa-corp.co.jp/business">https://www.kyowa-corp.co.jp/business</a></td>
+<td><a class="ext" href="https://www.kyowa-corp.co.jp/business" target="_blank" rel="noopener">kyowa-corp.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>企業情報</td>
-<td><a href="https://www.kyowa-corp.co.jp/company">https://www.kyowa-corp.co.jp/company</a></td>
+<td><a class="ext" href="https://www.kyowa-corp.co.jp/company" target="_blank" rel="noopener">kyowa-corp.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>沿革（YAZアミューズメント・シティエンタテインメントの吸収合併と、店舗名の「アピナ」への統一）</td>
-<td><a href="https://www.kyowa-corp.co.jp/company/history">https://www.kyowa-corp.co.jp/company/history</a></td>
+<td><a class="ext" href="https://www.kyowa-corp.co.jp/company/history" target="_blank" rel="noopener">kyowa-corp.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>2027年3月期第1四半期決算短信〔日本基準〕（連結）。売上高・営業利益・経常利益・純利益・EPS・セグメント情報・通期計画の据え置き記載などを確認</td>
-<td><a href="https://www.release.tdnet.info/inbs/140120260810516597.pdf">https://www.release.tdnet.info/inbs/140120260810516597.pdf</a>（TDnet原本。開示日2026-08-10。<code>kabutan.jp/disclosures/pdf/20260810/140120260810516597/</code>と同一文書）</td>
+<td><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">TDnet ↗</a>（TDnet原本。開示日2026-08-10。<code>kabutan.jp/disclosures/pdf/20260810/140120260810516597/</code>と同一文書）</td>
 <td>2026-08-16</td>
 </tr>
 <tr>
 <td>創立40周年記念株主優待の実施に関するお知らせ。対象株主・優待内容・贈呈時期・「今回限り」の記載を確認</td>
-<td><a href="https://www.release.tdnet.info/inbs/140120260810516625.pdf">https://www.release.tdnet.info/inbs/140120260810516625.pdf</a>（TDnet原本。開示日2026-08-10。<code>kabutan.jp/disclosures/pdf/20260810/140120260810516625/</code>と同一文書）</td>
+<td><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516625.pdf" target="_blank" rel="noopener">TDnet ↗</a>（TDnet原本。開示日2026-08-10。<code>kabutan.jp/disclosures/pdf/20260810/140120260810516625/</code>と同一文書）</td>
 <td>2026-08-16</td>
 </tr>
 </tbody>
 </table></div>
 <blockquote>
-<p>※ 決算短信PDFは今回はじめて機械で読み取った（TDnetの日次一覧経由。保持期間は約31日のため、この2件のURLは2026年9月上旬ごろに切れる見込み）。<code>data/tanshin/</code>への正式な取り込みはまだ行っていない。2017年3月期の経常利益の食い違いも、その期の一次情報でしか決着しない（今回は対象外）。</p>
+<p><span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span> 決算短信PDFは今回はじめて機械で読み取った（TDnetの日次一覧経由。保持期間は約31日のため、この2件のURLは2026年9月上旬ごろに切れる見込み）。<code>data/tanshin/</code>への正式な取り込みはまだ行っていない。2017年3月期の経常利益の食い違いも、その期の一次情報でしか決着しない（今回は対象外）。</p>
 </blockquote>
 <h3>二次情報（機械で突き合わせているもの）</h3>
 <div class="scroll"><table class="prose-table">
@@ -946,17 +962,17 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>通期の業績推移・財務指標・キャッシュフロー</td>
-<td><a href="https://irbank.net/E33822/results">https://irbank.net/E33822/results</a></td>
+<td><a class="ext" href="https://irbank.net/E33822/results" target="_blank" rel="noopener">IR BANK ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>四半期推移</td>
-<td><a href="https://irbank.net/E33822/quarter">https://irbank.net/E33822/quarter</a></td>
+<td><a class="ext" href="https://irbank.net/E33822/quarter" target="_blank" rel="noopener">IR BANK ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>業績推移・財務・キャッシュフロー</td>
-<td><a href="https://kabutan.jp/stock/finance?code=6570">https://kabutan.jp/stock/finance?code=6570</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/finance?code=6570" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 </tbody>
@@ -974,37 +990,37 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>株価・時価総額・信用残・比較銘柄・事業概要・配当</td>
-<td><a href="https://kabutan.jp/stock/?code=6570">https://kabutan.jp/stock/?code=6570</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>1Q決算の内訳（既存店・道楽・ブルームの寄与）と記念株主優待の内容</td>
-<td><a href="https://kabutan.jp/news/marketnews/?b=n202608100568">https://kabutan.jp/news/marketnews/?b=n202608100568</a></td>
+<td><a class="ext" href="https://kabutan.jp/news/marketnews/?b=n202608100568" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>適時開示の一覧（出店・1Q決算・記念優待・支配株主に関する事項）</td>
-<td><a href="https://kabutan.jp/stock/news?code=6570">https://kabutan.jp/stock/news?code=6570</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/news?code=6570" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>株価診断・個人予想・目標株価・PSR・PBR</td>
-<td><a href="https://minkabu.jp/stock/6570">https://minkabu.jp/stock/6570</a></td>
+<td><a class="ext" href="https://minkabu.jp/stock/6570" target="_blank" rel="noopener">みんかぶ ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>アナリストレーティング・理論株価・BPS・PER</td>
-<td><a href="https://kabuyoho.jp/sp/reportTarget?bcode=6570">https://kabuyoho.jp/sp/reportTarget?bcode=6570</a></td>
+<td><a class="ext" href="https://kabuyoho.jp/sp/reportTarget?bcode=6570" target="_blank" rel="noopener">kabuyoho.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>道楽の買収（株式譲渡の実行日2026年2月1日・取得株式60株＝議決権100.0%・国内4店舗及びEC）。<strong>財務数値の記載は無い</strong></td>
-<td><a href="https://www.nihon-ma.co.jp/news/20251112_6570-1/">https://www.nihon-ma.co.jp/news/20251112_6570-1/</a></td>
+<td><a class="ext" href="https://www.nihon-ma.co.jp/news/20251112_6570-1/" target="_blank" rel="noopener">nihon-ma.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>道楽の買収時財務（2025年3月期の売上高9億7400万円・営業利益1800万円・純資産8200万円）と4店舗＋EC。<strong>この財務3項目はこの1サイトにしか無い</strong></td>
-<td><a href="https://www.strike.co.jp/ma_news/detail.html?id=20251112a">https://www.strike.co.jp/ma_news/detail.html?id=20251112a</a></td>
+<td><a class="ext" href="https://www.strike.co.jp/ma_news/detail.html?id=20251112a" target="_blank" rel="noopener">strike.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 </tbody>

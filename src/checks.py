@@ -3128,6 +3128,9 @@ _FRONT_MATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n(.*)$", re.DOTALL)
 _SEP_CELL_RE = re.compile(r"^:?-{2,}:?$")
 _PROSE_NUM_RE = re.compile(
     r"[0-9][0-9,]*(?:\.[0-9]+)?\s*(?:億円|百万円|千円|兆円|円|%|％|倍)")
+# diagram（定性図）が持ってはいけない「数字」。chartdata._DIAGRAM_DIGIT_RE と
+# 同じ線引き（全角数字も数字）。
+_ANY_DIGIT_RE = re.compile(r"[0-9０-９]")
 _URL_RE = re.compile(r"https?://[^\s<>\"'\)\]|｜]+")
 
 
@@ -3221,6 +3224,15 @@ def _chart_prose(meta: dict) -> list[str]:
                 for p in value:
                     if isinstance(p, dict) and isinstance(p.get("note"), str):
                         out.append(p["note"])
+            elif key in ("events", "steps") and isinstance(value, list):
+                # timeline の出来事ラベル・diagram の箱書きは SVG に描かれる。
+                # 読者から見れば本文と同格（caption / notes と同じ扱い）。
+                for p in value:
+                    if not isinstance(p, dict):
+                        continue
+                    for k in ("label", "note"):
+                        if isinstance(p.get(k), str):
+                            out.append(p[k])
     return out
 
 
@@ -3257,6 +3269,43 @@ def _chart_overlay_problems(cid: str, chart: dict) -> list[str]:
     return out
 
 
+def _chart_kind_problems(cid: str, chart: dict) -> list[str]:
+    """timeline / diagram（図型2種）の書き方を見る。
+
+    値は chartdata が検証済み CSV から引くか、そもそも持たない（diagram）ので、
+    ここで見るのは書き方だけ:
+      - diagram の steps に数字があると chartdata / chart の両方が描画を拒否する。
+        黙って「描けず」になる前に、書いた本人に名指しで知らせる
+      - timeline の events は日付で配置するので、date が読めないと窓に置けない。
+        並びも日付昇順で書く（periods の昇順規則と同じ。表示側は昇順に直すが、
+        差分レビューで期のすり替えに気づけるのは書いた順が固定のときだけ）
+    """
+    out: list[str] = []
+    kind = str(chart.get("type", "") or "")
+    if kind == "diagram":
+        for i, s in enumerate(chart.get("steps") or []):
+            if not isinstance(s, dict):
+                continue
+            text = str(s.get("label", "") or "") + str(s.get("note", "") or "")
+            if _ANY_DIGIT_RE.search(text):
+                out.append(f"charts.{cid}.steps[{i}] に数字が入っている"
+                           "（定性図は数値を持てず、描画が拒否される）")
+    elif kind == "timeline":
+        days = []
+        for ev in chart.get("events") or []:
+            if not isinstance(ev, dict):
+                continue
+            day = str(ev.get("date", "") or "")
+            if _d(day) is None:
+                out.append(f"charts.{cid}.events の date を読めない: {day!r}"
+                           "（窓に置けず欠測になる）")
+            else:
+                days.append(day)
+        if days != sorted(days):
+            out.append(f"charts.{cid}.events が日付の昇順でない: {days}")
+    return out
+
+
 def _chart_source_problems(meta: dict) -> list[str]:
     """`charts.<id>.source.periods` の並びと、手書き図の書き方の検査。
 
@@ -3279,6 +3328,7 @@ def _chart_source_problems(meta: dict) -> list[str]:
         if not isinstance(chart, dict):
             continue
         out += _chart_overlay_problems(cid, chart)
+        out += _chart_kind_problems(cid, chart)
         source = chart.get("source")
         if not isinstance(source, dict):
             if chart.get("data") and not chart.get("metric"):

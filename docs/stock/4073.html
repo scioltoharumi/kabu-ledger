@@ -128,6 +128,22 @@ border-radius:2px;overflow-wrap:anywhere}
 .viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
 .viz-bar,.viz-dot{cursor:default}
 
+/* 検証状態の記号バッジ（✓=2ソース照合済み ※=未照合参考 †=一次情報から直接）。
+   意味は title 属性（ブラウザ標準 tooltip）と about.html の凡例が持つ。
+   上付き風に小さく出す。色: 照合済み=青（.chg-pos と同系）・参考=橙（警告系）・
+   一次情報=グレー。色だけに意味を持たせない（記号そのものが常に見える） */
+.vm{font-size:.7em;font-weight:700;vertical-align:super;line-height:1;
+padding:0 .06em;cursor:help}
+.vm-ok{color:var(--pos)}
+.vm-ref{color:var(--warn)}
+.vm-pri{color:var(--dim)}
+
+/* 週次アップデートの古い週の折りたたみ。カード（.upd）より一段控えめにして
+   「畳んであるだけで消えてはいない」ことを見せる */
+details.upd-old{background:var(--soft);border-style:dashed;
+box-shadow:none;padding:.5rem .8rem}
+details.upd-old>summary{font-weight:400}
+
 /* 折りたたみ（裏取りで「裏付けが取れた記述」を畳む。JSは使わない） */
 details{margin:1rem 0;border:1px solid var(--rule);border-radius:6px;
 padding:.5rem .8rem;background:var(--card)}
@@ -240,21 +256,21 @@ font-size:.72rem;font-weight:700}
 .viz figcaption{font-size:.78rem}
 .viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
-</style></head><body><main><h1>ジィ・シィ企画（4073）</h1><p class="lede">東証グロース／レポート更新 2026-08-21<br><span class="pill pill-warn">記録が古い</span><a href="#verify">本文がこの検証のあとに書き換えられている（件数は現在の本文に適用できない）</a><br><a class="ext" href="https://www.gck.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E36666" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=4073" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://www.gck.co.jp/company/co-outline/" target="_blank" rel="noopener">会社概要 ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">500<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-neg">-1.0%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">415 〜 816</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">記録が古い</span></span><span class="k-sub">本文が更新されてから未実施</span></div></div><blockquote>
+</style></head><body><main><h1>ジィ・シィ企画（4073）</h1><p class="lede">東証グロース／レポート更新 2026-08-21<br><span class="pill pill-warn">記録が古い</span><a href="#verify">本文がこの検証のあとに書き換えられている（件数は現在の本文に適用できない）</a><br><a class="ext" href="https://www.gck.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E36666" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=4073" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://www.gck.co.jp/company/co-outline/" target="_blank" rel="noopener">会社概要 ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">500<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-neg">-1.0%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">415 〜 816</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">見送(トレンド)</span></span><span class="k-sub">src/judge.py の機械判定</span></div><div class="kpi-tile"><span class="k-label">次回決算</span><span class="k-value"><span class="k-value-sm">2026-08-14</span></span><span class="k-sub">発表予定日</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">記録が古い</span></span><span class="k-sub">本文が更新されてから未実施</span></div></div><blockquote>
 <p><strong>一行でいうと</strong>：中堅〜大手の小売チェーン向けに、レジとカード会社をつなぐ決済システムを作って運用している千葉の会社。時価総額13.6億円の小型株。<strong>2026年6月期は黒字転換したが、会社予想には届かなかった。焦点は2027年6月期の会社計画（営業利益109百万円）を達成できるかに移っている。</strong></p>
 </blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W34・全 6 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W34（2026-08-17 週）</h3><p><strong>株式の立会外分売を開示。週間-12.28%とトレンド悪化が続く</strong></p>
 <ul>
 <li>株価: 週間 -12.3%（570→500円・採用終値ベース、照合成立 4日、週内 500〜527円）</li>
 <li>出来高: 前週比 -18.8%（今週 234,000株／前週 288,200株）（参考・未照合）／信用倍率: 58.71倍（買残 164.4千株・売残 2.8千株、08/14時点）（参考）</li>
 <li>判定: 「見送(トレンド)」／開示: なし</li>
-<li>ニュース: 08/21 株式の立会外分売実施に関するお知らせ <a href="https://kabutan.jp/disclosures/pdf/20260821/140120260821524608/">https://kabutan.jp/disclosures/pdf/20260821/140120260821524608/</a>（取得日 2026-08-21）</li>
+<li>ニュース: 08/21 株式の立会外分売実施に関するお知らせ <a class="ext" href="https://kabutan.jp/disclosures/pdf/20260821/140120260821524608/" target="_blank" rel="noopener">株探 ↗</a>（取得日 2026-08-21）</li>
 </ul>
 <p>（解釈）8/21に「株式の立会外分売実施に関するお知らせ」が開示された（kabutan、2026-08-21）。売出株数・売出人・価格決定方法は本文を確認しておらず、既存株主による売出か新株発行かは未確認
 株価は570円→500円で週間-12.28%、判定は見送(トレンド)のまま。分売による浮動株増加が需給の重石として意識されている可能性がある</p>
 <p><strong>次週に見ること</strong>: ① 立会外分売の実施結果（売出株数・価格・売出人）を確認 ② 見送(トレンド)判定の回復有無を見る</p></div><div class="upd"><h3>2026-W33（続報）</h3><p><strong>8/14、本決算発表予定日。ただしこのレポート作成時点（2026-08-14 JST午後、市場が開いている時間帯）では、決算はまだ確認できていない。</strong></p>
 <ul>
 <li><code>data/master.yaml</code> の <code>next_earnings</code> は 2026-08-14。日本の決算発表は多くの場合15:00（大引け後）以降になるため、まだ出ていなくても不自然ではない</li>
-<li>一次情報（<a href="https://www.gck.co.jp/ir/">https://www.gck.co.jp/ir/</a> とその配下：irnews／results／disclosure／library）、および二次情報（株探ニュース <a href="https://s.kabutan.jp/stocks/4073/news/">https://s.kabutan.jp/stocks/4073/news/</a>）を確認したが、いずれも<strong>2026年6月期本決算（通期）の決算短信の掲載は確認できなかった</strong>（2026-08-14 時点）。株探のニュース一覧は8/7掲載分までで止まっている</li>
+<li>一次情報（<a class="ext" href="https://www.gck.co.jp/ir/" target="_blank" rel="noopener">gck.co.jp ↗</a> とその配下：irnews／results／disclosure／library）、および二次情報（株探ニュース <a class="ext" href="https://s.kabutan.jp/stocks/4073/news/" target="_blank" rel="noopener">株探 ↗</a>）を確認したが、いずれも<strong>2026年6月期本決算（通期）の決算短信の掲載は確認できなかった</strong>（2026-08-14 時点）。株探のニュース一覧は8/7掲載分までで止まっている</li>
 <li>今回の差分取得（<code>fetch_fundamentals.py</code>）は0件追記、<code>fetch_tanshin.py</code> は環境エラーで未実行のため、<code>data/fundamentals/4073.csv</code> に新しい期（FY2026-06）の行はまだ無い</li>
 <li>したがって、③で書いた「4Qで営業益170百万円を稼げたか」は<strong>未解決のまま</strong>。<code>predictions/2026-W33.yaml</code> の P-2026W33-01（売上高比率）・P-2026W33-02（営業利益黒字化）も <code>status: open</code> のまま、resolve_by 2026-08-21 までに機械採点される見込み（本レポートでは当否を判定しない）</li>
 <li>株価は8/13終値542円まで4日続伸（8/7 566円 → 8/10 535円 → 8/12 540円 → 8/13 542円）。決算前のポジション調整とみられるが、確たる材料は確認できていない</li>
@@ -266,19 +282,19 @@ font-size:.72rem;font-weight:700}
 <li>株価: 週間 -4.2%（566→542円・採用終値ベース、照合成立 3日、週内 535〜542円）</li>
 <li>出来高: 前週比 -83.7%（今週 288,200株／前週 1,766,300株）（参考・未照合）／信用倍率: 算出不可（RATIO_NA）・買残 140.4千株（08/07時点）（参考）</li>
 <li>判定: 「見送(トレンド)」／開示: 08/14 決算短信</li>
-<li>ニュース: 08/14 ジィ・シィ、今期経常は2.1倍増益へ <a href="https://kabutan.jp/stock/news?code=4073&amp;b=k202608140170">https://kabutan.jp/stock/news?code=4073&amp;b=k202608140170</a></li>
-<li>ニュース: 08/14 資本金及び資本準備金の額の減少並びに剰余金の処分に関するお知らせ <a href="https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/">https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/</a></li>
-<li>ニュース: 08/14 株式の立会外分売に関するお知らせ <a href="https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/">https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/</a></li>
+<li>ニュース: 08/14 ジィ・シィ、今期経常は2.1倍増益へ <a class="ext" href="https://kabutan.jp/stock/news?code=4073&amp;b=k202608140170" target="_blank" rel="noopener">株探 ↗</a></li>
+<li>ニュース: 08/14 資本金及び資本準備金の額の減少並びに剰余金の処分に関するお知らせ <a class="ext" href="https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/" target="_blank" rel="noopener">株探 ↗</a></li>
+<li>ニュース: 08/14 株式の立会外分売に関するお知らせ <a class="ext" href="https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/" target="_blank" rel="noopener">株探 ↗</a></li>
 </ul>
 <p>（解釈）週足終値は566円→542円（-4.24%）。決算短信の開示は8/14付で、本レポートの価格データ（8/13まで）にはまだ市場の反応が反映されていない可能性がある。
 見出しでは「今期経常は2.1倍増益へ」と伝えられている。同日に資本金及び資本準備金の減少・剰余金の処分、立会外分売の開示も重なっており、増益見通しとは別に財務構成・需給に関わる動きがあった週と読める。数値の妥当性は短信原文の確認が必要。</p>
-<p><strong>次週に見ること</strong>: ① 決算短信の増益内容・通期計画との整合を確認（deep_dive 対象） ② 立会外分売・資本異動が株価に与えた影響を来週の価格データで確認</p></div><div class="upd"><h3>2026-W33（続報3）</h3><p><strong>別コンテキストの裏取りで見つかった2件を訂正する（続報2の本文は書き換えない）。</strong></p>
+<p><strong>次週に見ること</strong>: ① 決算短信の増益内容・通期計画との整合を確認（deep_dive 対象） ② 立会外分売・資本異動が株価に与えた影響を来週の価格データで確認</p></div><details class="upd-old"><summary>それ以前の週次アップデート（3件）</summary><div class="upd"><h3>2026-W33（続報3）</h3><p><strong>別コンテキストの裏取りで見つかった2件を訂正する（続報2の本文は書き換えない）。</strong></p>
 <ul>
 <li>続報2に書いた「自己資本比率は…3四半期時点の9.9%から回復している。有利子負債倍率も3Q時点の7.99倍から3.75倍…剰余金も−579百万円（3Q）から−410百万円…」について、比較対象にした3Q時点の3値（9.9%・7.99倍・−579百万円）は<code>data/fundamentals/4073.csv</code>で<strong>status=SINGLE_SOURCE</strong>（株探単独・照合不成立）だった。数値そのものは正しいが、未照合であることを明示せず断定形で書いていた点が不変条件（SINGLE_SOURCE/MISMATCHの数値をそう明示せず断定形で書かない）に抵触する。財務の余力節・出典節はこの節に合わせて表記を直した</li>
 <li>「財務の推移と健全性」節にあった、Q4（4-6月期）が売上最大の四半期になった年数についての記述が、本決算確定前（FY2026-06のQ4実績759百万円が判明する前）のまま残っていた。実際は直近5年（2022〜2026年6月期）でQ4が最大だったのは2022・2025・2026年6月期の3年。裏取り（<code>data/verification/4073.yaml</code> V44）で発見し、その節は表記を直した（この節とは別の節のため書き換え可能）</li>
 </ul></div><div class="upd"><h3>2026-W33（続報2）</h3><p><strong>8/14に2026年6月期本決算が確定。通期は黒字転換したが、会社予想には届かなかった。</strong></p>
 <ul>
-<li>一次情報（決算短信PDF、TDnet <a href="https://www.release.tdnet.info/inbs/140120260814520260.pdf">https://www.release.tdnet.info/inbs/140120260814520260.pdf</a>、2026-08-14開示）を<code>fetch_tanshin.py</code>が機械抽出し、<code>data/tanshin/4073.csv</code>に記録した。<code>data/fundamentals/4073.csv</code>が株探・IR BANKと突き合わせて採用値を確定させている（2026-08-16取得・照合）。通期実績（status OK）は<strong>売上高2,252百万円・営業利益69百万円・経常利益33百万円・当期純利益70百万円</strong></li>
+<li>一次情報（決算短信PDF、TDnet <a class="ext" href="https://www.release.tdnet.info/inbs/140120260814520260.pdf" target="_blank" rel="noopener">TDnet ↗</a>、2026-08-14開示）を<code>fetch_tanshin.py</code>が機械抽出し、<code>data/tanshin/4073.csv</code>に記録した。<code>data/fundamentals/4073.csv</code>が株探・IR BANKと突き合わせて採用値を確定させている（2026-08-16取得・照合）。通期実績（status OK）は<strong>売上高2,252百万円・営業利益69百万円・経常利益33百万円・当期純利益70百万円</strong></li>
 <li>前期（2025年6月期、status OK）は売上高1,844百万円・営業利益−80百万円・経常利益−115百万円・当期純利益−146百万円（いずれも赤字）だった。<strong>売上・営業利益・経常利益・当期純利益のすべてが黒字（増収）に転じた</strong></li>
 <li>会社予想（売上高2,403百万円・営業利益92百万円・経常利益55百万円・当期純利益54百万円、いずれもstatus OK）と比べると、売上・営業利益・経常利益は予想を下回った。<strong>当期純利益（70百万円）だけは予想（54百万円）を上回っている</strong>。理由は開示情報からはまだ確認できていない</li>
 <li>4-6月期（4Q）単体の営業利益は147百万円（<code>data/fundamentals/4073.csv</code>、status OK）。前々回更新（③のリスク欄）で書いた「4Qで必要な170百万円」には届かなかったが、通期での黒字転換は達成した</li>
@@ -296,7 +312,7 @@ font-size:.72rem;font-weight:700}
 <li>7/21 の大型案件（4.63億円）は<strong>来期計上</strong>であることを確認した。今期の数字には効かない。ストップ高の材料と今期業績は切り離して見る必要がある</li>
 <li>8/5 に年初来高値729円をつけた翌日、8/6 に579円までストップ安。<strong>1日で20%動いている</strong>。時価総額13.6億円・買建のみという需給の薄さが効いている</li>
 </ul>
-<p><strong>次週に見ること</strong>：①通期実績が予想（売上2,403・営業92百万円）に届いたか ②2027年6月期の会社計画 ③ストック/フローの構成比 ④原価率が改善したか ⑤自己資本比率</p></div></div></details><details class="sec"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">まだ作成していない</span></summary><div class="sec-body"><p class="none">推定モデルは未作成。「この銘柄の推定モデルを組んで」と Claude に言えば起案できる（手順は <code>.claude/skills/kabu-ledger-estimate/</code>）。</p></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p>千葉県佐倉市の会社で、1995年設立。上場は2021年。社名の由来は Global Communication Planning。</p>
+<p><strong>次週に見ること</strong>：①通期実績が予想（売上2,403・営業92百万円）に届いたか ②2027年6月期の会社計画 ③ストック/フローの構成比 ④原価率が改善したか ⑤自己資本比率</p></div></details></div></details><details class="sec"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">まだ作成していない</span></summary><div class="sec-body"><p class="none">推定モデルは未作成。「この銘柄の推定モデルを組んで」と Claude に言えば起案できる（手順は <code>.claude/skills/kabu-ledger-estimate/</code>）。</p></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p>千葉県佐倉市の会社で、1995年設立。上場は2021年。社名の由来は Global Communication Planning。</p>
 <h3>何をして稼いでいるか</h3>
 <p>イオンモールのような複数店舗を持つ小売チェーンが、クレジットカードやQR決済を受け付けるとき、<strong>レジとカード会社のあいだをつなぐ裏方のシステム</strong>が要る。この会社はそれを作って、動かし続けている。主力製品はキャッシュレス決済パッケージ <strong>CARD CREW PLUS</strong>（導入180社以上）。</p>
 <p>決済の許可を取り、精算データを作り、店舗側に返す。こうした処理の一部を担っている。クレジットカード番号を扱う許認可（関東（ク）第186号）を持つ登録事業者でもある。</p>
@@ -665,43 +681,43 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>会社概要・所在地・資本金・取引銀行・許認可</td>
-<td><a href="https://www.gck.co.jp/company/co-outline/">https://www.gck.co.jp/company/co-outline/</a></td>
+<td><a class="ext" href="https://www.gck.co.jp/company/co-outline/" target="_blank" rel="noopener">gck.co.jp ↗</a></td>
 <td>2026-08-12</td>
 </tr>
 <tr>
 <td>IR情報</td>
-<td><a href="https://www.gck.co.jp/ir/">https://www.gck.co.jp/ir/</a></td>
+<td><a class="ext" href="https://www.gck.co.jp/ir/" target="_blank" rel="noopener">gck.co.jp ↗</a></td>
 <td>2026-08-12</td>
 </tr>
 <tr>
 <td>2026年6月期 第3四半期決算短信（PDF本文から機械抽出・<code>data/tanshin/4073.csv</code>）</td>
-<td><a href="https://www.nikkei.com/markets/ir/irftp/data/tdnr/tdnetg3/20260515/fxfcrw/140120260515536364.pdf">https://www.nikkei.com/markets/ir/irftp/data/tdnr/tdnetg3/20260515/fxfcrw/140120260515536364.pdf</a></td>
+<td><a class="ext" href="https://www.nikkei.com/markets/ir/irftp/data/tdnr/tdnetg3/20260515/fxfcrw/140120260515536364.pdf" target="_blank" rel="noopener">日経 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>2026年6月期 本決算短信（PDF本文から機械抽出・<code>data/tanshin/4073.csv</code>。2027年6月期会社計画を含む）</td>
-<td><a href="https://www.release.tdnet.info/inbs/140120260814520260.pdf">https://www.release.tdnet.info/inbs/140120260814520260.pdf</a></td>
+<td><a class="ext" href="https://www.release.tdnet.info/inbs/140120260814520260.pdf" target="_blank" rel="noopener">TDnet ↗</a></td>
 <td>2026-08-16（開示日は2026-08-14）</td>
 </tr>
 <tr>
 <td>資本金及び資本準備金の額の減少並びに剰余金の処分に関するお知らせ（PDF本文を直接確認）</td>
-<td><a href="https://www.release.tdnet.info/inbs/140120260814520281.pdf">https://www.release.tdnet.info/inbs/140120260814520281.pdf</a></td>
+<td><a class="ext" href="https://www.release.tdnet.info/inbs/140120260814520281.pdf" target="_blank" rel="noopener">TDnet ↗</a></td>
 <td>2026-08-16（開示日は2026-08-14）</td>
 </tr>
 <tr>
 <td>株式の立会外分売に関するお知らせ（PDF本文を直接確認）</td>
-<td><a href="https://www.release.tdnet.info/inbs/140120260814520282.pdf">https://www.release.tdnet.info/inbs/140120260814520282.pdf</a></td>
+<td><a class="ext" href="https://www.release.tdnet.info/inbs/140120260814520282.pdf" target="_blank" rel="noopener">TDnet ↗</a></td>
 <td>2026-08-16（開示日は2026-08-14）</td>
 </tr>
 <tr>
 <td>代表取締役の異動及び役員人事に関するお知らせ（PDF本文を直接確認）</td>
-<td><a href="https://www.release.tdnet.info/inbs/140120260717596017.pdf">https://www.release.tdnet.info/inbs/140120260717596017.pdf</a></td>
+<td><a class="ext" href="https://www.release.tdnet.info/inbs/140120260717596017.pdf" target="_blank" rel="noopener">TDnet ↗</a></td>
 <td>2026-08-16（開示日は2026-07-17）</td>
 </tr>
 </tbody>
 </table></div>
 <blockquote>
-<p>※ 決算短信2件はPDF本文を機械抽出（<code>data/tanshin/4073.csv</code>）し、まとめサイト（株探・IR BANK）の値と一致することを機械で確認している（status OK。内訳は「数値の検証状況」を参照）。資本金・資本準備金の減少／立会外分売／代表取締役異動の3件は決算短信のような機械抽出の仕組みが無いため、PDF本文を直接読んで数値・日程を本文に転記した（機械照合の対象外）。3Q決算短信PDFの直接再取得はHTTP 403で失敗するため、そちらは機械抽出済みのCSVの値に依拠している。</p>
+<p><span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span> 決算短信2件はPDF本文を機械抽出（<code>data/tanshin/4073.csv</code>）し、まとめサイト（株探・IR BANK）の値と一致することを機械で確認している（status OK。内訳は「数値の検証状況」を参照）。資本金・資本準備金の減少／立会外分売／代表取締役異動の3件は決算短信のような機械抽出の仕組みが無いため、PDF本文を直接読んで数値・日程を本文に転記した（機械照合の対象外）。3Q決算短信PDFの直接再取得はHTTP 403で失敗するため、そちらは機械抽出済みのCSVの値に依拠している。</p>
 </blockquote>
 <h3>二次情報（機械で突き合わせているもの）</h3>
 <div class="scroll"><table class="prose-table">
@@ -715,17 +731,17 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>10年の業績推移・原価率・ROE/ROA</td>
-<td><a href="https://irbank.net/E36666/results">https://irbank.net/E36666/results</a></td>
+<td><a class="ext" href="https://irbank.net/E36666/results" target="_blank" rel="noopener">IR BANK ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>四半期推移・財務指標・キャッシュフロー</td>
-<td><a href="https://kabutan.jp/stock/finance?code=4073">https://kabutan.jp/stock/finance?code=4073</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/finance?code=4073" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>2026年6月期本決算実績・2027年6月期会社計画の再取得（本決算反映）</td>
-<td><a href="https://irbank.net/E36666/results">https://irbank.net/E36666/results</a> ／ <a href="https://kabutan.jp/stock/finance?code=4073">https://kabutan.jp/stock/finance?code=4073</a></td>
+<td><a class="ext" href="https://irbank.net/E36666/results" target="_blank" rel="noopener">IR BANK ↗</a> ／ <a class="ext" href="https://kabutan.jp/stock/finance?code=4073" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-16</td>
 </tr>
 </tbody>
@@ -743,57 +759,57 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>株価・信用・時価総額・比較銘柄</td>
-<td><a href="https://kabutan.jp/stock/?code=4073">https://kabutan.jp/stock/?code=4073</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/?code=4073" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-12</td>
 </tr>
 <tr>
 <td>大型案件4.63億円が<strong>2027年6月期計上</strong>である旨</td>
-<td><a href="https://www.zaikei.co.jp/article/20260722/862304.html">https://www.zaikei.co.jp/article/20260722/862304.html</a></td>
+<td><a class="ext" href="https://www.zaikei.co.jp/article/20260722/862304.html" target="_blank" rel="noopener">zaikei.co.jp ↗</a></td>
 <td>2026-08-12</td>
 </tr>
 <tr>
 <td>株価診断・個人予想・目標株価・PSR</td>
-<td><a href="https://minkabu.jp/stock/4073">https://minkabu.jp/stock/4073</a></td>
+<td><a class="ext" href="https://minkabu.jp/stock/4073" target="_blank" rel="noopener">みんかぶ ↗</a></td>
 <td>2026-08-12</td>
 </tr>
 <tr>
 <td>アナリストレーティング・理論株価</td>
-<td><a href="https://kabuyoho.jp/sp/reportTarget?bcode=4073">https://kabuyoho.jp/sp/reportTarget?bcode=4073</a></td>
+<td><a class="ext" href="https://kabuyoho.jp/sp/reportTarget?bcode=4073" target="_blank" rel="noopener">kabuyoho.jp ↗</a></td>
 <td>2026-08-12</td>
 </tr>
 <tr>
 <td>事業内容・ビジネスモデル・顧客層</td>
-<td><a href="https://note.com/tatsuya_sabato/n/naf535589c0bf">https://note.com/tatsuya_sabato/n/naf535589c0bf</a></td>
+<td><a class="ext" href="https://note.com/tatsuya_sabato/n/naf535589c0bf" target="_blank" rel="noopener">note.com ↗</a></td>
 <td>2026-08-12</td>
 </tr>
 <tr>
 <td>本決算の掲載有無（未掲載を確認）</td>
-<td><a href="https://www.gck.co.jp/ir/irnews/">https://www.gck.co.jp/ir/irnews/</a>／<a href="https://www.gck.co.jp/ir/results/">https://www.gck.co.jp/ir/results/</a>／<a href="https://www.gck.co.jp/ir/disclosure/">https://www.gck.co.jp/ir/disclosure/</a>／<a href="https://www.gck.co.jp/ir/library/">https://www.gck.co.jp/ir/library/</a></td>
+<td><a class="ext" href="https://www.gck.co.jp/ir/irnews/" target="_blank" rel="noopener">gck.co.jp ↗</a>／<a class="ext" href="https://www.gck.co.jp/ir/results/" target="_blank" rel="noopener">gck.co.jp ↗</a>／<a class="ext" href="https://www.gck.co.jp/ir/disclosure/" target="_blank" rel="noopener">gck.co.jp ↗</a>／<a class="ext" href="https://www.gck.co.jp/ir/library/" target="_blank" rel="noopener">gck.co.jp ↗</a></td>
 <td>2026-08-14</td>
 </tr>
 <tr>
 <td>本決算の掲載有無（未掲載を確認）・ニュース一覧</td>
-<td><a href="https://s.kabutan.jp/stocks/4073/news/">https://s.kabutan.jp/stocks/4073/news/</a></td>
+<td><a class="ext" href="https://s.kabutan.jp/stocks/4073/news/" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-14</td>
 </tr>
 <tr>
 <td>役員一覧（丸山英幸氏が代表取締役副社長として掲載。2026-09-25の異動発効前なので現行表示と一致）</td>
-<td><a href="https://www.gck.co.jp/company/co-outline/2277-2/">https://www.gck.co.jp/company/co-outline/2277-2/</a></td>
+<td><a class="ext" href="https://www.gck.co.jp/company/co-outline/2277-2/" target="_blank" rel="noopener">gck.co.jp ↗</a></td>
 <td>2026-08-14</td>
 </tr>
 <tr>
 <td>決算発表の見出し記事（「経常2.1倍増益」の一次数値との整合を確認）</td>
-<td><a href="https://kabutan.jp/stock/news?code=4073&amp;b=k202608140170">https://kabutan.jp/stock/news?code=4073&amp;b=k202608140170</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/news?code=4073&amp;b=k202608140170" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-16</td>
 </tr>
 <tr>
 <td>資本金・資本準備金の減少（開示のタイトルページ。PDF本体は上の一次情報表を参照）</td>
-<td><a href="https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/">https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/</a></td>
+<td><a class="ext" href="https://kabutan.jp/disclosures/pdf/20260814/140120260814520281/" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-16</td>
 </tr>
 <tr>
 <td>株式の立会外分売（開示のタイトルページ。PDF本体は上の一次情報表を参照）</td>
-<td><a href="https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/">https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/</a></td>
+<td><a class="ext" href="https://kabutan.jp/disclosures/pdf/20260814/140120260814520282/" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-16</td>
 </tr>
 </tbody>

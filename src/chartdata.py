@@ -40,6 +40,18 @@ front matter の書き方（`source:` があれば CSV から引く）:
       type: range
       source: {dataset: prices, window_weeks: 52}
 
+    events_52w:
+      type: timeline           # 採用終値の折れ線に、出来事の点を重ねる
+      source: {dataset: prices, window_weeks: 52}
+      events:
+        - {date: "2026-06-24", label: "10年ぶり安値"}
+
+    biz_model:
+      type: diagram            # 定性図。数値を持たない（数字が入れば描画拒否）
+      steps:
+        - {label: "開発案件（フロー型）", note: "案件ごとに大きく入る"}
+        - {label: "運用・保守（ストック型）", note: "毎月少しずつ・安定"}
+
 dataset:
   fundamentals  data/fundamentals/{code}.csv の採用値（別サイト2つ以上が一致）
   tanshin       data/tanshin/{code}.csv（決算短信 PDF＝一次情報）。`cross:` に
@@ -610,6 +622,105 @@ def _price_range(code: str, source: dict, unit: str) -> tuple[dict, list[str], s
     return {"low": lo_v, "high": hi_v, "current": cur_v}, [], detail
 
 
+def _timeline(code: str, source: dict, chart: dict,
+              unit: str) -> tuple[dict, list[str], int, int, str]:
+    """timeline 型: 窓の中の採用終値の折れ線に、出来事（events）の点を重ねる。
+
+    戻り値 (spec に足す値, 欠測の説明, 採用数, 総数, 注記の詳細)。
+    y は必ず採用終値から引く（D53）。event の日に採用終値が無ければ
+    **窓の中の直前の採用終値**に置き、そのことを点の注記に出す。
+    窓に置けない event は黙って捨てず missing に記録する。
+    """
+    unit = unit or "円"
+    series = prices(code)
+    if not series:
+        return {}, ["採用終値が1日も無い"], 0, 0, ""
+    weeks = int(source.get("window_weeks", 52) or 52)
+    last_day, _last_close = series[-1]
+    try:
+        start = (_date.fromisoformat(last_day)
+                 - timedelta(days=weeks * 7 - 1)).isoformat()
+    except ValueError:
+        return {}, ["最終営業日を読めない（" + last_day + "）"], 0, 0, ""
+    window = [x for x in series if x[0] >= start]
+    if not window:
+        return {}, ["窓のなかに採用終値が無い"], 0, 0, ""
+
+    data: list[dict] = []
+    for day, close in window:
+        v = convert(close, "円", unit)
+        if v is None:
+            return {}, ["単位を換算できない（円 → " + str(unit) + "）"], 0, 0, ""
+        data.append({"label": day, "value": v})
+
+    declared = chart.get("events") or []
+    missing: list[str] = []
+    normalized: list[tuple[str, str]] = []
+    for ev in declared:
+        if not isinstance(ev, dict):
+            missing.append(str(ev) + "（イベントの書き方を解釈できない）")
+            continue
+        day = str(ev.get("date", "") or "")
+        label = str(ev.get("label", "") or "") or day or "（無題）"
+        normalized.append((day, label))
+
+    placed: list[dict] = []
+    # 並びは front matter の記述順に任せず日付昇順で固定する（決定論・D8）。
+    for day, label in sorted(normalized):
+        if not day:
+            missing.append(label + "（date が無い）")
+            continue
+        if day < start or day > last_day:
+            missing.append(label + "（窓の外: " + day + "）")
+            continue
+        prior = [p for p in data if p["label"] <= day]
+        if not prior:
+            missing.append(label + "（直前の採用終値が無い: " + day + "）")
+            continue
+        anchor = prior[-1]
+        item = {"date": day, "label": label, "value": anchor["value"]}
+        if anchor["label"] != day:
+            # その日の採用終値が無い（休場・照合不成立）。直前値で置いたことを隠さない。
+            item["note"] = "値は直前 " + anchor["label"] + " の採用終値"
+        placed.append(item)
+
+    used = len(data) + len(placed)
+    total = len(data) + len(declared)
+    detail = (str(weeks) + "週の採用終値 " + str(len(data)) + "営業日、"
+              "出来事 " + str(len(placed)) + "/" + str(len(declared)) + "件を配置")
+    return {"data": data, "events": placed}, missing, used, total, detail
+
+
+# diagram（定性図）に数字が入っていたときの拒否文。checks・テストと共有する。
+_DIAGRAM_DIGIT_RE = re.compile(r"[0-9０-９]")
+DIAGRAM_NUMBER_REASON = ("図解に数値が含まれている"
+                         "（数値は検証済みデータ由来の図でしか出さない）")
+DIAGRAM_NOTE = "定性図（数値を含まない）"
+
+
+def _resolve_diagram(spec: dict) -> Resolved:
+    """diagram 型（定性図）。数値を持たない構造図なので CSV とは突き合わせない。
+
+    その代わり **数字が1文字でも入っていたら描画を拒否する**。
+    「手書き（未検証）」の枠を数値の抜け道にしない（D30/D31 の趣旨を守る
+    機械的な線引き）。全角数字（０-９）も同じ扱い。
+    """
+    steps = spec.get("steps")
+    if not isinstance(steps, list) or not steps:
+        return Resolved(spec=spec, origin="diagram",
+                        empty_reason="steps が無い（定性図は steps で構造を書く）")
+    for s in steps:
+        if not isinstance(s, dict) or not str(s.get("label", "") or "").strip():
+            return Resolved(spec=spec, origin="diagram",
+                            empty_reason="label の無い step がある")
+        text = str(s.get("label", "") or "") + str(s.get("note", "") or "")
+        if _DIAGRAM_DIGIT_RE.search(text):
+            return Resolved(spec=spec, origin="diagram",
+                            empty_reason=DIAGRAM_NUMBER_REASON)
+    spec["source_note"] = DIAGRAM_NOTE
+    return Resolved(spec=spec, origin="diagram", note=DIAGRAM_NOTE)
+
+
 def _hand_note(code: str, chart: dict) -> str:
     """手書きの図に添える説明。CSV に同じ metric があれば状態も出す。"""
     metric = str(chart.get("metric", "") or "")
@@ -687,6 +798,11 @@ def resolve_chart(code: str, cid: str, chart: dict) -> Resolved:
     spec.pop("notes", None)
     spec.pop("emphasis", None)
     unit = str(spec.get("unit", "") or "")
+    kind = str(spec.get("type", "") or "")
+
+    # 定性図は source を持たない（＝手書き扱いにしない）。数字の混入だけ見る。
+    if kind == "diagram":
+        return _resolve_diagram(spec)
 
     if not isinstance(source, dict):
         bits = [_hand_note(code, chart or {})] + _overlay_notes(spec)
@@ -702,10 +818,16 @@ def resolve_chart(code: str, cid: str, chart: dict) -> Resolved:
     detail = ""
 
     if dataset == "prices":
-        got, missing, detail = _price_range(code, source, unit)
-        spec.update(got)
-        used = len(got)
-        total = 3
+        if kind == "timeline":
+            got, missing, used, total, detail = _timeline(
+                code, source, chart or {}, unit)
+            spec.pop("events", None)   # 生の宣言を、配置済みのイベントで置き換える
+            spec.update(got)
+        else:
+            got, missing, detail = _price_range(code, source, unit)
+            spec.update(got)
+            used = len(got)
+            total = 3
         origins = ["prices"] * used
         path_note = ("data/prices/daily.csv の採用終値（2つの取得元が一致した終値だけ）。"
                      "ザラ場の高値・安値は照合を通っていないので使っていない")
@@ -868,6 +990,12 @@ def verify(code: str, charts: dict | None = None,
     for cid, res in (resolve_charts(code, charts or {})).items():
         if res.origin == "hand":
             v.charts_hand += 1
+            continue
+        if res.origin == "diagram":
+            # 定性図は数値を持たないので CSV由来にも手書きにも数えない。
+            # ただし描画拒否（数字の混入など）は穴として名指しする。
+            if res.empty_reason:
+                v.chart_gaps.append(cid + ": " + res.empty_reason)
             continue
         v.charts_csv += 1
         if res.empty_reason:

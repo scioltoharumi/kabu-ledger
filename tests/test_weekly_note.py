@@ -246,12 +246,12 @@ def test_collect_uses_only_ok_rows() -> None:
         eq(s["ok_days"], 2, "ok_days は OK 行だけ（SINGLE_SOURCE/NO_TRADE を数えない）")
         eq(s["week_high"], 120, "week_high に close 入り非OK 行(999)を混ぜない")
         eq(s["week_low"], 110, "week_low")
-        # 出来高は照合外の参考値。全行を数え、ラベル必須
-        assert "参考・未照合" in s["volume_note"], s["volume_note"]
+        # 出来高は照合外の参考値。全行を数え、記号必須
+        assert "※" in s["volume_note"], s["volume_note"]
         assert "+300.0%" in s["volume_note"], s["volume_note"]  # 5600/1400
         eq(s["margin"]["date"], "2024-01-12", "margin は最新行")
         eq(s["margin"]["ratio"], None, "RATIO_NA は null")
-        assert "参考" in s["margin"]["note"], s["margin"]["note"]
+        assert "※" in s["margin"]["note"], s["margin"]["note"]
         eq(s["stamp"], "様子見(過熱)", "stamp")
         eq(s["disclosures"], [{"date": "2024-01-09", "label": "決算短信"}],
            "disclosures は週内のみ")
@@ -287,7 +287,8 @@ def test_write_preserves_existing_lines() -> None:
         # 機械の計測と一筆が合成されていること
         assert "**合成データの一文。**" in after
         assert "- 株価: 週間 +20.0%（100→120円・採用終値ベース、照合成立 2日、週内 110〜120円）" in after
-        assert "（参考・未照合）" in after and "（参考）" in after
+        assert "出来高" in after and after.count("※") >= 2, \
+            "出来高・信用倍率の※記号が無い"
         assert "開示: 01/09 決算短信" in after
         assert "<https://example.invalid/n1>（取得日 2024-01-10）" in after
         assert "（解釈）一行目の解釈。" in after

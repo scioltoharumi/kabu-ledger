@@ -23,6 +23,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+import chart as CH      # noqa: E402（timeline / diagram は描画側も検査する）
 import chartdata as CD  # noqa: E402
 import report as R      # noqa: E402
 
@@ -415,6 +416,160 @@ def test_price_range_without_adopted_close_is_empty():
 
 
 # =============================================================================
+# timeline（採用終値の折れ線＋出来事）
+# =============================================================================
+
+def test_timeline_uses_adopted_close_only():
+    """折れ線もイベントの y も採用終値だけから引く（D53）。
+
+    照合を通っていない日（SINGLE_SOURCE）は折れ線に入れず、その日の
+    イベントは**直前の採用終値**に置いて、そのことを注記に出す。
+    """
+    sb = Sandbox()
+    try:
+        sb.prices([
+            prow("2026-01-05", 500, 9999, 1),
+            prow("2026-01-06", None, 9999, 1, status="SINGLE_SOURCE"),
+            prow("2026-01-07", 600, 9999, 1),
+        ])
+        chart = {"type": "timeline", "unit": "円",
+                 "source": {"dataset": "prices", "window_weeks": 52},
+                 "events": [
+                     {"date": "2026-01-06", "label": "未照合日の出来事"},
+                     {"date": "2026-01-07", "label": "高値の日"},
+                 ]}
+        res = CD.resolve_chart("9999", "c", chart)
+        eq(res.origin, "csv", "全点が検証済みデータ由来")
+        eq([p["label"] for p in res.spec["data"]],
+           ["2026-01-05", "2026-01-07"], "未照合の日は折れ線に入れない")
+        events = res.spec["events"]
+        eq(len(events), 2, "2件とも配置")
+        eq(events[0]["value"], 500.0, "採用終値が無い日は直前の採用終値")
+        assert "直前 2026-01-05" in events[0].get("note", ""), events[0]
+        eq(events[1]["value"], 600.0, "その日の採用終値")
+        assert "note" not in events[1], "その日の値ならフォールバック注記は出ない"
+        assert "出来事 2/2件を配置" in res.note, res.note
+    finally:
+        sb.close()
+
+
+def test_timeline_unplaceable_events_become_missing():
+    """窓に置けないイベントは黙って捨てず missing に記録する。"""
+    sb = Sandbox()
+    try:
+        sb.prices([
+            prow("2026-01-05", 500, 500, 500),
+            prow("2026-06-01", 600, 600, 600),
+        ])
+        chart = {"type": "timeline", "unit": "円",
+                 "source": {"dataset": "prices", "window_weeks": 52},
+                 "events": [
+                     {"date": "2024-01-01", "label": "昔の出来事"},
+                     # 窓の中（52週=2025-06-03〜）だが最初の採用終値より前
+                     {"date": "2025-12-01", "label": "直前値の無い出来事"},
+                 ]}
+        res = CD.resolve_chart("9999", "c", chart)
+        eq(res.spec["events"], [], "置けないイベントは描かない")
+        eq(len(res.missing), 2, "2件とも欠測に記録")
+        assert "窓の外" in res.missing[0], res.missing
+        assert "直前の採用終値が無い" in res.missing[1], res.missing
+        assert "出来事 0/2件を配置" in res.note, res.note
+    finally:
+        sb.close()
+
+
+def test_timeline_output_is_deterministic():
+    """front matter のイベント記述順に依存しない（日付昇順に固定。D8）。"""
+    sb = Sandbox()
+    try:
+        sb.prices([
+            prow("2026-01-05", 500, 500, 500),
+            prow("2026-01-07", 600, 600, 600),
+            prow("2026-01-09", 550, 550, 550),
+        ])
+        events = [{"date": "2026-01-09", "label": "後の出来事"},
+                  {"date": "2026-01-05", "label": "先の出来事"}]
+
+        def resolve(evs):
+            CD.clear_cache()
+            return CD.resolve_chart("9999", "c", {
+                "type": "timeline", "unit": "円",
+                "source": {"dataset": "prices", "window_weeks": 52},
+                "events": list(evs)})
+
+        a, b = resolve(events), resolve(reversed(events))
+        eq(a.spec, b.spec, "記述順を変えても同じ spec")
+        eq(a.note, b.note, "注記も同じ")
+        eq([e["date"] for e in a.spec["events"]],
+           ["2026-01-05", "2026-01-09"], "日付昇順")
+        svg = CH.render(a.spec)
+        eq(svg, CH.render(b.spec), "SVG も同じ")
+        assert "先の出来事" in svg and "後の出来事" in svg, "ラベルが描かれる"
+    finally:
+        sb.close()
+
+
+# =============================================================================
+# diagram（定性図。数値を持たない）
+# =============================================================================
+
+def test_diagram_is_qualitative_not_hand():
+    """定性図は「手書き（未検証）」扱いにしない（数値を主張していない）。"""
+    chart = {"type": "diagram", "caption": "収益構造",
+             "steps": [
+                 {"label": "開発案件（フロー型）", "note": "案件ごとに大きく入る"},
+                 {"label": "運用・保守（ストック型）", "note": "毎月少しずつ・安定"},
+             ]}
+    res = CD.resolve_chart("9999", "d", chart)
+    eq(res.origin, "diagram", "hand でも csv でもない")
+    eq(res.empty_reason, "", "描ける")
+    eq(res.note, CD.DIAGRAM_NOTE, "定性図であることを必ず出す")
+    svg = CH.render(res.spec)
+    assert svg, "SVG が出る"
+    assert "開発案件（フロー型）" in svg and "毎月少しずつ・安定" in svg, svg
+
+
+def test_diagram_with_digits_is_refused():
+    """数字（半角・全角とも）が1文字でも入っていたら描画拒否。
+
+    「定性図」の枠を、未検証の数値の抜け道にしない（D30/D31 の趣旨）。
+    """
+    bads = [
+        [{"label": "売上", "note": "1件あたり大きい"}],   # note に半角数字
+        [{"label": "１０年ぶり安値", "note": ""}],        # label に全角数字
+    ]
+    for steps in bads:
+        res = CD.resolve_chart("9999", "d", {"type": "diagram", "steps": steps})
+        eq(res.origin, "diagram", f"{steps}: origin")
+        eq(res.empty_reason, CD.DIAGRAM_NUMBER_REASON, f"{steps}: 拒否文")
+        eq(CH.render(res.spec), "", f"{steps}: 表示側でも描かない")
+
+
+def test_diagram_without_steps_says_why():
+    res = CD.resolve_chart("9999", "d", {"type": "diagram"})
+    eq(res.origin, "diagram", "origin")
+    assert res.empty_reason, "描けない理由が出ること"
+
+
+def test_verify_does_not_count_diagram_as_csv_or_hand():
+    """定性図は CSV由来にも手書きにも数えない。拒否された図は穴として名指し。"""
+    sb = Sandbox()
+    try:
+        charts = {
+            "ok": {"type": "diagram",
+                   "steps": [{"label": "フロー", "note": ""}]},
+            "bad": {"type": "diagram",
+                    "steps": [{"label": "3事業", "note": ""}]},
+        }
+        v = CD.verify("9999", charts)
+        eq((v.charts_csv, v.charts_hand), (0, 0), "どちらにも数えない")
+        eq(len(v.chart_gaps), 1, "拒否された図だけが穴")
+        assert v.chart_gaps[0].startswith("bad: "), v.chart_gaps
+    finally:
+        sb.close()
+
+
+# =============================================================================
 # 手書きの図
 # =============================================================================
 
@@ -554,6 +709,12 @@ def test_real_reports_charts_resolve_or_say_why():
         for cid, res in CD.resolve_charts(path.stem, rep.charts).items():
             if res.origin == "hand":
                 assert res.spec.get("source_note"), f"{cid}: 手書きの表示が無い"
+                continue
+            if res.origin == "diagram":
+                # 定性図は数値を持たない。描けたなら「定性図」の1行、
+                # 拒否されたなら理由が必ず付く。
+                assert res.empty_reason or res.spec.get("source_note"), \
+                    f"{cid}: 定性図の表示が無い"
                 continue
             if res.used == 0:
                 assert res.empty_reason, f"{cid}: 描けない理由が無い"

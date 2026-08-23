@@ -128,6 +128,22 @@ border-radius:2px;overflow-wrap:anywhere}
 .viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
 .viz-bar,.viz-dot{cursor:default}
 
+/* 検証状態の記号バッジ（✓=2ソース照合済み ※=未照合参考 †=一次情報から直接）。
+   意味は title 属性（ブラウザ標準 tooltip）と about.html の凡例が持つ。
+   上付き風に小さく出す。色: 照合済み=青（.chg-pos と同系）・参考=橙（警告系）・
+   一次情報=グレー。色だけに意味を持たせない（記号そのものが常に見える） */
+.vm{font-size:.7em;font-weight:700;vertical-align:super;line-height:1;
+padding:0 .06em;cursor:help}
+.vm-ok{color:var(--pos)}
+.vm-ref{color:var(--warn)}
+.vm-pri{color:var(--dim)}
+
+/* 週次アップデートの古い週の折りたたみ。カード（.upd）より一段控えめにして
+   「畳んであるだけで消えてはいない」ことを見せる */
+details.upd-old{background:var(--soft);border-style:dashed;
+box-shadow:none;padding:.5rem .8rem}
+details.upd-old>summary{font-weight:400}
+
 /* 折りたたみ（裏取りで「裏付けが取れた記述」を畳む。JSは使わない） */
 details{margin:1rem 0;border:1px solid var(--rule);border-radius:6px;
 padding:.5rem .8rem;background:var(--card)}
@@ -240,7 +256,7 @@ font-size:.72rem;font-weight:700}
 .viz figcaption{font-size:.78rem}
 .viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
-</style></head><body><main><h1>Waqoo（4937）</h1><p class="lede">東証グロース／レポート更新 2026-08-21<br>記述の裏取り <a href="#verify">38/57件が裏付けあり／19件は未確認・要修正</a><br><a class="ext" href="https://waqoo.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E36697" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=4937" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://waqoo.jp/medical-support.html" target="_blank" rel="noopener">事業内容（メディカルサポート） ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">2,355<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+4.0%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">1,110 〜 2,355</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value">38<span class="k-unit">/57</span></span><span class="k-sub">裏付けあり／全記述</span></div></div><blockquote>
+</style></head><body><main><h1>Waqoo（4937）</h1><p class="lede">東証グロース／レポート更新 2026-08-21<br>記述の裏取り <a href="#verify">38/57件が裏付けあり／19件は未確認・要修正</a><br><a class="ext" href="https://waqoo.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E36697" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=4937" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://waqoo.jp/medical-support.html" target="_blank" rel="noopener">事業内容（メディカルサポート） ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">2,355<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+4.0%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">1,110 〜 2,355</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">様子見(過熱)</span></span><span class="k-sub">src/judge.py の機械判定</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value">38<span class="k-unit">/57</span></span><span class="k-sub">裏付けあり／全記述</span></div></div><blockquote>
 <p><strong>一行でいうと</strong>：かつては通販化粧品「肌ナチュール」のD2C事業が主力だったが、<strong>2026年9月期3Q累計（決算補足説明資料・2026-08-20開示）では美容クリニック向けの血液・脂肪加工受託事業（メディカルサポート事業）が売上の64.4%を占めて主力が入れ替わり、3Q累計の営業利益は前年同期の赤字（△32百万円）から415百万円の黒字に転換した。</strong>2025年12月に、湘南美容クリニックを運営するSBCメディカルグループが株式公開買付で親会社（持分51.51%）になっており、この事業構造の転換は親会社との連携が原動力とされている。8月20日の採用終値2,355円で計算した時価総額は約86.3億円（3,663,068株×2,355円）。8月7日の上方修正・株主優待の新設をきっかけに株価は約1か月で約1,500円台から2,300円台まで上昇した。20日平均売買代金は<code>src/judge.py</code>基準で数値上は流動性ゲート（3,000万円）を通過しているが、<strong>中央値は依然として大きく下回っており、板が薄いという実態は変わっていない。</strong></p>
 </blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W34・全 5 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W34（2026-08-17 週）</h3><p><strong>「決算補足説明資料」が新規開示。3Q実績を一次情報で確認：営業黒字転換・利益剰余金もプラス転換。株価は4営業日で+16.0%と上昇継続。再調査（deep_dive）を実施。</strong></p>
 <ul>
@@ -264,12 +280,12 @@ font-size:.72rem;font-weight:700}
 <li>株価: 週間 +30.0%（1568→2038円・採用終値ベース、照合成立 3日、週内 1968〜2150円）</li>
 <li>出来高: 前週比 +8318.4%（今週 319,900株／前週 3,800株）（参考・未照合）／信用倍率: 算出不可（RATIO_NA）・買残 189.6千株（08/07時点）（参考）</li>
 <li>判定: 「様子見(過熱)」／開示: なし</li>
-<li>ニュース: 08/10 Waqoo---ストップ高買い気配、26年9月期通期業績予想の上方修正及び株主優待制度導入を発表 <a href="https://kabutan.jp/stock/news?code=4937&amp;b=n202608100342">https://kabutan.jp/stock/news?code=4937&amp;b=n202608100342</a></li>
-<li>ニュース: 08/10 ワクーがカイ気配のまま上昇、「湘南美容クリニック」連携効果で今期業績予想を上方修正 <a href="https://kabutan.jp/stock/news?code=4937&amp;b=n202608100223">https://kabutan.jp/stock/news?code=4937&amp;b=n202608100223</a></li>
+<li>ニュース: 08/10 Waqoo---ストップ高買い気配、26年9月期通期業績予想の上方修正及び株主優待制度導入を発表 <a class="ext" href="https://kabutan.jp/stock/news?code=4937&amp;b=n202608100342" target="_blank" rel="noopener">株探 ↗</a></li>
+<li>ニュース: 08/10 ワクーがカイ気配のまま上昇、「湘南美容クリニック」連携効果で今期業績予想を上方修正 <a class="ext" href="https://kabutan.jp/stock/news?code=4937&amp;b=n202608100223" target="_blank" rel="noopener">株探 ↗</a></li>
 </ul>
 <p>（解釈）週足終値は1,568円→2,038円（+29.97%）、出来高は前週比+8318.4%と急増。8/10付の見出しで通期業績予想の上方修正と株主優待制度導入が伝えられており、これが材料になった可能性が高い。
 週内に±3σを超える値幅の「ブレイク」観測が複数回出ており、値動きの荒さも目立つ。信用倍率は算出不可（RATIO_NA・売り残0）のため、需給面の過熱は倍率では確認できない。</p>
-<p><strong>次週に見ること</strong>: ① 上方修正の具体的な数値・前提を確認（deep_dive 対象） ② 出来高急増後の反落有無を注視</p></div><div class="upd"><h3>2026-W33（続報2）</h3><p><strong>新しい適時開示は無し。8月14日の株価はまだ1ソースのみで、この台帳の採用値になっていない。</strong></p>
+<p><strong>次週に見ること</strong>: ① 上方修正の具体的な数値・前提を確認（deep_dive 対象） ② 出来高急増後の反落有無を注視</p></div><details class="upd-old"><summary>それ以前の週次アップデート（2件）</summary><div class="upd"><h3>2026-W33（続報2）</h3><p><strong>新しい適時開示は無し。8月14日の株価はまだ1ソースのみで、この台帳の採用値になっていない。</strong></p>
 <ul>
 <li>8月14日、出来高は17,900株（8月13日の43,500株からさらに減少）。ただし<strong>株探（kabutan）側がこの日をまだ反映しておらず</strong>、終値は yahoo_jp の単独値（2,030円）しかない。この台帳の採用基準（2つの取得元の一致）を満たしていないため <code>close</code> は空欄・<code>status=SINGLE_SOURCE</code>（<code>data/prices/daily.csv</code>・2026-08-16取得）。参考までに見ると、8月13日の採用終値2,038円からは下げた形（高値2,036円・安値1,994円も同じく参考値）だが、<strong>照合できていないので断定しない</strong></li>
 <li>8月15日・16日は土日で取引なし。本レポート作成時点（2026-08-16）の次の取引日は8月17日</li>
@@ -284,7 +300,7 @@ font-size:.72rem;font-weight:700}
 <li>直近四半期（2026年4-6月）は売上906百万円・営業利益277百万円。<strong>営業利益率30.6%</strong>で、1年前（2025年4-6月は4.04%）とは別の会社のような数字になっている</li>
 <li>⚠️ <strong>流動性が壊滅的に薄い。</strong> 8月10日より前の1か月（7月10日〜8月7日の20営業日）は、1日の出来高が<strong>0〜6,200株（売買代金0〜941万円）</strong>で、そのうち<strong>300株以下の日が10日</strong>あり、7月17日と8月3日は<strong>出来高ゼロ</strong>だった。20日平均売買代金2,871万円は、材料が出た8月10・12日の2日で持ち上がった数字で、<strong>同じ期間の中央値は68万円</strong></li>
 </ul>
-<p><strong>次週に見ること</strong>：①出来高が続くか（材料が抜けたあと1日100株に戻るか） ②3Q決算短信のセグメント別内訳（D2Cとメディカルサポートのどちらが伸びたか） ③親会社グループとの取引額（関連当事者取引）の開示 ④信用買い残（8/7時点189.6千株）の推移</p></div></div></details><details class="sec"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">まだ作成していない</span></summary><div class="sec-body"><p class="none">推定モデルは未作成。「この銘柄の推定モデルを組んで」と Claude に言えば起案できる（手順は <code>.claude/skills/kabu-ledger-estimate/</code>）。</p></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p>東証グロース上場。業種分類は「化学」。発行済株式数3,663,068株（株探・2026-08-13取得）。配当は無配。</p>
+<p><strong>次週に見ること</strong>：①出来高が続くか（材料が抜けたあと1日100株に戻るか） ②3Q決算短信のセグメント別内訳（D2Cとメディカルサポートのどちらが伸びたか） ③親会社グループとの取引額（関連当事者取引）の開示 ④信用買い残（8/7時点189.6千株）の推移</p></div></details></div></details><details class="sec"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">まだ作成していない</span></summary><div class="sec-body"><p class="none">推定モデルは未作成。「この銘柄の推定モデルを組んで」と Claude に言えば起案できる（手順は <code>.claude/skills/kabu-ledger-estimate/</code>）。</p></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p>東証グロース上場。業種分類は「化学」。発行済株式数3,663,068株（株探・2026-08-13取得）。配当は無配。</p>
 <p>時価総額は株探が2026-08-13に表示していた<strong>74.7億円</strong>を載せているが、74.7億円÷3,663,068株＝約2,038円で、これは当台帳が8月13日に取得した株価（2,038円・照合前）と一致する。つまり<strong>8月13日のザラ場の値</strong>である。<strong>本レポートのほかの株価指標はすべて8月12日の採用終値2,150円ベース</strong>で、同じ株数で計算すると<strong>約78.8億円</strong>（3,663,068株×2,150円）になる。基準日が1日ずれるだけで5%前後動くので、時価総額を見るときは基準日を確かめること。（8月20日の採用終値2,355円で同じ株数で計算すると約<strong>86.3億円</strong>。8月12日時点から+9.5%。）</p>
 <h3>何をして稼いでいるか — 事業は2本</h3>
 <div class="scroll"><table class="prose-table">
@@ -319,7 +335,7 @@ font-size:.72rem;font-weight:700}
 </tbody>
 </table></div>
 <blockquote>
-<p><strong>主力が入れ替わった（2026年8月20日開示「決算補足説明資料」より）</strong>。上場時の柱はD2C事業だったが、2026年9月期3Q累計（2025年10月〜2026年6月）の売上構成比は<strong>メディカルサポート事業64.4%・D2C事業26.6%・その他（海外）8.9%</strong>（売上高2,039百万円のうちメディカルサポート事業1,312百万円・D2C事業543百万円・その他182百万円）で、メディカルサポート事業が逆転して主力になっている。メディカルサポート事業の売上は前年同期比+128.5%、D2C事業は同△26.0%。会社側はこれを「D2Cからメディカルサポートへ」の3年がかりの事業構造転換の帰結だとしている（この評価は会社自身のもので、外部による検証は行っていない）。出典：<a href="https://kabutan.jp/disclosures/pdf/20260820/140120260820523833/">https://kabutan.jp/disclosures/pdf/20260820/140120260820523833/</a>（2026-08-20開示・2026-08-21取得。直リンクは403のため、TDnet配信元と同一文書のミラー <a href="https://assets.minkabu.jp/news/article_media_content/urn:newsml:tdnet.info:20260820523833/140120260820523833.pdf">https://assets.minkabu.jp/news/article_media_content/urn:newsml:tdnet.info:20260820523833/140120260820523833.pdf</a> から本文を取得）</p>
+<p><strong>主力が入れ替わった（2026年8月20日開示「決算補足説明資料」より）</strong>。上場時の柱はD2C事業だったが、2026年9月期3Q累計（2025年10月〜2026年6月）の売上構成比は<strong>メディカルサポート事業64.4%・D2C事業26.6%・その他（海外）8.9%</strong>（売上高2,039百万円のうちメディカルサポート事業1,312百万円・D2C事業543百万円・その他182百万円）で、メディカルサポート事業が逆転して主力になっている。メディカルサポート事業の売上は前年同期比+128.5%、D2C事業は同△26.0%。会社側はこれを「D2Cからメディカルサポートへ」の3年がかりの事業構造転換の帰結だとしている（この評価は会社自身のもので、外部による検証は行っていない）。出典：<a class="ext" href="https://kabutan.jp/disclosures/pdf/20260820/140120260820523833/" target="_blank" rel="noopener">株探 ↗</a>（2026-08-20開示・2026-08-21取得。直リンクは403のため、TDnet配信元と同一文書のミラー <a class="ext" href="https://assets.minkabu.jp/news/article_media_content/urn:newsml:tdnet.info:20260820523833/140120260820523833.pdf" target="_blank" rel="noopener">みんかぶ ↗</a> から本文を取得）</p>
 </blockquote>
 <p>用語をその場で開くと——</p>
 <ul>
@@ -869,33 +885,33 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>IR情報（決算短信・適時開示）</td>
-<td><a href="https://waqoo.jp/ir/">https://waqoo.jp/ir/</a></td>
+<td><a class="ext" href="https://waqoo.jp/ir/" target="_blank" rel="noopener">waqoo.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>メディカルサポート事業（PDF-FD・ASC・広告運用）</td>
-<td><a href="https://waqoo.jp/medical-support.html">https://waqoo.jp/medical-support.html</a></td>
+<td><a class="ext" href="https://waqoo.jp/medical-support.html" target="_blank" rel="noopener">waqoo.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>D2C事業（HADA NATURE・CobodySlim+・SBCメディカルグループとの提携）</td>
-<td><a href="https://waqoo.jp/dtoc.html">https://waqoo.jp/dtoc.html</a></td>
+<td><a class="ext" href="https://waqoo.jp/dtoc.html" target="_blank" rel="noopener">waqoo.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td><strong>2026年9月期第3四半期 決算補足説明資料</strong>（セグメント別売上・利益、四半期貸借対照表、通期進捗率、主要KPI）</td>
-<td><a href="https://kabutan.jp/disclosures/pdf/20260820/140120260820523833/">https://kabutan.jp/disclosures/pdf/20260820/140120260820523833/</a>（直リンクは403のため本文は同一文書のミラー <a href="https://assets.minkabu.jp/news/article_media_content/urn:newsml:tdnet.info:20260820523833/140120260820523833.pdf">https://assets.minkabu.jp/news/article_media_content/urn:newsml:tdnet.info:20260820523833/140120260820523833.pdf</a> から取得）</td>
+<td><a class="ext" href="https://kabutan.jp/disclosures/pdf/20260820/140120260820523833/" target="_blank" rel="noopener">株探 ↗</a>（直リンクは403のため本文は同一文書のミラー <a class="ext" href="https://assets.minkabu.jp/news/article_media_content/urn:newsml:tdnet.info:20260820523833/140120260820523833.pdf" target="_blank" rel="noopener">みんかぶ ↗</a> から取得）</td>
 <td>2026-08-21（開示日2026-08-20）</td>
 </tr>
 <tr>
 <td>上記開示の存在・開示日時（2026-08-20 16:00）の確認</td>
-<td><a href="https://webapi.yanoshin.jp/webapi/tdnet/list/4937.json">https://webapi.yanoshin.jp/webapi/tdnet/list/4937.json</a>（TDnet非公式ミラー）</td>
+<td><a class="ext" href="https://webapi.yanoshin.jp/webapi/tdnet/list/4937.json" target="_blank" rel="noopener">webapi.yanoshin.jp ↗</a>（TDnet非公式ミラー）</td>
 <td>2026-08-21</td>
 </tr>
 </tbody>
 </table></div>
 <blockquote>
-<p>※ 決算短信PDF本体はまだ機械で読み取っていない。決算補足説明資料でセグメント内訳・進捗率・四半期BSは把握できたが、<strong>関連当事者取引の金額はこの一次情報でも開示されていない</strong>。決算短信本体または有価証券報告書の取り込みが引き続き必要。</p>
+<p><span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span> 決算短信PDF本体はまだ機械で読み取っていない。決算補足説明資料でセグメント内訳・進捗率・四半期BSは把握できたが、<strong>関連当事者取引の金額はこの一次情報でも開示されていない</strong>。決算短信本体または有価証券報告書の取り込みが引き続き必要。</p>
 </blockquote>
 <h3>二次情報（機械で突き合わせているもの）</h3>
 <div class="scroll"><table class="prose-table">
@@ -909,17 +925,17 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>通期の業績推移・財務指標・キャッシュフロー</td>
-<td><a href="https://irbank.net/E36697/results">https://irbank.net/E36697/results</a></td>
+<td><a class="ext" href="https://irbank.net/E36697/results" target="_blank" rel="noopener">IR BANK ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>四半期推移</td>
-<td><a href="https://irbank.net/E36697/quarter">https://irbank.net/E36697/quarter</a></td>
+<td><a class="ext" href="https://irbank.net/E36697/quarter" target="_blank" rel="noopener">IR BANK ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>業績推移・財務・キャッシュフロー</td>
-<td><a href="https://kabutan.jp/stock/finance?code=4937">https://kabutan.jp/stock/finance?code=4937</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/finance?code=4937" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 </tbody>
@@ -937,52 +953,52 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>株価・時価総額・信用残・<strong>信用区分（制度信用は買建のみ）</strong>・比較銘柄・事業概要</td>
-<td><a href="https://kabutan.jp/stock/?code=4937">https://kabutan.jp/stock/?code=4937</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/?code=4937" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>上方修正と株主優待の内容（売上27.5億円・経常5.5億円・10%割引チケット）</td>
-<td><a href="https://s.kabutan.jp/news/n202608100342/">https://s.kabutan.jp/news/n202608100342/</a></td>
+<td><a class="ext" href="https://s.kabutan.jp/news/n202608100342/" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>適時開示の一覧（3Q短信・通期予想の修正・株主優待の導入がいずれも 2026-08-07 15:30 開示であること）</td>
-<td><a href="https://kabutan.jp/stock/news?code=4937">https://kabutan.jp/stock/news?code=4937</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/news?code=4937" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>上方修正の理由が「湘南美容クリニック連携効果」である旨</td>
-<td><a href="https://news.livedoor.com/article/detail/32030572/">https://news.livedoor.com/article/detail/32030572/</a></td>
+<td><a class="ext" href="https://news.livedoor.com/article/detail/32030572/" target="_blank" rel="noopener">news.livedoor.com ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>株価診断・個人予想・目標株価・PSR・PBR</td>
-<td><a href="https://minkabu.jp/stock/4937">https://minkabu.jp/stock/4937</a></td>
+<td><a class="ext" href="https://minkabu.jp/stock/4937" target="_blank" rel="noopener">みんかぶ ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>アナリストレーティング・理論株価・BPS・PER</td>
-<td><a href="https://kabuyoho.jp/sp/reportTarget?bcode=4937">https://kabuyoho.jp/sp/reportTarget?bcode=4937</a></td>
+<td><a class="ext" href="https://kabuyoho.jp/sp/reportTarget?bcode=4937" target="_blank" rel="noopener">kabuyoho.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>相川佳之氏による989,802株の取得（2022年6月17日発表・21日完了）・議決権33.0%・1株649円・井上社長の持分57.9%→25.8%・業務提携は「協議を開始する」段階</td>
-<td><a href="https://netkeizai.com/articles/detail/6726">https://netkeizai.com/articles/detail/6726</a></td>
+<td><a class="ext" href="https://netkeizai.com/articles/detail/6726" target="_blank" rel="noopener">netkeizai.com ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>1株1,900円のTOB（買付予定数575,000株＝15.44%）・TOB前のSBCメディカルグループ持分9.49%・相川氏からの26.58%取得・最終51.51%・非公開化を伴わない方針</td>
-<td><a href="https://maonline.jp/news/20251113j">https://maonline.jp/news/20251113j</a></td>
+<td><a class="ext" href="https://maonline.jp/news/20251113j" target="_blank" rel="noopener">maonline.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>TOBの成立（2025-12-12終了・575,052株取得・公開買付後の所有割合51.51%・12月19日付で親会社に該当）</td>
-<td><a href="https://www.nihon-ma.co.jp/news/20251213_4937-15/">https://www.nihon-ma.co.jp/news/20251213_4937-15/</a></td>
+<td><a class="ext" href="https://www.nihon-ma.co.jp/news/20251213_4937-15/" target="_blank" rel="noopener">nihon-ma.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>セルプロジャパンの子会社化（再生医療。2023-11-20決議・株式交換の効力発生日2024-01-01・交換比率1:54.4）</td>
-<td><a href="https://maonline.jp/news/20231120f">https://maonline.jp/news/20231120f</a></td>
+<td><a class="ext" href="https://maonline.jp/news/20231120f" target="_blank" rel="noopener">maonline.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 </tbody>
