@@ -692,7 +692,9 @@ def _timeline(code: str, source: dict, chart: dict,
 
 
 # diagram（定性図）に数字が入っていたときの拒否文。checks・テストと共有する。
-_DIAGRAM_DIGIT_RE = re.compile(r"[0-9０-９]")
+# chart._DIGIT_RE と同じ線引き（全角数字・丸数字・括弧付き数字・上付き数字も数字）。
+# 漢数字は「一部」「二本立て」など一般語に含まれるため対象外。
+_DIAGRAM_DIGIT_RE = re.compile(r"[0-9０-９①-⒛⁰-⁹¹²³]")
 DIAGRAM_NUMBER_REASON = ("図解に数値が含まれている"
                          "（数値は検証済みデータ由来の図でしか出さない）")
 DIAGRAM_NOTE = "定性図（数値を含まない）"

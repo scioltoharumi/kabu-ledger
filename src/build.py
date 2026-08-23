@@ -86,6 +86,7 @@ VM_BADGES = {
     "†": ("vm-pri", "決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし"),
 }
 _VM_RE = re.compile("[" + "".join(VM_BADGES) + "]")
+_CODE_SPLIT_RE = re.compile(r"(<code>.*?</code>)", re.S)
 
 
 def mark_badges(html_text: str) -> str:
@@ -99,7 +100,12 @@ def mark_badges(html_text: str) -> str:
         ch = m.group(0)
         cls, title = VM_BADGES[ch]
         return f'<span class="vm {cls}" title="{html.escape(title)}">{ch}</span>'
-    return _VM_RE.sub(sub, html_text)
+    # <code>…</code> の中は置換しない（ファイル名やコマンドの中の記号は
+    # 検証状態の印ではない）。split の偶数番目だけが code の外。
+    parts = _CODE_SPLIT_RE.split(html_text)
+    for i in range(0, len(parts), 2):
+        parts[i] = _VM_RE.sub(sub, parts[i])
+    return "".join(parts)
 
 
 # Markdown の自動リンク `<https://…>` は `<a href="U">U</a>` になる
@@ -262,7 +268,13 @@ def load_stamp(code: str) -> str | None:
     return str(v) if v else None
 
 
-def kpi_tiles(code: str, meta: dict | None = None) -> str:
+def _future_earnings(meta: dict | None, as_of: str) -> str:
+    """next_earnings が集計基準日より先のときだけ返す（過去日付は予定ではない）。"""
+    earn = str((meta or {}).get("next_earnings") or "")
+    return earn if earn and (not as_of or as_of == "—" or earn > as_of) else ""
+
+
+def kpi_tiles(code: str, meta: dict | None = None, as_of: str = "") -> str:
     """銘柄ページ冒頭の KPI タイル。値はすべて検証済みデータ由来（D8 決定論）。
 
     - 終値・レンジは採用終値（2ソース照合成立日）だけで組む。D53
@@ -305,11 +317,13 @@ def kpi_tiles(code: str, meta: dict | None = None) -> str:
                            f'<span class="k-value-sm">{html.escape(stamp)}</span>',
                            "src/judge.py の機械判定"))
 
-    # 次回決算。front matter に書かれた予定日（無ければ出さない）
-    earn = (meta or {}).get("next_earnings")
+    # 次回決算。front matter に書かれた予定日。**過去日付は出さない**
+    # （発表済みの日付を「次回」として掲げるのは表示の嘘。intake が
+    # next_earnings を更新するまでタイルを消しておく）
+    earn = _future_earnings(meta, as_of)
     if earn:
         tiles.append(_tile("次回決算",
-                           f'<span class="k-value-sm">{html.escape(str(earn))}</span>',
+                           f'<span class="k-value-sm">{html.escape(earn)}</span>',
                            "発表予定日"))
 
     passed, claims, present, stale = verify_stat(code)
@@ -365,7 +379,7 @@ def first_sentence(text: str, limit: int = 78) -> str:
     return plain
 
 
-def render_row(stock: dict, rep: R.Report | None) -> str:
+def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
     """一覧の1行。銘柄が増えても詰まらないよう、1銘柄1行に収める。
 
     スマホでは CSS 側でカード状に積み替える（横スクロールさせない）。
@@ -396,20 +410,20 @@ def render_row(stock: dict, rep: R.Report | None) -> str:
     # 銘柄ページ側は Markdown を通すが、一覧はエスケープしかしていなかったため
     # `**` がそのまま画面に出ていた。**エスケープしたあとに**強調だけ戻す
     # （順序が逆だと `<strong>` ごとエスケープされる／注入経路にもなる）。
-    oneline = _STRONG_RE.sub(r"<strong>\1</strong>",
-                             html.escape(R.one_liner(rep)))
-    earn = rep.meta.get("next_earnings")
+    oneline = mark_badges(_STRONG_RE.sub(r"<strong>\1</strong>",
+                                         html.escape(R.one_liner(rep))))
+    earn = _future_earnings(rep.meta, as_of)   # 過去日付は予定として出さない
     earn_pill = ""
     if earn:
         earn_pill = (f'<span class="pill pill-warn">決算 '
-                     f'{html.escape(str(earn))}</span>')
+                     f'{html.escape(earn)}</span>')
 
     latest = rep.latest_week()
     week_txt = "—"
     week_head = ""
     if latest is not None:
         week_head = html.escape(latest[0].split("（")[0])
-        week_txt = html.escape(first_sentence(latest[1]))
+        week_txt = mark_badges(html.escape(first_sentence(latest[1])))
 
     # 裏取りの状態を一覧にも出す。銘柄ページを開かないと分からない状態にしない。
     passed, claims, present, stale = verify_stat(code)
@@ -456,7 +470,7 @@ def section_order_text() -> str:
 
 def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     stocks = sorted(master["stocks"], key=lambda s: s["code"])
-    rows = [render_row(s, reports.get(s["code"])) for s in stocks]
+    rows = [render_row(s, reports.get(s["code"]), as_of) for s in stocks]
     scr = master.get("screening", {})
     scr_name = html.escape(str(scr.get("name", "")))
     n_deep = sum(1 for r in reports.values() if r.deep_dive)
@@ -1212,7 +1226,7 @@ def build_stock_page(rep: R.Report, as_of: str) -> None:
         + nav(1)
     )
     lead_md = strip_title(rep.lead)
-    body = head + kpi_tiles(rep.code, rep.meta) + to_html(lead_md, charts)
+    body = head + kpi_tiles(rep.code, rep.meta, as_of) + to_html(lead_md, charts)
 
     # 大きく2つに畳む（既定は閉）: 週次アップデート／会社概要。
     # 検証の記録（裏取り・数値の検証状況）は会社概要の末尾に含める。
@@ -1397,7 +1411,7 @@ def build_about_page(as_of: str) -> None:
         "<tr><td><strong>2ソース照合済み</strong></td>"
         f"<td>{_vm_badge('✓')}</td>"
         "<td>運営の異なる2つの取得元から機械で抜き、表示されている桁の範囲で"
-        "一致した値だけを採用値にしている。図はこれだけで描く</td>"
+        "一致した値だけを採用値にしている。図の数値は原則これで描き、例外（手書き・一次情報のみ）は図の下の注記が明示する</td>"
         "<td>本文では値の直後の ✓。図の下に「出所: data/… の採用値」と出る</td></tr>"
         "<tr><td><strong>一次情報から直接</strong></td>"
         f"<td>{_vm_badge('†')}</td>"

@@ -34,6 +34,24 @@ SECTIONS = [
 ]
 
 
+_SEQ_RE = re.compile(r"（続報(\d*)）")
+
+
+def _entry_order(head: str) -> tuple[str, int]:
+    """週次エントリの並び順キー（週キー, 週内の連番）。
+
+    単純な文字列降順だと「（続報）」の全角閉じ括弧が数字より大きく、
+    無印の続報が「（続報2）」「（続報3）」より**新しい側**に並んでいた
+    （実際に 4073/6570 の W33 で起きた）。weekly_note._choose_heading の
+    採番規則（基本→続報→続報2→…の順に書かれる）を数に起こして並べる。
+    """
+    m = re.match(r"(\d{4}-W\d{2})", head)
+    week = m.group(1) if m else head
+    m2 = _SEQ_RE.search(head)
+    seq = int(m2.group(1) or 1) if m2 else 0
+    return (week, seq)
+
+
 @dataclass
 class Report:
     code: str
@@ -73,7 +91,7 @@ class Report:
         out: list[tuple[str, str]] = []
         for i in range(1, len(parts) - 1, 2):
             out.append((parts[i].strip(), parts[i + 1].strip()))
-        out.sort(key=lambda x: x[0], reverse=True)   # 週の表記は YYYY-Www なので文字列降順で新しい順
+        out.sort(key=lambda x: _entry_order(x[0]), reverse=True)
         return out
 
     def latest_week(self) -> tuple[str, str] | None:
