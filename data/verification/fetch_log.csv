@@ -166,3 +166,4 @@ fetched_at,code,url,final_url,http_status,chars,sha256,note
 2026-08-22T04:29:12.115479+09:00,4937,https://s.kabutan.jp/news/n202608100342/,https://s.kabutan.jp/news/n202608100342/,200,2919,ae13317dfeaf3bd1,text/html; charset=utf-8
 2026-08-22T04:29:16.998391+09:00,4937,https://news.livedoor.com/article/detail/32030572/,https://news.livedoor.com/article/detail/32030572/,200,9871,baf1191afe5672e5,text/html; charset=euc-jp
 2026-08-22T04:29:21.305549+09:00,4937,https://kabutan.jp/stock/news?code=4937,https://kabutan.jp/stock/news?code=4937,200,4402,c53da584bb26543d,text/html; charset=UTF-8
+2026-08-23T10:40:11.089940+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4371,817f819a4dc25776,text/html; charset=UTF-8
