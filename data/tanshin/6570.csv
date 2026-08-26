@@ -1,0 +1,11 @@
+date,code,metric,value,value_extracted,unit,definition,assumed,source,tier,status,source_url,fetched_at
+2026-08-10,6570,eps,76.76,76.76,JPY,FY2027Q1cum|連結|日本基準|1株当たり四半期純利益,false,tanshin,primary,EPS_CROSS_OK|YOY_CHECK_NA,https://www.release.tdnet.info/inbs/140120260810516597.pdf,2026-08-26T15:05:59+09:00
+2026-08-10,6570,eps_prev_year,23.92,23.92,JPY,FY2026Q1cum|連結|日本基準|1株当たり四半期純利益,false,tanshin,primary,YOY_CHECK_NA,https://www.release.tdnet.info/inbs/140120260810516597.pdf,2026-08-26T15:05:59+09:00
+2026-08-10,6570,net_income,459,459,JPY_million,FY2027Q1cum|連結|日本基準|親会社株主に帰属する四半期純利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120260810516597.pdf,2026-08-26T15:05:59+09:00
+2026-08-10,6570,net_income_prev_year,142,142,JPY_million,FY2026Q1cum|連結|日本基準|親会社株主に帰属する四半期純利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120260810516597.pdf,2026-08-26T15:05:59+09:00
+2026-08-10,6570,operating_income,756,756,JPY_million,FY2027Q1cum|連結|日本基準|営業利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120260810516597.pdf,2026-08-26T15:05:59+09:00
+2026-08-10,6570,operating_income_prev_year,238,238,JPY_million,FY2026Q1cum|連結|日本基準|営業利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120260810516597.pdf,2026-08-26T15:05:59+09:00
+2026-08-10,6570,ordinary_income,788,788,JPY_million,FY2027Q1cum|連結|日本基準|経常利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120260810516597.pdf,2026-08-26T15:05:59+09:00
+2026-08-10,6570,ordinary_income_prev_year,234,234,JPY_million,FY2026Q1cum|連結|日本基準|経常利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120260810516597.pdf,2026-08-26T15:05:59+09:00
+2026-08-10,6570,revenue,7383,7383,JPY_million,FY2027Q1cum|連結|日本基準|売上高,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120260810516597.pdf,2026-08-26T15:05:59+09:00
+2026-08-10,6570,revenue_prev_year,4357,4357,JPY_million,FY2026Q1cum|連結|日本基準|売上高,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120260810516597.pdf,2026-08-26T15:05:59+09:00

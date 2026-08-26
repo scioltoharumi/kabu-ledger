@@ -722,6 +722,62 @@ def test_real_reports_charts_resolve_or_say_why():
                 assert res.spec.get("source_note"), f"{cid}: 出所の表示が無い"
 
 
+def test_first_quarter_standalone_equals_cumulative():
+    """1Qは「単独四半期」と「累計」が同じ3か月を指す（定義上同一）。
+
+    ここを別物として扱っていたため、1Qしか開示の無い銘柄では一次情報と
+    二次情報の突き合わせが永久に0件だった（BACKLOG タスク9）。
+    """
+    q1_span = CD._cross_bucket("Q2026-04_2026-06", 3)      # 3月決算の1Q
+    q1_tanshin = CD._cross_bucket("FY2027Q1cum")
+    assert q1_span == (2027, 1, False), q1_span
+    assert q1_tanshin == (2027, 1, True), q1_tanshin
+    assert CD.same_bucket(q1_span, q1_tanshin)
+    # 2Q以降は単独と累計が別の量。同一視してはいけない
+    q2_span = CD._cross_bucket("Q2026-07_2026-09", 3)
+    assert q2_span == (2027, 2, False), q2_span
+    assert not CD.same_bucket(q2_span, CD._cross_bucket("FY2027Q2cum"))
+
+
+def test_quarter_key_needs_fiscal_year_end():
+    """決算月が分からなければ単独四半期の期は決められない（推測しない）。"""
+    assert CD._cross_bucket("Q2026-04_2026-06") is None
+    # 6月決算なら 2026-04〜06 は第4四半期（3月決算の第1四半期ではない）
+    assert CD._cross_bucket("Q2026-04_2026-06", 6) == (2026, 4, False)
+
+
+def test_cross_check_compares_nothing_when_period_is_unreadable():
+    """期を確定できないときは1件も比べない。
+
+    以前はここで「フィルタだけを外して全期を比べる」形になっており、
+    通期の実績が1Qの観測値と突き合わされ得た（偶然一致すると気づけない）。
+    """
+    sb = Sandbox()
+    try:
+        sb.tanshin("9999", [
+            trow("2026-08-10", "revenue", 7383,
+                 definition="FY2027Q1cum|連結|日本基準|売上高"),
+            # 同じ metric・別の期（通期）。1Qの観測値と比べてはいけない
+            trow("2026-05-10", "revenue", 26870,
+                 definition="FY2027Q4cum|連結|日本基準|売上高"),
+        ])
+        sb.fundamentals("9999", [
+            frow("Q2026-04_2026-06", "revenue", 7383, "OK",
+                 sources_all="kabutan=7383|irbank=7383"),
+        ])
+        # 決算月が分からない（master.yaml が無い）＝期を確定できない → 比べない
+        agree, disagree, nopair, _ = CD.cross_check_tanshin(
+            "9999", "Q2026-04_2026-06")
+        eq((agree, disagree, nopair), ([], [], []), "決算月なしで比べてしまった")
+
+        # 決算月を与えれば1Qとして突き合わせが成立し、通期の行は混ざらない
+        agree, disagree, nopair, _ = CD.cross_check_tanshin(
+            "9999", "Q2026-04_2026-06", fy_end=3)
+        eq((agree, disagree, nopair), (["revenue"], [], []), "1Qの突合")
+    finally:
+        sb.close()
+
+
 def main() -> int:
     tests = [(n, f) for n, f in sorted(globals().items())
              if n.startswith("test_") and callable(f)]

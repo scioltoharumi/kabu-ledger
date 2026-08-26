@@ -2214,6 +2214,542 @@ runs:
           このURLを根拠にできる記述は現状ゼロ。
         action: "個別の開示PDFのURLを出典に書く。目次ページは出典として機能しない"
 
+
+  - run: "2026-08-26T15:40:00+09:00"
+    report_updated: "2026-08-26"
+    report_sha256: "af12e160d318fafebd925d3ead04b44117acd0fa4580808e7d9507474ba033a0"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    note: >-
+      2026-08-26 に本文が更新された（理論株価520→886円・判定「妥当水準」→「割安」・時価総額13.6→12.5億円・
+      PBR 7.4→3.54倍・週足MA傾き・20日売買代金・front matter の price_range マーカー）
+      ことを受けた全量スナップショット run。前 run（2026-08-23T22:28）の claim 30件を全件拾い直し、
+      quote が本文から消えていた5件（V05・V07・V09・V20・V21）は同じ id に新しい quote を書いた。
+      変更点の検証のために claim を9件足した（V64〜V72）。
+      合計39件。contradicted は0件。更新された値はすべて書き手の主張を使わず、株予報Pro・株探を本日このセッションで再取得し、
+      指標は judge.py --indicators-only を実行して突き合わせた（886/466/1,306・
+      割安・12.5億円・3.54倍・+0.381%/週・−0.252%/週・7,444万円/2,248万円はいずれも一致）。
+      一方で「8月上旬の7.4倍から下がった」「前回記載の13週−0.230%／26週−0.546%」「8月中旬時点の中央値約470万円」という**過去値との比較**は、
+      生きている出典にもツールにも再現手段が無く unsupported とした。
+      本文が2026-08-26取得の値を載せているのに front matter の updated が 2026-08-23 のままで、
+      出典表の株探・株予報Proの取得日も2026-08-12 のまま残っている（V05・V70・V71 の action）。
+      代表取締役異動の適時開示PDF（7/17開示）は TDnet の保持期間切れで HTTP 404 になり、
+      前 run で supported だった V15 は unverifiable に落ちた（過去 run の記録は裏付けに使わない）。
+      みんかぶは前 run と同じく403。TDnet の減資・立会外分売PDF 2件は fetch_source.py で到達性を確認・
+      ログに残したうえで、PDF本体をこのセッションでダウンロードし pypdf でテキスト化して本文と突き合わせた（fetch_source.py は PDF をテキスト化しないため。
+      run4〜6と同じ手順）。クロール先・PDF本文に指示めいた文字列（D9）は検出されなかった。
+    urls_refetched:
+      - {url: "https://note.com/tatsuya_sabato/n/naf535589c0bf", http_status: 200}
+      - {url: "https://www.zaikei.co.jp/article/20260722/862304.html", http_status: 200}
+      - {url: "https://kabuyoho.jp/sp/reportTarget?bcode=4073", http_status: 200}
+      - {url: "https://minkabu.jp/stock/4073", http_status: 403}
+      - {url: "https://kabutan.jp/stock/?code=4073", http_status: 200}
+      - {url: "https://www.gck.co.jp/company/co-outline/", http_status: 200}
+      - {url: "https://www.gck.co.jp/ir/", http_status: 200}
+      - {url: "https://www.release.tdnet.info/inbs/140120260814520281.pdf", http_status: 200}
+      - {url: "https://www.release.tdnet.info/inbs/140120260814520282.pdf", http_status: 200}
+      - {url: "https://www.release.tdnet.info/inbs/140120260717596017.pdf", http_status: 404}
+    urls_delegated:
+      - url: "https://kabutan.jp/stock/finance?code=4073"
+        to: "data/fundamentals/4073.csv"
+      - url: "https://irbank.net/E36666/results"
+        to: "data/fundamentals/4073.csv"
+      - url: "https://irbank.net/E36666"
+        to: "data/fundamentals/4073.csv"
+      - url: "https://www.nikkei.com/markets/ir/irftp/data/tdnr/tdnetg3/20260515/fxfcrw/140120260515536364.pdf"
+        to: "data/tanshin/4073.csv"
+      - url: "https://www.release.tdnet.info/inbs/140120260814520260.pdf"
+        to: "data/tanshin/4073.csv"
+
+    claims:
+      # --- この会社は何者か --------------------------------------------------
+      - id: V01
+        section: company
+        quote: "**CARD CREW PLUS**（導入180社以上）"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://note.com/tatsuya_sabato/n/naf535589c0bf"]
+        evidence: >-
+          note記事を再取得（200・4,596字）。「CARD CREW」「180」のいずれもヒット0件（run1〜6と同じ）。
+          記事本文は4073を「キャッシュレス決済システムの開発・運用を主力事業とし…」と冒頭で紹介するだけで、
+          製品名も導入社数も書かれていない。
+        action: >-
+          会社の製品ページ等の一次情報を出典に足すか、この記述を落とす
+
+      - id: V02
+        section: company
+        quote: "顧客は中堅〜大手の流通事業者。"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://note.com/tatsuya_sabato/n/naf535589c0bf"]
+        evidence: >-
+          同記事（再取得200）は4073を「金融機関や決済事業者向けにソリューションを提供するフィンテック企業」と書いており、
+          小売・流通向けとは書いていない。run1〜6から変化なし。
+        action: >-
+          決算説明資料・有報の事業セグメント記述を出典にして書き直す
+
+      - id: V12
+        section: company
+        quote: "取引銀行は千葉銀行・りそな・京葉・みずほ・三井住友・三菱UFJ・三菱UFJ信託の**7行**"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.gck.co.jp/company/co-outline/"]
+        evidence: >-
+          会社概要ページを再取得（200・1,025字）。取引銀行欄に千葉銀行・りそな銀行・京葉銀行・みずほ銀行・
+          三井住友銀行・三菱UFJ銀行・三菱UFJ信託銀行の7行を確認。
+          許認可「クレジットカード番号等取扱契約締結事業者　関東（ク）第186号」も同ページにある。
+
+      # --- 財務 --------------------------------------------------------------
+      - id: V16
+        section: financials
+        quote: "下表はすべて2ソース照合済みの採用値（✓）。"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          直近4期＋来期計画の表の全マスが status OK の採用値と一致する。
+          2023/6: revenue=1549・operating_income=-273・net_income=-773・
+          equity_ratio=21.7。2024/6: 1740・58・72・23.5。
+          2025/6: 1844・-80・-146・13.5。2026/6: 2252・69・70・17.8。
+          2027/6予: revenue_plan=2751・operating_income_plan=109・
+          net_income_plan=67（自己資本比率は会社計画に無く表も「—」で整合）。
+
+      - id: V17
+        section: financials
+        quote: "会社予想に届かせるには、4-6月の3か月だけで**170百万円**が必要だった"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4073.csv"
+          - "data/tanshin/4073.csv"
+        evidence: >-
+          FY2026-06 operating_income_plan=92（status OK）。
+          3Q累計の営業利益は data/tanshin/4073.csv の2026-05-15行（definition FY2026Q3cum）
+          で-78。92-(-78)=170。「直近で最も良かった四半期（26年1-3月、68百万円）の倍以上」も Q2026-01_2026-03 operating_income=68（OK）
+          に対し170/68=2.5倍で整合する。
+
+      - id: V18
+        section: financials
+        quote: "四半期営業利益の過去最高160百万円✓（2022年4-6月期）を上回る水準"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          Q2022-04_2022-06 operating_income=160（status OK|ROUNDING）。
+          status OK の四半期営業利益ではこれが最大で、4Q実績147（OK）も超えていない。
+          170>160 で「上回る水準」と整合する。
+
+      - id: V30b
+        section: financials
+        quote: "**当期純利益（70百万円✓）だけは予想を上回っている**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          FY2026-06 の実績と決算前予想（いずれも status OK）: net_income 70 > net_income_plan 54。
+          revenue 2252 < plan 2403、operating_income 69 < plan 92、
+          ordinary_income 33 < plan 55 で他3項目は未達。
+          本文の「売上・営業利益・経常利益（33百万円✓）のいずれも予想を下回った」とも一致する。
+
+      - id: V31
+        section: financials
+        quote: "4Q単体の営業利益は**147百万円✓**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          Q2026-04_2026-06 operating_income=147（status OK）。
+          通期69 − 3Q累計(-78) = 147 とも整合する。
+
+      - id: V32
+        section: financials
+        quote: "| 自己資本比率 | 17.8% | 9.9% | 期末✓／3Q※ |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          期末 FY2026-06 equity_ratio=17.8（OK）・interest_bearing_debt_ratio=3.7508（OK。
+          表の3.75倍と整合）・retained_earnings=-410（OK）。
+          3Q側 C2025-07_2026-03 は equity_ratio=9.9・interest_bearing_debt_ratio=7.99・
+          retained_earnings=-579 でいずれも status SINGLE_SOURCE。
+          表の「期末✓／3Q※」と凡例（※=未照合・参考値）の明示は今回の本文でも維持されている。
+
+      - id: V35
+        section: financials
+        quote: "2023年−251✓／2024年+63✓／2025年−229✓百万円と直近3期のうち2期でマイナスだったが、2026年6月期は**+162百万円✓とプラスに転じた**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          operating_cf: FY2023-06=-251（OK）・FY2024-06=63（OK）・FY2025-06=-229（OK）
+          ・FY2026-06=162（OK|ROUNDING）。
+          続く「フリーキャッシュフローも+32百万円✓」「財務活動によるキャッシュフローが−158百万円✓」「現金残高は前期末の742百万円✓から616百万円✓へ減少」もfree_cf=32（OK）
+          ・financing_cf=-158（OK）・cash_equivalents FY2025-06=742（OK）
+          →FY2026-06=616（OK）と一致。
+
+      - id: V44
+        section: financials
+        quote: "4-6月期が最大だったのは直近5年〈2022〜2026年6月期〉で3年〈2022・2025・2026年6月期〉。2026年6月期の4Qは759百万円で単四半期として過去最高"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4073.csv"]
+        evidence: >-
+          status OK の四半期売上高で年度別の最大四半期を数え直すと、FY2022は4-6月(570)、FY2023は1-3月(496)、
+          FY2024は7-9月(517)、FY2025は4-6月(565)、FY2026は4-6月(759)が最大。
+          4-6月期が最大なのはFY2022・FY2025・FY2026の3年で本文と一致。
+          759は全四半期を通じた最大値（次点は Q2026-01_2026-03 の723）で「単四半期として過去最高」も成立する。
+
+      - id: V45
+        section: financials
+        quote: "期末時点で約4.1億円のマイナスとなっている繰越利益剰余金（欠損）を埋めること"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520281.pdf"]
+        evidence: >-
+          PDFを再取得（200）し、本文を pypdf でテキスト化して読んだ。
+          1.目的に「2026年６月期末において繰越利益剰余金はマイナス 411,913,950円となっております。
+          現在生じている繰越利益剰余金の欠損を填補し」を確認。411,913,950円≒約4.1億円で一致。
+
+      - id: V46
+        section: financials
+        quote: "資本金を4.4億円から1.0億円へ減らし、資本準備金の一部取り崩しとあわせて約4.1億円をその他資本剰余金に振り替えたうえで欠損に充当する"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520281.pdf"]
+        evidence: >-
+          同PDF本文2.に「資本金の額 440,872,250円のうち、340,872,250円」（減少後100,000,000円＝1.0億円）
+          「資本準備金の額 324,472,250円のうち、69,521,700円」「その他資本剰余金 410,393,950円」、
+          3.に「その他資本剰余金を繰越利益剰余金に振り替えることで、欠損填補に充当」を確認。
+          4.4億→1.0億・一部取り崩し・約4.1億円のいずれも一致する。
+
+      - id: V47
+        section: financials
+        quote: "処理後の繰越利益剰余金はマイナス2百万円前後まで縮む見込み"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520281.pdf"]
+        evidence: >-
+          同PDF本文3.に「振替後の繰越利益剰余金の額はマイナス1,520,000円となります」を確認。
+          −1,520,000円は百万円単位に丸めると−2百万円で、「マイナス2百万円前後」という概数表現と整合する。
+
+      - id: V61
+        section: financials
+        quote: "繰越利益剰余金は−412百万円（8/14の減資・剰余金処分の開示PDF本文を直接確認・機械照合の対象外）で、採用値とほぼ整合する（定義の取り方による差とみられる）"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.release.tdnet.info/inbs/140120260814520281.pdf"
+          - "data/fundamentals/4073.csv"
+        evidence: >-
+          本文の出典表記どおり、−412百万円の出所は8/14開示の減資・剰余金処分PDF本文（「繰越利益剰余金はマイナス 411,913,950円」＝百万円単位に丸めて−412百万円）
+          で確認できる。採用値は FY2026-06 retained_earnings=-410（status OK・
+          株探とIR BANK一致）で差は約1.9百万円。「ほぼ整合する（定義の取り方による差）」と整合する。
+
+      # --- 展望とリスク ------------------------------------------------------
+      - id: V03
+        section: outlook
+        quote: "**2027年6月期に売上計上予定**である（財経新聞・フィスコ）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.zaikei.co.jp/article/20260722/862304.html"]
+        evidence: >-
+          記事本文を再取得（200）。「受注金額は4.63億円で、売上計上予定時期は27年6月期。
+          8月に公表予定の27年6月期の業績予想に織り込む予定」を確認。
+          記事提供元はフィスコ・掲載は財経新聞で出典表記とも一致。
+
+      - id: V15
+        section: outlook
+        quote: "2026年7月17日開示（一次情報・PDF本文確認済み）"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: >-
+          出典の代表取締役異動PDF（www.release.tdnet.info/inbs/140120260717596017.pdf）
+          をfetch_source.py で再取得したが **HTTP 404**（前 run では200）。
+          TDnet の保持期間（約1か月・開示日2026-07-17）を過ぎて消えたとみられ、このセッションでは本文を確かめられない。
+          run5・run6 が本文一致を記録しているが、**過去 run の記録を今回の裏付けにはしない**。
+        action: >-
+          保存済みPDFを data/sources.yaml の known_pdfs のように参照可能な場所に残すか、
+          会社サイト側の恒久URLに出典を差し替える
+
+      # --- 値動きと市場の評価 ------------------------------------------------
+      - id: V04
+        section: price
+        quote: "レーティングを出している証券会社が**0社**（強気0・中立0・弱気0）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=4073"]
+        evidence: >-
+          株予報Proを再取得（200・1,775字）。強気(5点)0人・やや強気(4点)0人・中立(3点)0人・
+          やや弱気(2点)0人・弱気(1点)0人、平均・人数とも「--」、目標株価も「--」を確認。
+          2つ目の裏付けに使っていたみんかぶは今回も403で到達できず、単独ソースでの確認。
+
+      - id: V05
+        section: price
+        quote: "| **理論株価（PBR基準・アイフィスジャパン）** | **割安** | 886円（下値目途466円／上値目途1,306円）。2026-08-26取得※ |"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=4073"]
+        evidence: >-
+          **今回の変更点**。株予報Proを本日（2026-08-26）再取得（200）した本文に「理論株価(PBR基準) | 886 円 (6.35 倍)」「上値目途 | 1,306 円 (9.36 倍)」「下値目途 | 466 円 (3.34 倍)」「理論株価 (PBR基準) | 割安」を確認。
+          ページ内の基準株価は「株価(2026/08/25) | 493 円」。
+          886円・466円・1,306円・「割安」のすべてが本文と一致する。
+          出典元がアイフィスジャパンである旨も同ページの著作権表示で確認した。
+          （前 run（2026-08-23）の再取得値は913円/468円/1,358円で、本文はその後さらに動いた値を採っている）
+        action: >-
+          front matter の `updated: 2026-08-23` が本文の取得日（2026-08-26）
+          と食い違っている。時点依存の値を取り直したなら updated も揃える
+
+      - id: V06
+        section: price
+        quote: "目標株価 641円"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: >-
+          出典のみんかぶ（minkabu.jp/stock/4073）を再取得したが HTTP 403（run3・
+          run5・run6と同じ）。この出典では確認できない。株予報Proの目標株価欄は「--」で、別ソースでも埋まらない。
+        action: >-
+          到達できるようになったら再確認する。403が続くなら出典を差し替えるか記述を落とす
+
+      - id: V07
+        section: price
+        quote: "PBR 3.54倍※"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4073"]
+        evidence: >-
+          **今回の変更点**。株探を本日（2026-08-26）再取得（200）し「PER | PBR | 利回り | 信用倍率 / 18.7 倍 | 3.54 倍 | － ％ | 22.34 倍」を確認。
+          本文の3.54倍と一致する。独立の突き合わせとして、8/14開示PDFの資本金440,872,250円＋資本準備金324,472,250円−繰越利益剰余金411,913,950円=353,430,550円 を発行済株式数2,539,060株（株探・
+          同再取得）で割るとBPS≒139.2円、株価493円（株予報Pro・2026/08/25時点）÷139.2円=3.54倍となり、
+          値の桁も基準も整合する。
+
+      - id: V66
+        section: price
+        quote: "PSR 0.73倍※"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: >-
+          PSRの出典はみんかぶ（本文の出典表でも「株価診断・個人予想・目標株価・PSR」の行）だが、再取得は HTTP 403 で到達できない。
+          株探・株予報ProにPSRの掲載は無く、今回のセッションでは0.73倍を確かめられない。
+          ※（未照合・参考値）は本文に付されている。
+        action: >-
+          みんかぶが403のままなら、PSRは時価総額÷売上高（採用値）で自前計算に置き換えるか落とす
+
+      - id: V67
+        section: price
+        quote: "本決算で自己資本が厚くなり、8月上旬の7.4倍※から下がった"
+        verdict: unsupported
+        tier: secondary
+        sources:
+          - "https://kabutan.jp/stock/?code=4073"
+          - "data/fundamentals/4073.csv"
+        evidence: >-
+          **今回の変更点**。株探の再取得（200）が示すのは現在値（PBR 3.54倍）だけで、「8月上旬の7.4倍」という過去のスナップショットはページに無く、
+          この出典では確かめられない。「自己資本が厚くなった」側は採用値で裏が取れる（equity_ratio FY2025-06=13.5 → FY2026-06=17.8、
+          retained_earnings -480 → -410、いずれも status OK）。
+          なお本文の出典表は株探の取得日を2026-08-12 と書いており、その日付は8月上旬ではなく中旬にあたる。
+        action: >-
+          過去値は取得日つきで data 側に残すか、比較を落として現在値と自己資本の増加だけを書く
+
+      - id: V09
+        section: price
+        quote: "時価総額12.5億円※（2026-08-26取得）では証券会社が調査コストを掛けられず"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4073"]
+        evidence: >-
+          **今回の変更点**。株探を本日（2026-08-26）再取得（200）し「時価総額 | 12.5 億円」「発行済株式数 | 2,539,060 株」を確認。
+          2,539,060株×493円（株予報Pro・2026/08/25終値）=12.52億円で表示とも整合する。
+          本文の12.5億円・取得日2026-08-26のいずれも一致する。
+
+      - id: V11
+        section: price
+        quote: "制度信用は**買建のみ**で売りから入れず"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4073"]
+        evidence: >-
+          株探に「証券取引所が指定する制度信用銘柄のうち、買建(信用買い)のみができる銘柄」の記載を再確認（200）。
+
+      - id: V64
+        section: price
+        quote: "週足13週移動平均の傾き：**+0.381%/週（上向き）**"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "src/judge.py"
+          - "data/prices/daily.csv"
+        evidence: >-
+          **今回の変更点**。python src/judge.py --indicators-only を実行（4073 の as_of は 2026-08-20）。
+          weekly_ma_mid_slope_pct=0.3812377741707239・weekly_ma_mid_direction=up。
+          +0.381%/週・（上向き）と一致する。前 run では −0.230%/週（下向きではなくほぼ横ばい）
+          と書かれていた箇所で、符号が反転している。
+
+      - id: V20
+        section: price
+        quote: "週足26週移動平均の傾き：**−0.252%/週（下向き）**"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "src/judge.py"
+          - "data/prices/daily.csv"
+        evidence: >-
+          **今回の変更点**。同じ実行（as_of 2026-08-20）で weekly_ma_long_slope_pct=-0.25217136722943495・
+          weekly_ma_long_direction=down。
+          −0.252%/週・（下向き）と一致する。続く「**26週線は下向き**。
+          現時点では買いで入る条件を満たしていない」も direction=down と整合する。
+
+      - id: V68
+        section: price
+        quote: "前回記載の 13週−0.230%／26週−0.546% は8月中旬時点の値"
+        verdict: unsupported
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: >-
+          judge.py --indicators-only は最新営業日（今回は2026-08-20）の指標しか出力せず、
+          基準日を遡って再計算する引数を持たない（--json / --stamps / --indicators-only のみ）。
+          したがって「8月中旬時点で13週−0.230%／26週−0.546%だった」ことは、このセッションで確かめられない。
+          レポート本文の過去の記述は根拠にできない（D45）。
+        action: >-
+          過去の指標値を本文で引くなら、基準日つきで data 側に記録するか、この括弧書きを落とす
+
+      - id: V21
+        section: price
+        quote: "20日平均売買代金は約7,400万円、**中央値は約2,200万円**（同じく2026-08-20時点）"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "src/judge.py"
+          - "data/prices/daily.csv"
+        evidence: >-
+          **今回の変更点**。同じ実行（as_of 2026-08-20）で avg_turnover_20d=74,438,400円（約7,444万円）
+          ・median_turnover_20d=22,484,000円（約2,248万円）。
+          本文の「約7,400万円」「約2,200万円」はいずれも有効数字2桁の丸めとして整合し、基準日2026-08-20も出力の as_of と一致する。
+          「平均と中央値の差は大きく」も 74,438,400 対 22,484,000（約3.3倍）で成立する。
+
+      - id: V69
+        section: price
+        quote: "8月中旬時点の中央値約470万円からは一桁上がった"
+        verdict: unsupported
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: >-
+          V68と同じ理由で、8月中旬時点の median_turnover_20d は今回のツールでは再計算できない。
+          現時点の中央値が22,484,000円であることは確認したが、比較の起点（約470万円）はこの出典では確かめられない。
+          なお 470万円→2,248万円は約4.8倍で、10倍には届かない（万円表記の桁数が3桁→4桁に変わるという意味なら成立する）。
+        action: >-
+          起点の値を基準日つきで data 側に残すか、倍率（約4.8倍）で書く
+
+      - id: V22
+        section: price
+        quote: "直近1年の値幅は、照合済みの終値で **415円〜816円**。直近の採用終値は500円（2026-08-20）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          data/prices/daily.csv の 4073・status に OK を含む行（266行）で、
+          直近52週の採用終値の最小は415円(2026-06-24)・最大は816円(2025-09-04)、最新の採用終値は2026-08-20の500円。
+          続く「下から2割ほどの位置」も (500-415)/(816-415)=21.2% で整合する。
+
+      - id: V52
+        section: price
+        quote: "**分売予定株式数**：60,000株。発行済株式数（2026-08-12時点・二次情報）に対し約2.4%※相当"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://www.release.tdnet.info/inbs/140120260814520282.pdf"
+          - "https://kabutan.jp/stock/?code=4073"
+        evidence: >-
+          立会外分売PDFを再取得（200）しテキスト化。「１． 分売予定株式数    60,000 株」を確認。
+          株探（本run再取得・200）の「発行済株式数 | 2,539,060 株」に対し 60,000/2,539,060=2.363%で「約2.4%」と整合する。
+          株数側が二次情報である旨と※も本文に明示されている。
+
+      - id: V63
+        section: price
+        quote: "**期間**：2026年8月24日（月）〜8月28日（金）。値段は分売実施日前日の終値または最終気配値を基準に決定予定。買付限度は1人1,000株"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260814520282.pdf"]
+        evidence: >-
+          同PDF本文に「２． 分売予定期間 2026 年８月24 日（月）～2026 年８月28 日（金）」「３． 分売値段 分売実施日前日の終値もしくは最終気配値を基準として決定する予定です。
+          」「４． 買付申込数量の限度  買付顧客１人につき1,000 株（売買単位：100 株）」を確認。
+          売り手が「当社の主要株主である株式会社コミューン」であること、「約定結果によっては、当社の主要株主の異動が発生する可能性があります」も同PDFで確認した。
+
+      - id: V62
+        section: price
+        quote: "信用買い残（`data/margin/4073.csv`、株探・週次）は 7/31時点の111.3千株※から8/14時点で164.4千株※へ積み上がっている"
+        verdict: supported
+        tier: dataset
+        sources: ["data/margin/4073.csv"]
+        evidence: >-
+          data/margin/4073.csv: 2026-07-31 long_balance=111.3千株（status RATIO_NA）
+          、2026-08-14 long_balance=164.4千株・short_balance=2.8千株・
+          ratio=58.71（status OK）。いずれも本文と一致する。
+          取得元は株探1系統のため本文の※（参考値）も妥当。
+
+      - id: V65
+        section: price
+        quote: "      - {label: \"理論株価\", value: 886}"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=4073"]
+        evidence: >-
+          **今回の変更点**。front matter の price_range 図のマーカー。
+          株予報Pro再取得（200）の「理論株価(PBR基準) | 886 円」と一致する（前 run で 520 のまま残っていると指摘された箇所）。
+          本文表（V05）の886円とも図と本文で食い違いがない。
+
+      # --- 出典の建て付け ----------------------------------------------------
+      - id: V24
+        section: sources
+        quote: "IR情報 | <https://www.gck.co.jp/ir/>"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://www.gck.co.jp/ir/"]
+        evidence: >-
+          一次情報として掲げられているが、再取得（200・772字）してもグローバルナビゲーションとフッターの目次だけで、
+          IRニュース・適時開示・決算短信の一覧はHTMLに含まれない（JS描画とみられる。
+          run1〜6と同じ）。このURLを根拠にできる記述は現状ゼロ。
+        action: >-
+          個別の開示PDFのURLを出典に書く。目次ページは出典として機能しない
+
+      - id: V70
+        section: sources
+        quote: "| アナリストレーティング・理論株価 | <https://kabuyoho.jp/sp/reportTarget?bcode=4073> | 2026-08-12 |"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=4073"]
+        evidence: >-
+          **今回の変更点に伴うずれ**。本文の理論株価は「2026-08-26取得※」と書き換えられたのに、出典表のこの行の取得日は 2026-08-12 のまま。
+          同じURLを本日再取得（200）した値（886円・割安）が本文に入っている以上、表の2026-08-12は現在の本文が依拠している取得日ではない。
+        action: >-
+          出典表の取得日を 2026-08-26 に揃える（本文と表で取得日が食い違っている）
+
+      - id: V71
+        section: sources
+        quote: "| 株価・信用・時価総額・比較銘柄 | <https://kabutan.jp/stock/?code=4073> | 2026-08-12 |"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4073"]
+        evidence: >-
+          **今回の変更点に伴うずれ**。本文の時価総額（12.5億円）とPBR（3.54倍）は「2026-08-26取得」と書き換えられたのに、
+          出典表のこの行の取得日は 2026-08-12 のまま。
+          同じURLを本日再取得（200）した値が本文に入っている。
+        action: >-
+          出典表の取得日を 2026-08-26 に揃える（本文と表で取得日が食い違っている）
+
+      - id: V72
+        section: sources
+        quote: "| 代表取締役の異動及び役員人事に関するお知らせ（PDF本文を直接確認） | <https://www.release.tdnet.info/inbs/140120260717596017.pdf> | 2026-08-16（開示日は2026-07-17） |"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: >-
+          一次情報として掲げられているこのURLは、本日の再取得で **HTTP 404**（前 run では200）。
+          TDnet の保持期間切れとみられる。表に載っているが、いま辿っても本文に到達できない。
+        action: >-
+          TDnet の適時開示PDFは1か月ほどで消える。保存したPDFを参照できる形にするか、会社サイト側の恒久URLに差し替える
+
 # ---------------------------------------------------------------------------
 # 判定の始末（resolutions）
 #

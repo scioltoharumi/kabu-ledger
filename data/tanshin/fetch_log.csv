@@ -2,3 +2,4 @@ disclosed_on,code,pdf_url,status,pages,text_chars,metrics_written,note,fetched_a
 2026-05-15,4073,https://www.nikkei.com/markets/ir/irftp/data/tdnr/tdnetg3/20260515/fxfcrw/140120260515536364.pdf,OK,10,8895,21,,2026-08-13T11:32:30+09:00
 2026-08-14,4073,https://www.release.tdnet.info/inbs/140120260814520260.pdf,OK,17,17513,19,,2026-08-16T11:20:21+09:00
 2026-08-13,150A,https://www.release.tdnet.info/inbs/140120260812517623.pdf,OK,13,12425,21,,2026-08-21T13:12:39+09:00
+2026-08-10,6570,https://www.release.tdnet.info/inbs/140120260810516597.pdf,OK,12,10925,10,行ラベルを解釈できない: 第2四半期(累計) / 行ラベルを解釈できない: 通期,2026-08-26T15:05:59+09:00

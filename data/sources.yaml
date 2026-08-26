@@ -612,6 +612,15 @@ tanshin:
   # 人間が実際にアクセスして中身を確認した短信PDF。**推測でURLを組み立てない**。
   # TDnet の保持期間を過ぎた開示はここからしか辿れない。
   known_pdfs:
+    "6570":
+      - url: "https://www.release.tdnet.info/inbs/140120260810516597.pdf"
+        disclosed_on: "2026-08-10"
+        title: "2027年3月期 第1四半期決算短信〔日本基準〕(連結)"
+        verified_on: "2026-08-26"
+        note: "TDnet 原本。保持期間（約31日）を過ぎると 404 になる見込みなので、
+               取り込み済みであることの記録としてここに残す（機械抽出の結果は
+               data/tanshin/6570.csv）"
+
     "4073":
       - url: "https://www.nikkei.com/markets/ir/irftp/data/tdnr/tdnetg3/20260515/fxfcrw/140120260515536364.pdf"
         disclosed_on: "2026-05-15"
