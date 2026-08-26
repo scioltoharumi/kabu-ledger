@@ -16,7 +16,9 @@
 from __future__ import annotations
 
 import html
+import re
 from dataclasses import dataclass
+from datetime import date as _date
 
 # --- 色（CSS 変数名。実体は style.py 側で light/dark を切り替える） ---
 POS = "var(--viz-pos)"
@@ -327,23 +329,47 @@ def range_pos(low: float, high: float, current: float, unit: str = "円",
     parts.append(f'<rect x="{pad_l}" y="{y}" width="{px(current) - pad_l:.1f}" '
                  f'height="{bh}" rx="6" fill="{POS}" opacity="0.35"/>')
 
-    for m in (markers or []):
+    # マーカーのラベルは値の順に置き、直前のラベルと横に重なるときは1段上げる
+    # （目標株価と理論株価が近い値のときに実際に重なった）。
+    prev_end = {0: -1e9, 1: -1e9}   # 段ごとの「直前ラベルの右端」
+    for m in sorted(markers or [], key=lambda m: float(m["value"])):
         mx = px(float(m["value"]))
+        label = str(m.get("label", ""))
         parts.append(f'<g class="viz-dot"><title>'
-                     f'{html.escape(str(m.get("label", "")))}: '
+                     f'{html.escape(label)}: '
                      f'{html.escape(_fmt(float(m["value"]), unit))}</title>'
                      f'<line x1="{mx:.1f}" y1="{y - 6}" x2="{mx:.1f}" '
                      f'y2="{y + bh + 6}" stroke="{MUTED}" stroke-width="1.5"/></g>')
-        parts.append(f'<text x="{mx:.1f}" y="{y - 12}" text-anchor="middle" '
-                     f'class="viz-tick">{html.escape(str(m.get("label", "")))}</text>')
+        half = len(label) * 15 / 2   # スマホの viz-tick 15px で見積もる
+        row = 0 if mx - half > prev_end[0] + 6 else 1
+        prev_end[row] = mx + half
+        my = y - 12 - row * 16
+        parts.append(f'<text x="{mx:.1f}" y="{my}" text-anchor="middle" '
+                     f'class="viz-tick">{html.escape(label)}</text>')
 
     cx = px(current)
     parts.append(f'<g class="viz-dot"><title>現在: '
                  f'{html.escape(_fmt(current, unit))}</title>'
                  f'<circle cx="{cx:.1f}" cy="{y + bh / 2:.1f}" r="9" '
                  f'fill="{POS}" stroke="var(--viz-surface)" stroke-width="2.5"/></g>')
-    parts.append(f'<text x="{cx:.1f}" y="{y + bh + 30:.1f}" text-anchor="middle" '
-                 f'class="viz-value">現在 {html.escape(_fmt(current, unit))}</text>')
+    # 「現在」ラベルが端の高安ラベル（2行・中央揃え）と横に重なるとき
+    # （現在値が52週高安に近い・一致するときに実際に起きた）は1段下げ、
+    # 点から縦線でつないで どの位置のラベルかを保つ。図の高さも1段ぶん伸ばす。
+    cur_text = f"現在 {_fmt(current, unit)}"
+    cw = len(cur_text) * 16 / 2      # 半幅（スマホの viz-value 16px で見積もる）
+    edge_half = 70                   # 高安ラベル（〜9文字×15px）の半幅の見積もり
+    near_edge = (cx - cw < pad_l + edge_half) or (cx + cw > W - pad_r - edge_half)
+    if near_edge:
+        cur_y = y + bh + 58.0
+        H = 150
+        parts.append(f'<line x1="{cx:.1f}" y1="{y + bh + 6:.1f}" '
+                     f'x2="{cx:.1f}" y2="{cur_y - 12:.1f}" '
+                     f'stroke="{MUTED}" stroke-width="1"/>')
+    else:
+        cur_y = y + bh + 30.0
+    ctx = min(max(cx, cw + 4), W - cw - 4)   # viewBox からはみ出させない
+    parts.append(f'<text x="{ctx:.1f}" y="{cur_y:.1f}" text-anchor="middle" '
+                 f'class="viz-value">{html.escape(cur_text)}</text>')
 
     parts.append(f'<text x="{pad_l}" y="{y + bh + 30:.1f}" text-anchor="middle" '
                  f'class="viz-tick">{html.escape(low_label)}<tspan x="{pad_l}" '
@@ -353,6 +379,248 @@ def range_pos(low: float, high: float, current: float, unit: str = "円",
                  f'{html.escape(high_label)}<tspan x="{W - pad_r}" dy="14">'
                  f'{html.escape(_fmt(high, unit))}</tspan></text>')
 
+    return _wrap("".join(parts), W, H, caption, source_note)
+
+
+# --- 時系列イベント（採用終値の折れ線に出来事を重ねる） ---------------------
+
+def _dfmt(day: str) -> str:
+    """ISO 日付を短い表示（"2026-06-24" → "26/6/24"）にする。読めなければそのまま。"""
+    try:
+        d = _date.fromisoformat(day)
+    except ValueError:
+        return day
+    return f"{d.year % 100}/{d.month}/{d.day}"
+
+
+def timeline(data: list[dict], events: list[dict], unit: str = "円",
+             caption: str = "", source_note: str = "") -> str:
+    """折れ線（採用終値）＋イベント点。ラベルは上下交互に置いて重なりを避ける。
+
+    x は日付に比例させる（等間隔だと休場・欠測で時間の感覚が歪む）。
+    日付を1つでも読めなければ等間隔に落とす（描けないよりよい）。
+    events は chartdata が配置済み（date / label / value / note）のものを受け取る。
+    """
+    pts = [(str(d.get("label", "")), float(d["value"])) for d in data
+           if d.get("value") is not None]
+    if not pts:
+        return ""
+
+    W, H = 720, 300
+    pad_l, pad_r, pad_t, pad_b = 54, 16, 34, 48
+    plot_w = W - pad_l - pad_r
+    plot_h = H - pad_t - pad_b
+
+    vals = [v for _, v in pts]
+    lo, hi = min(vals), max(vals)
+    pad_v = (hi - lo) * 0.15 or 1
+    lo, hi = lo - pad_v, hi + pad_v
+    span = (hi - lo) or 1.0
+
+    def y_of(v: float) -> float:
+        return pad_t + plot_h * ((hi - v) / span)
+
+    try:
+        ords = {day: _date.fromisoformat(day).toordinal() for day, _ in pts}
+    except ValueError:
+        ords = {}
+    days = [day for day, _ in pts]
+    if ords and max(ords.values()) > min(ords.values()):
+        o0, o1 = min(ords.values()), max(ords.values())
+
+        def x_of(day: str) -> float:
+            o = ords.get(day)
+            if o is None:
+                try:
+                    o = _date.fromisoformat(day).toordinal()
+                except ValueError:
+                    o = o0
+            return pad_l + plot_w * (min(max(o, o0), o1) - o0) / (o1 - o0)
+    else:
+        denom = max(len(days) - 1, 1)
+
+        def x_of(day: str) -> float:
+            # 等間隔モード。イベントの日は「その日以前の最後の点」に置く。
+            j = 0
+            for i, d2 in enumerate(days):
+                if d2 <= day:
+                    j = i
+            return pad_l + plot_w * j / denom
+
+    parts: list[str] = []
+
+    # 目盛（上下の端）
+    for v in (hi - pad_v, lo + pad_v):
+        y = y_of(v)
+        parts.append(f'<line x1="{pad_l}" y1="{y:.1f}" x2="{W - pad_r}" '
+                     f'y2="{y:.1f}" stroke="{GRID}" stroke-width="1"/>')
+        parts.append(f'<text x="{pad_l - 8}" y="{y + 4:.1f}" text-anchor="end" '
+                     f'class="viz-tick">{html.escape(_fmt(v, unit))}</text>')
+
+    d = " ".join(
+        ("M" if i == 0 else "L") + f"{x_of(day):.1f},{y_of(v):.1f}"
+        for i, (day, v) in enumerate(pts))
+    parts.append(f'<path d="{d}" fill="none" stroke="{POS}" stroke-width="2" '
+                 f'stroke-linejoin="round" stroke-linecap="round"/>')
+
+    # x ラベルは両端の日付だけ（毎日の点に文字を置かない）
+    parts.append(f'<text x="{pad_l}" y="{H - pad_b + 20}" text-anchor="start" '
+                 f'class="viz-tick">{html.escape(_dfmt(days[0]))}</text>')
+    parts.append(f'<text x="{W - pad_r}" y="{H - pad_b + 20}" text-anchor="end" '
+                 f'class="viz-tick">{html.escape(_dfmt(days[-1]))}</text>')
+
+    # イベント点とラベル。置いたラベルの占有矩形を覚えておき、点の上→下→さらに
+    # 上→…の順で**最初に空いた段**に置く。偶奇交互だけの旧実装は、直近に密集する
+    # イベントが x クランプで右端の同じ位置に積み重なり判読不能になった。
+    # 文字幅は viewBox 座標での最大フォント（スマホは viz-value 16px / viz-tick 15px）
+    # で見積もる。過大な見積もりは余白になるだけだが、過小は重なりに戻る。
+    placed: list[tuple[float, float, float, float]] = []   # (x0, y0, x1, y1)
+
+    def _collides(rect: tuple[float, float, float, float]) -> bool:
+        x0, y0, x1, y1 = rect
+        return any(x0 < a1 and a0 < x1 and y0 < b1 and b0 < y1
+                   for a0, b0, a1, b1 in placed)
+
+    for ev in (events or []):
+        if ev.get("value") is None:
+            continue
+        v = float(ev["value"])
+        day = str(ev.get("date", ""))
+        label = str(ev.get("label", ""))
+        x, y = x_of(day), y_of(v)
+        tip = f"{_dfmt(day)} {label}: {_fmt(v, unit)}"
+        note = str(ev.get("note", "") or "")
+        if note:
+            tip += f" — {note}"
+        parts.append(f'<g class="viz-dot"><title>{html.escape(tip)}</title>'
+                     f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5.5" fill="{POS}" '
+                     f'stroke="var(--viz-surface)" stroke-width="2"/></g>')
+
+        # ラベルは2行（名前＋日付）。半幅ぶんクランプして viewBox からはみ出させない。
+        half = max(len(label) * 16, len(_dfmt(day)) * 15) / 2
+        half = min(max(half, 30.0), plot_w / 2)
+        tx = min(max(x, pad_l + half), W - pad_r - half)
+        slots: list[float] = []
+        for k in range(6):
+            slots.append(y - 34 - k * 37)   # 上へ1段ずつ
+            slots.append(y + 26 + k * 37)   # 下へ1段ずつ
+        # 縦の段が全部ふさがっていたら横へ退避する。イベントが直近に密集すると
+        # クランプで右端の同じ x に集まり、縦の段だけでは本当に置き場が尽きる。
+        # 引き出し線が点とラベルをつなぐので、横にずれても対応は追える。
+        shifts = (0.0, -120.0, -240.0, -360.0, 120.0)
+        chosen = None
+        for dx in shifts:
+            tx2 = min(max(tx + dx, pad_l + half), W - pad_r - half)
+            for ly in slots:
+                if ly - 17 < pad_t or ly + 18 > H - pad_b:
+                    continue                # 枠外の段は使わない
+                rect = (tx2 - half, ly - 17, tx2 + half, ly + 18)
+                if not _collides(rect):
+                    chosen = (tx2, ly, rect)
+                    break
+            if chosen is not None:
+                break
+        if chosen is None:
+            # それでも置けないときは枠内の最初の段に置く（決定論。
+            # 最悪でも1件ぶんの重なりで止まり、ツールチップは常に無傷）
+            for ly in slots:
+                if ly - 17 >= pad_t and ly + 18 <= H - pad_b:
+                    chosen = (tx, ly, (tx - half, ly - 17, tx + half, ly + 18))
+                    break
+        if chosen is None:
+            continue
+        tx, ly, rect = chosen
+        placed.append(rect)
+        above = ly < y
+        # 引き出し線（点とラベルのつながりを色に頼らず示す。クランプで x が
+        # ずれたときは斜めに引いて、どの点のラベルかを保つ）
+        parts.append(f'<line x1="{x:.1f}" y1="{(y - 8) if above else (y + 8):.1f}" '
+                     f'x2="{tx:.1f}" y2="{(ly + 4) if above else (ly - 12):.1f}" '
+                     f'stroke="{MUTED}" stroke-width="1"/>')
+        parts.append(f'<text x="{tx:.1f}" y="{ly:.1f}" text-anchor="middle" '
+                     f'class="viz-value">{html.escape(label)}</text>')
+        parts.append(f'<text x="{tx:.1f}" y="{ly + 14:.1f}" text-anchor="middle" '
+                     f'class="viz-tick">{html.escape(_dfmt(day))}</text>')
+
+    return _wrap("".join(parts), W, H, caption, source_note)
+
+
+# --- 定性図（数値を持たない構造図） ----------------------------------------
+
+# chartdata._DIAGRAM_DIGIT_RE と同じ線引き（全角数字・丸数字・括弧付き数字・
+# 上付き数字も数字）。漢数字は「一部」「二本立て」など一般語に含まれるため対象外。
+_DIGIT_RE = re.compile(r"[0-9０-９①-⒛⁰-⁹¹²³]")
+
+
+def _wrap_chars(text: str, width: int) -> list[str]:
+    """文字数で折り返す（CJK 主体の等幅近似。単語境界は考えない）。"""
+    width = max(width, 2)
+    return [text[i:i + width] for i in range(0, len(text), width)] or [""]
+
+
+def diagram(steps: list[dict], caption: str = "", source_note: str = "") -> str:
+    """横並びのボックス＋矢印。**数字が1文字でも入っていたら描かない**。
+
+    数値は検証済みデータ由来の図でしか出さない（D30/D31）。chartdata 側でも
+    拒否するが、render 単体で呼ばれても嘘を描かないようここでも落とす
+    （照合を通らない値を表示側でもう一度落とす、の流儀）。
+
+    ラベル・注記は箱幅の文字数で折り返し、行数に応じて箱の高さを伸ばす。
+    1行で置くだけの旧実装は、長い注記が箱をはみ出して隣の注記と重なっていた。
+    """
+    items: list[tuple[str, str]] = []
+    for s in steps or []:
+        if not isinstance(s, dict):
+            return ""
+        label = str(s.get("label", "") or "").strip()
+        note = str(s.get("note", "") or "").strip()
+        if not label or _DIGIT_RE.search(label + note):
+            return ""
+        items.append((label, note))
+    if not items:
+        return ""
+
+    n = len(items)
+    W = 720
+    pad, gap = 14, 30
+    bw = (W - pad * 2 - gap * (n - 1)) / n
+    # 文字幅はスマホの最大フォント（viz-value 16px / viz-tick 15px）で見積もる。
+    boxes = [(_wrap_chars(label, int((bw - 16) // 16)),
+              _wrap_chars(note, int((bw - 16) // 15)) if note else [])
+             for label, note in items]
+    LH_LABEL, LH_NOTE = 19, 16
+    th = max(LH_LABEL * len(ls) + (4 + LH_NOTE * len(ns) if ns else 0)
+             for ls, ns in boxes)
+    y, bh = 26, th + 26
+    H = y + bh + 26
+    cy = y + bh / 2
+    parts: list[str] = []
+    for i, (label_lines, note_lines) in enumerate(boxes):
+        x = pad + i * (bw + gap)
+        if i:
+            ax0, ax1 = x - gap + 5, x - 5
+            parts.append(f'<line x1="{ax0:.1f}" y1="{cy:.1f}" '
+                         f'x2="{ax1 - 6:.1f}" y2="{cy:.1f}" '
+                         f'stroke="{MUTED}" stroke-width="2"/>')
+            parts.append(f'<path d="M{ax1:.1f},{cy:.1f} l-8,-5 l0,10 z" '
+                         f'fill="{MUTED}"/>')
+        parts.append(f'<rect x="{x:.1f}" y="{y}" width="{bw:.1f}" height="{bh}" '
+                     f'rx="8" fill="{GRID}" opacity="0.45" stroke="{AXIS}"/>')
+        tx = x + bw / 2
+        own = (LH_LABEL * len(label_lines)
+               + (4 + LH_NOTE * len(note_lines) if note_lines else 0))
+        ty = cy - own / 2 + 14          # 先頭行のベースライン（箱内で上下中央）
+        for ln in label_lines:
+            parts.append(f'<text x="{tx:.1f}" y="{ty:.1f}" text-anchor="middle" '
+                         f'class="viz-value">{html.escape(ln)}</text>')
+            ty += LH_LABEL
+        if note_lines:
+            ty += 4 - (LH_LABEL - LH_NOTE)
+            for ln in note_lines:
+                parts.append(f'<text x="{tx:.1f}" y="{ty:.1f}" '
+                             f'text-anchor="middle" class="viz-tick">'
+                             f'{html.escape(ln)}</text>')
+                ty += LH_NOTE
     return _wrap("".join(parts), W, H, caption, source_note)
 
 
@@ -382,6 +650,11 @@ def render(spec: dict) -> str:
         return progress(float(spec["done"]), float(spec["target"]), unit,
                         spec.get("done_label", "実績"),
                         spec.get("rest_label", "残り"), caption, note)
+    if kind == "timeline":
+        return timeline(spec.get("data", []), spec.get("events", []),
+                        unit or "円", caption, note)
+    if kind == "diagram":
+        return diagram(spec.get("steps", []), caption, note)
     if kind == "range":
         need = ("low", "high", "current")
         if any(spec.get(k) is None for k in need):

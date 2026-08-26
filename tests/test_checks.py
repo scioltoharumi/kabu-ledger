@@ -1558,6 +1558,74 @@ def test_report_extraction_failure_is_warned():
     expect(rep, checks.WARN, "report", "数値を1件も抽出できていない")
 
 
+# --- 図型2種（timeline / diagram）の書き方 -----------------------------------
+#
+# 値そのものは chartdata が検証済み CSV から引くか、そもそも持たない（diagram）。
+# checks が見るのは書き方だけ: 数字の混入した定性図は chartdata / chart の
+# 両方が描画を拒否するので、黙って「描けず」になる前に名指しで知らせる。
+
+def _diagram_front(note: str) -> str:
+    return ('code: "4073"\nname: "テスト"\n'
+            'charts:\n'
+            '  biz_model:\n'
+            '    type: diagram\n'
+            '    steps:\n'
+            f'      - {{label: "開発案件", note: "{note}"}}\n')
+
+
+def test_report_diagram_with_digits_is_flagged():
+    def m(d):
+        write_report(d, _diagram_front("1件あたり大きい"))
+    rep = run(make_data(m))
+    expect(rep, checks.WARN, "report", "steps[0] に数字が入っている")
+
+
+def test_report_diagram_without_digits_is_quiet():
+    """対照: 数字の無い定性図に誤検知しない。"""
+    def m(d):
+        write_report(d, _diagram_front("案件ごとに大きく入る"))
+    rep = run(make_data(m))
+    expect_none(rep, checks.WARN, "report", "数字が入っている")
+
+
+def _timeline_front(events: str) -> str:
+    return ('code: "4073"\nname: "テスト"\n'
+            'charts:\n'
+            '  events_52w:\n'
+            '    type: timeline\n'
+            '    source: {dataset: prices, window_weeks: 52}\n'
+            '    events:\n'
+            + events)
+
+
+def test_report_timeline_unsorted_events_are_flagged():
+    """events は日付昇順で書く（periods の昇順規則と同じ）。"""
+    def m(d):
+        write_report(d, _timeline_front(
+            '      - {date: "2026-07-21", label: "大型案件"}\n'
+            '      - {date: "2026-06-24", label: "安値"}\n'))
+    rep = run(make_data(m))
+    expect(rep, checks.WARN, "report", "日付の昇順でない")
+
+
+def test_report_timeline_bad_event_date_is_flagged():
+    def m(d):
+        write_report(d, _timeline_front(
+            '      - {date: "来週", label: "出来事"}\n'))
+    rep = run(make_data(m))
+    expect(rep, checks.WARN, "report", "date を読めない")
+
+
+def test_report_timeline_sorted_events_are_quiet():
+    """対照: 昇順で日付が読めるなら図型の指摘は出ない。"""
+    def m(d):
+        write_report(d, _timeline_front(
+            '      - {date: "2026-06-24", label: "安値"}\n'
+            '      - {date: "2026-07-21", label: "大型案件"}\n'))
+    rep = run(make_data(m))
+    expect_none(rep, checks.WARN, "report", "図の指定が読者の見え方と食い違う")
+
+
 def test_period_notations_are_normalized():
     """突合の土台。表記が違っても同じ期として扱えること／違う期は混ぜないこと。"""
     same = [("2026-06Q3", "26/6 3Q"), ("2026-06", "2026/6"), ("2026-06予", "26/6予")]

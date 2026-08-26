@@ -1009,3 +1009,317 @@ runs:
       sources:
       - data/fundamentals/4937.csv
       evidence: '`ls data/tanshin/` に4937.csvは存在しない（決算短信の機械取り込みが1件も無い）。「決算短信PDF本体...まだ機械で読み取っていない」という記述と一致。一方「決算補足説明資料は今回読み取り...本文に反映した」の部分は、この検証セッションの手段（fetch_source.py）ではPDFの内容を読めないため、報告書執筆時にどのような方法でPDFを読んだのかは確認できない。少なくとも本検証ツールでは同じ内容を再現できないことを申し添える。'
+  - run: '2026-08-23T16:25:00+09:00'
+    report_updated: '2026-08-23'
+    report_sha256: 1839057c4a01072c741e3e6dd563abb43286c06c096bc8b063e8aa1d18840bf5
+    verifier: kabu-ledger-verify（別コンテキスト・F3）
+    note: '2026-08-23の表記規約変更（✓※†記号の導入）に伴う全面清書後の本文に対する全量スナップショット。週次アップデート節は不変だが他の節は書き直されており、前runのclaimの多くはquoteが現在の本文に存在しない。同じ内容が言い回しを変えて残っている記述は同じidで新しいquoteに書き直し（V18/V19/V23/V24/V26/V33/V34/V35/V36/V42/V43/V44/V45/V46/V50/V56/V57/V59/V62）、本文から消えた記述のid（V17=時価総額74.7億円の旧文・V58等）は拾っていない。清書で新たに生まれた記述にはV63〜V68を割り当てた。主要な確認: (1) 8月14日の終値2,030円は前run時点のSINGLE_SOURCEから2ソース照合成立（OK）に変わっており、「13〜14日に反落」まで採用値で裏付けられるようになった。(2) FY2021-09の売上4,684百万円（46.8億円）はOK|ROUNDING|NONCONSOLIDATEDの採用値で、10年推移のピークという記述・非連結の注記の双方と整合。(3) 進捗率表（74.3%/74.5%/95.8%）が実績÷計画の単純な割り算と一致しない前runからの論点（V41/V49）は、清書後も本文がそのまま残しているため unsupported を維持。(4) みんかぶは403が3run連続で、個人予想・株価診断の行は検証不能が続く。(5) 決算補足説明資料はPDFのためテキスト化できず、PDF単独出典のセグメント別数値・四半期貸借対照表・シナジー施策の記述は unverifiable のまま。contradicted は0件。'
+    urls_refetched:
+    - url: https://kabutan.jp/stock/?code=4937
+      http_status: 200
+    - url: https://kabuyoho.jp/sp/reportTarget?bcode=4937
+      http_status: 200
+    - url: https://minkabu.jp/stock/4937
+      http_status: 403
+    - url: https://waqoo.jp/ir/
+      http_status: 200
+    - url: https://waqoo.jp/medical-support.html
+      http_status: 200
+    - url: https://waqoo.jp/dtoc.html
+      http_status: 200
+    - url: https://kabutan.jp/stock/news?code=4937
+      http_status: 200
+    - url: https://kabutan.jp/stock/news?code=4937&b=n202608100223
+      http_status: 200
+    - url: https://kabutan.jp/stock/news?code=4937&b=n202608100342
+      http_status: 200
+    - url: https://s.kabutan.jp/news/n202608100342/
+      http_status: 200
+    - url: https://news.livedoor.com/article/detail/32030572/
+      http_status: 200
+    - url: https://netkeizai.com/articles/detail/6726
+      http_status: 200
+    - url: https://maonline.jp/news/20251113j
+      http_status: 200
+    - url: https://www.nihon-ma.co.jp/news/20251213_4937-15/
+      http_status: 200
+    - url: https://maonline.jp/news/20231120f
+      http_status: 200
+    - url: https://kabutan.jp/disclosures/pdf/20260820/140120260820523833/
+      http_status: 200
+    - url: https://assets.minkabu.jp/news/article_media_content/urn:newsml:tdnet.info:20260820523833/140120260820523833.pdf
+      http_status: 200
+    - url: https://webapi.yanoshin.jp/webapi/tdnet/list/4937.json
+      http_status: 200
+    urls_delegated:
+    - url: https://irbank.net/E36697/results
+      to: data/fundamentals/4937.csv
+    - url: https://irbank.net/E36697/quarter
+      to: data/fundamentals/4937.csv
+    - url: https://kabutan.jp/stock/finance?code=4937
+      to: data/fundamentals/4937.csv
+    claims:
+    - id: V18
+      section: company
+      quote: 東証グロース上場。業種分類は「化学」。発行済株式数は約366万株※（株探）、配当は無配。
+      verdict: supported
+      tier: secondary
+      sources:
+      - https://kabutan.jp/stock/?code=4937
+      evidence: 本runで再取得（200）。「東証Ｇ」「業種 | 化学」「発行済株式数 | 3,663,068 株」（≈約366万株）、業績推移表の「１株配」列が2024.09・2025.09・予2026.09いずれも「0.0」でヒットし、記述（約366万株・無配）と一致。
+    - id: V42
+      section: company
+      quote: 8月20日の採用終値2,355円✓ベースの時価総額は約86億円※になる
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/prices/daily.csv
+      - https://kabutan.jp/stock/?code=4937
+      evidence: data/prices/daily.csv 2026-08-20行 close=2355.0(OK)。発行済株式数3,663,068株（本runの株探再取得で確認）。3,663,068×2,355=8,626,525,140円≈86.3億円≈約86億円（採用値どうしの式）。なお株探の現在表示は2,457円（8/21）ベースの「時価総額 | 90.0 億円」で、本文が基準日を明示して計算値としている読み方と整合する。
+    - id: V19
+      section: company
+      quote: 株探が「比較される銘柄」として挙げるのはアクシージア・アジュバンホールディングス・Aiロボティクス。
+      verdict: supported
+      tier: secondary
+      sources:
+      - https://kabutan.jp/stock/?code=4937
+      evidence: 本runで再取得（200）。「比較される銘柄」欄に「アクシージア , アジュバン , Ａｉロボ」とヒット。サイト上は略称表示だが、本文の「アジュバンホールディングス」「Aiロボティクス」と同一銘柄と判断できる（前々回runと同じ判断）。
+    - id: V43
+      section: company
+      quote: 2026年9月期3Q累計（2025年10月〜2026年6月）の売上構成比はメディカルサポート事業64.4%※・D2C事業26.6%※・その他（海外）8.9%※で、上場時の柱だったD2C事業をメディカルサポート事業が逆転している
+      verdict: unverifiable
+      tier: primary
+      sources: &id001
+      - https://kabutan.jp/disclosures/pdf/20260820/140120260820523833/
+      - https://assets.minkabu.jp/news/article_media_content/urn:newsml:tdnet.info:20260820523833/140120260820523833.pdf
+      evidence: 出典の決算補足説明資料はPDFで、fetch_source.pyはテキスト化しない仕様（本runでも「PDF。この道具はテキスト化しない」応答・200）。data/fundamentals/4937.csvにセグメント別項目は無い。構成比3つの合計は64.4+26.6+8.9=99.9%で内部整合するが、個々の値の真偽はこのツールでは確認できない。本文が※（未照合）と2ソース照合を経ていない旨を明示している点は適切。
+    - id: V44
+      section: company
+      quote: 売上は前年同期比でメディカルサポート事業+128.5%※・D2C事業−26.0%※（2026-08-20開示の決算補足説明資料。会社の一次資料からの転記で、2ソース照合を経ていない）
+      verdict: unverifiable
+      tier: primary
+      sources: *id001
+      evidence: V43と同じ理由。PDFをテキスト化できず、data/fundamentals/4937.csvにもセグメント別の前年同期比データは無いため、+128.5%／−26.0%の真偽をこのツールでは確認できない。
+    - id: V24
+      section: company
+      quote: 親会社グループ向けの売上が全体の何%を占めるか（関連当事者取引の金額）
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4937.csv
+      evidence: 「未確認」という自己申告の裏取り。data/fundamentals/4937.csvのmetric列に存在する項目にセグメント別売上・関連当事者取引に相当するものは無く（bps/capex/cash_equivalents/cost_ratio/eps/equity/各CF/net_assets/net_income/operating_income/ordinary_income/retained_earnings/revenue/roa/roe/sga_ratio/shareholders_equity系のみ）、data/tanshin/4937.csvも存在しない。「未確認」のままという記述と手持ちデータの状態が一致する。
+    - id: V59
+      section: company
+      quote: シナジー施策8項目のうち3項目（販売チャネル拡大・提携医院ネットワーク拡大・SBCクリニックネットワークを生かした販路拡大）が「今中間期において両社協議し連携開始」と述べているが、これは進行状況の記述であり、取引額そのものは開示されていない
+      verdict: unverifiable
+      tier: primary
+      sources: *id001
+      evidence: 決算補足説明資料（PDF）の記載内容の要約であり、fetch_source.pyはPDFをテキスト化できないため、PDFに実際にそう書かれているかを確認できない。「取引額そのものは開示されていない」という否定的主張（書かれていないこと）も同じ理由で確認も反証もできない。
+    - id: V66
+      section: financials
+      quote: '**2021年9月期の46.8億円✓がピーク**で、そこから2年で17.3億円✓まで**63%落ちた**。広告費をかけて通販で売るD2Cモデルは、広告の効率が悪化すると売上が急速に縮む。この会社はそれを実際に経験している。今期の上方修正後の予想27.5億円✓は前期比+40.3%と大きく伸びるが、**ピークの6割にすぎない**。'
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4937.csv
+      evidence: FY2016-09〜FY2025-09のrevenue採用値（statusにOKを含む）は1145/1566/2172/3386/4504/4684/2731/1726/1943/1960で、最大はFY2021-09の4684百万円=46.84億円≈46.8億円（ピーク）。FY2023-09は1726百万円=17.26億円≈17.3億円で、1726/4684-1=-63.15%≈63%減（2年）。FY2026-09 revenue_plan=2750(OK)で2750/1960-1=+40.31%≈+40.3%、2750/4684=58.7%≈6割。なおFY2016〜FY2021のstatusはNONCONSOLIDATEDフラグ付きで、本文の「2016〜2021年9月期は非連結」の注記（front matterのcaption）とも整合する。
+    - id: V20
+      section: financials
+      quote: '| 2022/9期 | 2,731 | −39 | −21 | −57 |
+
+        | 2023/9期 | 1,726 | 277 | 287 | 28 |
+
+        | 2024/9期 | 1,943 | 56 | 57 | −17 |
+
+        | 2025/9期 | 1,960 | 150 | 152 | 44 |
+
+        | 2026/9期（会社予想） | 2,750 | 560 | 550 | 410 |'
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4937.csv
+      evidence: 本runで再照合。FY2022-09 revenue=2731/operating_income=-39/ordinary_income=-21/net_income=-57、FY2023-09 1726/277/287/28、FY2024-09 1943/56/57/-17、FY2025-09 1960/150/152/44、FY2026-09 revenue_plan=2750/operating_income_plan=560/ordinary_income_plan=550/net_income_plan=410。いずれもstatusにOKを含む採用値で全21値一致。
+    - id: V67
+      section: financials
+      quote: '**1年前（2025年4-6月）は営業利益率4.0%✓だった会社が、23.6%✓→30.6%✓と2四半期で30%台になっている**（直近1年で最も低かったのは2025年10-12月の−8.1%✓）'
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4937.csv
+      evidence: 'operating_marginの採用値: Q2025-04_2025-06=4.04(OK|ROUNDING)≈4.0%、Q2026-01_2026-03=23.56(OK|ROUNDING)≈23.6%、Q2026-04_2026-06=30.57(OK|ROUNDING)≈30.6%、Q2025-10_2025-12=-8.11(OK|ROUNDING)≈-8.1%。直近1年（Q2025-07〜Q2026-04）の採用値のあるmarginの最小は-8.11で「最も低かったのは2025年10-12月」と一致（Q2025-07_2025-09はMISMATCHで採用値なし）。'
+    - id: V68
+      section: financials
+      quote: 2024年7-9月は営業利益120百万円✓・利益率23%前後※、2025年7-9月は営業利益180百万円台※・利益率28%台※で、利益率はいずれも2つの取得元が小数点以下で食い違い採用値になっていない
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4937.csv
+      evidence: 'Q2024-07_2024-09: operating_income=120(OK|ROUNDING、kabutan_q=120/irbank_q=121)、operating_margin=MISMATCH（kabutan_q=23.1/irbank_q=23.26→23%前後・小数点以下の食い違い）。Q2025-07_2025-09: operating_income=MISMATCH（kabutan_q=182/irbank_q=184→180百万円台）、operating_margin=MISMATCH（kabutan_q=28.3/irbank_q=28.52→28%台・小数点以下の食い違い）。いずれも記述と一致。'
+    - id: V45
+      section: financials
+      quote: 同事業のセグメント利益は今期1Q −11百万円※→2Q 99百万円※→3Q 244百万円※と3四半期連続で伸びる一方、D2C事業は85→76→74百万円※とほぼ横ばいで
+      verdict: unverifiable
+      tier: primary
+      sources: *id001
+      evidence: 四半期別セグメント利益は決算補足説明資料（PDF）のみが出典で、fetch_source.pyはPDFをテキスト化できず、data/fundamentals/4937.csvにも四半期セグメント項目は無い。本文が※と「セグメント別の数値は外部2サイトが集計しておらず、2ソース照合ができない」を明示している点は適切だが、内容の真偽は確認できない。
+    - id: V39
+      section: updates
+      quote: 資料によれば3Q累計（2025年10月〜2026年6月）は売上高2,039百万円（前年同期比+54.9%）、営業利益415百万円（前年同期は△32百万円の赤字）、経常利益409百万円（同△33百万円）
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4937.csv
+      evidence: '2ソース照合済み（OK/OK|ROUNDING）の四半期採用値の合算で独立に再現できる: revenue 407+726+906=2,039。前年同期 407+427+482=1,316、(2039-1316)/1316=+54.94%≈+54.9%。operating_income -33+171+277=415、前年同期 -45+(-6.8)+20=-31.8≈△32。ordinary_income -35+169+275=409、前年同期 -46+(-8.1)+21=-33.1≈△33。すべて一致（前runと同じ結果を本runでも再計算）。'
+    - id: V40
+      section: updates
+      quote: 親会社株主に帰属する四半期純利益392百万円（同△61百万円）
+      verdict: supported
+      tier: secondary
+      sources:
+      - https://kabutan.jp/stock/news?code=4937&b=n202608100223
+      evidence: 四半期net_incomeはdata/fundamentals/4937.csvでSINGLE_SOURCEのため採用値では裏付けられない（D7）。本runで再取得（200）した株探記事に「第３四半期累計の売上高は２０億３９００万円（前年同期比５４．９％増）、最終損益は３億９２００万円の黒字（前年同期は６１００万円の最終赤字）だった」とあり、392百万円・△61百万円とも独立の二次情報源で一致。
+    - id: V41
+      section: updates
+      quote: 通期計画（8/7上方修正後）に対する進捗率は売上74.1%・営業利益74.3%・経常利益74.5%・純利益95.8%で、3Q終了時点の時間進捗75.0%とおおむね整合する（純利益だけ大きく先行）
+      verdict: unsupported
+      tier: dataset
+      sources:
+      - data/fundamentals/4937.csv
+      evidence: 実績・計画の単体値は採用値と一致する（V39・V20）。しかし単純な割り算では 2039/2750=74.145%≈74.1%（一致）、415/560=74.107%（表示74.3%・差-0.19pt）、409/550=74.364%（表示74.5%・差-0.14pt）、392/410=95.610%（表示95.8%・差-0.19pt）で、売上高以外の3項目は表示と一致しない。決算補足説明資料（PDF）が丸め前の精緻な値で計算している可能性は排除できないが、その値はこのツールでは確認できない（前runと同じ論点が本文清書後も残っている）。
+      action: 進捗率の算出根拠（丸め前の一次情報の数値）を確認するか、実績÷計画の単純な割り算に表記を揃える。
+    - id: V49
+      section: financials
+      quote: '| 売上高 | 2,039 | 2,750 | 74.1% |
+
+        | 営業利益 | 415 | 560 | 74.3% |
+
+        | 経常利益 | 409 | 550 | 74.5% |
+
+        | 当期純利益（親会社株主帰属） | 392 | 410 | **95.8%** |'
+      verdict: unsupported
+      tier: dataset
+      sources:
+      - data/fundamentals/4937.csv
+      evidence: '表の実績・計画列はデータセットで裏付けられる（V39・V20・V40参照。純利益のみ二次情報）が、進捗率列は単純な割り算と一致しない: 415/560=74.107%（表示74.3%）、409/550=74.364%（表示74.5%）、392/410=95.610%（表示95.8%）。売上高のみ2039/2750=74.145%≈74.1%で一致。V41と同一の論点。'
+      action: 'V41と同じ: 算出根拠を確認するか表記を揃える。'
+    - id: V50
+      section: financials
+      quote: 4-6月の売上だけは資料905※・採用値906✓と1百万円の差があるが、端数処理の違いとみられる
+      verdict: unverifiable
+      tier: primary
+      sources: *id001
+      evidence: CSV側の906百万円（Q2026-04_2026-06 revenue、OK）は確認できる。しかしPDFが実際に「905」と記載しているかはテキスト化できないため確認できず、差の原因を「端数処理の違いとみられる」とする推測部分も未検証のまま。本文が「とみられる」と推測を明示している点は適切。
+    - id: V46
+      section: financials
+      quote: 同じ四半期貸借対照表では3Q末に+54百万円※とプラスへ転換しているが、一次資料のみの数値であり、確定値は本決算（9月期末）の開示を待つ
+      verdict: unverifiable
+      tier: primary
+      sources: *id001
+      evidence: 起点のFY2025-09期末の剰余金-338百万円はdata/fundamentals/4937.csvの採用値と一致するが、3Q末+54百万円は決算補足説明資料（PDF）のみが出典で、fetch_source.pyはPDFをテキスト化できず確認できない。本文が「一次資料のみ・確定値は本決算待ち」と限定している点は適切。
+      action: 本決算（9月期末）開示後、2ソース照合済みのFY値で確定させる。
+    - id: V23
+      section: financials
+      quote: '| 売上原価率 | **食い違い** | 2022〜2025年9月期の4期すべてで IR BANK の2つのページどうしが食い違っている。同じサイトの中で矛盾しているため、原価構造は本レポートで扱わない |
+
+        | 2025年7-9月期の営業利益 | **食い違い** | 株探182／IR BANK 184百万円。図では空けてある |
+
+        | ROE | **食い違い** | 2025年9月期で株探2.09%／IR BANK 2.12% |
+
+        | 自己資本の金額・純資産 | **1サイトのみ** | 照合が成立していない |'
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4937.csv
+      evidence: '本runで再照合。cost_ratio: FY2022-09〜FY2025-09の4期すべてstatus=MISMATCHで、いずれもirbank_pl_comprehensiveとirbank_q（同一サイト内の2ページ）の食い違い。Q2025-07_2025-09 operating_income: MISMATCH（kabutan_q=182/irbank_q=184）。FY2025-09 roe: MISMATCH（kabutan_fy_profit=2.09/irbank_pl_comprehensive=2.12）。FY2025-09 equity: SINGLE_SOURCE（kabutan_bsのみ）、net_assets/shareholders_equityもirbank_bsのみのSINGLE_SOURCE。4行すべて一致。'
+    - id: V36
+      section: financials
+      quote: '| BPSの別値 | **食い違い** | 株予報Proは BPS 700円・PBR 3.07倍とする（2026-08-13取得）。採用値591.15円との差は算出の基準時点の違いとみられるが、確認していない。どちらも本文で断定形には使っていない |'
+      verdict: superseded
+      tier: secondary
+      sources:
+      - https://kabuyoho.jp/sp/reportTarget?bcode=4937
+      evidence: 本runで再取得（200・2026/08/21株価2,457円時点の表示）。「BPS(実績) | 700 円」は完全一致（安定）。一方「PBR | 3.51 倍」（2,457÷700=3.510）で、本文の3.07倍（2,150÷700=3.071・2026-08-12終値ベース）から動いている。本文は取得日（2026-08-13）を明記し断定形に使っていないため、時点付きの記録として読める。採用値bps=591.15（FY2025-09、OK）との食い違いの存在自体は継続。
+    - id: V63
+      section: price
+      quote: 直近1年の値幅は、照合済みの終値で**1,110円✓（2025年9月12日）〜2,355円✓（2026年8月20日）**。いまはその高値そのものにいる。
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/prices/daily.csv
+      evidence: data/prices/daily.csvの4937行のうち直近の採用終値は2026-08-20（close=2355.0・statusにOK）。そこから遡る52週（2025-08-21以降）のstatusにOKを含む行のcloseの最小は1110.0（2025-09-12）、最大は2355.0（2026-08-20）で、値幅・日付とも一致。最大値が最新の採用終値そのものである点も「いまはその高値そのものにいる」と一致。
+    - id: V56
+      section: price
+      quote: 8月7日の開示（引け後）を起点に、8月10日ストップ高1,968円✓（+25.5%）→ 8月12日2,150円✓ → 13〜14日に反落 → 17〜20日に4営業日続伸で2,355円✓と、**約2週間で約5割上がった**
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/prices/daily.csv
+      evidence: '採用終値（statusにOK）: 08-07=1568.0→08-10=1968.0で(1968-1568)/1568=+25.51%≈+25.5%。1968=1568+400は東証の値幅制限（基準値1,568円の制限値幅400円）の上限と一致しストップ高と整合。08-12=2150.0。08-13=2038.0・08-14=2030.0と2日続落（反落。08-14は現在2ソース照合が成立しOK）。08-17=2158.0→08-18=2210.0→08-19=2265.0→08-20=2355.0の4営業日続伸。(2355-1568)/1568=+50.19%≈約5割、8/7→8/20は9営業日≈約2週間。すべて採用値どうしの式で一致。'
+    - id: V57
+      section: price
+      quote: 8月21日の終値（速報2,457円※）はまだ照合が成立しておらず、採用値になっていない
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/prices/daily.csv
+      evidence: '2026-08-21行: status=SINGLE_SOURCE、source_primary=yahoo_jp、value_primary=2457.0、source_secondary空欄・close列空欄（採用値なし）。記述と一致。'
+    - id: V64
+      section: price
+      quote: 直近1年には売買が1株も成立しなかった日が6日あり（5/26・6/10・6/23・7/1・7/17・8/3）、その日の終値は取得元1つの値※で照合を通していない
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/prices/daily.csv
+      evidence: 直近52週の4937行でvolume=0の日は2026-05-26/06-10/06-23/07-01/07-17/08-03のちょうど6日で日付が全一致。6行ともstatus=NO_TRADE（OKを含まない＝採用扱いでない）で、source_primary=kabutanのみ・source_secondary空欄。「取得元1つの値で照合を通していない」と一致。
+    - id: V33
+      section: price
+      quote: '| **個人投資家（みんかぶ）** | **売り** | 目標株価 1,452円（8月20日終値の約38%下） |
+
+        | **株価診断（みんかぶ）** | **割高** | PSR 3.80倍・PBR 3.58倍 |'
+      verdict: unverifiable
+      tier: secondary
+      sources:
+      - https://minkabu.jp/stock/4937
+      evidence: 本runで再取得も http_status=403（Forbidden）で到達不能（3run連続）。目標株価1,452円・PSR3.80倍・PBR3.58倍・「売り」「割高」のいずれも裏付けも反証もできない。なお括弧内の換算は採用終値2,355円（2026-08-20、OK）に対し1452/2355-1=-38.3%≈約38%下で、本文内の算術としては整合する（元値1,452円自体は未確認のまま）。
+      action: みんかぶが恒常的に403のため、この行の数値は取得日（2026-08-13）時点の転記のまま検証不能が続く。到達可能な代替出典を検討するか、検証不能である旨の現状の注記を維持する。
+    - id: V34
+      section: price
+      quote: '| **アナリスト（機関投資家向け）** | **カバーなし** | レーティングを出している証券会社が0社（強気0・中立0・弱気0） |'
+      verdict: supported
+      tier: secondary
+      sources:
+      - https://kabuyoho.jp/sp/reportTarget?bcode=4937
+      evidence: 本runで再取得（200）。「強気(5点) | 0 人」「やや強気(4点) | 0 人」「中立(3点) | 0 人」「やや弱気(2点) | 0 人」「弱気(1点) | 0 人」と全区分0人、「目標株価 | --」でカバーなし。一致。
+    - id: V35
+      section: price
+      quote: '| **理論株価（PBR基準・アイフィスジャパン）** | **割高** | 1,698円（下値目途1,516円／上値目途1,881円） |'
+      verdict: superseded
+      tier: secondary
+      sources:
+      - https://kabuyoho.jp/sp/reportTarget?bcode=4937
+      evidence: 本runで再取得（200・2026/08/21株価2,457円時点の表示）では「理論株価 1,760 円」「下値目途 1,413 円」「上値目途 2,106 円」「割高」。「割高」の判定は継続しているが、具体値は本文の1,698/1,516/1,881円（2026-08-13取得）から動いている。表の直前に「下表はいずれも2026-08-13取得の未照合の転記値」「再取得すれば現値との乖離はさらに広がっている可能性が高い」と明記されており、時点付きの記録として読める。
+    - id: V65
+      section: price
+      quote: 週足13週移動平均の傾きは+1.179%/週・26週+0.746%/週でいずれも上向きが続いており
+      verdict: supported
+      tier: dataset
+      sources:
+      - src/judge.py
+      evidence: '`python src/judge.py --indicators-only`（as_of自動解決=2026-08-20、4937）: weekly_ma_mid_slope_pct=1.1794007…≈+1.179、weekly_ma_long_slope_pct=0.7456451…≈+0.746、weekly_ma_mid_direction=up・weekly_ma_long_direction=up。すべて一致。'
+    - id: V26
+      section: sources
+      quote: IR情報（決算短信・適時開示） | <https://waqoo.jp/ir/> | 2026-08-13
+      verdict: unsupported
+      tier: primary
+      sources:
+      - https://waqoo.jp/ir/
+      evidence: 本runで再取得（200・448字）。ページは「IRニュース」「経営情報」「業績・財務情報」「IRライブラリ」「株式情報」等の見出しが並ぶナビゲーションのみで、決算短信・適時開示の本文・数値は無い。一次情報欄のURLとしては目次止まりの状態が3run連続で継続。
+      action: 個別のIRニュース一覧ページや直近開示（8/7の3件・8/20の決算補足説明資料）の実URLへの差し替えを引き続き推奨。
+    - id: V62
+      section: sources
+      quote: 決算短信PDF本体はまだ機械で読み取っていない
+      verdict: supported
+      tier: dataset
+      sources:
+      - data/fundamentals/4937.csv
+      evidence: data/tanshin/ に4937.csvは存在しない（150A.csv・4073.csvのみ）。決算短信の機械取り込みが1件も無い状態という自己申告と一致。関連して同じ段落の「関連当事者取引の金額はこの一次情報でも開示されていない」はPDF内容の否定的主張でこのツールでは確認できない（V59と同じ制約）。

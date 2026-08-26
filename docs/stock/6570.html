@@ -128,6 +128,22 @@ border-radius:2px;overflow-wrap:anywhere}
 .viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
 .viz-bar,.viz-dot{cursor:default}
 
+/* 検証状態の記号バッジ（✓=2ソース照合済み ※=未照合参考 †=一次情報から直接）。
+   意味は title 属性（ブラウザ標準 tooltip）と about.html の凡例が持つ。
+   上付き風に小さく出す。色: 照合済み=青（.chg-pos と同系）・参考=橙（警告系）・
+   一次情報=グレー。色だけに意味を持たせない（記号そのものが常に見える） */
+.vm{font-size:.7em;font-weight:700;vertical-align:super;line-height:1;
+padding:0 .06em;cursor:help}
+.vm-ok{color:var(--pos)}
+.vm-ref{color:var(--warn)}
+.vm-pri{color:var(--dim)}
+
+/* 週次アップデートの古い週の折りたたみ。カード（.upd）より一段控えめにして
+   「畳んであるだけで消えてはいない」ことを見せる */
+details.upd-old{background:var(--soft);border-style:dashed;
+box-shadow:none;padding:.5rem .8rem}
+details.upd-old>summary{font-weight:400}
+
 /* 折りたたみ（裏取りで「裏付けが取れた記述」を畳む。JSは使わない） */
 details{margin:1rem 0;border:1px solid var(--rule);border-radius:6px;
 padding:.5rem .8rem;background:var(--card)}
@@ -240,8 +256,8 @@ font-size:.72rem;font-weight:700}
 .viz figcaption{font-size:.78rem}
 .viz-tick{font-size:15px}.viz-value{font-size:16px}
 }
-</style></head><body><main><h1>共和コーポレーション（6570）</h1><p class="lede">東証スタンダード／レポート更新 2026-08-21<br><span class="pill pill-warn">記録が古い</span><a href="#verify">本文がこの検証のあとに書き換えられている（件数は現在の本文に適用できない）</a><br><a class="ext" href="https://www.kyowa-corp.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E33822" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://www.kyowa-corp.co.jp/business" target="_blank" rel="noopener">事業内容 ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">3,970<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+13.1%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">1,077 〜 3,970</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">記録が古い</span></span><span class="k-sub">本文が更新されてから未実施</span></div></div><blockquote>
-<p><strong>一行でいうと</strong>：長野県から全国へ広げたアミューズメント施設「アピナ」（2026年6月末時点76店舗）を運営し、クレーンゲームの景品需要で伸びている会社。ゲーム機器の販売と、ホテル・商業施設への機器の設置受託も手がける。時価総額は約192.1億円（2026-08-13の採用終値3,160円×発行済株式6,080,130株。株数は決算短信原文でも確認済み）。<strong>売上は4年で倍増し、2026年8月10日発表の1Q決算は売上+69.4%・営業利益3.2倍・経常利益3.4倍（決算短信原文で確認）。株価は週間+50.3%上げて52週高値3,160円にいる。</strong> 買収したトレカ買取店（道楽）とスクイーズ玩具の子会社（ブルーム）が上乗せしており、決算短信のセグメント情報を計算すると、1Q営業利益の増加額のうち約6割がこの「その他」区分によるものと読める（詳細は「財務の推移と健全性」節）。</p>
+</style></head><body><main><h1>共和コーポレーション（6570）</h1><p class="lede">東証スタンダード／レポート更新 2026-08-23<br>記述の裏取り <a href="#verify">34/64件が裏付けあり／30件は未確認・要修正</a><br><a class="ext" href="https://www.kyowa-corp.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E33822" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://www.kyowa-corp.co.jp/business" target="_blank" rel="noopener">事業内容 ↗</a></p><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">3,970<span class="k-unit">円</span></span><span class="k-sub">2026-08-20・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+13.1%</span></span><span class="k-sub">2026-08-19 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">1,077 〜 3,970</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">様子見(過熱)</span></span><span class="k-sub">src/judge.py の機械判定</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value">34<span class="k-unit">/64</span></span><span class="k-sub">裏付けあり／全記述</span></div></div><blockquote>
+<p><strong>一行でいうと</strong>：長野県から全国へ広げたアミューズメント施設「アピナ」（2026年6月末時点76店舗<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）を運営し、クレーンゲームの景品需要で伸びている会社。売上は4年で倍増し、直近の1Q決算（8月10日発表）は売上+69.4%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>・営業利益3.2倍<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>の大幅増益だった。株価は決算後に急騰して52週高値圏にあり、時価総額は約240億円（8/20の採用終値3,970円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>×発行済株式数<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）。</p>
 </blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W34・全 6 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W34（2026-08-17 週）</h3><p><strong>材料の開示・報道は見当たらず、週間+28.27%で急伸。理由は特定できていない</strong></p>
 <ul>
 <li>株価: 週間 +28.3%（3095→3970円・採用終値ベース、照合成立 4日、週内 3035〜3970円）</li>
@@ -250,7 +266,29 @@ font-size:.72rem;font-weight:700}
 </ul>
 <p>（解釈）直近7日のニュース見出しに該当する開示・報道は見当たらなかった（fetch_news.py確認、0件）。値動きの理由は特定できていない
 株価は3,095円→3,970円、週内3,035〜3,970円のレンジ。信用倍率3.27倍（OK）で需給面の異常な過熱シグナルは今のところ出ていない</p>
-<p><strong>次週に見ること</strong>: ① 材料が後付けで開示されないか確認 ② 急伸後の反動があるか値動きを見る</p></div><div class="upd"><h3>2026-W33（続報）</h3><p><strong>続伸で3営業日+50.4%、8月13日終値3,160円は2ソース照合済みの新高値。</strong></p>
+<p><strong>次週に見ること</strong>: ① 材料が後付けで開示されないか確認 ② 急伸後の反動があるか値動きを見る</p></div><div class="upd"><h3>2026-W33（続報4）</h3><p><strong>1Q決算で経常3.4倍増益、統計的な外れ値を伴う急騰</strong></p>
+<ul>
+<li>株価: 週間 +50.3%（2102→3160円・採用終値ベース、照合成立 3日、週内 2602〜3160円）</li>
+<li>出来高: 前週比 +1768.6%（今週 416,700株／前週 22,300株）（参考・未照合）／信用倍率: 9.13倍（買残 85.8千株・売残 9.4千株、08/07時点）（参考）</li>
+<li>判定: 「様子見(過熱)」／開示: なし</li>
+<li>ニュース: 08/10 共和コーポ、4-6月期(1Q)経常は3.4倍増益で着地 <a class="ext" href="https://kabutan.jp/stock/news?code=6570&amp;b=k202608100017" target="_blank" rel="noopener">株探 ↗</a></li>
+<li>ニュース: 08/10 共和コーポが後場急伸、記念株主優待と第1四半期大幅増収増益を好感 <a class="ext" href="https://kabutan.jp/stock/news?code=6570&amp;b=n202608100568" target="_blank" rel="noopener">株探 ↗</a></li>
+<li>ニュース: 08/10 創立40周年記念株主優待の実施に関するお知らせ <a class="ext" href="https://kabutan.jp/disclosures/pdf/20260810/140120260810516625/" target="_blank" rel="noopener">株探 ↗</a></li>
+</ul>
+<p>（解釈）週足終値は2,102円→3,160円（+50.33%）。checks.py が8/10（+23.8%・9.0σ）、8/12（+14.1%・5.4σ）を統計的な外れ値として検出しており、通常のレンジを大きく超える値動きの週だった。
+8/10付の見出しで1Q（4-6月期）経常が3.4倍増益で着地したと伝えられ、同日に創立40周年記念の株主優待実施も発表されている。両材料が重なったことが急騰の背景と読める。信用倍率9.13倍（買い残85.8千株）は前週比で大きくは動いていない模様。</p>
+<p><strong>次週に見ること</strong>: ① 1Q決算の増益内容・通期計画との整合を確認（deep_dive 対象） ② 急騰後の過熱解消（出来高・値幅）を注視</p></div><div class="upd"><h3>2026-W33（続報3）</h3><p><strong>別コンテキストの裏取りで見つかった1件を訂正する（続報2の本文は書き換えない）。</strong></p>
+<ul>
+<li>続報2の反落理由の材料探しで irbank.net のページに到達できなかったと書いたが、2026-08-16の裏取り（<code>data/verification/6570.yaml</code> V29）で再取得したところ<code>https://irbank.net/E33822</code>はhttp_status=200で正常に到達できた。到達できなかったことを裏付ける取得ログも見当たらない。一時的な問題だった可能性はあるが、この記述を根拠として引き継がないこと</li>
+</ul></div><details class="upd-old"><summary>それ以前の週次アップデート（3件）</summary><div class="upd"><h3>2026-W33（続報2）</h3><p><strong>急騰3営業日のあと、8月14日は反落。ただし未照合の参考値。</strong></p>
+<ul>
+<li>8月14日の株価は、当台帳の定期取得では<strong>kabutanが未反映でyahoo_jpの値のみ</strong>（<code>status=SINGLE_SOURCE</code>）。終値としての採用値は無く、<code>data/prices/daily.csv</code> 上は <code>close</code> 欄が空のまま。yahoo_jp基準の参考値は<strong>3,095円</strong>で、前日8月13日の採用終値3,160円から<strong>-2.06%</strong>。日中の高値3,180円・安値2,970円も参考値（<code>data/prices/daily.csv</code>、fetched_at 2026-08-16T11:07:51+09:00）</li>
+<li>同じ8月14日の値（現在値3,095円・前日比-65円/-2.06%・始値3,020円・高値3,180円[10:47]・安値2,970円[14:06]・売買高51,500株）は日本経済新聞のページでも同水準で確認できた（<a class="ext" href="https://www.nikkei.com/nkd/company/?scode=6570" target="_blank" rel="noopener">日経 ↗</a>、取得日2026-08-16）。二次情報どうしは近い値だが、当台帳の照合ルール上はkabutanとの一致が必要で、この値を2ソース照合済みの扱いにはしていない</li>
+<li>反落の理由を探したが、8月13日以降の新規開示・決算修正・その他材料は見つからなかった。企業IR公式ページのIRニュース一覧・IRカレンダーはJavaScript／画像での描画のため静的取得では中身を確認できず（前回エントリと同じ制約が継続）、irbank.netのトップページも403で到達できなかった。日本経済新聞の関連ニュース欄でも直近は7月24日付の記事が最新で、8月13日以降の新規ニュースは見当たらない（取得日2026-08-16）。<strong>理由は特定できていない。</strong> 3営業日で+50.4%上げた直後の反落であり、過熱の反動（利益確定売り）の可能性はあるが、これは根拠のない推測にとどまる（<code>assumed: true</code>）</li>
+<li>信用残は8月7日時点（買い残85.8千株・信用倍率9.13倍）から更新なし。財務数値も8月13日時点から更新なし（<code>data/margin/6570.csv</code>・<code>data/fundamentals/6570.csv</code> とも今回の取得で新規行の追加なし）</li>
+<li><code>data/master.yaml</code> を確認したが、6570には <code>next_earnings</code> の項目自体が設定されていない（他の一部銘柄には設定がある）。2Q決算の発表予定日は企業IRページからも今回確認できず、引き続き未確認のまま</li>
+</ul>
+<p><strong>次週に見ること</strong>：①8月14日の値がkabutanでも確認されて2ソース一致するか、それとも食い違い（<code>MISMATCH</code>）になるか ②反落が一時的な調整かトレンド転換の始まりか ③信用残・財務数値の次回更新の反映 ④2Q決算発表予定日の確定</p></div><div class="upd"><h3>2026-W33（続報）</h3><p><strong>続伸で3営業日+50.4%、8月13日終値3,160円は2ソース照合済みの新高値。</strong></p>
 <ul>
 <li>8月13日終値は<strong>3,160円</strong>（前日比+6.4%）で、8月12日に付けた直近1年の高値2,970円をさらに更新した。出来高は114,900株（8月10日109,800株・8月12日140,500株に続き高水準が継続。kabutan／yahoo_jpの2ソース一致で採用値、<code>data/prices/daily.csv</code>、fetched_at 2026-08-14）</li>
 <li>決算発表前の8月7日終値2,102円から3営業日で<strong>+50.4%</strong>。前回エントリで書いた「8月10日から2営業日で+41%」からさらに伸びている</li>
@@ -258,29 +296,7 @@ font-size:.72rem;font-weight:700}
 <li>信用残（8月7日時点・信用倍率9.13倍）と財務数値（8月13日時点）は前回エントリから更新なし。次回の信用残更新はこの後の週次取得で反映される見込み</li>
 <li>企業IRページ（IRニュース・適時開示・IRカレンダーの各ページ）を確認したが、一覧・カレンダーはJavaScriptで描画されており、静的な取得では8月10日以降に新規開示があるかを確認できなかった。TDnet経由の確認も本追記の時点ではできていない（<strong>未確認として残す</strong>）</li>
 </ul>
-<p><strong>次週に見ること</strong>：①2Qでの通期計画の上方修正があるか ②信用買い残の最新値（整理が進んでいるか） ③このペースの続伸が一服するか、過熱の反動が出るか</p></div><div class="upd"><h3>2026-W33（続報4）</h3><p><strong>1Q決算で経常3.4倍増益、統計的な外れ値を伴う急騰</strong></p>
-<ul>
-<li>株価: 週間 +50.3%（2102→3160円・採用終値ベース、照合成立 3日、週内 2602〜3160円）</li>
-<li>出来高: 前週比 +1768.6%（今週 416,700株／前週 22,300株）（参考・未照合）／信用倍率: 9.13倍（買残 85.8千株・売残 9.4千株、08/07時点）（参考）</li>
-<li>判定: 「様子見(過熱)」／開示: なし</li>
-<li>ニュース: 08/10 共和コーポ、4-6月期(1Q)経常は3.4倍増益で着地 <a href="https://kabutan.jp/stock/news?code=6570&amp;b=k202608100017">https://kabutan.jp/stock/news?code=6570&amp;b=k202608100017</a></li>
-<li>ニュース: 08/10 共和コーポが後場急伸、記念株主優待と第1四半期大幅増収増益を好感 <a href="https://kabutan.jp/stock/news?code=6570&amp;b=n202608100568">https://kabutan.jp/stock/news?code=6570&amp;b=n202608100568</a></li>
-<li>ニュース: 08/10 創立40周年記念株主優待の実施に関するお知らせ <a href="https://kabutan.jp/disclosures/pdf/20260810/140120260810516625/">https://kabutan.jp/disclosures/pdf/20260810/140120260810516625/</a></li>
-</ul>
-<p>（解釈）週足終値は2,102円→3,160円（+50.33%）。checks.py が8/10（+23.8%・9.0σ）、8/12（+14.1%・5.4σ）を統計的な外れ値として検出しており、通常のレンジを大きく超える値動きの週だった。
-8/10付の見出しで1Q（4-6月期）経常が3.4倍増益で着地したと伝えられ、同日に創立40周年記念の株主優待実施も発表されている。両材料が重なったことが急騰の背景と読める。信用倍率9.13倍（買い残85.8千株）は前週比で大きくは動いていない模様。</p>
-<p><strong>次週に見ること</strong>: ① 1Q決算の増益内容・通期計画との整合を確認（deep_dive 対象） ② 急騰後の過熱解消（出来高・値幅）を注視</p></div><div class="upd"><h3>2026-W33（続報3）</h3><p><strong>別コンテキストの裏取りで見つかった1件を訂正する（続報2の本文は書き換えない）。</strong></p>
-<ul>
-<li>続報2の反落理由の材料探しで irbank.net のページに到達できなかったと書いたが、2026-08-16の裏取り（<code>data/verification/6570.yaml</code> V29）で再取得したところ<code>https://irbank.net/E33822</code>はhttp_status=200で正常に到達できた。到達できなかったことを裏付ける取得ログも見当たらない。一時的な問題だった可能性はあるが、この記述を根拠として引き継がないこと</li>
-</ul></div><div class="upd"><h3>2026-W33（続報2）</h3><p><strong>急騰3営業日のあと、8月14日は反落。ただし未照合の参考値。</strong></p>
-<ul>
-<li>8月14日の株価は、当台帳の定期取得では<strong>kabutanが未反映でyahoo_jpの値のみ</strong>（<code>status=SINGLE_SOURCE</code>）。終値としての採用値は無く、<code>data/prices/daily.csv</code> 上は <code>close</code> 欄が空のまま。yahoo_jp基準の参考値は<strong>3,095円</strong>で、前日8月13日の採用終値3,160円から<strong>-2.06%</strong>。日中の高値3,180円・安値2,970円も参考値（<code>data/prices/daily.csv</code>、fetched_at 2026-08-16T11:07:51+09:00）</li>
-<li>同じ8月14日の値（現在値3,095円・前日比-65円/-2.06%・始値3,020円・高値3,180円[10:47]・安値2,970円[14:06]・売買高51,500株）は日本経済新聞のページでも同水準で確認できた（<a href="https://www.nikkei.com/nkd/company/?scode=6570">https://www.nikkei.com/nkd/company/?scode=6570</a>、取得日2026-08-16）。二次情報どうしは近い値だが、当台帳の照合ルール上はkabutanとの一致が必要で、この値を2ソース照合済みの扱いにはしていない</li>
-<li>反落の理由を探したが、8月13日以降の新規開示・決算修正・その他材料は見つからなかった。企業IR公式ページのIRニュース一覧・IRカレンダーはJavaScript／画像での描画のため静的取得では中身を確認できず（前回エントリと同じ制約が継続）、irbank.netのトップページも403で到達できなかった。日本経済新聞の関連ニュース欄でも直近は7月24日付の記事が最新で、8月13日以降の新規ニュースは見当たらない（取得日2026-08-16）。<strong>理由は特定できていない。</strong> 3営業日で+50.4%上げた直後の反落であり、過熱の反動（利益確定売り）の可能性はあるが、これは根拠のない推測にとどまる（<code>assumed: true</code>）</li>
-<li>信用残は8月7日時点（買い残85.8千株・信用倍率9.13倍）から更新なし。財務数値も8月13日時点から更新なし（<code>data/margin/6570.csv</code>・<code>data/fundamentals/6570.csv</code> とも今回の取得で新規行の追加なし）</li>
-<li><code>data/master.yaml</code> を確認したが、6570には <code>next_earnings</code> の項目自体が設定されていない（他の一部銘柄には設定がある）。2Q決算の発表予定日は企業IRページからも今回確認できず、引き続き未確認のまま</li>
-</ul>
-<p><strong>次週に見ること</strong>：①8月14日の値がkabutanでも確認されて2ソース一致するか、それとも食い違い（<code>MISMATCH</code>）になるか ②反落が一時的な調整かトレンド転換の始まりか ③信用残・財務数値の次回更新の反映 ④2Q決算発表予定日の確定</p></div><div class="upd"><h3>2026-W33（2026-08-10 週）</h3><p><strong>決算と記念優待が同じ日に出て、2日で+41%。</strong></p>
+<p><strong>次週に見ること</strong>：①2Qでの通期計画の上方修正があるか ②信用買い残の最新値（整理が進んでいるか） ③このペースの続伸が一服するか、過熱の反動が出るか</p></div><div class="upd"><h3>2026-W33（2026-08-10 週）</h3><p><strong>決算と記念優待が同じ日に出て、2日で+41%。</strong></p>
 <ul>
 <li>8月10日12時30分、2027年3月期1Q決算を発表。<strong>売上高7,383百万円（前年同期比+69.4%）、営業利益756百万円（同3.2倍）、経常利益788百万円</strong>。純利益459百万円（同3.2倍・株探）</li>
 <li>同時に<strong>創立40周年記念株主優待</strong>を発表。2026年9月末時点で100株以上を保有する株主に、子会社ブルームが展開する iBLOOM 製スクイーズと、オリジナルデザインの七味缶をセットで贈呈</li>
@@ -289,8 +305,8 @@ font-size:.72rem;font-weight:700}
 <li><strong>通期予想は据え置き</strong>（売上26,870・営業2,000・経常1,992・純利益1,219百万円）。1Qだけで営業利益の進捗率は約38%に達している</li>
 <li>出店も続いている。7月3日「アピナ小山駅前店・トレーディングカードピット小山駅前店」、7月31日「クレーンパラダイス諏訪店」、8月1日「アピナ高梁店」「トレカ道楽横浜西口店」、8月12日「MOOOSH SQUISHY SoLaDo原宿店」</li>
 </ul>
-<p><strong>次週に見ること</strong>：①2Qでの通期計画の上方修正があるか ②信用買い残（8/7時点85.8千株・信用倍率9.13倍）の整理 ③出店ペースと、それに伴う投資キャッシュフロー ④トレカ相場の動向（道楽の粗利に直結する）</p></div></div></details><details class="sec sec-wide"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">対象 FY2027-03・確認済み・変数 7 個</span></summary><div class="sec-body"><div class="est"><p class="lede"><span class="pill pill-good">マスター確認済み</span> 対象期 <b>FY2027-03</b>・起案 2026-08-17。検証済みデータと<strong>明示した仮定</strong>から機械計算した概算であり、会社計画でも的中予想でもない。<span class="pill pill-warn">推定</span> の付いた変数を疑うための頁。</p><div class="kpi"><div class="kpi-tile"><span class="k-label">推定売上</span><span class="k-value">32,433<span class="k-unit">百万円</span></span><span class="k-sub">対象期 FY2027-03</span></div><div class="kpi-tile"><span class="k-label">推定営業利益</span><span class="k-value">3,308<span class="k-unit">百万円</span></span><span class="k-sub">営業利益率 10.2%（仮定）</span></div><div class="kpi-tile"><span class="k-label">会社計画比（営業利益）</span><span class="k-value"><span class="chg-pos">+65.4%</span></span><span class="k-sub">会社計画 2,000 百万円</span></div><div class="kpi-tile"><span class="k-label">最も効く変数（売上側）</span><span class="k-value"><span class="k-value-sm">annualize</span></span><span class="k-sub">+10%で営業利益 +7.2%</span></div></div><h3>会社計画・市場予想・実績との比較（百万円）</h3><div class="scroll"><table class="prose-table est-mkt"><thead><tr><th>指標</th><th>前期実績</th><th>会社計画</th><th>市場予想</th><th>当台帳推定</th><th>市場予想比</th></tr></thead><tbody><tr><td>売上</td><td class="num">20,729</td><td class="num">26,870</td><td class="num">—</td><td class="num"><strong>32,433</strong></td><td class="num">—</td></tr><tr><td>営業利益</td><td class="num">1,757</td><td class="num">2,000</td><td class="num">—</td><td class="num"><strong>3,308</strong></td><td class="num">—</td></tr></tbody></table></div><p class="lede">市場予想: アナリストカバー0社（レーティングを出している証券会社が無いことを reports/6570.md の裏取りで確認済み・2026-08-13取得）。機関のコンセンサス予想は 存在しないため、比較対象は会社計画のみ</p><h3>計算の分解</h3><div class="scroll"><table class="prose-table est-vars"><thead><tr><th>セグメント</th><th>式（値を代入）</th><th>売上（百万円）</th></tr></thead><tbody><tr><td>アミューズメント施設運営</td><td class="num">5,085.352 × 4.57 = 23,240.0586</td><td class="num"><strong>23,240</strong></td></tr><tr><td>アミューズメント機器販売</td><td class="num">292.533 × 4 = 1,170.132</td><td class="num"><strong>1,170</strong></td></tr><tr><td>その他（道楽・ブルーム・広告等）</td><td class="num">2,005.692 × 4 = 8,022.768</td><td class="num"><strong>8,023</strong></td></tr></tbody></table></div><h3>変数と根拠</h3><p class="lede">カードを押すと、その値の置き方（メモ・出典）が開く。<span class="pill pill-warn">推定</span> の変数から疑うこと。</p><div class="var-grid"><details class="var"><summary><span class="v-seg">アミューズメント施設運営</span><code>q1_revenue</code><span class="v-val">5085.352</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上5,085,352千円（前年同期比+26.4%）。初版は店舗数から積み上げていたが、短信が施設運営セグメントの売上を実額で開示している以上、まず実額を置いて換算係数だけを仮定にするほうが仮定の数が減る <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">アミューズメント施設運営</span><code>annualize</code><span class="v-val">4.57</span><span class="pill pill-warn">推定</span></summary><div>1Q売上から通期への換算係数。道楽連結前の3期は1Qが通期売上に占める比率が21.50%（FY2023-03）・22.14%（FY2024-03）・22.02%（FY2025-03）で平均21.89%、その逆数が4.57（data/fundamentals/6570.csv の四半期売上のOK値から算出）。この比率には夏（7-9月）と冬から春（1-3月）が強い季節性と、期中の出店による成長の両方が入っている。したがって店舗数の増加率を別の変数として掛けると成長を二重に数えるため、この版では店舗数の変数を置かない。FY2026-03（21.02%＝係数4.76）は道楽の2026年2月連結で4Qが膨らみ比率が下がるため平均から外した。今期の施設運営の出店は1Q中3店に加え7〜8月にアピナ小山駅前・クレーンパラダイス諏訪・アピナ高梁の3店で、過去平均並みのペースにある（reports/6570.md 週次記録）</div></details><details class="var"><summary><span class="v-seg">アミューズメント機器販売</span><code>q1_revenue</code><span class="v-val">292.533</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上292,533千円（前年同期比+244.1%） <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">アミューズメント機器販売</span><code>annualize</code><span class="v-val">4.0</span><span class="pill pill-warn">推定</span></summary><div>案件ごとにまとまって入る受注型で四半期の季節性を判断する材料が無いため単純年率換算（×4）と置いた。施設運営に掛けた4.57は同社の四半期売上3期ぶんから実測した係数であり、内訳の四半期推移が開示されていないこのセグメントには持ち込まない（測れない季節性を推測で上乗せしない）。1Qの+244.1%が続く保証は無いが、縮むと置く根拠も無い</div></details><details class="var"><summary><span class="v-seg">その他（道楽・ブルーム・広告等）</span><code>q1_revenue</code><span class="v-val">2005.692</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上2,005,692千円（前年同期比+704.5%）。道楽の新規連結とブルームの伸びが混在 <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">その他（道楽・ブルーム・広告等）</span><code>annualize</code><span class="v-val">4.0</span><span class="pill pill-warn">推定</span></summary><div>道楽は2026年2月1日連結でFY2027は4四半期とも寄与する初年度のため、前年比の段差は通年で続く。道楽連結後の四半期が1期しか無く季節性を測れないため、1Q水準の継続（×4）と置いた。施設運営だけ4.57で当セグメントが4.0なのは方針の揺れではなく『実測できた季節性だけ入れる』という一貫した扱い。買取・物販なので実際には年末年始が強い可能性があり、その場合この×4は過小になる。逆にトレカ相場が崩れれば過大になる（感応度でいちばん効く売上側の変数がここ）</div></details><details class="var"><summary><span class="v-seg">全社</span><code>op_margin</code><span class="v-val">0.102</span><span class="pill pill-warn">推定</span></summary><div>推定売上のセグメント構成で組み直した。1Qのセグメント利益率は施設運営10.64%（541,231÷5,085,352千円）・機器販売29.06%（85,000÷292,533）・その他15.99%（320,688÷2,005,692）と大きく開いており、単一の率を総売上に掛ける近似は構成が変わるほど歪む。この版の推定売上の構成（施設運営71.7%・機器販売3.6%・その他24.7%）に各セグメント利益率を当て、全社調整額（1Q -190,617千円＝連結営業利益756,302千円−3区分合計946,919千円）を年換算×4して引くと10.28%になり、これを切り捨てて10.2%と置いた。初版の9.0%はFY2026-03実績8.48%（その他がほぼ無かった期）と1Q実績10.24%の間を取った値で、その他が通期売上の約1/4を占めるこの構成を映していなかった。なお当てた利益率は1Q（例年もっとも利益率の低い四半期。FY2026-03は1Q 5.46%に対し通期8.48%）の値なので、置き方としてはむしろ低めに出る。下振れ要因は出店の先行費用とトレカ相場、上振れ要因は下期の季節性</div></details></div><h3>感度 — この推定を最も動かす変数</h3><p class="lede">各変数を +10% したときの営業利益の変化。上にある変数ほど、根拠を厚く確かめる価値がある。ただし <code>op_margin</code> だけは別扱い——営業利益 = 売上合計 × op_margin なので +10% は定義上つねに +10% になり、売上側の変数と大小を比べても意味が無い。</p><div class="scroll"><table class="prose-table"><thead><tr><th>変数</th><th>セグメント</th><th>営業利益への影響</th></tr></thead><tbody><tr><td><code>op_margin</code></td><td>全社 <span class="pill pill-warn">定義上</span></td><td class="num">+10.0%<br><span class="k-sub">乗法モデルなので定義上つねに +10%。売上側の変数との大小比較には意味が無い（率の水準そのものを疑うこと）</span></td></tr><tr><td><code>annualize</code></td><td>アミューズメント施設運営</td><td class="num">+7.2%</td></tr><tr><td><code>q1_revenue</code></td><td>アミューズメント施設運営</td><td class="num">+7.2%</td></tr><tr><td><code>annualize</code></td><td>その他（道楽・ブルーム・広告等）</td><td class="num">+2.5%</td></tr><tr><td><code>q1_revenue</code></td><td>その他（道楽・ブルーム・広告等）</td><td class="num">+2.5%</td></tr><tr><td><code>annualize</code></td><td>アミューズメント機器販売</td><td class="num">+0.4%</td></tr></tbody></table></div><h3>推定の変遷</h3><p class="lede">過去の版は書き換えずに残す。数値感がどう変わってきたかが学習の履歴になる。</p><div class="scroll"><table class="prose-table"><thead><tr><th>起案日</th><th>対象期</th><th>売上</th><th>営業利益</th><th>何を変えたか</th></tr></thead><tbody><tr><td>2026-08-17</td><td>FY2027-03</td><td class="num">31,593</td><td class="num">2,843</td><td>初版。FY2026-03実績（data/fundamentals/6570.csv のOK値）と2027年3月期1Q決算短信のセグメント注記（2026-08-10開示）から組んだ。推定売上は会社計画26,870百万円を約+18%上回るが、これは1Q実績（売上+69.4%・営業利益進捗38%）の年率換算に対して8/10据え置きの会社計画が保守的に見えるためで、当てにいかずギャップのまま残す</td></tr><tr><td>2026-08-17</td><td>FY2027-03</td><td class="num">32,433</td><td class="num">3,308</td><td>論理レビュー反映（初版の差し替え。初版はそのまま残す）: ①施設運営の分解を stores × sales_per_store から 1Q実額×年率換算に変えた——初版は施設運営セグメントの売上を『総店舗数』で割って『総店舗数』に掛けており、7〜8月の新規6店のうち3店（トレーディングカードピット小山駅前・トレカ道楽横浜西口・MOOOSH SQUISHY SoLaDo原宿）が『その他』セグメントの店である以上、その他の出店を施設運営の増収として数える形になっていた ②年率換算の係数を四半期実績からの実測値に置き直した——初版は『1Qは通期売上の21%』を根拠に挙げながら+3%しか上乗せしておらず、根拠と値が合っていなかった（21%なら+19%相当） ③op_margin を推定売上のセグメント構成で組み直した（9.0%→10.2%）。推定売上は会社計画26,870百万円を約+21%、営業利益は2,000百万円を約+65%上回る。8/10据え置きの会社計画に対する乖離は当てにいかずギャップのまま残す</td></tr></tbody></table></div></div></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p>東証スタンダード上場、業種分類は「サービス業」。2018年に新規上場。発行済株式数6,080,130株（自己株式99,343株を含む。株探・2026-08-13取得に加え、2026年8月10日開示の2027年3月期第1四半期決算短信〔一次情報〕本文の「期末発行済株式数」欄でも同数を確認・2026-08-16取得）。直近の採用終値（2026-08-13、kabutan／yahoo_jpの2ソース照合済み）3,160円で計算すると、時価総額は約192.1億円（6,080,130×3,160＝19,213,210,800円）。株探が8月13日に表示していた192億円（同日ザラ場中の参考値）とほぼ一致する。今期の予想配当は1株40円（前期25円）。決算短信本文では中間20円・期末20円の内訳が示されている（一次情報で確認）。</p>
-<p>2026年6月末（第1四半期会計期間末）時点の総店舗数は<strong>76店舗</strong>で、当四半期中に3店舗を新規出店した（愛知県の「アピナ太田川店」など。決算短信で確認）。7月以降も出店が続いている（詳細は週次アップデート参照）。</p>
+<p><strong>次週に見ること</strong>：①2Qでの通期計画の上方修正があるか ②信用買い残（8/7時点85.8千株・信用倍率9.13倍）の整理 ③出店ペースと、それに伴う投資キャッシュフロー ④トレカ相場の動向（道楽の粗利に直結する）</p></div></details></div></details><details class="sec sec-wide"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">対象 FY2027-03・確認済み・変数 7 個</span></summary><div class="sec-body"><div class="est"><p class="lede"><span class="pill pill-good">マスター確認済み</span> 対象期 <b>FY2027-03</b>・起案 2026-08-17。検証済みデータと<strong>明示した仮定</strong>から機械計算した概算であり、会社計画でも的中予想でもない。<span class="pill pill-warn">推定</span> の付いた変数を疑うための頁。</p><div class="kpi"><div class="kpi-tile"><span class="k-label">推定売上</span><span class="k-value">32,433<span class="k-unit">百万円</span></span><span class="k-sub">対象期 FY2027-03</span></div><div class="kpi-tile"><span class="k-label">推定営業利益</span><span class="k-value">3,308<span class="k-unit">百万円</span></span><span class="k-sub">営業利益率 10.2%（仮定）</span></div><div class="kpi-tile"><span class="k-label">会社計画比（営業利益）</span><span class="k-value"><span class="chg-pos">+65.4%</span></span><span class="k-sub">会社計画 2,000 百万円</span></div><div class="kpi-tile"><span class="k-label">最も効く変数（売上側）</span><span class="k-value"><span class="k-value-sm">annualize</span></span><span class="k-sub">+10%で営業利益 +7.2%</span></div></div><h3>会社計画・市場予想・実績との比較（百万円）</h3><div class="scroll"><table class="prose-table est-mkt"><thead><tr><th>指標</th><th>前期実績</th><th>会社計画</th><th>市場予想</th><th>当台帳推定</th><th>市場予想比</th></tr></thead><tbody><tr><td>売上</td><td class="num">20,729</td><td class="num">26,870</td><td class="num">—</td><td class="num"><strong>32,433</strong></td><td class="num">—</td></tr><tr><td>営業利益</td><td class="num">1,757</td><td class="num">2,000</td><td class="num">—</td><td class="num"><strong>3,308</strong></td><td class="num">—</td></tr></tbody></table></div><p class="lede">市場予想: アナリストカバー0社（レーティングを出している証券会社が無いことを reports/6570.md の裏取りで確認済み・2026-08-13取得）。機関のコンセンサス予想は 存在しないため、比較対象は会社計画のみ</p><h3>計算の分解</h3><div class="scroll"><table class="prose-table est-vars"><thead><tr><th>セグメント</th><th>式（値を代入）</th><th>売上（百万円）</th></tr></thead><tbody><tr><td>アミューズメント施設運営</td><td class="num">5,085.352 × 4.57 = 23,240.0586</td><td class="num"><strong>23,240</strong></td></tr><tr><td>アミューズメント機器販売</td><td class="num">292.533 × 4 = 1,170.132</td><td class="num"><strong>1,170</strong></td></tr><tr><td>その他（道楽・ブルーム・広告等）</td><td class="num">2,005.692 × 4 = 8,022.768</td><td class="num"><strong>8,023</strong></td></tr></tbody></table></div><h3>変数と根拠</h3><p class="lede">カードを押すと、その値の置き方（メモ・出典）が開く。<span class="pill pill-warn">推定</span> の変数から疑うこと。</p><div class="var-grid"><details class="var"><summary><span class="v-seg">アミューズメント施設運営</span><code>q1_revenue</code><span class="v-val">5085.352</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上5,085,352千円（前年同期比+26.4%）。初版は店舗数から積み上げていたが、短信が施設運営セグメントの売上を実額で開示している以上、まず実額を置いて換算係数だけを仮定にするほうが仮定の数が減る <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">アミューズメント施設運営</span><code>annualize</code><span class="v-val">4.57</span><span class="pill pill-warn">推定</span></summary><div>1Q売上から通期への換算係数。道楽連結前の3期は1Qが通期売上に占める比率が21.50%（FY2023-03）・22.14%（FY2024-03）・22.02%（FY2025-03）で平均21.89%、その逆数が4.57（data/fundamentals/6570.csv の四半期売上のOK値から算出）。この比率には夏（7-9月）と冬から春（1-3月）が強い季節性と、期中の出店による成長の両方が入っている。したがって店舗数の増加率を別の変数として掛けると成長を二重に数えるため、この版では店舗数の変数を置かない。FY2026-03（21.02%＝係数4.76）は道楽の2026年2月連結で4Qが膨らみ比率が下がるため平均から外した。今期の施設運営の出店は1Q中3店に加え7〜8月にアピナ小山駅前・クレーンパラダイス諏訪・アピナ高梁の3店で、過去平均並みのペースにある（reports/6570.md 週次記録）</div></details><details class="var"><summary><span class="v-seg">アミューズメント機器販売</span><code>q1_revenue</code><span class="v-val">292.533</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上292,533千円（前年同期比+244.1%） <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">アミューズメント機器販売</span><code>annualize</code><span class="v-val">4.0</span><span class="pill pill-warn">推定</span></summary><div>案件ごとにまとまって入る受注型で四半期の季節性を判断する材料が無いため単純年率換算（×4）と置いた。施設運営に掛けた4.57は同社の四半期売上3期ぶんから実測した係数であり、内訳の四半期推移が開示されていないこのセグメントには持ち込まない（測れない季節性を推測で上乗せしない）。1Qの+244.1%が続く保証は無いが、縮むと置く根拠も無い</div></details><details class="var"><summary><span class="v-seg">その他（道楽・ブルーム・広告等）</span><code>q1_revenue</code><span class="v-val">2005.692</span><span class="pill">開示（一次）</span></summary><div>1Qセグメント売上2,005,692千円（前年同期比+704.5%）。道楽の新規連結とブルームの伸びが混在 <a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">その他（道楽・ブルーム・広告等）</span><code>annualize</code><span class="v-val">4.0</span><span class="pill pill-warn">推定</span></summary><div>道楽は2026年2月1日連結でFY2027は4四半期とも寄与する初年度のため、前年比の段差は通年で続く。道楽連結後の四半期が1期しか無く季節性を測れないため、1Q水準の継続（×4）と置いた。施設運営だけ4.57で当セグメントが4.0なのは方針の揺れではなく『実測できた季節性だけ入れる』という一貫した扱い。買取・物販なので実際には年末年始が強い可能性があり、その場合この×4は過小になる。逆にトレカ相場が崩れれば過大になる（感応度でいちばん効く売上側の変数がここ）</div></details><details class="var"><summary><span class="v-seg">全社</span><code>op_margin</code><span class="v-val">0.102</span><span class="pill pill-warn">推定</span></summary><div>推定売上のセグメント構成で組み直した。1Qのセグメント利益率は施設運営10.64%（541,231÷5,085,352千円）・機器販売29.06%（85,000÷292,533）・その他15.99%（320,688÷2,005,692）と大きく開いており、単一の率を総売上に掛ける近似は構成が変わるほど歪む。この版の推定売上の構成（施設運営71.7%・機器販売3.6%・その他24.7%）に各セグメント利益率を当て、全社調整額（1Q -190,617千円＝連結営業利益756,302千円−3区分合計946,919千円）を年換算×4して引くと10.28%になり、これを切り捨てて10.2%と置いた。初版の9.0%はFY2026-03実績8.48%（その他がほぼ無かった期）と1Q実績10.24%の間を取った値で、その他が通期売上の約1/4を占めるこの構成を映していなかった。なお当てた利益率は1Q（例年もっとも利益率の低い四半期。FY2026-03は1Q 5.46%に対し通期8.48%）の値なので、置き方としてはむしろ低めに出る。下振れ要因は出店の先行費用とトレカ相場、上振れ要因は下期の季節性</div></details></div><h3>感度 — この推定を最も動かす変数</h3><p class="lede">各変数を +10% したときの営業利益の変化。上にある変数ほど、根拠を厚く確かめる価値がある。ただし <code>op_margin</code> だけは別扱い——営業利益 = 売上合計 × op_margin なので +10% は定義上つねに +10% になり、売上側の変数と大小を比べても意味が無い。</p><div class="scroll"><table class="prose-table"><thead><tr><th>変数</th><th>セグメント</th><th>営業利益への影響</th></tr></thead><tbody><tr><td><code>op_margin</code></td><td>全社 <span class="pill pill-warn">定義上</span></td><td class="num">+10.0%<br><span class="k-sub">乗法モデルなので定義上つねに +10%。売上側の変数との大小比較には意味が無い（率の水準そのものを疑うこと）</span></td></tr><tr><td><code>annualize</code></td><td>アミューズメント施設運営</td><td class="num">+7.2%</td></tr><tr><td><code>q1_revenue</code></td><td>アミューズメント施設運営</td><td class="num">+7.2%</td></tr><tr><td><code>annualize</code></td><td>その他（道楽・ブルーム・広告等）</td><td class="num">+2.5%</td></tr><tr><td><code>q1_revenue</code></td><td>その他（道楽・ブルーム・広告等）</td><td class="num">+2.5%</td></tr><tr><td><code>annualize</code></td><td>アミューズメント機器販売</td><td class="num">+0.4%</td></tr></tbody></table></div><h3>推定の変遷</h3><p class="lede">過去の版は書き換えずに残す。数値感がどう変わってきたかが学習の履歴になる。</p><div class="scroll"><table class="prose-table"><thead><tr><th>起案日</th><th>対象期</th><th>売上</th><th>営業利益</th><th>何を変えたか</th></tr></thead><tbody><tr><td>2026-08-17</td><td>FY2027-03</td><td class="num">31,593</td><td class="num">2,843</td><td>初版。FY2026-03実績（data/fundamentals/6570.csv のOK値）と2027年3月期1Q決算短信のセグメント注記（2026-08-10開示）から組んだ。推定売上は会社計画26,870百万円を約+18%上回るが、これは1Q実績（売上+69.4%・営業利益進捗38%）の年率換算に対して8/10据え置きの会社計画が保守的に見えるためで、当てにいかずギャップのまま残す</td></tr><tr><td>2026-08-17</td><td>FY2027-03</td><td class="num">32,433</td><td class="num">3,308</td><td>論理レビュー反映（初版の差し替え。初版はそのまま残す）: ①施設運営の分解を stores × sales_per_store から 1Q実額×年率換算に変えた——初版は施設運営セグメントの売上を『総店舗数』で割って『総店舗数』に掛けており、7〜8月の新規6店のうち3店（トレーディングカードピット小山駅前・トレカ道楽横浜西口・MOOOSH SQUISHY SoLaDo原宿）が『その他』セグメントの店である以上、その他の出店を施設運営の増収として数える形になっていた ②年率換算の係数を四半期実績からの実測値に置き直した——初版は『1Qは通期売上の21%』を根拠に挙げながら+3%しか上乗せしておらず、根拠と値が合っていなかった（21%なら+19%相当） ③op_margin を推定売上のセグメント構成で組み直した（9.0%→10.2%）。推定売上は会社計画26,870百万円を約+21%、営業利益は2,000百万円を約+65%上回る。8/10据え置きの会社計画に対する乖離は当てにいかずギャップのまま残す</td></tr></tbody></table></div></div></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p>東証スタンダード上場（2018年新規上場）、業種分類は「サービス業」。発行済株式数は約608万株（自己株式を含む）で、株探の表示と決算短信の「期末発行済株式数」欄（PDF本文を直接確認・機械照合の対象外）が一致する。今期の予想配当は1株40円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（前期25円。中間20円・期末20円の内訳は短信PDF本文で直接確認）。</p>
+<p>2026年6月末時点の総店舗数は<strong>76店舗</strong><span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で、1Q中に3店舗を新規出店した。7月以降も出店が続いている（週次アップデート参照）。</p>
 <h3>何をして稼いでいるか — 事業は4本</h3>
 <div class="scroll"><table class="prose-table">
 <thead>
@@ -303,7 +319,7 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td><strong>アミューズメント施設運営</strong></td>
-<td>「APINA（アピナ）」ブランドのゲームセンターを、ロードサイドを中心に全国展開。バッティングセンター併設型もある。買収した YAZアミューズメント・シティエンタテインメント（2019年1月に吸収合併）の店舗は、2020年4月〜2021年4月に「アピナ」へ名称統一されている（沿革）</td>
+<td>「APINA（アピナ）」ブランドのゲームセンターを、ロードサイドを中心に全国展開。買収した2社の店舗も「アピナ」へ名称統一済み（沿革）</td>
 <td>来店客が1回ずつ払う。<strong>毎日少しずつ、継続して入る</strong></td>
 </tr>
 <tr>
@@ -324,79 +340,67 @@ font-size:.72rem;font-weight:700}
 </tbody>
 </table></div>
 <blockquote>
-<p><strong>決算短信のセグメント区分はこの4分類と一致しない</strong>：2027年3月期第1四半期決算短信（一次情報）の財務諸表上の報告セグメントは「アミューズメント施設運営事業」「アミューズメント機器販売事業」「その他」の3区分で、上表の管理委託・総合広告業・店装事業・トレーディングカード事業・ブルームの商品販売は、いずれも「その他」にまとめて計上されている。事業内容ページの4分類は会社案内としての区切り方であり、決算の数字を見るときは短信側の3区分（後述）を使う。</p>
+<p>決算短信の報告セグメントはこの4分類と一致しない。短信（PDF本文を直接確認）は「アミューズメント施設運営」「アミューズメント機器販売」「その他」の3区分で、管理委託・広告・店装・トレカ事業・ブルームはすべて「その他」に入る。決算の数字を見るときは短信側の3区分を使う。</p>
 </blockquote>
 <p>用語をその場で開くと——</p>
 <ul>
-<li><strong>景品ゲーム（プライズ）</strong>：クレーンゲームのように、プレイして景品を取る形のゲーム。いまのゲームセンターの主力で、<strong>景品の仕入れ値と客単価の差</strong>が利益になる</li>
-<li><strong>スクイーズ</strong>：握ってつぶして遊ぶ、ゆっくり戻る感触の玩具。子会社ブルームの「iBLOOM」ブランドが、クレーンゲームの景品としても店頭商品としても使われている</li>
+<li><strong>景品ゲーム（プライズ）</strong>：クレーンゲームのように、プレイして景品を取る形のゲーム。いまのゲームセンターの主力で、景品の仕入れ値と客単価の差が利益になる</li>
+<li><strong>スクイーズ</strong>：握ってつぶして遊ぶ、ゆっくり戻る感触の玩具。子会社ブルームの「iBLOOM」ブランドが、景品としても店頭商品としても使われている</li>
 </ul>
-<h3>この会社を理解するうえで大事なこと — 「稼ぎ方」は積み上げ型、「伸ばし方」は投資型</h3>
-<p>施設運営が主力なので、収入は<strong>毎日の来店から少しずつ入る</strong>。決算のたびに大きく振れる受注型の商売ではない。四半期の売上が9期連続で前年を上回っているのは、その安定性を反映している。</p>
-<p>一方で、<strong>伸ばすには店を増やすしかない</strong>。店を増やすには土地・建物・ゲーム機に先に金を出す必要がある。だからこの会社の成長は「営業キャッシュフロー（本業の現金）を、投資に注ぎ込み続けられるか」で決まる。この点は後の財務の節で数字を出す。</p>
+<h3>稼ぎ方は積み上げ型、伸ばし方は投資型</h3>
+<figure class="viz"><svg viewBox="0 0 720 152" role="img" preserveAspectRatio="xMidYMid meet"><rect x="14.0" y="26" width="210.7" height="100" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="119.3" y="61.0" text-anchor="middle" class="viz-value">借入と営業CFで出店・設</text><text x="119.3" y="80.0" text-anchor="middle" class="viz-value">備投資</text><text x="119.3" y="100.0" text-anchor="middle" class="viz-tick">先に現金が出る</text><line x1="229.7" y1="76.0" x2="243.7" y2="76.0" stroke="var(--viz-muted)" stroke-width="2"/><path d="M249.7,76.0 l-8,-5 l0,10 z" fill="var(--viz-muted)"/><rect x="254.7" y="26" width="210.7" height="100" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="360.0" y="61.0" text-anchor="middle" class="viz-value">来店客の売上が毎日積み上</text><text x="360.0" y="80.0" text-anchor="middle" class="viz-value">がる</text><text x="360.0" y="100.0" text-anchor="middle" class="viz-tick">ストック型の稼ぎ</text><line x1="470.3" y1="76.0" x2="484.3" y2="76.0" stroke="var(--viz-muted)" stroke-width="2"/><path d="M490.3,76.0 l-8,-5 l0,10 z" fill="var(--viz-muted)"/><rect x="495.3" y="26" width="210.7" height="100" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="600.7" y="53.0" text-anchor="middle" class="viz-value">稼いだ現金をまた次の出店</text><text x="600.7" y="72.0" text-anchor="middle" class="viz-value">へ</text><text x="600.7" y="92.0" text-anchor="middle" class="viz-tick">FCFはマイナスになりや</text><text x="600.7" y="108.0" text-anchor="middle" class="viz-tick">すい</text></svg><figcaption>この会社の成長循環。収入は積み上げ型、成長は投資型で、投資を続けられるかが生命線になる。</figcaption><p class="viz-src">定性図（数値を含まない）</p></figure>
+<p>施設運営が主力なので、収入は毎日の来店から少しずつ入り、受注型のような決算ごとの大きな振れは出にくい。一方で伸ばすには店を増やすしかなく、土地・建物・ゲーム機に先に現金を出す必要がある。この循環の実際の数字は「財務の推移と健全性」節で示す。</p>
 <h3>最近の伸びは「自前の成長」だけではない</h3>
-<p>直近の増収には、買収と子会社の寄与が明確に入っている。</p>
 <ul>
-<li><strong>道楽（トレカ道楽）</strong> — トレーディングカードの買取・販売会社（東京都豊島区）。2025年11月12日に買収を決議し、<strong>2026年2月1日付で全株式（60株・議決権100.0%）を取得</strong>した。展開は<strong>国内4店舗とEC</strong>（日本M&amp;Aセンター／ストライク。両記事とも2025年11月時点の記事で、取得日は「予定」として書かれている）。<strong>買収時点（2025年3月期）の道楽の売上は974百万円、営業利益18百万円、純資産82百万円</strong>——ただしこの財務3項目は<strong>ストライクにしか載っていない</strong>（日本M&amp;Aセンターの記事には財務数値が1つも無い）。<strong>2つの出典が一致した値ではない</strong>ので、断定の根拠としては1サイトぶんの重みしかない</li>
-<li><strong>ブルーム</strong> — iBLOOM ブランドのスクイーズを展開する子会社。8月10日の1Q増収要因として「ブルームの商品販売が好調」と説明されている</li>
+<li><strong>道楽（トレカ道楽）</strong> — トレーディングカードの買取・販売会社（国内4店舗とEC）。2026年2月1日付で全株式を取得し連結子会社化した。買収時点（2025年3月期）の売上9.7億円・営業利益18百万円・純資産82百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（M&amp;A仲介1サイトのみの記載で、2つめの出典が無い）</li>
+<li><strong>ブルーム</strong> — iBLOOM ブランドのスクイーズを展開する子会社。1Qの増収要因のひとつとして「商品販売が好調」と説明されている</li>
 </ul>
-<p>トレカ買取は<strong>在庫を持つ商売</strong>で、粗利はカード相場に左右される。安定した施設運営とは性質の異なる事業が加わっている点は、押さえておく必要がある。</p>
-<p><strong>決算短信のセグメント情報（一次情報）で計算すると、この「自前の成長だけではない」比重がかなり大きいと読める。</strong></p>
+<p>トレカ買取は<strong>在庫を持つ商売</strong>で、粗利はカード相場に左右される。安定した施設運営とは性質の異なる事業が加わっている。</p>
+<p>1Qのセグメント数値で見ると、この比重はかなり大きい。数値はいずれも決算短信のセグメント情報から（百万円・切り捨て。短信PDF本文を直接読んで転記した値<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で、機械照合の対象外）。</p>
 <div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>セグメント</th>
-<th style="text-align: right;">売上高（1Q・千円）</th>
+<th style="text-align: right;">売上高（百万円）</th>
 <th style="text-align: right;">前年同期比</th>
-<th style="text-align: right;">セグメント利益（1Q・千円）</th>
-<th style="text-align: right;">前年同期比</th>
+<th style="text-align: right;">セグメント利益（百万円）</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>アミューズメント施設運営</td>
-<td style="text-align: right;">5,085,352</td>
+<td style="text-align: right;">5,085</td>
 <td style="text-align: right;">+26.4%</td>
-<td style="text-align: right;">541,231</td>
-<td style="text-align: right;">+49.4%</td>
+<td style="text-align: right;">541</td>
 </tr>
 <tr>
 <td>アミューズメント機器販売</td>
-<td style="text-align: right;">292,533</td>
+<td style="text-align: right;">292</td>
 <td style="text-align: right;">+244.1%</td>
-<td style="text-align: right;">85,000</td>
-<td style="text-align: right;">+47.3%</td>
+<td style="text-align: right;">85</td>
 </tr>
 <tr>
-<td>その他（広告代理店業・トレカ事業・ブルーム・道楽）</td>
-<td style="text-align: right;">2,005,692</td>
+<td>その他（トレカ・ブルーム・広告ほか）</td>
+<td style="text-align: right;">2,005</td>
 <td style="text-align: right;">+704.5%</td>
-<td style="text-align: right;">320,688</td>
-<td style="text-align: right;">+3,854.2%</td>
+<td style="text-align: right;">320</td>
 </tr>
 <tr>
 <td>3区分合計（調整前）</td>
-<td style="text-align: right;">7,383,578</td>
+<td style="text-align: right;">7,383</td>
 <td style="text-align: right;">+69.4%</td>
-<td style="text-align: right;">946,919</td>
-<td style="text-align: right;">+121.2%（当台帳計算）</td>
+<td style="text-align: right;">946</td>
 </tr>
 </tbody>
 </table></div>
-<p>（数値は決算短信の「セグメント情報等の注記」原文より。2026-08-16取得）</p>
-<p>セグメント利益の<strong>増加額</strong>（前年同期からの差分）で見ると、施設運営が178,932千円・機器販売が27,303千円・その他が312,579千円で、3区分合計の増加額は518,813千円（この内訳の比率は施設運営34.5％・機器販売5.3％・その他60.2％）。全社の連結営業利益の増加額は517,645千円で、調整額の変動（-1,168千円）を除けばほぼ同じ規模になる。つまり<strong>1Qの営業利益の増加分のうち、およそ6割が「その他」区分の伸びで説明できる</strong>という計算になる（当台帳計算・一次情報の実額から算出）。その他の前年同期のセグメント利益はわずか8,109千円だったので、40倍近い伸びである。道楽は2026年2月1日付の買収であり前年同期（2025年4-6月）にはまだグループに入っていなかったため、この「その他」の急増は<strong>買収による非連続な増加（道楽の新規連結）とブルームの既存事業の伸びが混ざったもの</strong>と読める。短信のセグメント注記は道楽とブルームを分けて開示していないため、両者の寄与を個別に切り分けることはできない。
-一方、主力のアミューズメント施設運営事業は売上+26.4%・利益+49.4%と、それ自体は着実な伸びである。<strong>「1Q全体の増益率（経常3.4倍）＝主力事業の実力」と読むと過大評価になりうる</strong>という点は、押さえておく必要がある。</p>
+<p>前年同期からの営業利益の増加分のうち、<strong>およそ6割は「その他」区分の伸びで説明できる</strong>（当台帳計算）。道楽は前年同期にはまだ連結されていなかったため、この急増は買収による非連続な増加とブルームの伸びが混ざったものと読める（短信は両者を分けて開示していない）。主力の施設運営も売上+26.4%・利益+49.4%と着実に伸びているが、<strong>全社の増益率（経常3.4倍）をそのまま主力事業の実力と読むと過大評価になりうる</strong>。</p>
 <h3>顧客と競合</h3>
-<p>顧客は施設に来る一般消費者と、機器を買う／借りる法人。株探が「比較される銘柄」として挙げるのは GENDA・ベルトラ・コレックホールディングス。GENDA はアミューズメント施設で積極的にM&amp;Aを重ねている先で、<strong>買収による出店競争の相手</strong>にあたる。</p>
-<blockquote>
-<p><strong>未確認（一部は決算短信で判明）</strong>：決算短信のセグメント情報により「アミューズメント施設運営／機器販売／その他」の3区分の売上・利益（前掲の表）と、1Q末時点の店舗数（76店舗）は確認できた。ただし事業内容ページの4分類（管理委託と広告・店装の切り分け）はその他区分の内側に埋もれており、決算説明資料（会社は「決算説明会開催の有無：無」「決算補足説明資料作成の有無：無」と短信に明記＝今回は説明資料そのものが存在しない）でも確認できない。店舗数の四半期ごとの推移（増減の内訳）も未確認のまま。</p>
-</blockquote><h2>財務の推移と健全性</h2><h3>11年で何が起きたか</h3>
-<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">269億円</text><g class="viz-bar"><title>2016/3: 113億円</title><rect x="64.4" y="151.3" width="33.8" height="96.7" fill="var(--viz-pos)" rx="3"/></g><text x="81.2" y="268.0" text-anchor="middle" class="viz-tick">2016/3</text><g class="viz-bar"><title>2017/3: 118億円</title><rect x="118.9" y="146.7" width="33.8" height="101.3" fill="var(--viz-pos)" rx="3"/></g><text x="135.8" y="268.0" text-anchor="middle" class="viz-tick">2017/3</text><g class="viz-bar"><title>2018/3: 130億円</title><rect x="173.4" y="137.1" width="33.8" height="110.9" fill="var(--viz-pos)" rx="3"/></g><text x="190.2" y="268.0" text-anchor="middle" class="viz-tick">2018/3</text><g class="viz-bar"><title>2019/3: 115億円</title><rect x="227.9" y="149.2" width="33.8" height="98.8" fill="var(--viz-pos)" rx="3"/></g><text x="244.8" y="268.0" text-anchor="middle" class="viz-tick">2019/3</text><g class="viz-bar"><title>2020/3: 136億円</title><rect x="282.4" y="131.7" width="33.8" height="116.3" fill="var(--viz-pos)" rx="3"/></g><text x="299.2" y="268.0" text-anchor="middle" class="viz-tick">2020/3</text><g class="viz-bar"><title>2021/3: 107億円</title><rect x="336.9" y="156.3" width="33.8" height="91.7" fill="var(--viz-pos)" rx="3"/></g><text x="353.8" y="268.0" text-anchor="middle" class="viz-tick">2021/3</text><g class="viz-bar"><title>2022/3: 104億円 — 直近11年の底</title><rect x="391.4" y="159.1" width="33.8" height="88.9" fill="var(--viz-pos)" rx="3"/></g><text x="408.2" y="153.1" text-anchor="middle" class="viz-value">104億円</text><text x="408.2" y="268.0" text-anchor="middle" class="viz-tick">2022/3</text><g class="viz-bar"><title>2023/3: 124億円</title><rect x="445.9" y="141.5" width="33.8" height="106.5" fill="var(--viz-pos)" rx="3"/></g><text x="462.8" y="268.0" text-anchor="middle" class="viz-tick">2023/3</text><g class="viz-bar"><title>2024/3: 146億円</title><rect x="500.4" y="123.2" width="33.8" height="124.8" fill="var(--viz-pos)" rx="3"/></g><text x="517.2" y="268.0" text-anchor="middle" class="viz-tick">2024/3</text><g class="viz-bar"><title>2025/3: 167億円</title><rect x="554.9" y="105.0" width="33.8" height="143.0" fill="var(--viz-pos)" rx="3"/></g><text x="571.8" y="268.0" text-anchor="middle" class="viz-tick">2025/3</text><g class="viz-bar"><title>2026/3: 207億円 — 過去最高</title><rect x="609.4" y="70.6" width="33.8" height="177.4" fill="var(--viz-pos)" rx="3"/></g><text x="626.2" y="64.6" text-anchor="middle" class="viz-value">207億円</text><text x="626.2" y="268.0" text-anchor="middle" class="viz-tick">2026/3</text><g class="viz-bar"><title>2027/3予: 269億円 — 会社予想</title><rect x="663.9" y="18.0" width="33.8" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="680.8" y="12.0" text-anchor="middle" class="viz-value">269億円</text><text x="680.8" y="268.0" text-anchor="middle" class="viz-tick">2027/3予</text></svg><figcaption>売上高の11年推移。2022年3月期の103.9億円が底で、そこから4年連続で伸びて2026年3月期は207.3億円と倍増した。今期の会社予想268.7億円はさらに+29.6%。この銘柄は4銘柄のなかで唯一、素直な右肩上がりの形をしている。2019〜2021年3月期は非連結の数字が混じるため、その前後の比較はその点を差し引いて見る。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。12/12点を採用。</p></figure>
-<p><strong>2022年3月期の103.9億円が底</strong>で、そこから4年連続で伸びて2026年3月期は207.3億円と<strong>倍増</strong>した。今期の会社予想268.7億円はさらに+29.6%。</p>
-<p>四半期で見ても崩れがない。</p>
-<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">7,383百万円</text><g class="viz-bar"><title>24/4-6: 3,679百万円</title><rect x="67.8" y="133.4" width="45.1" height="114.6" fill="var(--viz-pos)" rx="3"/></g><text x="90.3" y="268.0" text-anchor="middle" class="viz-tick">24/4-6</text><g class="viz-bar"><title>24/7-9: 4,502百万円</title><rect x="140.5" y="107.8" width="45.1" height="140.2" fill="var(--viz-pos)" rx="3"/></g><text x="163.0" y="268.0" text-anchor="middle" class="viz-tick">24/7-9</text><g class="viz-bar"><title>24/10-12: 3,974百万円</title><rect x="213.1" y="124.2" width="45.1" height="123.8" fill="var(--viz-pos)" rx="3"/></g><text x="235.7" y="268.0" text-anchor="middle" class="viz-tick">24/10-12</text><g class="viz-bar"><title>25/1-3: 4,550百万円</title><rect x="285.8" y="106.3" width="45.1" height="141.7" fill="var(--viz-pos)" rx="3"/></g><text x="308.3" y="268.0" text-anchor="middle" class="viz-tick">25/1-3</text><g class="viz-bar"><title>25/4-6: 4,357百万円</title><rect x="358.5" y="112.3" width="45.1" height="135.7" fill="var(--viz-pos)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">25/4-6</text><g class="viz-bar"><title>25/7-9: 5,356百万円</title><rect x="431.1" y="81.1" width="45.1" height="166.9" fill="var(--viz-pos)" rx="3"/></g><text x="453.7" y="268.0" text-anchor="middle" class="viz-tick">25/7-9</text><g class="viz-bar"><title>25/10-12: 5,001百万円</title><rect x="503.8" y="92.2" width="45.1" height="155.8" fill="var(--viz-pos)" rx="3"/></g><text x="526.3" y="268.0" text-anchor="middle" class="viz-tick">25/10-12</text><g class="viz-bar"><title>26/1-3: 6,015百万円</title><rect x="576.5" y="60.6" width="45.1" height="187.4" fill="var(--viz-pos)" rx="3"/></g><text x="599.0" y="268.0" text-anchor="middle" class="viz-tick">26/1-3</text><g class="viz-bar"><title>26/4-6: 7,383百万円 — 直近（1Q）</title><rect x="649.1" y="18.0" width="45.1" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="671.7" y="12.0" text-anchor="middle" class="viz-value">7,383百万円</text><text x="671.7" y="268.0" text-anchor="middle" class="viz-tick">26/4-6</text></svg><figcaption>四半期ごとの売上高（3か月ぶんだけ。累計ではない）。9四半期すべてで前年の同じ四半期を上回っている。直近の2026年4-6月は7,383百万円で、前年同期4,357百万円から+69.4%。夏（7-9月）と冬から春（1-3月）が強い季節性も読み取れる。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。9/9点を採用。</p></figure>
-<p><strong>9四半期すべてで前年の同じ四半期を上回っている。</strong> 夏休みのある7-9月と、冬休み・春休みにかかる1-3月が強い季節性も見える。直近の4-6月が7,383百万円で過去最大になっているのは、季節性ではなく出店とM&amp;Aが効いている。</p>
-<h3>直近4期＋今期計画（すべて2ソース照合済み）</h3>
+<p>顧客は施設に来る一般消費者と、機器を買う／借りる法人。株探が「比較される銘柄」として挙げるのは GENDA・ベルトラ・コレックホールディングス。GENDA はアミューズメント施設で積極的にM&amp;Aを重ねており、買収による出店競争の相手にあたる。</p><h2>財務の推移と健全性</h2><h3>11年で何が起きたか</h3>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">269億円</text><g class="viz-bar"><title>2016/3: 113億円</title><rect x="64.4" y="151.3" width="33.8" height="96.7" fill="var(--viz-pos)" rx="3"/></g><text x="81.2" y="268.0" text-anchor="middle" class="viz-tick">2016/3</text><g class="viz-bar"><title>2017/3: 118億円</title><rect x="118.9" y="146.7" width="33.8" height="101.3" fill="var(--viz-pos)" rx="3"/></g><text x="135.8" y="268.0" text-anchor="middle" class="viz-tick">2017/3</text><g class="viz-bar"><title>2018/3: 130億円</title><rect x="173.4" y="137.1" width="33.8" height="110.9" fill="var(--viz-pos)" rx="3"/></g><text x="190.2" y="268.0" text-anchor="middle" class="viz-tick">2018/3</text><g class="viz-bar"><title>2019/3: 115億円</title><rect x="227.9" y="149.2" width="33.8" height="98.8" fill="var(--viz-pos)" rx="3"/></g><text x="244.8" y="268.0" text-anchor="middle" class="viz-tick">2019/3</text><g class="viz-bar"><title>2020/3: 136億円</title><rect x="282.4" y="131.7" width="33.8" height="116.3" fill="var(--viz-pos)" rx="3"/></g><text x="299.2" y="268.0" text-anchor="middle" class="viz-tick">2020/3</text><g class="viz-bar"><title>2021/3: 107億円</title><rect x="336.9" y="156.3" width="33.8" height="91.7" fill="var(--viz-pos)" rx="3"/></g><text x="353.8" y="268.0" text-anchor="middle" class="viz-tick">2021/3</text><g class="viz-bar"><title>2022/3: 104億円 — 直近11年の底</title><rect x="391.4" y="159.1" width="33.8" height="88.9" fill="var(--viz-pos)" rx="3"/></g><text x="408.2" y="153.1" text-anchor="middle" class="viz-value">104億円</text><text x="408.2" y="268.0" text-anchor="middle" class="viz-tick">2022/3</text><g class="viz-bar"><title>2023/3: 124億円</title><rect x="445.9" y="141.5" width="33.8" height="106.5" fill="var(--viz-pos)" rx="3"/></g><text x="462.8" y="268.0" text-anchor="middle" class="viz-tick">2023/3</text><g class="viz-bar"><title>2024/3: 146億円</title><rect x="500.4" y="123.2" width="33.8" height="124.8" fill="var(--viz-pos)" rx="3"/></g><text x="517.2" y="268.0" text-anchor="middle" class="viz-tick">2024/3</text><g class="viz-bar"><title>2025/3: 167億円</title><rect x="554.9" y="105.0" width="33.8" height="143.0" fill="var(--viz-pos)" rx="3"/></g><text x="571.8" y="268.0" text-anchor="middle" class="viz-tick">2025/3</text><g class="viz-bar"><title>2026/3: 207億円 — 過去最高</title><rect x="609.4" y="70.6" width="33.8" height="177.4" fill="var(--viz-pos)" rx="3"/></g><text x="626.2" y="64.6" text-anchor="middle" class="viz-value">207億円</text><text x="626.2" y="268.0" text-anchor="middle" class="viz-tick">2026/3</text><g class="viz-bar"><title>2027/3予: 269億円 — 会社予想</title><rect x="663.9" y="18.0" width="33.8" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="680.8" y="12.0" text-anchor="middle" class="viz-value">269億円</text><text x="680.8" y="268.0" text-anchor="middle" class="viz-tick">2027/3予</text></svg><figcaption>売上高の11年推移。2022年3月期の103.9億円を底に4年連続で伸び、2026年3月期は207.3億円と倍増。今期の会社予想268.7億円はさらに+29.6%。2019〜2021年3月期は非連結の数字が混じるため、その前後の比較は割り引いて見る。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。12/12点を採用。</p></figure>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">7,383百万円</text><g class="viz-bar"><title>24/4-6: 3,679百万円</title><rect x="67.8" y="133.4" width="45.1" height="114.6" fill="var(--viz-pos)" rx="3"/></g><text x="90.3" y="268.0" text-anchor="middle" class="viz-tick">24/4-6</text><g class="viz-bar"><title>24/7-9: 4,502百万円</title><rect x="140.5" y="107.8" width="45.1" height="140.2" fill="var(--viz-pos)" rx="3"/></g><text x="163.0" y="268.0" text-anchor="middle" class="viz-tick">24/7-9</text><g class="viz-bar"><title>24/10-12: 3,974百万円</title><rect x="213.1" y="124.2" width="45.1" height="123.8" fill="var(--viz-pos)" rx="3"/></g><text x="235.7" y="268.0" text-anchor="middle" class="viz-tick">24/10-12</text><g class="viz-bar"><title>25/1-3: 4,550百万円</title><rect x="285.8" y="106.3" width="45.1" height="141.7" fill="var(--viz-pos)" rx="3"/></g><text x="308.3" y="268.0" text-anchor="middle" class="viz-tick">25/1-3</text><g class="viz-bar"><title>25/4-6: 4,357百万円</title><rect x="358.5" y="112.3" width="45.1" height="135.7" fill="var(--viz-pos)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">25/4-6</text><g class="viz-bar"><title>25/7-9: 5,356百万円</title><rect x="431.1" y="81.1" width="45.1" height="166.9" fill="var(--viz-pos)" rx="3"/></g><text x="453.7" y="268.0" text-anchor="middle" class="viz-tick">25/7-9</text><g class="viz-bar"><title>25/10-12: 5,001百万円</title><rect x="503.8" y="92.2" width="45.1" height="155.8" fill="var(--viz-pos)" rx="3"/></g><text x="526.3" y="268.0" text-anchor="middle" class="viz-tick">25/10-12</text><g class="viz-bar"><title>26/1-3: 6,015百万円</title><rect x="576.5" y="60.6" width="45.1" height="187.4" fill="var(--viz-pos)" rx="3"/></g><text x="599.0" y="268.0" text-anchor="middle" class="viz-tick">26/1-3</text><g class="viz-bar"><title>26/4-6: 7,383百万円 — 直近（1Q）</title><rect x="649.1" y="18.0" width="45.1" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="671.7" y="12.0" text-anchor="middle" class="viz-value">7,383百万円</text><text x="671.7" y="268.0" text-anchor="middle" class="viz-tick">26/4-6</text></svg><figcaption>四半期ごとの売上高（3か月ぶんだけ。累計ではない）。9四半期すべてで前年同期を上回る。直近の2026年4-6月は73.8億円で前年同期比+69.4%。夏（7-9月）と冬から春（1-3月）が強い季節性も読み取れる。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。9/9点を採用。</p></figure>
+<p>年次・四半期とも崩れがない。直近の4-6月が四半期として過去最大なのは、季節性ではなく出店とM&amp;Aが効いている。</p>
+<h3>直近4期と今期計画</h3>
+<p>この表の数値はすべて2ソース照合済みの採用値<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（百万円）。</p>
 <div class="scroll"><table class="prose-table">
 <thead>
 <tr>
@@ -445,65 +449,15 @@ font-size:.72rem;font-weight:700}
 </tr>
 </tbody>
 </table></div>
-<p>この表の数値は、株探と IR BANK から別々に抜いて<strong>一致したものだけ</strong>を載せている。</p>
-<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">2,000百万円</text><g class="viz-bar"><title>2023/3: 717百万円</title><rect x="96.4" y="165.5" width="46.0" height="82.5" fill="var(--viz-pos)" rx="3"/></g><text x="119.4" y="268.0" text-anchor="middle" class="viz-tick">2023/3</text><g class="viz-bar"><title>2024/3: 1,082百万円</title><rect x="227.2" y="123.6" width="46.0" height="124.4" fill="var(--viz-pos)" rx="3"/></g><text x="250.2" y="268.0" text-anchor="middle" class="viz-tick">2024/3</text><g class="viz-bar"><title>2025/3: 1,294百万円</title><rect x="358.0" y="99.2" width="46.0" height="148.8" fill="var(--viz-pos)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">2025/3</text><g class="viz-bar"><title>2026/3: 1,757百万円 — 過去最高</title><rect x="488.8" y="45.9" width="46.0" height="202.1" fill="var(--viz-pos)" rx="3"/></g><text x="511.8" y="39.9" text-anchor="middle" class="viz-value">1,757百万円</text><text x="511.8" y="268.0" text-anchor="middle" class="viz-tick">2026/3</text><g class="viz-bar"><title>2027/3予: 2,000百万円 — 会社予想</title><rect x="619.6" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="642.6" y="12.0" text-anchor="middle" class="viz-value">2,000百万円</text><text x="642.6" y="268.0" text-anchor="middle" class="viz-tick">2027/3予</text></svg><figcaption>営業利益（本業のもうけ）。717→1,082→1,294→1,757百万円と4期連続で増えている。ただし今期の会社予想2,000百万円は前期比+13.8%にとどまり、売上の伸び（+29.6%）よりずっと小さい。会社は「売上ほどには利益が伸びない年」を計画している。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。5/5点を採用。</p></figure>
-<p><strong>今期計画の形に注目してほしい。</strong> 売上は+29.6%伸ばす計画なのに、営業利益は+13.8%しか伸ばさない計画になっている。営業利益率で見ると、前期8.48%に対して今期計画7.44%（どちらも2ソース照合済み）と、<strong>利益率が下がる前提</strong>である。出店の先行費用を織り込んでいるとみられるが、内訳は未確認である。</p>
-<h3>⚠️ 1Qの進捗はすでに38%</h3>
-<figure class="viz"><svg viewBox="0 0 720 132" role="img" preserveAspectRatio="xMidYMid meet"><rect x="12" y="42" width="696" height="34" rx="4" fill="var(--viz-grid)" opacity="0.55"/><g class="viz-bar"><title>1Q（4-6月）の営業利益: 756百万円</title><rect x="12.0" y="42" width="263.1" height="34" rx="4" fill="var(--viz-pos)"/></g><line x1="708.0" y1="32" x2="708.0" y2="86" stroke="var(--viz-ink)" stroke-width="2"/><text x="708.0" y="26" text-anchor="middle" class="viz-value">目標 2,000百万円</text><text x="12" y="26" class="viz-tick">1Q（4-6月）の営業利益 756百万円</text><text x="12" y="98" class="viz-value">残り3四半期で必要な額 1,244百万円</text></svg><figcaption>今期（2027年3月期）の会社計画2,000百万円に対し、最初の3か月で756百万円を稼いだ。進捗率は約38%で、残り9か月に必要なのは1,244百万円。しかも1Qは例年いちばん弱い四半期にあたる（前年の1Qは238百万円）。会社は決算短信原文で通期計画の据え置きを明言しており（8月10日開示）、計画のほうが保守的に見える形になっている。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。2/2点を採用。</p></figure>
-<p>1Q（4-6月）の営業利益756百万円は、通期計画2,000百万円の<strong>約38%</strong>にあたる。しかも1Qは例年いちばん弱い四半期で、前年の1Qは238百万円だった。</p>
-<p>鉄則の観点「1Q等の進捗率30%超えているか（2Qでの上方修正を狙える）」に照らすと、<strong>この銘柄は明確に条件を満たしている</strong>。会社は8月10日時点で通期計画を据え置いており、<strong>計画のほうが実力に追いついていない可能性がある</strong>。</p>
-<p>ただし裏返すと、<strong>株価はすでにその上方修正を織り込みにいっている</strong>（後述）。</p>
-<h3>1Q決算を決算短信原文（一次情報）で確認する</h3>
-<p><code>data/fundamentals/6570.csv</code> の1Q（2027年3月期第1四半期）の値は、これまで株探とIR BANKの2サイトを突き合わせて採用してきた。今回、決算短信PDF（TDnet、2026年8月10日開示、2026-08-16取得）を直接読み、以下の主要数値が短信原文と完全に一致することを確認した。</p>
-<div class="scroll"><table class="prose-table">
-<thead>
-<tr>
-<th>指標</th>
-<th style="text-align: right;">短信原文の値</th>
-<th style="text-align: right;">前年同期比</th>
-<th>data/fundamentals/6570.csv の採用値・status</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>売上高</td>
-<td style="text-align: right;">7,383百万円（7,383,578千円）</td>
-<td style="text-align: right;">+69.4%</td>
-<td>7,383（OK|ROUNDING・kabutan／irbank一致）</td>
-</tr>
-<tr>
-<td>営業利益</td>
-<td style="text-align: right;">756百万円（756,302千円）</td>
-<td style="text-align: right;">+216.9%</td>
-<td>756（OK・kabutan／irbank一致）</td>
-</tr>
-<tr>
-<td>経常利益</td>
-<td style="text-align: right;">788百万円（788,159千円）</td>
-<td style="text-align: right;">+236.6%</td>
-<td>788（OK・kabutan／irbank一致）</td>
-</tr>
-<tr>
-<td>親会社株主に帰属する四半期純利益</td>
-<td style="text-align: right;">459百万円（459,068千円）</td>
-<td style="text-align: right;">+221.9%</td>
-<td>459（<strong>SINGLE_SOURCE</strong>・kabutanのみ）</td>
-</tr>
-<tr>
-<td>1株当たり四半期純利益</td>
-<td style="text-align: right;">76.76円</td>
-<td style="text-align: right;">—</td>
-<td>76.8（<strong>SINGLE_SOURCE</strong>・kabutanのみ）</td>
-</tr>
-</tbody>
-</table></div>
-<p>営業利益・経常利益は前年同期比+216.9%／+236.6%で、既報の「営業利益3.2倍・経常利益3.4倍」という丸め方（756÷238≈3.17倍、788÷234≈3.37倍）と整合する。<strong>純利益とEPSは<code>data/fundamentals/6570.csv</code>上ではいまもkabutan単独のSINGLE_SOURCEのままだが、決算短信原文の数値と完全に一致することを今回確認した。</strong> これは<code>fetch_tanshin.py</code>の照合ルールでいう「一次あり・二次1つだけ」（<code>PRIMARY_ONLY</code>扱いになりうる形）に相当するが、実際に<code>data/tanshin/6570.csv</code>へ機械的に取り込む作業は本レポート作成の範囲外（<code>kabu-ledger</code>スキルの担当）であり、今回は行っていない。</p>
-<p>短信の「連結業績予想などの将来予測情報に関する説明」には次の記載がある（原文まま）：<strong>「業績予想につきましては、2026年5月13日の『2026年3月期　決算短信』で公表いたしました第2四半期連結累計期間及び通期の業績予想に変更はありません。」</strong> これにより「通期予想は据え置き」という既報の記述が一次情報で裏付けられた。あわせて短信は第2四半期（累計）計画も開示している：売上高12,910百万円（+32.9%）・営業利益925百万円（+17.6%）・経常利益944百万円（+21.4%）・純利益576百万円（+21.5%）・EPS 96.43円。1Qの営業利益756百万円は、この2Q累計計画925百万円に対しても<strong>約82%</strong>に達している。</p>
-<blockquote>
-<p><strong>細かな食い違い</strong>：短信原文の通期計画EPSは「203円85銭」（203.85円）だが、<code>data/fundamentals/6570.csv</code>の採用値は203.82円（kabutan 203.8／IR BANK 203.82、status OK|ROUNDING）。差は0.03円で、期中平均株式数の丸め方の違いによるとみられるが未確認。本文の「約14.6倍」等のPER計算では引き続き採用値203.82円を使う。</p>
-</blockquote>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">2,000百万円</text><g class="viz-bar"><title>2023/3: 717百万円</title><rect x="96.4" y="165.5" width="46.0" height="82.5" fill="var(--viz-pos)" rx="3"/></g><text x="119.4" y="268.0" text-anchor="middle" class="viz-tick">2023/3</text><g class="viz-bar"><title>2024/3: 1,082百万円</title><rect x="227.2" y="123.6" width="46.0" height="124.4" fill="var(--viz-pos)" rx="3"/></g><text x="250.2" y="268.0" text-anchor="middle" class="viz-tick">2024/3</text><g class="viz-bar"><title>2025/3: 1,294百万円</title><rect x="358.0" y="99.2" width="46.0" height="148.8" fill="var(--viz-pos)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">2025/3</text><g class="viz-bar"><title>2026/3: 1,757百万円 — 過去最高</title><rect x="488.8" y="45.9" width="46.0" height="202.1" fill="var(--viz-pos)" rx="3"/></g><text x="511.8" y="39.9" text-anchor="middle" class="viz-value">1,757百万円</text><text x="511.8" y="268.0" text-anchor="middle" class="viz-tick">2026/3</text><g class="viz-bar"><title>2027/3予: 2,000百万円 — 会社予想</title><rect x="619.6" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="642.6" y="12.0" text-anchor="middle" class="viz-value">2,000百万円</text><text x="642.6" y="268.0" text-anchor="middle" class="viz-tick">2027/3予</text></svg><figcaption>営業利益（本業のもうけ）。7.2億→10.8億→12.9億→17.6億円と4期連続で増えている。今期の会社予想20.0億円は+13.8%にとどまり、売上の伸び（+29.6%）よりずっと小さい——会社は「売上ほどには利益が伸びない年」を計画している。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。5/5点を採用。</p></figure>
+<p>営業利益率は2025年3月期7.75%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>→2026年3月期8.48%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>と改善してきたが、今期計画は7.4%（計画値<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>から当台帳計算）。<strong>会社自身が利益率の低下を見込む計画</strong>であり、出店の先行費用を織り込んだとみられるが、内訳は未確認である。</p>
+<h3>1Q（2026年4-6月）— 進捗率はすでに約38%</h3>
+<figure class="viz"><svg viewBox="0 0 720 132" role="img" preserveAspectRatio="xMidYMid meet"><rect x="12" y="42" width="696" height="34" rx="4" fill="var(--viz-grid)" opacity="0.55"/><g class="viz-bar"><title>1Q（4-6月）の営業利益: 756百万円</title><rect x="12.0" y="42" width="263.1" height="34" rx="4" fill="var(--viz-pos)"/></g><line x1="708.0" y1="32" x2="708.0" y2="86" stroke="var(--viz-ink)" stroke-width="2"/><text x="708.0" y="26" text-anchor="middle" class="viz-value">目標 2,000百万円</text><text x="12" y="26" class="viz-tick">1Q（4-6月）の営業利益 756百万円</text><text x="12" y="98" class="viz-value">残り3四半期で必要な額 1,244百万円</text></svg><figcaption>今期の会社計画（営業利益20.0億円）に対し、最初の3か月で7.6億円を稼いだ。進捗率は約38%で、1Qは例年いちばん弱い四半期（前年の1Qは2.4億円）。会社は通期計画の据え置きを明言しており、計画のほうが保守的に見える形になっている。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。2/2点を採用。</p></figure>
+<p>1Qは売上73.8億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（前年同期比+69.4%）・営業利益7.6億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（同3.2倍）・経常利益7.9億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（同3.4倍）・純利益4.6億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（取得元1つのみ。ただし決算短信PDFの実額と一致することは直接確認済み）。営業利益は通期計画の約38%、短信が開示する2Q累計計画（営業9.3億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）に対してはすでに約82%にあたる。短信は「業績予想に変更はありません」と通期・2Q計画の据え置きを明言している（短信PDF本文で直接確認）。</p>
+<p>鉄則の観点「1Q等の進捗率30%超え（2Qでの上方修正を狙える）」に照らすと、この銘柄は明確に条件を満たしている。ただし株価がすでにそれを織り込みにいっている点は「今後の展望とリスク」節で扱う。</p>
 <h3>財務の余力 — 借りて設備を持つ会社</h3>
-<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">31.7%</text><g class="viz-bar"><title>2024/3: 28.1%</title><rect x="140.0" y="44.1" width="46.0" height="203.9" fill="var(--viz-pos)" rx="3"/></g><text x="163.0" y="268.0" text-anchor="middle" class="viz-tick">2024/3</text><g class="viz-bar"><title>2025/3: 31.6%</title><rect x="358.0" y="18.7" width="46.0" height="229.3" fill="var(--viz-pos)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">2025/3</text><g class="viz-bar"><title>2026/3: 31.7%</title><rect x="576.0" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="599.0" y="268.0" text-anchor="middle" class="viz-tick">2026/3</text></svg><figcaption>自己資本比率。総資産のうち、返さなくてよい自前の資本がどれだけあるかを示す。28%から31%台へ改善しているが、3割前後は「借金を使って設備を持つ商売」の水準である。4銘柄のなかでは日本一ソフトウェア（69.4%）とは対照的な財務の形になる。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。3/3点を採用。</p></figure>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">31.7%</text><g class="viz-bar"><title>2024/3: 28.1%</title><rect x="140.0" y="44.1" width="46.0" height="203.9" fill="var(--viz-pos)" rx="3"/></g><text x="163.0" y="268.0" text-anchor="middle" class="viz-tick">2024/3</text><g class="viz-bar"><title>2025/3: 31.6%</title><rect x="358.0" y="18.7" width="46.0" height="229.3" fill="var(--viz-pos)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">2025/3</text><g class="viz-bar"><title>2026/3: 31.7%</title><rect x="576.0" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="599.0" y="268.0" text-anchor="middle" class="viz-tick">2026/3</text></svg><figcaption>自己資本比率。28%から31%台へ改善しているが、3割前後は「借金を使って設備を持つ商売」の水準である。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。3/3点を採用。</p></figure>
+<p>この表の数値はすべて2ソース照合済みの採用値<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。</p>
 <div class="scroll"><table class="prose-table">
 <thead>
 <tr>
@@ -546,18 +500,14 @@ font-size:.72rem;font-weight:700}
 </tr>
 </tbody>
 </table></div>
-<p>用語をその場で開くと——</p>
 <ul>
-<li><strong>自己資本比率</strong>：総資産のうち返さなくてよい自前の資本の割合。<strong>3割前後</strong>。設備を借金で持つ商売としては珍しくないが、薄いほうではある</li>
-<li><strong>有利子負債倍率</strong>：借金が自己資本の何倍か。<strong>1.13倍</strong>なので、<strong>自己資本より借金のほうがやや多い</strong>。ただし3期で1.53倍→1.13倍へ改善している</li>
-<li><strong>剰余金</strong>：過去に稼いだ利益の積み上げ。<strong>プラス4,512百万円</strong>で増え続けている</li>
-<li><strong>1株純資産（BPS）</strong>：1株あたりの帳簿上の取り分。<strong>986.13円</strong>（2026年3月期末）に対し株価は3,160円（8/13の採用終値）なので、<strong>株価は帳簿上の純資産の約3.2倍</strong>にあたる</li>
+<li><strong>有利子負債倍率1.13倍</strong>——自己資本より借金のほうがやや多い。ただし3期で1.53倍→1.13倍へ改善している</li>
+<li><strong>剰余金</strong>（過去に稼いだ利益の積み上げ）は45.1億円まで増え続けている</li>
+<li><strong>1株純資産（BPS）</strong>は986.13円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（2026年3月期末）。決算短信のQ1末（2026年6月末）の自己資本から計算した簡易BPSは約1,048円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で、<strong>PBRは分母の基準時点によってぶれる</strong>（株価との比較は「値動きと市場の評価」節）</li>
 </ul>
-<blockquote>
-<p><strong>数値の食い違い（縮まった）</strong>：みんかぶは PBR（株価÷1株純資産）を <strong>3.25倍</strong>としている（2026-08-13取得。後掲「市場はどう評価しているか」の表）。当台帳の採用値（2026年3月期末の BPS 986.13円・2ソース照合済み）と8月13日の採用終値3,160円で計算すると <strong>3.20倍</strong>（3,160÷986.13）で、8月12日終値2,970円ベースの旧計算（3.01倍）よりみんかぶの値に近づいた。基準日のズレ（みんかぶがどの時点の株価・BPSを使っているか）が主な原因だったと読める。決算短信のQ1末（2026年6月末）時点の自己資本6,270,166千円を、期末発行済株式数から自己株式を除いた5,980,787株で割ると簡易BPSは約1,048.4円（決算短信原文の実額から当台帳が計算・assumed: false）。これで計算すると3,160÷1,048.4≈3.01倍で、旧BPS（986.13円）ベースの3.20倍とは離れる。<strong>分母を期末時点（2026年3月末）にするか直近四半期末（2026年6月末）にするかでPBRは3.01倍にも3.20倍にもなる</strong>ため、基準時点を明記しないPBRの断定は避ける。</p>
-</blockquote>
 <h3>現金はどこへ行っているか</h3>
-<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="83.9" x2="708" y2="83.9" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="87.9" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">98.0百万円</text><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">-244百万円</text><g class="viz-bar"><title>2024/3: 98.0百万円</title><rect x="140.0" y="18.0" width="46.0" height="65.9" fill="var(--viz-pos)" rx="3"/></g><text x="163.0" y="268.0" text-anchor="middle" class="viz-tick">2024/3</text><g class="viz-bar"><title>2025/3: -221百万円</title><rect x="358.0" y="83.9" width="46.0" height="148.6" fill="var(--viz-neg)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">2025/3</text><g class="viz-bar"><title>2026/3: -244百万円</title><rect x="576.0" y="83.9" width="46.0" height="164.1" fill="var(--viz-neg)" rx="3"/></g><text x="599.0" y="268.0" text-anchor="middle" class="viz-tick">2026/3</text></svg><figcaption>フリーキャッシュフロー（本業で入ってきた現金から、設備投資などに出ていった現金を引いた残り）。青が黒字、赤が赤字。2期連続でマイナスになっている。本業で稼いだ現金（2026年3月期は4,036百万円）を、それ以上に出店・設備へ振り向けているという意味である。成長企業として自然な形ではあるが、投資を止めた瞬間に成長も止まる構造でもある。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。3/3点を採用。</p></figure>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="83.9" x2="708" y2="83.9" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="87.9" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">98.0百万円</text><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">-244百万円</text><g class="viz-bar"><title>2024/3: 98.0百万円</title><rect x="140.0" y="18.0" width="46.0" height="65.9" fill="var(--viz-pos)" rx="3"/></g><text x="163.0" y="268.0" text-anchor="middle" class="viz-tick">2024/3</text><g class="viz-bar"><title>2025/3: -221百万円</title><rect x="358.0" y="83.9" width="46.0" height="148.6" fill="var(--viz-neg)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">2025/3</text><g class="viz-bar"><title>2026/3: -244百万円</title><rect x="576.0" y="83.9" width="46.0" height="164.1" fill="var(--viz-neg)" rx="3"/></g><text x="599.0" y="268.0" text-anchor="middle" class="viz-tick">2026/3</text></svg><figcaption>フリーキャッシュフロー（本業で入ってきた現金から、設備投資などに出ていった現金を引いた残り）。2期連続のマイナスは、本業で稼いだ現金を上回る額を出店・設備に振り向けているという意味。成長企業として自然な形だが、投資を止めた瞬間に成長も止まる構造でもある。</figcaption><p class="viz-src">出所: data/fundamentals/6570.csv の採用値（別サイト2つ以上が一致した値だけ）。3/3点を採用。</p></figure>
+<p>この表の数値はすべて2ソース照合済みの採用値<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（百万円）。</p>
 <div class="scroll"><table class="prose-table">
 <thead>
 <tr>
@@ -592,14 +542,9 @@ font-size:.72rem;font-weight:700}
 </tr>
 </tbody>
 </table></div>
-<p><strong>営業キャッシュフロー（本業で実際に入ってきた現金）は3期とも大きな黒字</strong>で、2026年3月期は40.4億円まで増えた。ところが投資キャッシュフローが毎年それを上回っており、<strong>フリーキャッシュフローは2期連続でマイナス</strong>になっている。</p>
-<p>これは「稼いだ現金を全部、出店と設備に回している」ということである。成長企業として自然だが、次の2つの意味を持つ。</p>
-<ol>
-<li><strong>投資を止めれば現金は残るが、成長も止まる</strong></li>
-<li><strong>借入に頼らざるをえない</strong>（2026年3月期の財務CF +559百万円は資金を入れた側）</li>
-</ol>
-<p>現金残高が43.8億円で横ばいなのは、この循環の結果である。</p>
-<h3>⚠️ 数値が確かめられていないところ — 経常利益が10倍ちがう期がある</h3>
+<p>本業で入ってくる現金は3期とも大きな黒字で、2026年3月期は40.4億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>まで増えた。それを上回る額を出店と設備に投じているためフリーキャッシュフローは2期連続マイナスで、不足分は借入で埋めている（2026年3月期の財務CFは資金を入れた側）。現金残高が44億円前後で横ばいなのは、この循環の結果である。<strong>投資を止めれば現金は残るが、成長も止まる。</strong></p>
+<h3>数値が確かめられていないところ</h3>
+<p>以下はいずれも照合が成立していない値<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で、採用していない。</p>
 <div class="scroll"><table class="prose-table">
 <thead>
 <tr>
@@ -611,18 +556,18 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td><strong>2017年3月期の経常利益</strong></td>
-<td><strong>桁が違う食い違い</strong></td>
-<td><strong>株探 3,003百万円／IR BANK 304百万円</strong>。約10倍ちがう。どちらが正しいか決められないため、<strong>どちらも採用していない</strong></td>
+<td>桁違いの食い違い</td>
+<td>株探 3,003百万円／IR BANK 304百万円。約10倍ちがい、どちらが正しいか決められない</td>
 </tr>
 <tr>
 <td>自己資本（金額）</td>
 <td>食い違い</td>
-<td>26/3期で株探5,897／IR BANK 5,690百万円。<strong>別々の勘定科目（自己資本と株主資本）を突き合わせている可能性</strong></td>
+<td>26/3期で株探5,897／IR BANK 5,690百万円。別々の勘定科目（自己資本と株主資本）を突き合わせている可能性</td>
 </tr>
 <tr>
 <td>ROE・ROA</td>
 <td>食い違い</td>
-<td>26/3期で ROE は株探20.84%／IR BANK 19.03%、ROA は6.59%／6.03%</td>
+<td>26/3期で ROE は20.84%／19.03%、ROA は6.59%／6.03%</td>
 </tr>
 <tr>
 <td>売上原価率・販管費率</td>
@@ -631,28 +576,20 @@ font-size:.72rem;font-weight:700}
 </tr>
 </tbody>
 </table></div>
-<p>2017年3月期の食い違いは桁が1つ違う。参考までに、その期の売上は11,833百万円（2ソース照合済み）なので、3,003百万円なら売上に対して25%、304百万円なら2.6%になる。直近4期の経常利益率は5.7%〜8.4%である。<strong>ただし、どちらが正しいかを本レポートで決めることはしない。</strong> 一次情報（当時の決算短信・有価証券報告書）を確認するまで、この期の経常利益は「不明」として扱う。</p><h2>今後の展望とリスク</h2><h3>期待できること</h3>
+<p>2017年3月期の食い違いは、同期の売上118.3億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>に対して経常利益率25%か2.6%かの違いにあたる（直近4期は5.7〜8.4%）。どちらが正しいかは当時の一次情報でしか決着しないため、確認するまでこの期の経常利益は「不明」として扱う。</p><h2>今後の展望とリスク</h2><h3>期待できること</h3>
 <ol>
-<li><strong>1Qの進捗が約38%</strong> — 通期計画2,000百万円に対し756百万円。しかも1Qは例年最も弱い四半期。会社は決算短信原文で通期計画の据え置きを明言しており、<strong>2Qでの上方修正の余地がある</strong></li>
-<li><strong>主力事業も着実に伸びている</strong> — アミューズメント施設運営事業（決算短信のセグメント区分）だけで見ても売上+26.4%・セグメント利益+49.4%。増収は買収頼みではなく、既存店の景品ゲーム需要にも支えられている（決算短信・株探）</li>
-<li><strong>出店が止まっていない</strong> — 1Q中に3店舗（うち愛知「アピナ太田川店」）、7〜8月にさらに5店舗をオープン</li>
-<li><strong>増配</strong> — 今期予想配当は1株40円（前期25円、決算短信で中間20円・期末20円と確認）。財務が回っている裏付けになる</li>
-<li><strong>利益率が改善してきた</strong> — 営業利益率は2025年3月期7.75%→2026年3月期8.48%（2ソース照合済み）</li>
+<li><strong>2Qでの上方修正の余地</strong> — 1Qの進捗率約38%・2Q累計計画比約82%（数字は財務節）。会社は計画据え置きを明言しており、計画のほうが実力に追いついていない可能性がある</li>
+<li><strong>主力事業も着実に伸びている</strong> — 施設運営セグメントだけでも売上+26.4%・利益+49.4%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>。増収は買収頼みではなく、既存店の景品ゲーム需要にも支えられている</li>
+<li><strong>出店が止まっていない</strong> — 1Q中に3店舗、7〜8月にさらに5店舗をオープン</li>
+<li><strong>増配</strong> — 予想配当は25円→40円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>。財務が回っている裏付けになる</li>
+<li><strong>利益率の改善実績</strong> — 営業利益率は2期連続で上昇している（財務節）</li>
 </ol>
-<h3>⚠️ 株価が計画の上振れを先に織り込んでいる</h3>
-<p>株価3,160円（8/13の採用終値）に対し、今期予想1株益は203.82円（2ソース照合済み）なので、<strong>会社計画ベースのPERは約15.5倍</strong>（3,160÷203.82）。8月12日終値2,970円ベースでは約14.6倍だったので、この1週間で1ポイント近く切り上がった計算になる。それでも極端に高い水準ではない。</p>
-<p>問題は上がり方である。<strong>25日移動平均線からは+48.1%上に離れている</strong>（as_of 2026-08-13、鉄則の目安は「7〜8%超えたら怪しい」）。RSI(14)は90.4で、鉄則の「8割超えは注意」を超えている。</p>
-<p>つまり「上方修正が出る前提」でここまで買われている状態であり、<strong>実際に上方修正が出ても材料出尽くしになりうる</strong>し、出なければ前提が外れる。</p>
-<h3>「+50%」は1Q決算の増益率だけで説明がつく規模か</h3>
-<p>週間+50.3%という株価の上昇率を、1Q決算のどの数字と比べるかで印象が変わる。</p>
-<ul>
-<li>全社の増益率（経常3.4倍・営業3.2倍）と比べると、株価の上昇（+50%）は増益率よりはるかに小さい。この比較だけを見れば「決算の範囲内」の反応にも見える</li>
-<li>一方、主力のアミューズメント施設運営事業のセグメント利益は+49.4%で、こちらは株価の週間上昇率（+50.3%）とほぼ同じ水準になる。前節で見たとおり、全社の増益率のうち約6割は道楽の新規連結（M&amp;A）とブルームの伸びが混ざった「その他」区分が押し上げたもので、主力事業の伸びだけを取れば決算の増益率は株価の上昇率とほぼ同程度にとどまる、とも読める</li>
-<li>同じ日に発表された創立40周年記念株主優待（1回限り・スクイーズと七味缶を各1点。詳細は次段落）は、金額換算すれば小さい付与だが、個人投資家の思惑を誘発する材料になった可能性がある。週次アップデートに記録した出来高の急増（前週比+1768.6%）は、決算の実額だけでは説明しきれない思惑的な売買が混ざっていたことを示唆する、と読める</li>
-</ul>
-<p>以上を総合すると、<strong>+50%という上昇が1Q決算の増益率「だけ」で説明がつく規模かどうかは、決算の数字だけからは判定できない</strong>。全社ベースの増益率と比べれば説明可能な範囲に見える一方、その増益の过半が非連続なM&amp;A要因であることを踏まえると、記念優待や思惑的な短期資金の関与も混ざっていた可能性がある——という程度の解釈にとどめる（<code>assumed: true</code>、根拠は前掲のセグメント計算と出来高の急増）。</p>
-<p><strong>創立40周年記念株主優待の内容（一次情報で確認）</strong>：2026年8月10日開示の「創立40周年記念株主優待の実施に関するお知らせ」によると、対象は2026年9月30日時点で1単元（100株）以上を保有する株主。子会社ブルームが展開する「iBLOOM」ブランドと、長野県の老舗七味唐辛子メーカー「八幡屋礒五郎」がコラボしたスクイーズ、および40周年記念デザインの七味缶を各1点、2026年12月下旬ごろより順次贈呈する。<strong>この優待は今回限りであり、現在実施している通常の株主優待制度に変更はない</strong>、と開示文書に明記されている（一次情報・原文まま）。継続的な株主還元の強化ではなく、40周年を記念した一過性の施策であるという点は、今後の期待値を考えるうえで押さえておく必要がある。</p>
+<h3>株価が計画の上振れを先に織り込んでいる</h3>
+<p>株価3,970円（8/20の採用終値<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）に対し今期予想1株益は203.82円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>なので、会社計画ベースのPERは約19.5倍。水準として極端に高くはない。問題は上がり方で、<strong>25日移動平均線から+48.1%上に離れ、RSI(14)は90.4</strong>（いずれも機械計算、as_of 2026-08-13。鉄則の目安は乖離7〜8%・RSI8割）。つまり「上方修正が出る前提」でここまで買われている状態であり、<strong>実際に上方修正が出ても材料出尽くしになりうるし、出なければ前提が外れる</strong>。</p>
+<h3>急騰は決算だけで説明がつくか</h3>
+<p>決算発表週の株価上昇（+50.3%）は、全社の増益率（経常3.4倍）と比べれば「決算の範囲内」に見える。しかし増益の約6割は道楽の新規連結など非連続要因で、主力事業の利益の伸び（+49.4%）だけを取れば株価の上昇率とほぼ同水準にとどまる（計算は「この会社は何者か」節）。同日発表の<strong>創立40周年記念株主優待</strong>（2026年9月末に100株以上を保有する株主へ、iBLOOM のスクイーズと記念デザインの七味缶を各1点贈呈。<strong>今回限りで、通常の優待制度に変更はない</strong>と開示PDF本文に明記）は金額換算では小さいが、出来高の急増を伴っており、思惑的な短期資金も混ざっていた可能性がある（<code>assumed: true</code>。根拠は前掲のセグメント計算と週次アップデートに記録した出来高の急増）。</p>
 <h3>注意すべき点</h3>
+<p>各数値の時点と検証状態は所管節のとおり（信用残・出来高は未照合の参考値<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）。</p>
 <div class="scroll"><table class="prose-table">
 <thead>
 <tr>
@@ -663,19 +600,19 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td><strong>過熱</strong></td>
-<td>RSI(14) 90.4、25日移動平均乖離率+48.1%（as_of 2026-08-13）。<strong>4銘柄のなかで最も伸びきっている</strong></td>
+<td>RSI・移動平均乖離とも鉄則の目安を大きく超過（前掲）</td>
 </tr>
 <tr>
 <td><strong>増益の過半が非連続要因</strong></td>
-<td>決算短信のセグメント情報を計算すると、1Qの営業利益増加分の約6割は道楽の新規連結（M&amp;A）とブルームの伸びが混ざった「その他」区分による。主力のアミューズメント施設運営事業の伸び（+49.4%）だけを取ると、全社の増益率より小さくなる</td>
+<td>道楽の新規連結とブルームで1Q増益の約6割（「この会社は何者か」節）</td>
 </tr>
 <tr>
-<td><strong>信用倍率9.13倍</strong></td>
-<td>買い残85.8千株に対し売り残9.4千株（8/7）。鉄則の「5倍超えは下降の可能性が高い」に抵触。買い方の整理売りが出やすい</td>
+<td><strong>信用倍率</strong></td>
+<td>9.13倍（8/7時点）。鉄則の「5倍超えは下降の可能性が高い」に抵触し、買い方の整理売りが出やすい</td>
 </tr>
 <tr>
-<td><strong>フリーCFが2期連続マイナス</strong></td>
-<td>稼いだ現金を全額以上、出店に回している。景気や来店客が鈍ると、投資済みの店舗が固定費になる</td>
+<td><strong>フリーCFのマイナス</strong></td>
+<td>稼いだ現金を全額以上、出店に回している。来店が鈍ると投資済み店舗が固定費になる</td>
 </tr>
 <tr>
 <td><strong>借入依存</strong></td>
@@ -683,15 +620,15 @@ font-size:.72rem;font-weight:700}
 </tr>
 <tr>
 <td><strong>トレカ相場</strong></td>
-<td>道楽は在庫を持つ買取販売。カード相場が調整すると在庫の評価と粗利が同時に痛む</td>
+<td>道楽は在庫を持つ買取販売。相場が調整すると在庫評価と粗利が同時に痛む</td>
 </tr>
 <tr>
-<td><strong>計画の利益率</strong></td>
-<td>今期計画は売上+29.6%に対し営業+13.8%。<strong>会社自身が利益率の低下を見込んでいる</strong></td>
+<td><strong>計画の利益率低下</strong></td>
+<td>会社計画自体が利益率の低下を見込んでいる（財務節）</td>
 </tr>
 <tr>
 <td><strong>支配株主</strong></td>
-<td>2026年6月29日に「支配株主等に関する事項について」を開示。少数株主との利害が一致しない場面がありうる（内容は未確認）</td>
+<td>2026年6月29日に「支配株主等に関する事項について」を開示。少数株主と利害が一致しない場面がありうる（内容は未確認）</td>
 </tr>
 <tr>
 <td><strong>アナリストのカバーが0社</strong></td>
@@ -699,70 +636,25 @@ font-size:.72rem;font-weight:700}
 </tr>
 <tr>
 <td><strong>記念優待は一過性</strong></td>
-<td>創立40周年記念株主優待は「今回限り」と開示文書に明記されている。継続的な利回り改善ではなく、株価反応の一因が一過性の材料である可能性がある</td>
+<td>「今回限り」と開示文書に明記。株価反応の一因が一過性の材料である可能性がある</td>
 </tr>
 </tbody>
 </table></div>
 <h3>何が起きたらストーリーが崩れるか</h3>
 <ul>
-<li><strong>既存店の売上（客数）が前年割れに転じる</strong> — 主力のアミューズメント施設運営事業のセグメント利益成長（1Qは+49.4%）が鈍り、増収が出店とM&amp;Aだけで作られている状態になる</li>
+<li><strong>既存店の売上（客数）が前年割れに転じる</strong> — 増収が出店とM&amp;Aだけで作られている状態になる</li>
 <li><strong>トレカ相場が崩れて道楽の粗利が縮む</strong>、または在庫の評価損が出る</li>
-<li>2Q決算で<strong>通期計画が据え置きのまま、進捗率が30%台に鈍る</strong></li>
-<li>フリーキャッシュフローのマイナスが続き、<strong>有利子負債倍率が1.5倍に戻る</strong></li>
+<li>2Q決算で<strong>通期計画が据え置きのまま、進捗の貯金が減る</strong></li>
+<li>フリーキャッシュフローのマイナスが続き、<strong>有利子負債倍率が悪化に転じる</strong></li>
 <li>出店した店舗の<strong>投資回収が計画より遅れる</strong>（減価償却だけが先に効く）</li>
-<li>信用買い残（85.8千株）の整理売りで需給が崩れる</li>
+<li>積み上がった信用買い残の整理売りで需給が崩れる</li>
 </ul><h2>値動きと市場の評価</h2><h3>いまどこにいるか</h3>
-<figure class="viz"><svg viewBox="0 0 720 118" role="img" preserveAspectRatio="xMidYMid meet"><rect x="44" y="52" width="632" height="12" rx="6" fill="var(--viz-grid)"/><rect x="44" y="52" width="632.0" height="12" rx="6" fill="var(--viz-pos)" opacity="0.35"/><g class="viz-dot"><title>目標株価: 1,775円</title><line x1="196.5" y1="46" x2="196.5" y2="70" stroke="var(--viz-muted)" stroke-width="1.5"/></g><text x="196.5" y="40" text-anchor="middle" class="viz-tick">目標株価</text><g class="viz-dot"><title>理論株価: 1,894円</title><line x1="222.5" y1="46" x2="222.5" y2="70" stroke="var(--viz-muted)" stroke-width="1.5"/></g><text x="222.5" y="40" text-anchor="middle" class="viz-tick">理論株価</text><g class="viz-dot"><title>現在: 3,970円</title><circle cx="676.0" cy="58.0" r="9" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2.5"/></g><text x="676.0" y="94.0" text-anchor="middle" class="viz-value">現在 3,970円</text><text x="44" y="94.0" text-anchor="middle" class="viz-tick">52週安値(終値)<tspan x="44" dy="14">1,077円</tspan></text><text x="676" y="94.0" text-anchor="middle" class="viz-tick">52週高値(終値)<tspan x="676" dy="14">3,970円</tspan></text></svg><figcaption>直近1年の値幅（終値ベース）のなかで、いまどこにいるか。8月13日の終値3,160円（status OK）が52週の高値になっている。1年前の安値1,077円から2.9倍。印はみんかぶの目標株価1,775円と株予報Proの理論株価（PBR基準）1,894円で、どちらも人が転記した未検証の数値。いまの株価はその両方を大きく上回っている。</figcaption><p class="viz-src">出所: data/prices/daily.csv の採用終値（2つの取得元が一致した終値だけ）。ザラ場の高値・安値は照合を通っていないので使っていない。3/3点を採用、52週の採用終値 242営業日。安値 2025-11-21 / 高値 2026-08-20 / 現在 2026-08-20、図中の印は手書き（未検証）。</p></figure>
-<p>直近1年の値幅は、<strong>照合済みの終値で 1,077円〜3,160円</strong>。いまは3,160円で、<strong>その高値そのもの</strong>にいる。1年で<strong>2.9倍</strong>になった計算になる。</p>
-<div class="scroll"><table class="prose-table">
-<thead>
-<tr>
-<th>日付</th>
-<th>出来事</th>
-<th>終値</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>2025-11-21</td>
-<td>直近1年の安値（終値）</td>
-<td>1,077円</td>
-</tr>
-<tr>
-<td>2026-05-13</td>
-<td>1日で+24.2%</td>
-<td>1,539円</td>
-</tr>
-<tr>
-<td>2026-06-22</td>
-<td>1日で+12.7%</td>
-<td>2,014円</td>
-</tr>
-<tr>
-<td>2026-07-27</td>
-<td>1日で+6.1%</td>
-<td>2,128円</td>
-</tr>
-<tr>
-<td>2026-08-10</td>
-<td>1Q決算・記念優待を発表 → <strong>ストップ高</strong>（+23.8%）</td>
-<td>2,602円</td>
-</tr>
-<tr>
-<td>2026-08-12</td>
-<td>1日で+14.1%</td>
-<td>2,970円</td>
-</tr>
-<tr>
-<td>2026-08-13</td>
-<td><strong>直近1年の高値（終値）</strong>（+6.4%）</td>
-<td>3,160円</td>
-</tr>
-</tbody>
-</table></div>
-<p>上の表とレンジの図は、<strong>すべて2つの取得元で一致した終値</strong>である。ザラ場では8月13日に3,225円まで振れているが、<strong>日中の高値・安値は取得元1つの値しか持っておらず照合していない</strong>ため、採用値としては扱っていない。8月14日は逆にkabutan側が未反映で終値が採用できず（<code>status=SINGLE_SOURCE</code>）、参考値は3,095円（前日比-2.06%）——直近の値動きの続きは週次アップデート（続報2〜4）に記録している。</p>
-<p><strong>5月・6月にも1日で10〜24%動いている。</strong> 直近の急騰は決算がきっかけだが、その前から段階的に切り上がっていた銘柄である。</p>
+<figure class="viz"><svg viewBox="0 0 720 150" role="img" preserveAspectRatio="xMidYMid meet"><rect x="44" y="52" width="632" height="12" rx="6" fill="var(--viz-grid)"/><rect x="44" y="52" width="632.0" height="12" rx="6" fill="var(--viz-pos)" opacity="0.35"/><g class="viz-dot"><title>目標株価: 1,775円</title><line x1="196.5" y1="46" x2="196.5" y2="70" stroke="var(--viz-muted)" stroke-width="1.5"/></g><text x="196.5" y="40" text-anchor="middle" class="viz-tick">目標株価</text><g class="viz-dot"><title>理論株価: 1,894円</title><line x1="222.5" y1="46" x2="222.5" y2="70" stroke="var(--viz-muted)" stroke-width="1.5"/></g><text x="222.5" y="24" text-anchor="middle" class="viz-tick">理論株価</text><g class="viz-dot"><title>現在: 3,970円</title><circle cx="676.0" cy="58.0" r="9" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2.5"/></g><line x1="676.0" y1="70.0" x2="676.0" y2="110.0" stroke="var(--viz-muted)" stroke-width="1"/><text x="644.0" y="122.0" text-anchor="middle" class="viz-value">現在 3,970円</text><text x="44" y="94.0" text-anchor="middle" class="viz-tick">52週安値(終値)<tspan x="44" dy="14">1,077円</tspan></text><text x="676" y="94.0" text-anchor="middle" class="viz-tick">52週高値(終値)<tspan x="676" dy="14">3,970円</tspan></text></svg><figcaption>直近1年の値幅（採用終値ベース）のなかで、いまどこにいるか。印はみんかぶの目標株価と株予報Proの理論株価（PBR基準）で、どちらも人が転記した未検証の数値。いまの株価はその両方を大きく上回っている。</figcaption><p class="viz-src">出所: data/prices/daily.csv の採用終値（2つの取得元が一致した終値だけ）。ザラ場の高値・安値は照合を通っていないので使っていない。3/3点を採用、52週の採用終値 242営業日。安値 2025-11-21 / 高値 2026-08-20 / 現在 2026-08-20、図中の印は手書き（未検証）。</p></figure>
+<p>直近1年の値幅は、照合済みの終値で<strong>1,077円〜3,970円</strong><span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。いまはその高値そのものにいて、1年で約3.7倍になった。</p>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="59.2" x2="704" y2="59.2" stroke="var(--viz-grid)" stroke-width="1"/><text x="46" y="63.2" text-anchor="end" class="viz-tick">3,970円</text><line x1="54" y1="226.8" x2="704" y2="226.8" stroke="var(--viz-grid)" stroke-width="1"/><text x="46" y="230.8" text-anchor="end" class="viz-tick">1,077円</text><path d="M54.0,215.0 L59.4,214.5 L61.2,214.8 L63.0,214.6 L64.7,215.5 L66.5,215.3 L71.9,214.8 L73.7,214.0 L75.5,213.7 L77.3,213.8 L79.1,213.9 L84.4,213.7 L86.2,215.6 L88.0,215.1 L89.8,214.6 L91.6,214.6 L98.8,211.6 L100.6,210.2 L102.3,212.2 L104.1,211.8 L109.5,213.1 L113.1,213.6 L114.9,213.6 L116.7,213.3 L122.0,212.3 L123.8,212.7 L125.6,217.9 L127.4,218.0 L129.2,218.4 L134.6,217.8 L136.4,216.8 L138.2,217.3 L140.0,218.2 L141.7,221.0 L148.9,220.5 L150.7,219.7 L152.5,220.1 L154.3,219.1 L159.6,214.0 L161.4,216.6 L163.2,215.1 L165.0,216.2 L166.8,215.8 L172.2,216.7 L174.0,217.9 L175.8,220.2 L177.6,220.4 L179.3,220.4 L186.5,220.4 L188.3,221.1 L190.1,221.7 L191.9,221.6 L197.3,217.4 L199.0,219.0 L200.8,220.2 L202.6,220.2 L204.4,221.7 L209.8,225.8 L211.6,226.2 L213.4,226.6 L215.2,226.7 L216.9,226.8 L224.1,226.4 L225.9,225.8 L227.7,224.9 L229.5,223.2 L234.9,224.4 L236.6,225.5 L238.4,226.3 L240.2,225.3 L242.0,225.2 L247.4,223.7 L249.2,223.9 L251.0,224.1 L252.8,225.2 L254.6,225.3 L259.9,223.0 L261.7,223.7 L263.5,221.7 L265.3,219.3 L267.1,217.4 L272.5,217.8 L274.2,219.3 L276.0,219.3 L277.8,219.7 L279.6,219.1 L285.0,219.4 L286.8,219.7 L297.5,217.2 L299.3,216.2 L301.1,216.1 L302.9,216.5 L304.7,217.3 L311.9,217.9 L313.6,217.6 L315.4,217.3 L317.2,216.8 L322.6,216.1 L324.4,216.3 L326.2,217.4 L328.0,217.3 L329.8,217.5 L335.1,218.3 L336.9,218.7 L338.7,218.6 L340.5,220.4 L342.3,220.1 L347.7,220.3 L349.5,219.8 L351.2,218.3 L353.0,218.0 L354.8,218.0 L360.2,218.1 L362.0,217.9 L365.6,216.2 L367.4,216.0 L372.7,212.7 L374.5,213.9 L376.3,215.3 L378.1,213.7 L379.9,215.4 L387.1,214.3 L388.8,215.0 L390.6,215.3 L392.4,215.3 L397.8,213.9 L399.6,213.6 L401.4,215.1 L403.2,215.1 L405.0,213.4 L410.3,213.5 L412.1,214.1 L413.9,213.3 L415.7,211.9 L417.5,213.1 L422.9,213.6 L424.7,213.6 L426.5,213.9 L428.2,215.0 L435.4,216.2 L437.2,214.8 L439.0,214.7 L440.8,214.5 L442.6,218.0 L447.9,220.2 L449.7,222.2 L451.5,220.9 L453.3,218.7 L455.1,219.0 L460.5,218.7 L462.3,217.7 L464.1,217.3 L465.8,218.9 L467.6,218.5 L473.0,216.9 L474.8,217.5 L476.6,218.0 L478.4,217.3 L480.2,215.7 L485.5,216.2 L487.3,216.8 L489.1,217.7 L490.9,215.9 L492.7,218.1 L498.1,216.8 L499.9,217.7 L503.4,218.1 L505.2,217.9 L516.0,215.6 L517.8,216.5 L523.1,217.3 L524.9,217.5 L526.7,200.1 L528.5,196.4 L530.3,196.6 L535.7,196.2 L537.5,192.1 L539.3,195.3 L541.1,190.5 L542.8,191.2 L548.2,193.2 L550.0,191.9 L551.8,192.5 L553.6,194.7 L555.4,193.5 L560.7,192.7 L562.5,192.6 L564.3,193.5 L566.1,194.0 L567.9,194.2 L573.3,196.4 L575.1,194.5 L576.9,194.7 L578.7,195.3 L580.4,195.8 L585.8,193.6 L587.6,193.1 L589.4,187.5 L591.2,190.4 L593.0,185.7 L598.4,172.5 L600.1,176.2 L601.9,181.5 L603.7,181.1 L605.5,178.7 L610.9,182.4 L612.7,184.9 L614.5,185.2 L616.3,179.2 L618.0,180.2 L623.4,177.5 L625.2,178.7 L627.0,179.1 L628.8,181.2 L630.6,179.1 L636.0,178.4 L637.7,176.6 L639.5,173.4 L641.3,174.3 L643.1,177.5 L650.3,175.0 L652.1,173.1 L653.9,172.6 L655.7,173.1 L661.0,165.9 L662.8,166.6 L664.6,165.8 L666.4,165.1 L668.2,167.2 L673.6,166.6 L675.3,167.5 L677.1,165.8 L678.9,167.2 L680.7,167.4 L686.1,138.4 L689.7,117.1 L691.5,106.1 L693.3,109.9 L698.6,113.4 L700.4,100.9 L702.2,85.8 L704.0,59.2" fill="none" stroke="var(--viz-pos)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><text x="54" y="272" text-anchor="start" class="viz-tick">25/8/22</text><text x="704" y="272" text-anchor="end" class="viz-tick">26/8/20</text><g class="viz-dot"><title>25/11/21 直近1年の安値: 1,077円</title><circle cx="216.9" cy="226.8" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="216.9" y1="218.8" x2="216.9" y2="196.8" stroke="var(--viz-muted)" stroke-width="1"/><text x="216.9" y="192.8" text-anchor="middle" class="viz-value">直近1年の安値</text><text x="216.9" y="206.8" text-anchor="middle" class="viz-tick">25/11/21</text><g class="viz-dot"><title>26/5/13 材料不明の急伸: 1,539円</title><circle cx="526.7" cy="200.1" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="526.7" y1="192.1" x2="526.7" y2="170.1" stroke="var(--viz-muted)" stroke-width="1"/><text x="526.7" y="166.1" text-anchor="middle" class="viz-value">材料不明の急伸</text><text x="526.7" y="180.1" text-anchor="middle" class="viz-tick">26/5/13</text><g class="viz-dot"><title>26/6/22 続伸: 2,014円</title><circle cx="598.4" cy="172.5" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="598.4" y1="164.5" x2="598.4" y2="105.5" stroke="var(--viz-muted)" stroke-width="1"/><text x="598.4" y="101.5" text-anchor="middle" class="viz-value">続伸</text><text x="598.4" y="115.5" text-anchor="middle" class="viz-tick">26/6/22</text><g class="viz-dot"><title>26/8/10 1Q決算・記念優待→ストップ高: 2,602円</title><circle cx="686.1" cy="138.4" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="686.1" y1="146.4" x2="584.0" y2="189.4" stroke="var(--viz-muted)" stroke-width="1"/><text x="584.0" y="201.4" text-anchor="middle" class="viz-value">1Q決算・記念優待→ストップ高</text><text x="584.0" y="215.4" text-anchor="middle" class="viz-tick">26/8/10</text><g class="viz-dot"><title>26/8/20 急伸続く（52週高値）: 3,970円</title><circle cx="704.0" cy="59.2" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="704.0" y1="67.2" x2="376.0" y2="73.2" stroke="var(--viz-muted)" stroke-width="1"/><text x="376.0" y="85.2" text-anchor="middle" class="viz-value">急伸続く（52週高値）</text><text x="376.0" y="99.2" text-anchor="middle" class="viz-tick">26/8/20</text></svg><figcaption>採用終値の1年推移と主な出来事。決算前から段階的に切り上がっており、直近の急騰は最後の一段にあたる。</figcaption><p class="viz-src">出所: data/prices/daily.csv の採用終値（2つの取得元が一致した終値だけ）。ザラ場の高値・安値は照合を通っていないので使っていない。247/247点を採用、52週の採用終値 242営業日、出来事 5/5件を配置。</p></figure>
+<p>決算（8月10日）の前から、5月・6月にも1日で10〜24%動く急伸を挟みつつ段階的に切り上がってきた銘柄である。ザラ場の高値・安値は取得元1つの値しか持たず照合していないため、ここでは使っていない。直近の日々の値動きは週次アップデートに記録している。</p>
 <h3>市場はどう評価しているか</h3>
+<p>表の数値はいずれも未照合の参考値<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（2026年8月12〜13日時点。その後の急騰は未反映）。</p>
 <div class="scroll"><table class="prose-table">
 <thead>
 <tr>
@@ -775,17 +667,17 @@ font-size:.72rem;font-weight:700}
 <tr>
 <td><strong>アナリスト（機関投資家向け）</strong></td>
 <td><strong>カバーなし</strong></td>
-<td>レーティングを出している証券会社が<strong>0社</strong>（強気0・中立0・弱気0）</td>
+<td>レーティングを出している証券会社が0社</td>
 </tr>
 <tr>
 <td><strong>個人投資家（みんかぶ）</strong></td>
 <td><strong>売り</strong></td>
-<td>目標株価 1,775円（現値より約4割下）</td>
+<td>目標株価 1,775円</td>
 </tr>
 <tr>
 <td><strong>株価診断（みんかぶ）</strong></td>
 <td><strong>割高</strong></td>
-<td>PSR 0.92倍・PBR 3.25倍（当台帳の計算では期末BPS986.13円ベースで3.20倍、Q1末の簡易BPS1,048.4円ベースで3.01倍。食い違いの注記は「財務の余力」の節）</td>
+<td>PSR 0.92倍・PBR 3.25倍</td>
 </tr>
 <tr>
 <td><strong>理論株価（PBR基準・アイフィスジャパン）</strong></td>
@@ -794,51 +686,35 @@ font-size:.72rem;font-weight:700}
 </tr>
 </tbody>
 </table></div>
-<h3>過熱しているのか、冷めているのか</h3>
-<p><strong>熱い側</strong></p>
-<ul>
-<li>1Qが売上+69.4%・営業3.2倍・経常3.4倍（決算短信原文で確認）。進捗率38%で通期計画は据え置き（原文で確認）＝上方修正余地</li>
-<li>主力のアミューズメント施設運営事業だけでもセグメント利益+49.4%（決算短信）。売上は4年で倍増し、9四半期連続で前年超え</li>
-<li>増配（25円→40円予想）と記念株主優待</li>
-<li>会社計画ベースのPERは約15.5倍で、成長率に対して極端に高くはない</li>
-</ul>
-<p><strong>冷たい側</strong></p>
-<ul>
-<li>個人予想は「<strong>売り</strong>」、目標株価1,775円は現値の4割下</li>
-<li>理論株価1,894円、上値目途2,487円。<strong>どちらも超えている</strong>（ただしこれらは8/12時点の値で、現在の株価3,160円との比較は8/13以降には未更新）</li>
-<li>RSI(14) 90.4、25日移動平均乖離率+48.1%</li>
-<li>信用倍率9.13倍。買い残が積み上がっている</li>
-<li>フリーCFは2期連続マイナス</li>
-<li>全社の増益率のうち約6割は道楽の新規連結など非連続要因（決算短信のセグメント情報から当台帳が計算）</li>
-</ul>
-<p><strong>読み取れること</strong>：<strong>事業の中身と株価の水準は、この銘柄では別々に評価したほうがよい。</strong> 業績は4銘柄のなかで最も素直に伸びており、1Qの進捗も鉄則の条件を満たしている。一方で、直近2営業日で+41%という上がり方は、上方修正の期待を先取りしたものである。鉄則の「頭と尻尾はくれてやれ」に照らせば、<strong>いま飛び乗る場面ではない</strong>という読み方が素直になる。</p>
+<p>目標株価・理論株価とも、いまの株価はすでに大きく上回っている。当台帳の計算では、株価3,970円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>に対しPBRは期末BPSベースで約4.0倍、Q1末の簡易BPSベースで約3.8倍（BPSの基準時点の議論は財務節）。</p>
+<p><strong>読み取れること</strong>：事業の中身と株価の水準は、この銘柄では別々に評価したほうがよい。業績は素直に伸びており1Qの進捗も鉄則の条件を満たすが、直近の上がり方は上方修正の期待を先取りしたものである。鉄則の「頭と尻尾はくれてやれ」に照らせば、<strong>いま飛び乗る場面ではない</strong>という読み方が素直になる。</p>
 <blockquote>
-<p><strong>注意</strong>：ここで挙げた「市場の評価」は、みんかぶ・株予報Pro が公開している集計値である。SNS や掲示板の個別の書き込みは、書き手が特定できず検証もできないため採っていない。</p>
+<p><strong>注意</strong>：ここで挙げた「市場の評価」は公開されている集計値だけ。SNS や掲示板の個別の書き込みは、書き手が特定できず検証もできないため採っていない。</p>
 </blockquote>
 <h3>鉄則との関係</h3>
 <ul>
 <li>週足13週移動平均の傾き：<strong>+3.710%/週（上向き）</strong></li>
 <li>週足26週移動平均の傾き：<strong>+2.205%/週（上向き）</strong></li>
 </ul>
-<p>鉄則「週足中期移動平均線が下向きなら決して買いで入らない」には引っかからない。<strong>4銘柄のなかで最も強い上昇トレンドにある。</strong></p>
+<p>鉄則「週足中期移動平均線が下向きなら決して買いで入らない」には引っかからない。以下は機械計算の値（as_of 2026-08-13。信用倍率・出来高は未照合の参考値<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）。</p>
 <div class="scroll"><table class="prose-table">
 <thead>
 <tr>
 <th>鉄則の観点</th>
-<th>8/13時点の値（<code>src/judge.py</code>、as_of 2026-08-13）</th>
+<th>値</th>
 <th>判定</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>1Q等の進捗率30%超えているか</td>
-<td>約38%（756／2,000百万円）</td>
+<td>約38%</td>
 <td><strong>超えている</strong>（2Qでの上方修正を狙える形）</td>
 </tr>
 <tr>
 <td>信用倍率が5倍超えでないか</td>
-<td>9.13倍（8/7時点・未更新）</td>
-<td><strong>超えている</strong>（下降の可能性が高いとされる水準）</td>
+<td>9.13倍（8/7時点）</td>
+<td><strong>超えている</strong></td>
 </tr>
 <tr>
 <td>RSIが8割超えでないか</td>
@@ -852,43 +728,15 @@ font-size:.72rem;font-weight:700}
 </tr>
 <tr>
 <td>出来高を伴ったトレンドか</td>
-<td>8/10の出来高109,800株は前日8/7（1,800株）の61倍</td>
-<td><strong>判定していない</strong>（I-06・未実装）</td>
+<td>決算日の出来高は前日の約61倍</td>
+<td><strong>判定していない</strong>（未評価の観点）</td>
 </tr>
 </tbody>
 </table></div>
 <blockquote>
-<p><strong>なぜ最後の行だけ○×が無いか</strong>：「トレンドは明確で出来高を伴っているか」（I-06）は、本システムがまだ判定していない観点である（<code>src/judge.py</code> の <code>UNEVALUATED_RULES</code> に、出来高は流動性ゲートと3か月前比にしか使っていないと明記されている）。判定していないものを「伴っている」と書くと、通過扱いにしたのと同じになる。
-あわせて、<strong>出来高は取得元1つ（株探）の値で、終値のような2ソース照合を通っていない</strong>（<code>fetch.py</code> が照合しているのは <code>close</code> だけで、2倍以上ずれたときに <code>VOLUME_MISMATCH</code> を残すのみ）。上の61倍は桁の目安として読むこと。</p>
+<p>「出来高を伴ったトレンドか」は本システムが判定していない観点であり、判定していないものを通過扱いにしない。約61倍も未照合の出来高<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>から出した桁の目安である。</p>
 </blockquote>
-<p>20日平均売買代金は6,471万円、<strong>中央値は1,225万円</strong>（<code>src/judge.py</code>、as_of 2026-08-13。8/12基準の旧値4,683万円／1,029万円から、8/13の高水準の出来高（114,900株）が20日窓に入ったことで押し上げられた）。流動性ゲート（3,000万円）は平均で通過するが、中央値は下回る。材料が無い日は1日1,000万円前後しか動かない板であることは、玉の大きさを決めるときに効く。</p><h2>出典</h2><h3>この節の読み方 — 数値には3つの段階がある</h3>
-<div class="scroll"><table class="prose-table">
-<thead>
-<tr>
-<th>段階</th>
-<th>意味</th>
-<th>どこで見分けるか</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>2ソース照合済み</strong></td>
-<td>独立した2つ以上の取得元から機械で抜き、表示されている桁の範囲で一致した値。図はこれだけで描いている</td>
-<td>図の下に「出所: data/… の採用値」と出る</td>
-</tr>
-<tr>
-<td><strong>1サイトのみ／食い違い</strong></td>
-<td>取得元が1つしかない、または2つが一致しなかった値。<strong>採用値にしていない</strong></td>
-<td>本文で「未照合」「食い違い」と明記している</td>
-</tr>
-<tr>
-<td><strong>人が転記（未検証）</strong></td>
-<td>front matter や本文に人が書き写した数値。桁の取り違えを機械が検出できない</td>
-<td>図の中の印に「手書き（未検証）」と出る</td>
-</tr>
-</tbody>
-</table></div>
-<p>段階ごとの件数は、ページ末尾の<strong>「数値の検証状況」</strong>に機械が出している。2026年8月16日の深掘り更新で、2027年3月期第1四半期の決算短信PDF（一次情報）を<code>src/fetch_tanshin.py</code>で直接読み取り、本文の主要数値と突き合わせた。<strong>ただし<code>data/tanshin/6570.csv</code>への正式な取り込みはまだ行っていない</strong>（取り込みと<code>data/kpi/</code>への反映は<code>kabu-ledger</code>スキル＝別工程の担当であり、本レポート更新の範囲外）。2017年3月期以前の経常利益の食い違いなど、より古い期の一次情報との突き合わせは引き続き未着手。</p>
+<p>20日平均売買代金は約6,500万円、<strong>中央値は約1,200万円</strong>（as_of 2026-08-13）。流動性ゲート（3,000万円）は平均では通過するが、中央値は下回る。材料が無い日は薄い板であることは、玉の大きさを決めるときに効く。</p><h2>出典</h2><p>凡例: <span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>=2ソース照合済みの採用値 ／ <span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>=未照合・参考値 ／ <span class="vm vm-pri" title="決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし">†</span>=決算短信（一次情報）から機械抽出。<strong>この銘柄では<span class="vm vm-pri" title="決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし">†</span>は未使用</strong>（<code>data/tanshin/6570.csv</code> への機械取り込みが未実施のため、短信由来の値は <span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span> か「PDF本文を直接確認」の文言で示している）</p>
 <h3>一次情報</h3>
 <div class="scroll"><table class="prose-table">
 <thead>
@@ -901,38 +749,38 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>IR情報（決算短信・説明資料・適時開示）</td>
-<td><a href="https://www.kyowa-corp.co.jp/ir/">https://www.kyowa-corp.co.jp/ir/</a></td>
+<td><a class="ext" href="https://www.kyowa-corp.co.jp/ir/" target="_blank" rel="noopener">kyowa-corp.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>事業内容（アミューズメント施設運営／ゲーム機器販売／管理委託／総合広告業・店装事業）</td>
-<td><a href="https://www.kyowa-corp.co.jp/business">https://www.kyowa-corp.co.jp/business</a></td>
+<td><a class="ext" href="https://www.kyowa-corp.co.jp/business" target="_blank" rel="noopener">kyowa-corp.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>企業情報</td>
-<td><a href="https://www.kyowa-corp.co.jp/company">https://www.kyowa-corp.co.jp/company</a></td>
+<td><a class="ext" href="https://www.kyowa-corp.co.jp/company" target="_blank" rel="noopener">kyowa-corp.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>沿革（YAZアミューズメント・シティエンタテインメントの吸収合併と、店舗名の「アピナ」への統一）</td>
-<td><a href="https://www.kyowa-corp.co.jp/company/history">https://www.kyowa-corp.co.jp/company/history</a></td>
+<td><a class="ext" href="https://www.kyowa-corp.co.jp/company/history" target="_blank" rel="noopener">kyowa-corp.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
-<td>2027年3月期第1四半期決算短信〔日本基準〕（連結）。売上高・営業利益・経常利益・純利益・EPS・セグメント情報・通期計画の据え置き記載などを確認</td>
-<td><a href="https://www.release.tdnet.info/inbs/140120260810516597.pdf">https://www.release.tdnet.info/inbs/140120260810516597.pdf</a>（TDnet原本。開示日2026-08-10。<code>kabutan.jp/disclosures/pdf/20260810/140120260810516597/</code>と同一文書）</td>
+<td>2027年3月期第1四半期決算短信〔日本基準〕（連結）。売上高・営業利益・経常利益・純利益・EPS・セグメント情報・発行済株式数・通期計画の据え置き記載などを確認</td>
+<td><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">TDnet ↗</a>（TDnet原本。開示日2026-08-10）</td>
 <td>2026-08-16</td>
 </tr>
 <tr>
 <td>創立40周年記念株主優待の実施に関するお知らせ。対象株主・優待内容・贈呈時期・「今回限り」の記載を確認</td>
-<td><a href="https://www.release.tdnet.info/inbs/140120260810516625.pdf">https://www.release.tdnet.info/inbs/140120260810516625.pdf</a>（TDnet原本。開示日2026-08-10。<code>kabutan.jp/disclosures/pdf/20260810/140120260810516625/</code>と同一文書）</td>
+<td><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516625.pdf" target="_blank" rel="noopener">TDnet ↗</a>（TDnet原本。開示日2026-08-10）</td>
 <td>2026-08-16</td>
 </tr>
 </tbody>
 </table></div>
 <blockquote>
-<p>※ 決算短信PDFは今回はじめて機械で読み取った（TDnetの日次一覧経由。保持期間は約31日のため、この2件のURLは2026年9月上旬ごろに切れる見込み）。<code>data/tanshin/</code>への正式な取り込みはまだ行っていない。2017年3月期の経常利益の食い違いも、その期の一次情報でしか決着しない（今回は対象外）。</p>
+<p><span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span> TDnet の保持期間は約31日のため、上の短信2件のURLは2026年9月上旬ごろに切れる見込み。<code>data/tanshin/</code> への機械取り込みは未実施（別工程の担当）。</p>
 </blockquote>
 <h3>二次情報（機械で突き合わせているもの）</h3>
 <div class="scroll"><table class="prose-table">
@@ -946,22 +794,21 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>通期の業績推移・財務指標・キャッシュフロー</td>
-<td><a href="https://irbank.net/E33822/results">https://irbank.net/E33822/results</a></td>
+<td><a class="ext" href="https://irbank.net/E33822/results" target="_blank" rel="noopener">IR BANK ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>四半期推移</td>
-<td><a href="https://irbank.net/E33822/quarter">https://irbank.net/E33822/quarter</a></td>
+<td><a class="ext" href="https://irbank.net/E33822/quarter" target="_blank" rel="noopener">IR BANK ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>業績推移・財務・キャッシュフロー</td>
-<td><a href="https://kabutan.jp/stock/finance?code=6570">https://kabutan.jp/stock/finance?code=6570</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/finance?code=6570" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 </tbody>
 </table></div>
-<p>この2サイトは <code>data/fundamentals/6570.csv</code> に<strong>別々に記録し、値が一致した行だけを採用値</strong>にしている。</p>
 <h3>二次情報（人が読んで書いたもの・未照合）</h3>
 <div class="scroll"><table class="prose-table">
 <thead>
@@ -974,52 +821,52 @@ font-size:.72rem;font-weight:700}
 <tbody>
 <tr>
 <td>株価・時価総額・信用残・比較銘柄・事業概要・配当</td>
-<td><a href="https://kabutan.jp/stock/?code=6570">https://kabutan.jp/stock/?code=6570</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>1Q決算の内訳（既存店・道楽・ブルームの寄与）と記念株主優待の内容</td>
-<td><a href="https://kabutan.jp/news/marketnews/?b=n202608100568">https://kabutan.jp/news/marketnews/?b=n202608100568</a></td>
+<td><a class="ext" href="https://kabutan.jp/news/marketnews/?b=n202608100568" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>適時開示の一覧（出店・1Q決算・記念優待・支配株主に関する事項）</td>
-<td><a href="https://kabutan.jp/stock/news?code=6570">https://kabutan.jp/stock/news?code=6570</a></td>
+<td><a class="ext" href="https://kabutan.jp/stock/news?code=6570" target="_blank" rel="noopener">株探 ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>株価診断・個人予想・目標株価・PSR・PBR</td>
-<td><a href="https://minkabu.jp/stock/6570">https://minkabu.jp/stock/6570</a></td>
+<td><a class="ext" href="https://minkabu.jp/stock/6570" target="_blank" rel="noopener">みんかぶ ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
 <td>アナリストレーティング・理論株価・BPS・PER</td>
-<td><a href="https://kabuyoho.jp/sp/reportTarget?bcode=6570">https://kabuyoho.jp/sp/reportTarget?bcode=6570</a></td>
+<td><a class="ext" href="https://kabuyoho.jp/sp/reportTarget?bcode=6570" target="_blank" rel="noopener">kabuyoho.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
-<td>道楽の買収（株式譲渡の実行日2026年2月1日・取得株式60株＝議決権100.0%・国内4店舗及びEC）。<strong>財務数値の記載は無い</strong></td>
-<td><a href="https://www.nihon-ma.co.jp/news/20251112_6570-1/">https://www.nihon-ma.co.jp/news/20251112_6570-1/</a></td>
+<td>道楽の買収（株式譲渡の実行日2026年2月1日・取得株式60株＝議決権100.0%・国内4店舗及びEC）。財務数値の記載は無い</td>
+<td><a class="ext" href="https://www.nihon-ma.co.jp/news/20251112_6570-1/" target="_blank" rel="noopener">nihon-ma.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 <tr>
-<td>道楽の買収時財務（2025年3月期の売上高9億7400万円・営業利益1800万円・純資産8200万円）と4店舗＋EC。<strong>この財務3項目はこの1サイトにしか無い</strong></td>
-<td><a href="https://www.strike.co.jp/ma_news/detail.html?id=20251112a">https://www.strike.co.jp/ma_news/detail.html?id=20251112a</a></td>
+<td>道楽の買収時財務（2025年3月期の売上高9.7億円・営業利益18百万円・純資産82百万円）と4店舗＋EC。この財務3項目はこの1サイトにしか無い</td>
+<td><a class="ext" href="https://www.strike.co.jp/ma_news/detail.html?id=20251112a" target="_blank" rel="noopener">strike.co.jp ↗</a></td>
 <td>2026-08-13</td>
 </tr>
 </tbody>
 </table></div>
 <h3>未確認・次に確かめること</h3>
 <ul>
-<li><strong>2017年3月期の経常利益</strong>（株探3,003／IR BANK 304百万円）。一次情報で決着させる（今回の深掘りでは対象外）</li>
-<li>事業内容ページの4分類（施設運営／機器販売／<strong>管理委託／広告・店装</strong>）のうち後者2つの売上・利益内訳。決算短信のセグメント区分は3区分（施設運営／機器販売／その他）までしか分けておらず、これ以上は開示されていない</li>
-<li><strong>道楽とブルームの個別寄与の切り分け</strong>。決算短信のセグメント注記は「その他」区分をまとめて開示しており、1Qのその他セグメント利益320,688千円のうち道楽とブルームがそれぞれ何割かは分からない</li>
-<li>今期計画で営業利益率が8.48%→7.44%に下がる理由（出店の先行費用か、事業構成の変化か）</li>
+<li><strong>2017年3月期の経常利益</strong>（株探3,003／IR BANK 304百万円）。一次情報で決着させる</li>
+<li>事業内容ページの4分類のうち<strong>管理委託／広告・店装</strong>の売上・利益内訳。決算短信のセグメントは3区分までしか分けておらず、これ以上は開示されていない</li>
+<li><strong>道楽とブルームの個別寄与の切り分け</strong>。短信のセグメント注記は「その他」区分をまとめて開示しており、両者の内訳は分からない</li>
+<li>今期計画で営業利益率が下がる理由（出店の先行費用か、事業構成の変化か）</li>
 <li>2026年6月29日開示「支配株主等に関する事項について」の中身</li>
-<li><strong><code>data/tanshin/6570.csv</code>への正式な取り込み</strong>（<code>kabu-ledger</code>スキルの担当。今回は本レポート作成のためPDFを直接読んだのみで、CSVへの反映は未実施）</li>
-<li>通期計画EPS（決算短信原文203.85円／<code>data/fundamentals/6570.csv</code>採用値203.82円）の0.03円の差の原因</li>
-<li>2Q決算の発表予定日（本レポート作成時点で開示を確認できていない）</li>
-<li><strong>道楽の4店舗の所在地と、取り扱うカードタイトルの内訳</strong>。日本M&amp;Aセンター・ストライクのどちらの記事にも「国内4店舗及びEC」としか書かれていないため、店舗名とタイトル名は本文から落とした。道楽の自社サイト等の出典を特定してから書く</li>
-<li><strong>道楽の買収時財務（974／18／82百万円）の2つめの出典</strong>。現状はストライク1サイトのみ</li>
-<li>店舗数の四半期ごとの推移（1Q末76店舗という単発の数字はあるが、過去の四半期末との比較はできていない）</li>
-</ul><h2 id="verify">記述の裏取り</h2><p class="lede">このレポートを書いたのとは<strong>別の文脈</strong>が、本文に書かれている出典URLを実際にもう一度取りに行き、<strong>その記述がその出典で裏付けられるか</strong>を1件ずつ判定した結果。書き手が「こう書いてある」と言っていることは根拠にしていない。</p><p class="none"><span class="pill pill-warn">記録が古い</span>この検証のあとにレポート本文が書き換えられている。<strong>下の判定は現在の本文に適用できない。</strong>件数は出さない（現在の本文について確かめられていないため）。</p><h3>裏が取れなかった記述</h3><p>出典を取り直しても確かめられなかったもの。<strong>本文に残っているが、確認済みとして読んではいけない。</strong></p><div class="scroll"><table><thead><tr><th>判定</th><th>本文の記述</th><th>再取得して分かったこと</th><th>出典</th><th>どうするか</th></tr></thead><tbody><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>時価総額192億円</td><td>再取得（200）。ページは常に最新値を表示するライブページで、8/13時点のスナップショットを保存していない。今回（2026-08-16取得、8/14終値3,095円ベース）は「時価総額 | 188 億円」「発行済株式数 | 6,080,130 株」。188億円÷6,080,130株≈3,093円で8/14終値3,095円と整合しており計算方法自体はおかしくないが、本文が主張する『8/13取得・192億円』という値そのものは再取得では再現できない。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>時価総額のような日々変わる値は、取得のたびに『◯月◯日時点』の注記だけでなく、再取得しても照合できない旨をどこかで明示するとよい</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>目標株価 1,775円（現値より約4割下）</td><td>再取得を試みたが http_status=403（Forbidden）。到達できず、本文の数値の裏付けも反証もできない。</td><td>二次情報<br><a class="ext" href="https://minkabu.jp/stock/6570" target="_blank" rel="noopener">出典 ↗</a></td><td>みんかぶは恒常的に403を返す取得元。目標株価・PBR・PSRなど、みんかぶにしか無い数値は当面『未検証』のまま扱う。別の一次/二次情報（決算説明資料のアナリスト予想欄など）に置き換えられないか検討する</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>PSR 0.92倍・PBR 3.25倍</td><td>再取得を試みたが http_status=403（Forbidden）。V16と同じ理由で到達不能。</td><td>二次情報<br><a class="ext" href="https://minkabu.jp/stock/6570" target="_blank" rel="noopener">出典 ↗</a></td><td>V16と同じ（みんかぶ403問題）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>1,894円（下値目途1,301円／上値目途2,487円）</td><td>再取得（200）できたが、株予報Proの理論株価・上値/下値目途は当日の株価・BPSから逐次計算されるライブ値で履歴を保存していない。今回（2026-08-16取得、8/14終値3,095円・BPS実績1,048円ベース）は理論株価(PBR基準)1,939円・下値目途1,242円・上値目途2,636円と、本文の1,894/1,301/2,487円とは異なる（値が動いたこと自体は自然だが、本文が主張する時点の値は再現できない）。</td><td>二次情報<br><a class="ext" href="https://kabuyoho.jp/sp/reportTarget?bcode=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>この種のライブ計算値は取得日ごとにdata/へ保存しないと再検証できない。日次スナップショットの保存を検討</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>RSIが8割超えでないか | 88.7</td><td>`python src/judge.py --indicators-only` を実行すると6570の as_of は2026-08-13（直近のstatus=OK終値の日）で rsi14=90.37…。8/12を基準にした88.7は指標ツールの現在のライブ計算では再現できない（ツールに過去日付を指定するオプションが無く、日々の指標スナップショットも保存されていないため）。8/13時点の値がさらに高い90.37であることは、株価続伸という事実と整合する方向ではある。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>指標（RSI・移動平均乖離率・出来高代金）を日次でdata/に記録するか、judge.pyに--as-ofを持たせないと、時点依存の指標claimは今後も検証できない</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>移動平均乖離率が7〜8%超えでないか | +42.6%（25日）</td><td>`python src/judge.py --indicators-only` の6570 ma_deviation_pct=48.11…（as_of 2026-08-13）。8/12時点の42.6%とは一致しない。理由・限界はV21と同じ（as_ofが動いてしまい過去の値を再現できない）。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>V21と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>20日平均売買代金は4,683万円、中央値は1,029万円</td><td>`python src/judge.py --indicators-only` の6570 avg_turnover_20d=64,705,065円（約6,471万円）・median_turnover_20d=12,250,000円（約1,225万円）（as_of 2026-08-13）。本文の4,683万円／1,029万円とは一致しない。8/13の出来高114,900株・終値3,160円という高水準の1日が20日窓に入ったことで平均・中央値とも押し上げられたとみられ、V21/V22と同根のas_ofドリフトと考えられる。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>V21と同じ。この項目は『流動性ゲート（3,000万円）は平均で通過するが中央値は下回る』という結論に関わるため、特に日次記録の必要性が高い</td></tr><tr><td><span class="pill pill-warn">取得日から値が動いた</span></td><td>irbank.netのトップページも403で到達できなかった</td><td>直前run（2026-08-16T11:57:34+09:00）でcontradicted判定した記述。 この本文は「### 2026-W33（続報2）」内にあり、append-only制約 （過去週の本文は書き換えない）のため文面自体は変更できない。 「### 2026-W33（続報3）」を新設し、2026-08-16T13:05頃の再取得で https://irbank.net/E33822 がhttp_status=200で到達できること、 403だったことを裏付ける取得ログが無いことを明記して、この記述を 根拠として引き継がない旨を追記した。到達可否はサイト側の状態に 左右される時点依存の事実であり、contradicted（記述が誤り）ではなく superseded（取得時点で状況が変わりうる）として再判定する。</td><td>二次情報<br><a class="ext" href="https://irbank.net/E33822" target="_blank" rel="noopener">出典 ↗</a></td><td>次回このURLを再度叩いて到達可否を確認し、恒常的に403でないことを再確認する</td></tr><tr><td><span class="pill pill-warn">取得日から値が動いた</span></td><td>8月12日の終値2,970円が、そのまま52週の高値になっている</td><td>front matter の price_range チャートcaptionにある記述。data/prices/daily.csv を2025-08-13以降でOK行に絞ると、直近52週の最高値は2026-08-13の3160.0円（status=OK、8/12の2970.0円より高い）で、8/12は最高値ではなくなっている。この記述は front matter 記載当時（8/12時点）は正しかったが、続報・続報2で追記された8/13の新値（本台帳内でも既にOK化済み）によって既に超えられており、『8月12日時点』と明記しないと現状の本文全体としては誤りに読める。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>front matterのcaptionは週次アップデートと同期していない（追記のみモードの制約）。次回の全節見直し時に、価格レンジの図と本文キャプションを直近のOK終値（3160円・8/13）に合わせて更新するか、『8月12日時点』の注記を足す</td></tr><tr><td><span class="pill pill-warn">この出典では確かめられない（別の出典が要る）</span></td><td>IR情報（決算短信・説明資料・適時開示）</td><td>再取得（200、276文字）。本文はナビゲーションの見出し（『最新IR情報』『IRライブラリ』『決算短信』『決算説明資料』『適時開示情報』等のメニュー項目名）のみで、実際の決算短信・説明資料・適時開示の中身（日付・数値・PDFリンク）は含まれていない＝目次だけ。SKILL.mdの『一次の欄のURLが再取得すると目次だけなら unsupported』に該当する。</td><td>一次情報<br><a class="ext" href="https://www.kyowa-corp.co.jp/ir/" target="_blank" rel="noopener">出典 ↗</a></td><td>出典表の『一次情報』欄で、このURLが実際にどの一次情報を裏付けているかを明示するか、tierをsecondaryへ見直すか検討。本文中では『IRニュース・適時開示・IRカレンダーの各ページはJavaScriptで描画されており静的取得では確認できない』と別途書かれており、この制約自体は276文字という薄い取得結果と整合している</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>2026年6月末（第1四半期会計期間末）時点の総店舗数は76店舗で、当四半期中に3店舗を新規出店した（愛知県の「アピナ太田川店」など。決算短信で確認）。</td><td>再取得（200、content-type application/pdf、82文字のプレースホルダのみ）。fetch_source.pyはPDFをテキスト化しないため、本文中の店舗数・出店の記述はこの経路では確認できない。data/tanshin/6570.csvも未作成でこの経路からも確認できない。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>data/tanshin/6570.csvへの取り込み（kabu-ledgerスキル）後に再検証する</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>本文の「期末発行済株式数」欄でも同数を確認・2026-08-16取得</td><td>V37と同じ理由（PDFがテキスト化されないため、この経路では欄の記載内容を確認できない）。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>アミューズメント施設運営 | 5,085,352 | +26.4% | 541,231 | +49.4% |</td><td>V37と同じ理由。セグメント情報はdata/fundamentals/6570.csvにもdata/tanshin/6570.csvにも記録が無く、この経路で数値を確認する手段が無い。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>セグメント別の売上・利益をdata/tanshin/6570.csvのmetric語彙に追加するか、別ファイルでの記録を検討</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>アミューズメント機器販売 | 292,533 | +244.1% | 85,000 | +47.3% |</td><td>V39と同じ理由。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V39と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>その他（広告代理店業・トレカ事業・ブルーム・道楽） | 2,005,692 | +704.5% | 320,688 | +3,854.2% |</td><td>V39と同じ理由。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V39と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>3区分合計（調整前） | 7,383,578 | +69.4% | 946,919 | +121.2%（当台帳計算） |</td><td>売上高7,383,578千円の部分はdata/fundamentals/6570.csvのrevenue=7383(OK|ROUNDING)と整合するが、セグメント利益合計946,919千円と+121.2%はセグメント情報由来でCSVに無く、この経路では確認できない。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V39と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>つまり1Qの営業利益の増加分のうち、およそ6割が「その他」区分の伸びで説明できるという計算になる</td><td>セグメント別の増加額（178,932／27,303／312,579千円）から当台帳が計算した比率であり、元になるセグメント実額がCSVに無いためこの経路では再計算・確認ができない。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V39と同じ。セグメント実額が記録されれば比率計算も機械で再現可能になる</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>業績予想につきましては、2026年5月13日の『2026年3月期　決算短信』で公表いたしました第2四半期連結累計期間及び通期の業績予想に変更はありません。</td><td>V37と同じ理由（PDF本文の引用はこの経路では確認できない）。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>売上高12,910百万円（+32.9%）・営業利益925百万円（+17.6%）・経常利益944百万円（+21.4%）・純利益576百万円（+21.5%）・EPS 96.43円</td><td>V37と同じ理由。2Q累計計画はdata/fundamentals/6570.csvにH2027-04_2027-09等のキーで記録されていない。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>決算説明会開催の有無：無」「決算補足説明資料作成の有無：無」</td><td>V37と同じ理由。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>決算短信本文では中間20円・期末20円の内訳が示されている</td><td>V37と同じ理由。配当の中間・期末内訳はdata/fundamentals/6570.csvにも記録が無い。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>短信原文の通期計画EPSは「203円85銭」（203.85円）</td><td>V37と同じ理由。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>簡易BPSは約1,048.4円（決算短信原文の実額から当台帳が計算・assumed: false）</td><td>元になる自己資本6,270,166千円・株式数5,980,787株はいずれも決算短信原文の値で、fetch_source.pyはPDFをテキスト化しないためこの経路では再確認できない。当台帳の再計算（6,270,166,000÷5,980,787=1,048.39…）自体は式として矛盾なく、本文の1,048.4円と一致するが、元データの出典確認はできていない。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ。一次数値がdata/に記録されれば機械で再現可能になる</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>対象は2026年9月30日時点で1単元（100株）以上を保有する株主。子会社ブルームが展開する「iBLOOM」ブランドと、長野県の老舗七味唐辛子メーカー「八幡屋礒五郎」がコラボしたスクイーズ、および40周年記念デザインの七味缶を各1点、2026年12月下旬ごろより順次贈呈する。</td><td>再取得（200、content-type application/pdf、82文字のプレースホルダのみ）。fetch_source.pyはPDFをテキスト化しないため、この経路では優待内容の記述を確認できない。この開示は決算短信ではないため`src/fetch_tanshin.py`／`data/tanshin/`の対象にもならず、現状のツールセットでは内容を検証する手段が無い。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516625.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>非財務PDF（適時開示全般）をテキスト化する手段が無いことを、ツール群の既知の制約として記録することを検討</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>この優待は今回限りであり、現在実施している通常の株主優待制度に変更はない</td><td>V60と同じ理由。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516625.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V60と同じ</td></tr></tbody></table></div><details><summary>裏付けが取れた記述 36件</summary><div class="scroll"><table><thead><tr><th>判定</th><th>本文の記述</th><th>再取得して分かったこと</th><th>出典</th><th>どうするか</th></tr></thead><tbody><tr><td><span class="pill pill-good">裏付けあり</span></td><td>8月12日の採用終値で計算すると約180.6億円</td><td>data/prices/daily.csv の 2026-08-12 行は close=2970.0・status=OK（kabutan/yahoo_jp 一致）。6,080,130×2,970=18,057,986,100円＝約180.6億円で、本文の掛け算（本文中の『6,080,130×2,970＝18,057,986,100円』）も一致する。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>発行済株式数6,080,130株</td><td>再取得（200）本文に「発行済株式数 | 6,080,130 株」がそのまま存在（2026-08-16取得時点でも同値。株式分割等が無い限り変わらない項目）。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>今期の予想配当は1株40円（前期25円）</td><td>再取得（200）本文の業績テーブルに「連 予 2027.03 | 26,870 | 2,000 | 1,992 | 1,219 | 203.8 | 40 |」（今期予想配当40円）と「連 2026.03 | 20,729 | 1,757 | 1,741 | 1,122 | 188.1 | 25 |」（前期実績配当25円）が存在。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/finance?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>東証スタンダード上場、業種分類は「サービス業」。2018年に新規上場。</td><td>再取得（200）本文に「東証Ｓ」（東証スタンダードの略）「業績 | サービス業」「業種 | サービス業」「テーマ | …2018年のIPO…」がそれぞれ存在。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>買収した YAZアミューズメント・シティエンタテインメント（2019年1月に吸収合併）の店舗は、2020年4月〜2021年4月に「アピナ」へ名称統一されている</td><td>再取得（200）沿革本文に「2019年1月: 株式会社YAZアミューズメント・株式会社シティエンタテインメントの子会社2社を吸収合併」、「2020年4月: ゲームシティプラス川越店→アピナ川越店 等」「2021年4月: YAZ から アピナ に名称変更（磐田店・四日市店・浜松店ほか）」が存在し、日付・内容とも一致。</td><td>一次情報<br><a class="ext" href="https://www.kyowa-corp.co.jp/company/history" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2026年2月1日付で全株式（60株・議決権100.0%）を取得</td><td>再取得（200）本文に「取得株式数 | 60株」「異動後の所有株式数 | 60株（議決権所有割合：100.0％）」「株式譲渡 実行日：2026年2月1日（予定）」が存在。更新日は2025年11月12日。</td><td>二次情報<br><a class="ext" href="https://www.nihon-ma.co.jp/news/20251112_6570-1/" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>買収時点（2025年3月期）の道楽の売上は974百万円、営業利益18百万円、純資産82百万円</td><td>再取得（200）本文に「同社は売上高9億7400万円、営業利益1800万円、純資産8200万円（2025年3月期）」が存在し、974/18/82百万円と一致。日本M&amp;Aセンターの記事（nihon-ma.co.jp、再取得済み）にはこの財務3項目に相当する記載が無いことも確認した（本文の『2つの出典が一致した値ではない』という指摘は妥当）。</td><td>二次情報<br><a class="ext" href="https://www.strike.co.jp/ma_news/detail.html?id=20251112a" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>株探 3,003百万円／IR BANK 304百万円</td><td>data/fundamentals/6570.csv の FY2017-03,6570,ordinary_income 行: status=MISMATCH, source_primary=kabutan_record_fy value_primary=3003, source_secondary=irbank_pl_consolidated value_secondary=304。本文の数値と完全一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>26/3期で株探5,897／IR BANK 5,690百万円</td><td>data/fundamentals/6570.csv の FY2026-03,6570,equity 行: status=MISMATCH, source_primary=kabutan_bs value_primary=5897, source_secondary=irbank_bs value_secondary=5690。本文の数値と完全一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>ROE は株探20.84%／IR BANK 19.03%、ROA は6.59%／6.03%</td><td>data/fundamentals/6570.csv の FY2026-03 行: roe status=MISMATCH（kabutan_fy_profit=20.84 / irbank_pl_consolidated=19.03）、roa status=MISMATCH（kabutan_fy_profit=6.59 / irbank_pl_consolidated=6.03）。本文の数値と完全一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>717→1,082→1,294→1,757百万円と4期連続で増えている</td><td>data/fundamentals/6570.csv の operating_income: FY2023-03=717(OK) / FY2024-03=1082(OK|ROUNDING) / FY2025-03=1294(OK|ROUNDING) / FY2026-03=1757(OK|ROUNDING)。いずれも2ソース照合済み採用値で本文の数列と一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>今期の会社予想2,000百万円は前期比+13.8%にとどまり</td><td>data/fundamentals/6570.csv の FY2027-03,6570,operating_income_plan=2000(OK)。再取得したkabutan財務ページにも『前期比 | +29.6 | +13.8 | +14.4 | +8.6 | +8.3』の行があり、営業益の前期比+13.8%が一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>前期8.48%に対して今期計画7.44%</td><td>data/fundamentals/6570.csv: FY2026-03,operating_margin=8.48(OK)、FY2027-03,operating_margin_plan=7.44(OK)。本文の数値と一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>1.53倍→1.13倍へ改善している</td><td>data/fundamentals/6570.csv の interest_bearing_debt_ratio（有利子負債倍率）: FY2024-03=1.5279(OK)→FY2025-03=1.2129(OK)→FY2026-03=1.1257(OK)。再取得したkabutan財務ページの表でも『有利子負債倍率 | 1.53 | 1.21 | 1.13』と同じ並び。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>強気0・中立0・弱気0</td><td>再取得（200）本文に「強気(5点) | 0 人」「やや強気(4点) | 0 人」「中立(3点) | 0 人」「やや弱気(2点) | 0 人」「弱気(1点) | 0 人」「平均 | -- | 人数 | -- 人」が存在。全カテゴリ0人で本文の『0社』と整合。</td><td>二次情報<br><a class="ext" href="https://kabuyoho.jp/sp/reportTarget?bcode=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>会社計画ベースのPERは約14.6倍</td><td>2970円（2026-08-12 採用終値・OK）÷203.82円（FY2027-03 eps_plan・OK）＝14.57…≈約14.6倍。本文の計算根拠（8/12終値・会社予想EPS）と整合する。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>週足13週移動平均の傾き：+3.710%/週（上向き）</td><td>`python src/judge.py --indicators-only` の6570 weekly_ma_mid_slope_pct=3.7096577491490854（weekly_ma_mid_direction=up）。丸めると+3.710%/週で本文と一致。週足指標は直近1営業日の追加では変わらないため、日足のRSI等と違い再現できた。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>支配株主等に関する事項について」を開示</td><td>再取得（200）開示情報一覧に「26/06/29 14:10 | 開示 | 支配株主等に関する事項について」が存在。日付・件名とも本文と一致。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/news?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>7月3日「アピナ小山駅前店・トレーディングカードピット小山駅前店」、7月31日「クレーンパラダイス諏訪店」、8月1日「アピナ高梁店」「トレカ道楽横浜西口店」、8月12日「MOOOSH SQUISHY SoLaDo原宿店」</td><td>再取得（200）開示情報一覧に「26/08/12 …MOOOSH SQUISHY SoLaDo原宿店…オープン」「26/08/03 …トレカ道楽横浜西口店…8月１日（土）オープン」「26/08/03 …アピナ高梁店…8月１日（土）オープン」「26/07/30 …クレーンパラダイス諏訪店…7月31日（金）オープン」「26/07/03 …アピナ小山駅前店・トレーディングカードピット小山駅前店…7月３日（金）オープン」がすべて存在し、店名・日付とも本文と一致。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/news?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>「トレンドは明確で出来高を伴っているか」（I-06）は、本システムがまだ判定していない観点である</td><td>src/judge.py の UNEVALUATED_RULES（955-965行目）に (&quot;トレンドは明確で出来高を伴っているか（I-06）&quot;, &quot;出来高は流動性ゲートと3か月前比にしか使っておらず、「上昇に出来高が伴っているか」は判定していない&quot;) というエントリが実在。本文の要約は内容と一致。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>現在値3,095円・前日比-65円/-2.06%・始値3,020円・高値3,180円[10:47]・安値2,970円[14:06]・売買高51,500株</td><td>再取得（200）本文に「現在値(15:30)：3,095円」「前日比：－65(－2.06％)」「始値 (9:03) 3,020円」「高値 (10:47) 3,180円」「安値 (14:06) 2,970円」「売買高 51,500株」が存在し、値・時刻とも一致。</td><td>二次情報<br><a class="ext" href="https://www.nikkei.com/nkd/company/?scode=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>翌8月14日の取得で株探とyahoo_jpの2ソースが一致し、採用値（status=OK）に変わった</td><td>data/prices/daily.csv の 2026-08-13,6570 行: close=3160.0, status=OK, source_primary=kabutan(3160.0), source_secondary=yahoo_jp(3160.0), fetched_at=2026-08-14T13:46:39。本文の記述と一致。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>kabutanが未反映でyahoo_jpの値のみ（status=SINGLE_SOURCE）</td><td>data/prices/daily.csv の 2026-08-14,6570 行: close=（空）, status=SINGLE_SOURCE, source_primary=yahoo_jp(3095.0), source_secondary=（空）, fetched_at=2026-08-16T11:07:51。本文の記述と一致。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>信用残は8月7日時点（買い残85.8千株・信用倍率9.13倍）から更新なし</td><td>data/margin/6570.csv の最新行は 2026-08-07,6570,85.8,9.4,9.13,千株,OK。本文の買い残85.8千株・信用倍率9.13倍と一致し、これより新しい行は無い（更新なしという記述と整合）。</td><td>検証済みデータ<br><code>data/margin/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>この銘柄は決算短信PDF（一次情報）の取り込みがまだ無く、一次情報との突き合わせは行えていない</td><td>data/tanshin/6570.csv は存在しない（ls で確認）。本文の自己申告『決算短信PDFの取り込みがまだ無い』は事実と一致する。</td><td>検証済みデータ<br><code>data/tanshin</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>時価総額は約192.1億円（6,080,130×3,160＝19,213,210,800円）</td><td>data/prices/daily.csv の 2026-08-13,6570 行は close=3160.0・status=OK（kabutan/yahoo_jp一致）。6,080,130×3,160=19,213,210,800円=192.1321…億円で、本文の『約192.1億円』『19,213,210,800円』と一致する。株数6,080,130は前run V03で株探を再取得済み（supported）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>data/fundamentals/6570.csvの採用値は203.82円（kabutan 203.8／IR BANK 203.82、status OK|ROUNDING）</td><td>data/fundamentals/6570.csv の FY2027-03,6570,eps_plan 行: value=203.82, status=OK|ROUNDING, source_primary=kabutan_fy(203.8), source_secondary=irbank_pl_consolidated(203.82)。本文の記述と完全一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>会社計画ベースのPERは約15.5倍（3,160÷203.82）</td><td>3160(2026-08-13採用終値・OK)÷203.82(FY2027-03 eps_plan・OK|ROUNDING)=15.5039…≈約15.5倍。本文の計算根拠と一致する。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>株価は帳簿上の純資産の約3.2倍にあたる</td><td>3160(2026-08-13採用終値・OK)÷986.13(FY2026-03 bps・2ソース照合済み)=3.2043…≈約3.2倍。本文と整合。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>8月13日の採用終値3,160円で計算すると 3.20倍（3,160÷986.13）</td><td>V51と同じ計算（3160÷986.13=3.2043…）。四捨五入で3.20倍、本文と一致。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>25日移動平均線からは+48.1%上に離れている（as_of 2026-08-13</td><td>`python src/judge.py --indicators-only` の6570: as_of=2026-08-13, ma_deviation_pct=48.114817…。四捨五入で+48.1%、本文と一致。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>RSI(14)は90.4で、鉄則の「8割超えは注意」を超えている</td><td>`python src/judge.py --indicators-only` の6570: rsi14=90.370504…。四捨五入で90.4、本文と一致。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>20日平均売買代金は6,471万円、中央値は1,225万円</td><td>`python src/judge.py --indicators-only` の6570: avg_turnover_20d=64,705,065円（約6,470.5万円）・median_turnover_20d=12,250,000円（1,225万円）（as_of 2026-08-13）。平均は四捨五入で6,471万円（6,470.5→6,471）、中央値は1,225万円と一致する。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2026-08-13 | 直近1年の高値（終値）（+6.4%） | 3,160円 |</td><td>data/prices/daily.csv の2026-08-13,6570行はclose=3160.0・status=OK。前日2026-08-12のclose=2970.0からの変化率は(3160-2970)/2970=6.397%≈+6.4%。2025-08-16以降のOK終値のうち3160.0が最大値であることも確認した（直近52週の高値）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>ザラ場では8月13日に3,225円まで振れているが</td><td>data/prices/daily.csv の2026-08-13,6570行のhigh列=3225.0。本文の数値と一致（高値・安値は照合対象外だが、記録された生値としては存在する）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>8月14日は逆にkabutan側が未反映で終値が採用できず（status=SINGLE_SOURCE）、参考値は3,095円（前日比-2.06%）</td><td>data/prices/daily.csv の2026-08-14,6570行はclose=（空）・status=SINGLE_SOURCE・source_primary=yahoo_jp(3095.0)。前日終値3160円からの変化率は(3095-3160)/3160=-2.0570%≈-2.06%。本文と一致（前run V31と同じ事実の再確認）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr></tbody></table></div></details><h3>この欄の材料</h3><p>検証した時刻 2026-08-16T15:30:00+09:00。記録は <code>data/verification/6570.yaml</code>（append-only）。</p><h4>実際に取り直した出典</h4><ul><li><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">https://www.release.tdnet.info/inbs/140120260810516597.pdf ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516625.pdf" target="_blank" rel="noopener">https://www.release.tdnet.info/inbs/140120260810516625.pdf ↗</a>（HTTP 200）</li></ul><h4>機械抽出に委ねている出典</h4><p>毎週コードが表を抜いて突き合わせているもの。人が読み直すより、そちらの記録のほうが強い。</p><ul><li>なし</li></ul><h2>数値の検証状況</h2><p class="lede">この銘柄の数値が<strong>どこまで機械的に確かめられているか</strong>を開示する。財務の数値は2つの取得元から別々に抜き、<strong>値が一致したものだけを採用値</strong>にしている。一致しなかったもの・1つの取得元しか持っていないものは採用せず、図では欠測として抜いてある（0 で埋めない）。</p><p class="readout"><span>2ソース照合済み <b>111</b></span><span>2ソースが食い違う <b>7</b></span><span>1ソースのみ <b>336</b></span><span>決算短信から直接 <b>0</b></span><span>株価の採用終値 <b>266</b>/277日</span></p><div class="scroll"><table><thead><tr><th>図</th><th>数値の出どころ</th><th>状態</th></tr></thead><tbody><tr><td><code>equity_ratio</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>3/3点すべて採用値</td></tr><tr><td><code>fcf</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>3/3点すべて採用値</td></tr><tr><td><code>op_5y</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>5/5点すべて採用値</td></tr><tr><td><code>price_range</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>3/3点すべて採用値</td></tr><tr><td><code>q1_progress</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>2/2点すべて採用値</td></tr><tr><td><code>q_revenue</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>9/9点すべて採用値</td></tr><tr><td><code>revenue_11y</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>12/12点すべて採用値</td></tr></tbody></table></div><h3>2つの取得元が食い違った項目</h3><p>どちらが正しいか決められないため、<strong>どちらの値も採用していない</strong>。この項目を本文で断定形で書いてはいけない。</p><p>2017/3 経常利益、2025/3 ROA、2025/3 ROE、2025/3 自己資本、2026/3 ROA、2026/3 ROE、2026/3 自己資本</p><h3>この欄の材料</h3><ul><li>財務数値: <code>data/fundamentals/6570.csv</code>（454行）— 2サイトの表を機械的に抜いて突き合わせた結果</li><li>決算短信: <code>data/tanshin/6570.csv</code>（0行・開示日 —）— PDF本文からの抽出 </li><li>株価: <code>data/prices/daily.csv</code> の <code>close</code>。始値・高値・安値・出来高は主ソースのみで照合を通っていないため、図には使っていない</li></ul></div></details><footer>集計基準日 2026-08-20／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
+<li><strong><code>data/tanshin/6570.csv</code> への正式な取り込み</strong>（<code>kabu-ledger</code>スキルの担当。今回はPDFを直接読んだのみ）</li>
+<li>通期計画EPS（決算短信原文203.85円／採用値203.82円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）の0.03円の差の原因</li>
+<li>2Q決算の発表予定日（開示を確認できていない）</li>
+<li><strong>道楽の4店舗の所在地と取り扱うカードタイトルの内訳</strong>（両記事とも「国内4店舗及びEC」までしか書いていない）</li>
+<li><strong>道楽の買収時財務（9.7億円／18百万円／82百万円）の2つめの出典</strong>。現状はストライク1サイトのみ</li>
+<li>店舗数の四半期ごとの推移（1Q末76店舗<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>という単発の数字はあるが、過去の四半期末との比較はできていない）</li>
+</ul><h2 id="verify">記述の裏取り</h2><p class="lede">このレポートを書いたのとは<strong>別の文脈</strong>が、本文に書かれている出典URLを実際にもう一度取りに行き、<strong>その記述がその出典で裏付けられるか</strong>を1件ずつ判定した結果。書き手が「こう書いてある」と言っていることは根拠にしていない。</p><p class="readout"><span>検証した記述 <b>64</b></span><span>裏付けあり <b>34</b></span><span>取得日から値が動いた <b>7</b></span><span>この出典では確かめられない（別の出典が要る） <b>1</b></span><span>確かめられない（到達不可・出典なし） <b>22</b></span><span>再取得した出典 <b>7</b></span></p><h3>裏が取れなかった記述</h3><p>出典を取り直しても確かめられなかったもの。<strong>本文に残っているが、確認済みとして読んではいけない。</strong></p><div class="scroll"><table><thead><tr><th>判定</th><th>本文の記述</th><th>再取得して分かったこと</th><th>出典</th><th>どうするか</th></tr></thead><tbody><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>時価総額192億円</td><td>再取得（200）。ページは常に最新値を表示するライブページで、8/13時点のスナップショットを保存していない。今回（2026-08-16取得、8/14終値3,095円ベース）は「時価総額 | 188 億円」「発行済株式数 | 6,080,130 株」。188億円÷6,080,130株≈3,093円で8/14終値3,095円と整合しており計算方法自体はおかしくないが、本文が主張する『8/13取得・192億円』という値そのものは再取得では再現できない。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>時価総額のような日々変わる値は、取得のたびに『◯月◯日時点』の注記だけでなく、再取得しても照合できない旨をどこかで明示するとよい</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>目標株価 1,775円</td><td>再取得を試みたが http_status=403（Forbidden）。到達できず、裏付けも反証もできない（前run V16 から変化なし。みんかぶは恒常的に403）。</td><td>二次情報<br><a class="ext" href="https://minkabu.jp/stock/6570" target="_blank" rel="noopener">出典 ↗</a></td><td>前run V16 と同じ（みんかぶ由来の数値は当面『未検証』のまま扱う）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>PSR 0.92倍・PBR 3.25倍</td><td>再取得を試みたが http_status=403（Forbidden）。V16と同じ理由で到達不能。</td><td>二次情報<br><a class="ext" href="https://minkabu.jp/stock/6570" target="_blank" rel="noopener">出典 ↗</a></td><td>V16と同じ（みんかぶ403問題）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>1,894円（下値目途1,301円／上値目途2,487円）</td><td>再取得（200）できたが、株予報Proの理論株価・上値/下値目途は当日の株価・BPSから逐次計算されるライブ値で履歴を保存していない。今回（2026-08-16取得、8/14終値3,095円・BPS実績1,048円ベース）は理論株価(PBR基準)1,939円・下値目途1,242円・上値目途2,636円と、本文の1,894/1,301/2,487円とは異なる（値が動いたこと自体は自然だが、本文が主張する時点の値は再現できない）。</td><td>二次情報<br><a class="ext" href="https://kabuyoho.jp/sp/reportTarget?bcode=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>この種のライブ計算値は取得日ごとにdata/へ保存しないと再検証できない。日次スナップショットの保存を検討</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>RSIが8割超えでないか | 88.7</td><td>`python src/judge.py --indicators-only` を実行すると6570の as_of は2026-08-13（直近のstatus=OK終値の日）で rsi14=90.37…。8/12を基準にした88.7は指標ツールの現在のライブ計算では再現できない（ツールに過去日付を指定するオプションが無く、日々の指標スナップショットも保存されていないため）。8/13時点の値がさらに高い90.37であることは、株価続伸という事実と整合する方向ではある。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>指標（RSI・移動平均乖離率・出来高代金）を日次でdata/に記録するか、judge.pyに--as-ofを持たせないと、時点依存の指標claimは今後も検証できない</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>移動平均乖離率が7〜8%超えでないか | +42.6%（25日）</td><td>`python src/judge.py --indicators-only` の6570 ma_deviation_pct=48.11…（as_of 2026-08-13）。8/12時点の42.6%とは一致しない。理由・限界はV21と同じ（as_ofが動いてしまい過去の値を再現できない）。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>V21と同じ</td></tr><tr><td><span class="pill pill-warn">取得日から値が動いた</span></td><td>週足13週移動平均の傾き：+3.710%/週（上向き）</td><td>+3.710%/週は run 2026-08-16T11:57:34+09:00 の V23 で judge.py 出力との一致を確認済みの2026-08-13時点の値。今回の `python src/judge.py --indicators-only` は as_of=2026-08-20 で weekly_ma_mid_slope_pct=4.4565…・weekly_ma_mid_direction=up。値は動いたが上向きという判定は変わらず、鉄則（下向きなら買わない）に引っかからないという本文の結論も維持される。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>V54と同じ（時点依存の指標は日次記録がないと再現できない）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>20日平均売買代金は4,683万円、中央値は1,029万円</td><td>`python src/judge.py --indicators-only` の6570 avg_turnover_20d=64,705,065円（約6,471万円）・median_turnover_20d=12,250,000円（約1,225万円）（as_of 2026-08-13）。本文の4,683万円／1,029万円とは一致しない。8/13の出来高114,900株・終値3,160円という高水準の1日が20日窓に入ったことで平均・中央値とも押し上げられたとみられ、V21/V22と同根のas_ofドリフトと考えられる。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>V21と同じ。この項目は『流動性ゲート（3,000万円）は平均で通過するが中央値は下回る』という結論に関わるため、特に日次記録の必要性が高い</td></tr><tr><td><span class="pill pill-warn">取得日から値が動いた</span></td><td>irbank.netのトップページも403で到達できなかった</td><td>直前run（2026-08-16T11:57:34+09:00）でcontradicted判定した記述。 この本文は「### 2026-W33（続報2）」内にあり、append-only制約 （過去週の本文は書き換えない）のため文面自体は変更できない。 「### 2026-W33（続報3）」を新設し、2026-08-16T13:05頃の再取得で https://irbank.net/E33822 がhttp_status=200で到達できること、 403だったことを裏付ける取得ログが無いことを明記して、この記述を 根拠として引き継がない旨を追記した。到達可否はサイト側の状態に 左右される時点依存の事実であり、contradicted（記述が誤り）ではなく superseded（取得時点で状況が変わりうる）として再判定する。</td><td>二次情報<br><a class="ext" href="https://irbank.net/E33822" target="_blank" rel="noopener">出典 ↗</a></td><td>次回このURLを再度叩いて到達可否を確認し、恒常的に403でないことを再確認する</td></tr><tr><td><span class="pill pill-warn">取得日から値が動いた</span></td><td>8月12日の終値2,970円が、そのまま52週の高値になっている</td><td>front matter の price_range チャートcaptionにある記述。data/prices/daily.csv を2025-08-13以降でOK行に絞ると、直近52週の最高値は2026-08-13の3160.0円（status=OK、8/12の2970.0円より高い）で、8/12は最高値ではなくなっている。この記述は front matter 記載当時（8/12時点）は正しかったが、続報・続報2で追記された8/13の新値（本台帳内でも既にOK化済み）によって既に超えられており、『8月12日時点』と明記しないと現状の本文全体としては誤りに読める。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>front matterのcaptionは週次アップデートと同期していない（追記のみモードの制約）。次回の全節見直し時に、価格レンジの図と本文キャプションを直近のOK終値（3160円・8/13）に合わせて更新するか、『8月12日時点』の注記を足す</td></tr><tr><td><span class="pill pill-warn">この出典では確かめられない（別の出典が要る）</span></td><td>IR情報（決算短信・説明資料・適時開示）</td><td>再取得（200、276文字）。中身はナビゲーションの見出し（『最新IR情報』『IRライブラリ』『決算短信』『決算説明資料』『適時開示情報』等のメニュー項目名）のみで、決算短信・説明資料・適時開示の実体（日付・数値・PDFリンク）は含まれない＝目次だけ。SKILL.mdの『一次の欄のURLが再取得すると目次だけなら unsupported』に該当（前run V35 から変化なし）。</td><td>一次情報<br><a class="ext" href="https://www.kyowa-corp.co.jp/ir/" target="_blank" rel="noopener">出典 ↗</a></td><td>出典表の一次情報欄で、このURLが実際に裏付ける内容を明示するか tier の見直しを検討（前run V35 と同じ提案）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>2026年6月末時点の総店舗数は76店舗※で、1Q中に3店舗を新規出店した</td><td>再取得（200、content-type application/pdf、82文字のプレースホルダのみ）。fetch_source.py は PDF をテキスト化せず、data/tanshin/ に 6570.csv は無い（150A.csv・4073.csv のみ）。店舗数・出店数はどの経路でも確認できない（前run V37 から状態変わらず）。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>data/tanshin/6570.csv への取り込み（kabu-ledger スキル）後に再検証する</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>本文の「期末発行済株式数」欄でも同数を確認・2026-08-16取得</td><td>V37と同じ理由（PDFがテキスト化されないため、この経路では欄の記載内容を確認できない）。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>| アミューズメント施設運営 | 5,085 | +26.4% | 541 |</td><td>V37と同じ理由（PDF未テキスト化）。セグメント別の売上・利益は data/fundamentals/6570.csv にも data/tanshin/ にも記録が無く、確認する手段が無い。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>セグメント別数値の data/ への記録を検討（前run V39 と同じ提案）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>| アミューズメント機器販売 | 292 | +244.1% | 85 |</td><td>V39と同じ理由。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V39と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>| その他（トレカ・ブルーム・広告ほか） | 2,005 | +704.5% | 320 |</td><td>V39と同じ理由。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V39と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>| 3区分合計（調整前） | 7,383 | +69.4% | 946 |</td><td>売上高7,383百万円は data/fundamentals/6570.csv の Q2026-04_2026-06 revenue=7383（OK|ROUNDING）と整合するが、セグメント利益合計946百万円と前年同期比はセグメント情報由来でCSVに無く、PDF未テキスト化のため確認できない。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V39と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>およそ6割は「その他」区分の伸びで説明できる</td><td>元になるセグメント別増加額が CSV に無く PDF もテキスト化されないため、当台帳計算の比率をこの経路では再計算・確認できない（前run V43 と同じ状態）。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V39と同じ。セグメント実額が記録されれば機械で再現可能になる</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>短信は「業績予想に変更はありません」と通期・2Q計画の据え置きを明言している（短信PDF本文で直接確認）</td><td>V37と同じ理由（PDF本文の引用はこの経路では確認できない）。文言は†から「短信PDF本文で直接確認」に置き換えられたが、検証できない状態は変わらない。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>2Q累計計画（営業9.3億円※）に対してはすでに約82%</td><td>2Q累計の営業利益計画925百万円は短信由来で、PDF未テキスト化・data/fundamentals/6570.csv に H 期間の plan 行も無く確認できない。925 を前提にすれば 756（Q2026-04_2026-06 operating_income・OK）÷925=81.7%≈約82%・925百万円→9.3億円の丸めとも式は整合するが、前提の925自体の裏が取れない（前run V45 と同じ状態）。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>決算説明会開催の有無：無」「決算補足説明資料作成の有無：無」</td><td>V37と同じ理由。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>中間20円・期末20円の内訳は短信PDF本文で直接確認</td><td>V37と同じ理由。配当の中間・期末内訳は data/fundamentals/6570.csv にも無い。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>通期計画EPS（決算短信原文203.85円／採用値203.82円✓）の0.03円の差</td><td>原文側の203.85円は PDF 未テキスト化のため確認できない。採用値側の203.82円は V49 のとおり data/fundamentals/6570.csv で確認済み。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>決算短信のQ1末（2026年6月末）の自己資本から計算した簡易BPSは約1,048円※</td><td>元になるQ1末自己資本・期末株式数は決算短信原文の値で、PDF 未テキスト化のため確認できない。data/fundamentals/6570.csv の Q2026-04_2026-06 equity=6270 は kabutan_bs のみの SINGLE_SOURCE で採用値ではなく、裏付けに使えない（D7）。†→※の付け替え後も状態は前run V53 から変わらない。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V37と同じ</td></tr><tr><td><span class="pill pill-warn">取得日から値が動いた</span></td><td>25日移動平均線から+48.1%上に離れ</td><td>本文は as_of 2026-08-13 を明記しており、その時点の値+48.11%は run 2026-08-16T15:30:00+09:00 の V54 で judge.py 出力との一致を確認済み。今回の `python src/judge.py --indicators-only` は as_of=2026-08-20・ma_deviation_pct=63.5737…で値が動いている（2026年8月20日時点は+63.6%）。「大きく超えている」という判定の方向は変わらない。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>指標の日次スナップショット保存（過去runと同じ提案）</td></tr><tr><td><span class="pill pill-warn">取得日から値が動いた</span></td><td>RSI(14)は90.4</td><td>as_of 2026-08-13 時点の90.37…は run 2026-08-16T15:30:00+09:00 の V55 で一致を確認済み。今回の judge.py は as_of=2026-08-20・rsi14=90.2804…（2026年8月20日時点は90.3）。8割超えという判定の方向は変わらない。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>V54と同じ</td></tr><tr><td><span class="pill pill-warn">取得日から値が動いた</span></td><td>20日平均売買代金は約6,500万円、中央値は約1,200万円（as_of 2026-08-13）</td><td>as_of 2026-08-13 時点の6,471万円／1,225万円は run 2026-08-16T15:30:00+09:00 の V56 で一致を確認済み。今回の judge.py は as_of=2026-08-20 で avg_turnover_20d=142,466,210円（約1.42億円）・median_turnover_20d=17,363,150円（約1,736万円）。2026年8月20日時点でも中央値は流動性ゲート3,000万円を下回っており、「平均は通過・中央値は下回る」という本文の結論は現時点でも成立する。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>V54と同じ</td></tr><tr><td><span class="pill pill-warn">取得日から値が動いた</span></td><td>8月14日の株価は、当台帳の定期取得ではkabutanが未反映でyahoo_jpの値のみ（status=SINGLE_SOURCE）</td><td>記述はエントリ執筆時点（fetched_at 2026-08-16T11:07:51）のCSVの状態として正しかったが、2026-08-21T13:08:34 の取得で kabutan=yahoo_jp=3095.0 が一致し、data/revisions.csv に repair（SINGLE_SOURCE→OK・close 空→3095.0）が記録されて、現在の 2026-08-14,6570 行は close=3095.0・status=OK。「2026年8月16日時点」と読めば正しい（前run V59 と同じ判定）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <code>data/revisions.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>2026年9月末に100株以上を保有する株主へ、iBLOOM のスクイーズと記念デザインの七味缶を各1点贈呈</td><td>再取得（200、application/pdf、82文字のプレースホルダのみ）。PDF 未テキスト化のため優待内容はこの経路では確認できない（前run V60 と同じ状態）。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516625.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>非財務PDF（適時開示全般）をテキスト化する手段が無いという既知の制約（過去runの提案を引き継ぐ）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>今回限りで、通常の優待制度に変更はないと開示PDF本文に明記</td><td>V60と同じ理由。文言は†から「開示PDF本文に明記」に置き換えられたが、検証できない状態は変わらない。</td><td>一次情報<br><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516625.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>V60と同じ</td></tr></tbody></table></div><details><summary>裏付けが取れた記述 34件</summary><div class="scroll"><table><thead><tr><th>判定</th><th>本文の記述</th><th>再取得して分かったこと</th><th>出典</th><th>どうするか</th></tr></thead><tbody><tr><td><span class="pill pill-good">裏付けあり</span></td><td>8月12日の採用終値で計算すると約180.6億円</td><td>data/prices/daily.csv の 2026-08-12 行は close=2970.0・status=OK（kabutan/yahoo_jp 一致）。6,080,130×2,970=18,057,986,100円＝約180.6億円で、本文の掛け算（本文中の『6,080,130×2,970＝18,057,986,100円』）も一致する。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>発行済株式数6,080,130株</td><td>再取得（200）本文に「発行済株式数 | 6,080,130 株」がそのまま存在（2026-08-16取得時点でも同値。株式分割等が無い限り変わらない項目）。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>今期の予想配当は1株40円（前期25円）</td><td>再取得（200）本文の業績テーブルに「連 予 2027.03 | 26,870 | 2,000 | 1,992 | 1,219 | 203.8 | 40 |」（今期予想配当40円）と「連 2026.03 | 20,729 | 1,757 | 1,741 | 1,122 | 188.1 | 25 |」（前期実績配当25円）が存在。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/finance?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>東証スタンダード上場、業種分類は「サービス業」。2018年に新規上場。</td><td>再取得（200）本文に「東証Ｓ」（東証スタンダードの略）「業績 | サービス業」「業種 | サービス業」「テーマ | …2018年のIPO…」がそれぞれ存在。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>買収した YAZアミューズメント・シティエンタテインメント（2019年1月に吸収合併）の店舗は、2020年4月〜2021年4月に「アピナ」へ名称統一されている</td><td>再取得（200）沿革本文に「2019年1月: 株式会社YAZアミューズメント・株式会社シティエンタテインメントの子会社2社を吸収合併」、「2020年4月: ゲームシティプラス川越店→アピナ川越店 等」「2021年4月: YAZ から アピナ に名称変更（磐田店・四日市店・浜松店ほか）」が存在し、日付・内容とも一致。</td><td>一次情報<br><a class="ext" href="https://www.kyowa-corp.co.jp/company/history" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2026年2月1日付で全株式（60株・議決権100.0%）を取得</td><td>再取得（200）本文に「取得株式数 | 60株」「異動後の所有株式数 | 60株（議決権所有割合：100.0％）」「株式譲渡 実行日：2026年2月1日（予定）」が存在。更新日は2025年11月12日。</td><td>二次情報<br><a class="ext" href="https://www.nihon-ma.co.jp/news/20251112_6570-1/" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>買収時点（2025年3月期）の売上9.7億円・営業利益18百万円・純資産82百万円※（M&amp;A仲介1サイトのみの記載で、2つめの出典が無い）</td><td>ストライク再取得（200）本文に「同社は売上高9億7400万円、営業利益1800万円、純資産8200万円（2025年3月期）」が存在（9.74億円→本文の9.7億円は丸め）。日本M&amp;Aセンターの記事も再取得（200）したが「売上高|純資産|営業利益」のヒットは0件で、『1サイトのみの記載で2つめの出典が無い』という自己申告も事実と一致。</td><td>二次情報<br><a class="ext" href="https://www.strike.co.jp/ma_news/detail.html?id=20251112a" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://www.nihon-ma.co.jp/news/20251112_6570-1/" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>株探 3,003百万円／IR BANK 304百万円</td><td>data/fundamentals/6570.csv の FY2017-03,6570,ordinary_income 行: status=MISMATCH, source_primary=kabutan_record_fy value_primary=3003, source_secondary=irbank_pl_consolidated value_secondary=304。本文の数値と完全一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>26/3期で株探5,897／IR BANK 5,690百万円</td><td>data/fundamentals/6570.csv の FY2026-03,6570,equity 行: status=MISMATCH, source_primary=kabutan_bs value_primary=5897, source_secondary=irbank_bs value_secondary=5690。本文の数値と完全一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>ROE は株探20.84%／IR BANK 19.03%、ROA は6.59%／6.03%</td><td>data/fundamentals/6570.csv の FY2026-03 行: roe status=MISMATCH（kabutan_fy_profit=20.84 / irbank_pl_consolidated=19.03）、roa status=MISMATCH（kabutan_fy_profit=6.59 / irbank_pl_consolidated=6.03）。本文の数値と完全一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>717→1,082→1,294→1,757百万円と4期連続で増えている</td><td>data/fundamentals/6570.csv の operating_income: FY2023-03=717(OK) / FY2024-03=1082(OK|ROUNDING) / FY2025-03=1294(OK|ROUNDING) / FY2026-03=1757(OK|ROUNDING)。いずれも2ソース照合済み採用値で本文の数列と一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>今期の会社予想20.0億円は+13.8%にとどまり</td><td>data/fundamentals/6570.csv: FY2027-03 operating_income_plan=2000（OK）＝20.0億円、FY2026-03 operating_income=1757（OK|ROUNDING）。2000÷1757-1=+13.83%≈+13.8%。同じcaptionの売上+29.6%も revenue_plan 26870÷revenue 20729-1=+29.62%で整合。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>前期8.48%に対して今期計画7.44%</td><td>data/fundamentals/6570.csv: FY2026-03,operating_margin=8.48(OK)、FY2027-03,operating_margin_plan=7.44(OK)。本文の数値と一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>1.53倍→1.13倍へ改善している</td><td>data/fundamentals/6570.csv の interest_bearing_debt_ratio（有利子負債倍率）: FY2024-03=1.5279(OK)→FY2025-03=1.2129(OK)→FY2026-03=1.1257(OK)。再取得したkabutan財務ページの表でも『有利子負債倍率 | 1.53 | 1.21 | 1.13』と同じ並び。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>レーティングを出している証券会社が0社</td><td>再取得（200）本文に「強気(5点) | 0 人」「やや強気(4点) | 0 人」「中立(3点) | 0 人」「やや弱気(2点) | 0 人」「弱気(1点) | 0 人」「平均 | -- | 人数 | -- 人」が存在。カバー0社という記述と整合（2026-08-23 22時台の再取得でも変化なし）。</td><td>二次情報<br><a class="ext" href="https://kabuyoho.jp/sp/reportTarget?bcode=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>会社計画ベースのPERは約14.6倍</td><td>2970円（2026-08-12 採用終値・OK）÷203.82円（FY2027-03 eps_plan・OK）＝14.57…≈約14.6倍。本文の計算根拠（8/12終値・会社予想EPS）と整合する。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>支配株主等に関する事項について」を開示</td><td>再取得（200）開示情報一覧に「26/06/29 14:10 | 開示 | 支配株主等に関する事項について」が存在。日付・件名とも本文と一致。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/news?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>7月3日「アピナ小山駅前店・トレーディングカードピット小山駅前店」、7月31日「クレーンパラダイス諏訪店」、8月1日「アピナ高梁店」「トレカ道楽横浜西口店」、8月12日「MOOOSH SQUISHY SoLaDo原宿店」</td><td>再取得（200）開示情報一覧に「26/08/12 …MOOOSH SQUISHY SoLaDo原宿店…オープン」「26/08/03 …トレカ道楽横浜西口店…8月１日（土）オープン」「26/08/03 …アピナ高梁店…8月１日（土）オープン」「26/07/30 …クレーンパラダイス諏訪店…7月31日（金）オープン」「26/07/03 …アピナ小山駅前店・トレーディングカードピット小山駅前店…7月３日（金）オープン」がすべて存在し、店名・日付とも本文と一致。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/news?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>「トレンドは明確で出来高を伴っているか」（I-06）は、本システムがまだ判定していない観点である</td><td>src/judge.py の UNEVALUATED_RULES（955-965行目）に (&quot;トレンドは明確で出来高を伴っているか（I-06）&quot;, &quot;出来高は流動性ゲートと3か月前比にしか使っておらず、「上昇に出来高が伴っているか」は判定していない&quot;) というエントリが実在。本文の要約は内容と一致。</td><td>検証済みデータ<br><code>src/judge.py</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>現在値3,095円・前日比-65円/-2.06%・始値3,020円・高値3,180円[10:47]・安値2,970円[14:06]・売買高51,500株</td><td>再取得（200）本文に「現在値(15:30)：3,095円」「前日比：－65(－2.06％)」「始値 (9:03) 3,020円」「高値 (10:47) 3,180円」「安値 (14:06) 2,970円」「売買高 51,500株」が存在し、値・時刻とも一致。</td><td>二次情報<br><a class="ext" href="https://www.nikkei.com/nkd/company/?scode=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>翌8月14日の取得で株探とyahoo_jpの2ソースが一致し、採用値（status=OK）に変わった</td><td>data/prices/daily.csv の 2026-08-13,6570 行: close=3160.0, status=OK, source_primary=kabutan(3160.0), source_secondary=yahoo_jp(3160.0), fetched_at=2026-08-14T13:46:39。本文の記述と一致。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>kabutanが未反映でyahoo_jpの値のみ（status=SINGLE_SOURCE）</td><td>data/prices/daily.csv の 2026-08-14,6570 行: close=（空）, status=SINGLE_SOURCE, source_primary=yahoo_jp(3095.0), source_secondary=（空）, fetched_at=2026-08-16T11:07:51。本文の記述と一致。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>信用残は8月7日時点（買い残85.8千株・信用倍率9.13倍）から更新なし</td><td>data/margin/6570.csv の最新行は 2026-08-07,6570,85.8,9.4,9.13,千株,OK。本文の買い残85.8千株・信用倍率9.13倍と一致し、これより新しい行は無い（更新なしという記述と整合）。</td><td>検証済みデータ<br><code>data/margin/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>この銘柄は決算短信PDF（一次情報）の取り込みがまだ無く、一次情報との突き合わせは行えていない</td><td>data/tanshin/6570.csv は存在しない（ls で確認）。本文の自己申告『決算短信PDFの取り込みがまだ無い』は事実と一致する。</td><td>検証済みデータ<br><code>data/tanshin</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>時価総額は約240億円（8/20の採用終値3,970円✓×発行済株式数※）</td><td>data/prices/daily.csv の 2026-08-20,6570 行は close=3970.0・status=OK（kabutan/yahoo_jp 一致）。発行済株式数は再取得（200）した株探に「発行済株式数 | 6,080,130 株」。3,970×6,080,130=24,138,116,100円=約241.4億円で「約240億円」と整合。†→※の付け替え後も判定は前run V36 から変わらない。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>今期予想1株益は203.82円✓</td><td>data/fundamentals/6570.csv の FY2027-03,6570,eps_plan 行: value=203.82, status=OK|ROUNDING, kabutan_fy=203.8|irbank_pl_consolidated=203.82。本文と一致。</td><td>検証済みデータ<br><code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>会社計画ベースのPERは約19.5倍</td><td>3970（2026-08-20 採用終値・OK）÷203.82（FY2027-03 eps_plan・OK|ROUNDING）=19.4779…≈約19.5倍。本文の計算根拠（8/20終値・会社予想EPS）と一致。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>株価3,970円✓に対しPBRは期末BPSベースで約4.0倍</td><td>3970（2026-08-20 採用終値・OK）÷986.13（FY2026-03 bps・status=OK）=4.0258…≈約4.0倍。同じ文の「Q1末の簡易BPSベースで約3.8倍」は 3970÷1048.4=3.7867…と式は整合するが、分母の簡易BPSは未検証（V53）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>8月13日の採用終値3,160円で計算すると 3.20倍（3,160÷986.13）</td><td>V51と同じ計算（3160÷986.13=3.2043…）。四捨五入で3.20倍、本文と一致。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <code>data/fundamentals/6570.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>8月13日終値は3,160円（前日比+6.4%）</td><td>data/prices/daily.csv の 2026-08-13,6570 行は close=3160.0・status=OK。前日 2026-08-12 の close=2970.0（OK）から (3160-2970)/2970=+6.397%≈+6.4%。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>ザラ場では8月13日に3,225円まで振れているが</td><td>data/prices/daily.csv の2026-08-13,6570行のhigh列=3225.0。本文の数値と一致（高値・安値は照合対象外だが、記録された生値としては存在する）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>週間 +28.3%（3095→3970円・採用終値ベース、照合成立 4日、週内 3035〜3970円）</td><td>data/prices/daily.csv: 前週末 2026-08-14 close=3095.0（OK・2026-08-21のrepairで照合成立）、週内のOK行は 08-17=3035.0／08-18=3250.0／08-19=3510.0／08-20=3970.0 の4日（08-21は SINGLE_SOURCE・yahoo_jp=3880.0 のみで採用値なし）。(3970-3095)/3095=+28.27%≈+28.3%、週内OK終値の範囲も3035〜3970円で一致。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>直近1年の値幅は、照合済みの終値で1,077円〜3,970円✓</td><td>data/prices/daily.csv の6570で2025-08-24以降・status に OK を含み close のある241行のうち、最小値=1077.0（2025-11-21）・最大値=3970.0（2026-08-20）。events_52w の「2025-11-21 直近1年の安値」とも整合。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>この銘柄では†は未使用</td><td>reports/6570.md 全文を機械検索した結果、記号†が現れるのは凡例の1行（『†=決算短信（一次情報）から機械抽出。<strong>この銘柄では†は未使用</strong>…』）のみで、本文の数値に†は付いていない。凡例が理由として挙げる data/tanshin/6570.csv の未取り込みも事実（data/tanshin/ には 150A.csv・4073.csv のみで 6570.csv は存在しない）。</td><td>検証済みデータ<br><code>data/tanshin</code></td><td>—</td></tr></tbody></table></div></details><h3>この欄の材料</h3><p>検証した時刻 2026-08-23T22:36:14+09:00。記録は <code>data/verification/6570.yaml</code>（append-only）。</p><h4>実際に取り直した出典</h4><ul><li><a class="ext" href="https://kabutan.jp/stock/?code=6570" target="_blank" rel="noopener">https://kabutan.jp/stock/?code=6570 ↗</a>（HTTP 200）</li><li><a class="ext" href="https://minkabu.jp/stock/6570" target="_blank" rel="noopener">https://minkabu.jp/stock/6570 ↗</a>（HTTP 403）</li><li><a class="ext" href="https://kabuyoho.jp/sp/reportTarget?bcode=6570" target="_blank" rel="noopener">https://kabuyoho.jp/sp/reportTarget?bcode=6570 ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.kyowa-corp.co.jp/ir/" target="_blank" rel="noopener">https://www.kyowa-corp.co.jp/ir/ ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.strike.co.jp/ma_news/detail.html?id=20251112a" target="_blank" rel="noopener">https://www.strike.co.jp/ma_news/detail.html?id=20251112a ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.nihon-ma.co.jp/news/20251112_6570-1/" target="_blank" rel="noopener">https://www.nihon-ma.co.jp/news/20251112_6570-1/ ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516597.pdf" target="_blank" rel="noopener">https://www.release.tdnet.info/inbs/140120260810516597.pdf ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.release.tdnet.info/inbs/140120260810516625.pdf" target="_blank" rel="noopener">https://www.release.tdnet.info/inbs/140120260810516625.pdf ↗</a>（HTTP 200）</li></ul><h4>機械抽出に委ねている出典</h4><p>毎週コードが表を抜いて突き合わせているもの。人が読み直すより、そちらの記録のほうが強い。</p><ul><li><a class="ext" href="https://kabutan.jp/stock/finance?code=6570" target="_blank" rel="noopener">https://kabutan.jp/stock/finance?code=6570 ↗</a> → <code>data/fundamentals/6570.csv</code></li><li><a class="ext" href="https://irbank.net/E33822/results" target="_blank" rel="noopener">https://irbank.net/E33822/results ↗</a> → <code>data/fundamentals/6570.csv</code></li><li><a class="ext" href="https://irbank.net/E33822/quarter" target="_blank" rel="noopener">https://irbank.net/E33822/quarter ↗</a> → <code>data/fundamentals/6570.csv</code></li></ul><h2>数値の検証状況</h2><p class="lede">この銘柄の数値が<strong>どこまで機械的に確かめられているか</strong>を開示する。財務の数値は2つの取得元から別々に抜き、<strong>値が一致したものだけを採用値</strong>にしている。一致しなかったもの・1つの取得元しか持っていないものは採用せず、図では欠測として抜いてある（0 で埋めない）。</p><p class="readout"><span>2ソース照合済み <b>111</b></span><span>2ソースが食い違う <b>7</b></span><span>1ソースのみ <b>336</b></span><span>決算短信から直接 <b>0</b></span><span>株価の採用終値 <b>266</b>/277日</span></p><div class="scroll"><table><thead><tr><th>図</th><th>数値の出どころ</th><th>状態</th></tr></thead><tbody><tr><td><code>equity_ratio</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>3/3点すべて採用値</td></tr><tr><td><code>events_52w</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>247/247点すべて採用値</td></tr><tr><td><code>fcf</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>3/3点すべて採用値</td></tr><tr><td><code>growth_cycle</code></td><td><span class="pill">定性図</span>定性図（数値を含まない）</td><td>—</td></tr><tr><td><code>op_5y</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>5/5点すべて採用値</td></tr><tr><td><code>price_range</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>3/3点すべて採用値</td></tr><tr><td><code>q1_progress</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>2/2点すべて採用値</td></tr><tr><td><code>q_revenue</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>9/9点すべて採用値</td></tr><tr><td><code>revenue_11y</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>12/12点すべて採用値</td></tr></tbody></table></div><h3>2つの取得元が食い違った項目</h3><p>どちらが正しいか決められないため、<strong>どちらの値も採用していない</strong>。この項目を本文で断定形で書いてはいけない。</p><p>2017/3 経常利益、2025/3 ROA、2025/3 ROE、2025/3 自己資本、2026/3 ROA、2026/3 ROE、2026/3 自己資本</p><h3>この欄の材料</h3><ul><li>財務数値: <code>data/fundamentals/6570.csv</code>（454行）— 2サイトの表を機械的に抜いて突き合わせた結果</li><li>決算短信: <code>data/tanshin/6570.csv</code>（0行・開示日 —）— PDF本文からの抽出 </li><li>株価: <code>data/prices/daily.csv</code> の <code>close</code>。始値・高値・安値・出来高は主ソースのみで照合を通っていないため、図には使っていない</li></ul></div></details><footer>集計基準日 2026-08-20／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>

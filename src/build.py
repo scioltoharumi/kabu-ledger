@@ -48,6 +48,7 @@ MD_EXT = ["tables", "fenced_code", "sane_lists"]
 NAV_ITEMS = [
     ("index.html", "台帳"),
     ("data.html", "データの出どころ"),
+    ("about.html", "読み方"),
 ]
 
 DISCLAIMER = ("本サイトは個人の検討用であり、投資助言ではありません。"
@@ -77,10 +78,83 @@ def page(title: str, body: str, as_of: str, depth: int = 0) -> str:
     return f"{head}<body><main>{body}{foot}</main></body></html>"
 
 
+# 検証状態の記号（表記規約 2026-08-23）。本文の値の直後に付ける。
+# 記号 -> (クラス, 意味)。意味は title 属性と docs/about.html の凡例が持つ。
+VM_BADGES = {
+    "✓": ("vm-ok", "2ソース照合済みの採用値（status OK）"),
+    "※": ("vm-ref", "未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）"),
+    "†": ("vm-pri", "決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし"),
+}
+_VM_RE = re.compile("[" + "".join(VM_BADGES) + "]")
+_CODE_SPLIT_RE = re.compile(r"(<code>.*?</code>)", re.S)
+
+
+def mark_badges(html_text: str) -> str:
+    """検証状態の記号 ✓※† に、意味の tooltip 付きバッジを着せる。
+
+    **expand_charts の前に呼ぶこと。** 図（SVG の <text> と figcaption）は
+    chart.render が後から差し込むため、この置換の対象にならない
+    （SVG 内に <span> が入ると描画が壊れる。図キャプションはプレーン文字でよい）。
+    """
+    def sub(m: re.Match) -> str:
+        ch = m.group(0)
+        cls, title = VM_BADGES[ch]
+        return f'<span class="vm {cls}" title="{html.escape(title)}">{ch}</span>'
+    # <code>…</code> の中は置換しない（ファイル名やコマンドの中の記号は
+    # 検証状態の印ではない）。split の偶数番目だけが code の外。
+    parts = _CODE_SPLIT_RE.split(html_text)
+    for i in range(0, len(parts), 2):
+        parts[i] = _VM_RE.sub(sub, parts[i])
+    return "".join(parts)
+
+
+# Markdown の自動リンク `<https://…>` は `<a href="U">U</a>` になる
+# （href と本文が同一文字列。手書きの `[ラベル](U)` はここに当たらない）。
+_AUTOLINK_RE = re.compile(r'<a href="([^"]+)">\1</a>')
+
+# よく使う取得元は名前で呼ぶ。それ以外はホスト名（www を除く）で出す。
+# サブドメイン（s.kabutan.jp 等）も同じ運営なので同じ名前に寄せる。
+_HOST_LABELS = [
+    ("kabutan.jp", "株探"),
+    ("minkabu.jp", "みんかぶ"),
+    ("irbank.net", "IR BANK"),
+    ("release.tdnet.info", "TDnet"),
+    ("nikkei.com", "日経"),
+]
+
+
+def short_link_label(url: str) -> str:
+    """生URLの代わりに出す短いラベル。ホスト名から決める（決定論的）。"""
+    m = re.match(r"https?://([^/?#]+)", url)
+    host = (m.group(1) if m else url).split("@")[-1].split(":")[0].lower()
+    bare = host[4:] if host.startswith("www.") else host
+    for dom, label in _HOST_LABELS:
+        if bare == dom or bare.endswith("." + dom):
+            return label
+    return bare
+
+
+def shorten_autolinks(html_text: str) -> str:
+    """本文に生URLをそのまま出さない。リンク先（href）は変えない。
+
+    対象は「リンクテキストが URL そのもの」の自動リンクだけ。
+    書き手がラベルを付けたリンクには触らない。見た目は ext_link と同じ
+    （小さなピル・↗・別タブ）に揃える。
+    """
+    def sub(m: re.Match) -> str:
+        href = m.group(1)                       # markdown が escape 済み
+        label = short_link_label(html.unescape(href))
+        return (f'<a class="ext" href="{href}" target="_blank" '
+                f'rel="noopener">{html.escape(label)} ↗</a>')
+    return _AUTOLINK_RE.sub(sub, html_text)
+
+
 def to_html(markdown_text: str, charts: dict | None = None) -> str:
     """Markdown を HTML にする。表を横スクロールで包み、{{chart:id}} を図にする。
 
     charts は chartdata.resolve_charts の戻り（id -> Resolved）。
+    記号バッジとURL短縮は **expand_charts より前** に適用する
+    （SVG の中身を置換しないため。mark_badges の docstring 参照）。
     """
     raw = md.markdown(markdown_text, extensions=MD_EXT)
     # prose-table: 本文（出典の「内容」列など）が1列目に来るので折り返させる。
@@ -88,6 +162,7 @@ def to_html(markdown_text: str, charts: dict | None = None) -> str:
     # 表が画面外まで伸びる。
     out = raw.replace("<table>", '<div class="scroll"><table class="prose-table">'
                       ).replace("</table>", "</table></div>")
+    out = shorten_autolinks(mark_badges(out))
     return expand_charts(out, charts or {})
 
 
@@ -179,12 +254,33 @@ def _tile(label: str, value_html: str, sub: str) -> str:
             f'<span class="k-sub">{html.escape(sub)}</span></div>')
 
 
-def kpi_tiles(code: str) -> str:
+def load_stamp(code: str) -> str | None:
+    """`scoring/stamps.json` からその銘柄の判定スタンプを引く。
+
+    無い・読めない・銘柄が載っていないときは None（タイルを出さない）。
+    推測で埋めない——スタンプは judge.py の機械判定だけが書く。
+    """
+    try:
+        stamps = json.loads(STAMPS.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    v = stamps.get(code) if isinstance(stamps, dict) else None
+    return str(v) if v else None
+
+
+def _future_earnings(meta: dict | None, as_of: str) -> str:
+    """next_earnings が集計基準日より先のときだけ返す（過去日付は予定ではない）。"""
+    earn = str((meta or {}).get("next_earnings") or "")
+    return earn if earn and (not as_of or as_of == "—" or earn > as_of) else ""
+
+
+def kpi_tiles(code: str, meta: dict | None = None, as_of: str = "") -> str:
     """銘柄ページ冒頭の KPI タイル。値はすべて検証済みデータ由来（D8 決定論）。
 
     - 終値・レンジは採用終値（2ソース照合成立日）だけで組む。D53
     - 前日比は「直前の採用日」との比較（暦日の前日ではない）。sub に日付を明示
     - 騰落の色は図と同じ意味づけ（青=上・赤=下）。符号も必ず出す
+    - meta はレポートの front matter（next_earnings を引くためだけに使う）
     """
     series = load_adopted_series(code)
     if not series:
@@ -213,6 +309,22 @@ def kpi_tiles(code: str) -> str:
         tiles.append(_tile("52週レンジ",
                            f'<span class="k-value-sm">{lo:,.0f} 〜 {hi:,.0f}</span>',
                            "採用終値ベース・円"))
+
+    # 判定スタンプ。無ければ出さない（未計算を「通過」に見せない）
+    stamp = load_stamp(code)
+    if stamp:
+        tiles.append(_tile("判定",
+                           f'<span class="k-value-sm">{html.escape(stamp)}</span>',
+                           "src/judge.py の機械判定"))
+
+    # 次回決算。front matter に書かれた予定日。**過去日付は出さない**
+    # （発表済みの日付を「次回」として掲げるのは表示の嘘。intake が
+    # next_earnings を更新するまでタイルを消しておく）
+    earn = _future_earnings(meta, as_of)
+    if earn:
+        tiles.append(_tile("次回決算",
+                           f'<span class="k-value-sm">{html.escape(earn)}</span>',
+                           "発表予定日"))
 
     passed, claims, present, stale = verify_stat(code)
     if not present:
@@ -267,7 +379,7 @@ def first_sentence(text: str, limit: int = 78) -> str:
     return plain
 
 
-def render_row(stock: dict, rep: R.Report | None) -> str:
+def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
     """一覧の1行。銘柄が増えても詰まらないよう、1銘柄1行に収める。
 
     スマホでは CSS 側でカード状に積み替える（横スクロールさせない）。
@@ -298,20 +410,20 @@ def render_row(stock: dict, rep: R.Report | None) -> str:
     # 銘柄ページ側は Markdown を通すが、一覧はエスケープしかしていなかったため
     # `**` がそのまま画面に出ていた。**エスケープしたあとに**強調だけ戻す
     # （順序が逆だと `<strong>` ごとエスケープされる／注入経路にもなる）。
-    oneline = _STRONG_RE.sub(r"<strong>\1</strong>",
-                             html.escape(R.one_liner(rep)))
-    earn = rep.meta.get("next_earnings")
+    oneline = mark_badges(_STRONG_RE.sub(r"<strong>\1</strong>",
+                                         html.escape(R.one_liner(rep))))
+    earn = _future_earnings(rep.meta, as_of)   # 過去日付は予定として出さない
     earn_pill = ""
     if earn:
         earn_pill = (f'<span class="pill pill-warn">決算 '
-                     f'{html.escape(str(earn))}</span>')
+                     f'{html.escape(earn)}</span>')
 
     latest = rep.latest_week()
     week_txt = "—"
     week_head = ""
     if latest is not None:
         week_head = html.escape(latest[0].split("（")[0])
-        week_txt = html.escape(first_sentence(latest[1]))
+        week_txt = mark_badges(html.escape(first_sentence(latest[1])))
 
     # 裏取りの状態を一覧にも出す。銘柄ページを開かないと分からない状態にしない。
     passed, claims, present, stale = verify_stat(code)
@@ -358,7 +470,7 @@ def section_order_text() -> str:
 
 def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     stocks = sorted(master["stocks"], key=lambda s: s["code"])
-    rows = [render_row(s, reports.get(s["code"])) for s in stocks]
+    rows = [render_row(s, reports.get(s["code"]), as_of) for s in stocks]
     scr = master.get("screening", {})
     scr_name = html.escape(str(scr.get("name", "")))
     n_deep = sum(1 for r in reports.values() if r.deep_dive)
@@ -456,22 +568,39 @@ def render_section(rep: R.Report, key: str, title: str, charts: dict) -> str:
     return f"<h2>{html.escape(title)}</h2>" + to_html(body_md, charts)
 
 
+# 週次アップデートを畳まずに見せる週数。それ以前は details に畳む
+# （積み上がるほどページが下に伸び、会社概要へ届かなくなるため）。
+RECENT_WEEKS = 3
+
+
+def _update_card(head: str, body_md: str, charts: dict) -> str:
+    return ('<div class="upd">'
+            f"<h3>{html.escape(head)}</h3>"
+            + to_html(body_md, charts) + "</div>")
+
+
 def render_updates(rep: R.Report, title: str, charts: dict) -> str:
     """週次アップデートは新しい週を上に。過去の記述は残したまま並べる。
 
-    見出し（h2）は付けない。銘柄ページでは折りたたみ（fold）の summary が
-    グループ名を兼ねるため。
+    新しい RECENT_WEEKS 件だけ開いて見せ、それ以前は折りたたむ
+    （畳んでも中身の存在と件数は summary で必ず伝える。「見えない＝無い」に
+    見せない）。見出し（h2）は付けない。銘柄ページでは折りたたみ（fold）の
+    summary がグループ名を兼ねるため。
     """
     entries = rep.week_entries()
     if not entries:
         return ""
     parts = ['<p class="lede">新しい週を上に置いている。'
              "過去の記述は書き換えず、そのまま残している。</p>"]
-    for head, body_md in entries:
-        parts.append('<div class="upd">')
-        parts.append(f"<h3>{html.escape(head)}</h3>")
-        parts.append(to_html(body_md, charts))
-        parts.append("</div>")
+    for head, body_md in entries[:RECENT_WEEKS]:
+        parts.append(_update_card(head, body_md, charts))
+    older = entries[RECENT_WEEKS:]
+    if older:
+        parts.append('<details class="upd-old"><summary>'
+                     f"それ以前の週次アップデート（{len(older)}件）</summary>")
+        for head, body_md in older:
+            parts.append(_update_card(head, body_md, charts))
+        parts.append("</details>")
     return "".join(parts)
 
 
@@ -496,6 +625,7 @@ def fold(title: str, hint: str, inner: str, wide: bool = False) -> str:
 ORIGIN_JA = {
     "csv": "検証済みCSVから自動で組み立て",
     "hand": "front matter に人が書き写した値",
+    "diagram": "定性図（数値を含まない）",
 }
 
 
@@ -505,7 +635,13 @@ def chart_origin_rows(charts: dict) -> str:
     for cid in sorted(charts):
         res = charts[cid]
         origin = ORIGIN_JA.get(res.origin, res.origin)
-        if res.origin == "hand":
+        if res.origin == "diagram":
+            # 数値を持たない構造図。検証の対象になる数値が無いので
+            # 「未検証」の警告色ではなく中立のピルで出す（数値が混ざった
+            # diagram は chartdata 側が描画を拒否する）
+            pill = '<span class="pill">定性図</span>'
+            state = "—"
+        elif res.origin == "hand":
             pill = '<span class="pill pill-warn">未検証</span>'
             state = "—"
         elif res.empty_reason:
@@ -1090,7 +1226,7 @@ def build_stock_page(rep: R.Report, as_of: str) -> None:
         + nav(1)
     )
     lead_md = strip_title(rep.lead)
-    body = head + kpi_tiles(rep.code) + to_html(lead_md, charts)
+    body = head + kpi_tiles(rep.code, rep.meta, as_of) + to_html(lead_md, charts)
 
     # 大きく2つに畳む（既定は閉）: 週次アップデート／会社概要。
     # 検証の記録（裏取り・数値の検証状況）は会社概要の末尾に含める。
@@ -1253,6 +1389,90 @@ def build_data_page(master: dict, reports: dict[str, R.Report], as_of: str) -> N
                                     encoding="utf-8", newline="\n")
 
 
+# --- 読み方（手法の説明はここに一元化する） --------------------------------
+
+def _vm_badge(mark: str) -> str:
+    """凡例に出す記号バッジ。本文と同じ見た目（mark_badges と同じクラス）。"""
+    cls, title = VM_BADGES[mark]
+    return f'<span class="vm {cls}" title="{html.escape(title)}">{mark}</span>'
+
+
+def build_about_page(as_of: str) -> None:
+    """docs/about.html。数値の3段階・記号凡例・裏取り・図の出どころの説明。
+
+    以前は各レポートの出典節に「この節の読み方」表がコピペされていた。
+    説明はここに一元化し、レポート本文には手法の説明を書かない
+    （書く場所が増えるほど、改訂したときに古い説明が残る）。
+    """
+    tiers = (
+        '<div class="scroll"><table class="prose-table"><thead><tr>'
+        "<th>段階</th><th>記号</th><th>意味</th><th>どこで見分けるか</th>"
+        "</tr></thead><tbody>"
+        "<tr><td><strong>2ソース照合済み</strong></td>"
+        f"<td>{_vm_badge('✓')}</td>"
+        "<td>運営の異なる2つの取得元から機械で抜き、表示されている桁の範囲で"
+        "一致した値だけを採用値にしている。図の数値は原則これで描き、例外（手書き・一次情報のみ）は図の下の注記が明示する</td>"
+        "<td>本文では値の直後の ✓。図の下に「出所: data/… の採用値」と出る</td></tr>"
+        "<tr><td><strong>一次情報から直接</strong></td>"
+        f"<td>{_vm_badge('†')}</td>"
+        "<td>決算短信PDF（会社が自分で出した一次情報）から機械で抜いた値。"
+        "まとめサイトの値との突き合わせ結果は各銘柄ページの"
+        "「数値の検証状況」に併記している</td>"
+        "<td>本文では値の直後の †。図の下に「決算短信（一次情報）」と出る</td></tr>"
+        "<tr><td><strong>未照合・参考値</strong></td>"
+        f"<td>{_vm_badge('※')}</td>"
+        "<td>取得元が1つしかない、2つが一致しなかった、または出来高・信用残の"
+        "ように照合の仕組みが無い値。<strong>採用値にしていない</strong>。"
+        "断定形では書かない</td>"
+        "<td>本文では値の直後の ※</td></tr>"
+        "</tbody></table></div>"
+        '<p class="lede">凡例: ✓=2ソース照合済みの採用値 ／ ※=未照合・参考値 ／ '
+        "†=決算短信（一次情報）から直接。記号に指を載せる（マウスを重ねる）と"
+        "意味が出る。段階ごとの件数は、各銘柄ページ末尾の"
+        "<strong>「数値の検証状況」</strong>に機械が出している。</p>"
+    )
+
+    body = (
+        "<h1>この台帳の読み方</h1>"
+        '<p class="lede">この台帳は、スクリーニングを通過した銘柄について'
+        "<strong>その会社が何をしている会社なのか</strong>を調べ、毎週の動きを"
+        "記録するためのもの。売買の判断は人間が行い、台帳は候補の提示と記録に徹する。"
+        "数値は出所と検証状態をすべて開示し、"
+        "調べきれなかったことは「未確認」のまま残す（分かったふりをしない）。</p>"
+        + nav(0)
+        + "<h2>数値の3段階と記号</h2>"
+        + '<p>レポートの数値には検証の段階が3つあり、本文では値の直後の記号で'
+        "見分けられるようにしている。</p>"
+        + tiers
+        + "<h2>「記述の裏取り」とは</h2>"
+        + "<p>数値の照合が届かない散文——「導入180社以上」「カバーは0社」のような"
+        "記述——は、レポートを書いたのとは<strong>別の文脈</strong>が出典URLを"
+        "実際にもう一度取りに行き、その記述がその出典で裏付けられるかを1件ずつ"
+        "判定している。書き手が「こう書いてある」と言っていることは根拠にしない。"
+        "裏が取れなかった記述は、各銘柄ページの「記述の裏取り」欄に"
+        "理由つきで残している（消す方法は用意していない）。</p>"
+        + "<h2>図の出どころ</h2>"
+        + "<ul>"
+        "<li><strong>検証済みCSVから自動</strong>: 図の数値は検証済みデータ"
+        "（<code>data/</code> 配下のCSV）からコードが引いて描いている。"
+        "照合が成立しなかった点は欠測として抜く（0 で埋めない）</li>"
+        "<li><strong>手書き（未検証）</strong>: 人が front matter に書き写した"
+        "数値で描いた図には、図そのものに「手書き（未検証）」と表示される。"
+        "この表示を消す方法は用意していない</li>"
+        "<li><strong>定性図</strong>: ビジネスモデルの構造など、数値を含まない図。"
+        "数値が混ざった定性図は描画自体を拒否する（数値は検証済みデータ由来の"
+        "図でしか出さない）</li>"
+        "</ul>"
+        + "<h2>この台帳が見ていないもの</h2>"
+        + "<p>判定スタンプの「買」は、実装済みのゲートを通過したという意味しか"
+        "持たない。機械がまだ評価していない観点は"
+        '<a href="index.html#unevaluated">台帳トップの'
+        "「この台帳が見ていない鉄則」</a>に一覧している。</p>"
+    )
+    (DOCS / "about.html").write_text(page("この台帳の読み方", body, as_of, 0),
+                                     encoding="utf-8", newline="\n")
+
+
 # --- main -----------------------------------------------------------------
 
 def main() -> int:
@@ -1264,12 +1484,15 @@ def main() -> int:
     reports = R.load_all(codes)
     as_of = as_of_date()
 
+    # 判定スタンプを先に書く。銘柄ページの「判定」タイルが stamps.json を
+    # 読むため、後に回すと前回の判定が1週遅れで表示される
+    write_stamps(master)
+
     build_index(master, reports, as_of)
     build_data_page(master, reports, as_of)
+    build_about_page(as_of)
     for code in sorted(reports):
         build_stock_page(reports[code], as_of)
-
-    write_stamps(master)
 
     made = ", ".join(sorted(reports)) or "なし"
     print(f"docs/ を生成（基準日 {as_of}）")

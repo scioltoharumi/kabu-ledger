@@ -13,7 +13,8 @@
     突き合わせるので対象外。確認済み）
   - 採用終値は「status に OK があるか」で数える（D53）。close の有無で判定しない。
     判定は chartdata.adopted_close を共有する（独自実装で食い違いを作らない）
-  - 出来高・信用残は照合を通っていないので、必ず「参考・未照合」「参考」ラベルを付ける
+  - 出来高・信用残は照合を通っていないので、必ず「※」記号を付ける
+    （レポート表記規約2026-08-23改訂。凡例は各レポート「## 出典」節の先頭行が持つ）
   - 出力は決定論的。生成時刻を埋め込まない（D8）。銘柄は辞書順。
     「取得日」はニュース素材の属性なので notes.json 由来の値のみ書く
   - 書き込みは newline を固定する（tests/test_eol.py が AST で検査）
@@ -202,7 +203,7 @@ def collect_one(code: str, name: str, week: str) -> dict:
         margin = {"date": str(m.get("date", "") or ""), "ratio": _jnum(ratio),
                   "long_balance": _jnum(long_b), "short_balance": _jnum(short_b),
                   "unit": unit, "status": str(m.get("status", "") or ""),
-                  "note": margin_core + "（参考）"}
+                  "note": margin_core + "※"}
 
     stamp = None
     stamps_path = SCORING / "stamps.json"
@@ -248,7 +249,7 @@ def collect_one(code: str, name: str, week: str) -> dict:
         "ok_days": ok_days,
         "week_high": _jnum(week_high),
         "week_low": _jnum(week_low),
-        "volume_note": vol_core + "（参考・未照合）",
+        "volume_note": vol_core + "※",
         "margin": margin,
         "stamp": stamp,
         "disclosures": disclosures,
@@ -344,8 +345,8 @@ def build_entry(heading: str, facts: dict, note: dict) -> str:
             f"（{_fmt_num(facts['close_start'])}→{_fmt_num(facts['close_end'])}円・"
             f"採用終値ベース、照合成立 {facts['ok_days']}日、"
             f"週内 {_fmt_num(facts['week_low'])}〜{_fmt_num(facts['week_high'])}円）")
-    lines.append(f"- 出来高: {facts['_volume_core']}（参考・未照合）"
-                 f"／信用倍率: {facts['_margin_core']}（参考）")
+    lines.append(f"- 出来高: {facts['_volume_core']}※"
+                 f"／信用倍率: {facts['_margin_core']}※")
     disc = "、".join(f"{_mmdd(d['date'])} {d['label']}"
                      for d in facts["disclosures"]) or "なし"
     lines.append(f"- 判定: 「{facts['stamp'] or '—'}」／開示: {disc}")
