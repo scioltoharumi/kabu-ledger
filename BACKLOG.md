@@ -150,7 +150,23 @@ intake（新規銘柄の登録）時、`fetch.py --historical` が master.yaml �
 （`data/fundamentals/6570.csv` で `MISMATCH`）。どちらも採用せず、
 レポートに食い違いとして明記してある。**どちらが正しいかは未確認。**
 
-### 9. 1Q の短信は `tanshin_cross_period` を指定できない
+### 9. 1Q の短信は `tanshin_cross_period` を指定できない（2026-08-26 解決）
+
+**解決済み。** 上記①（1Q に限り単独四半期キーを累計とみなす）を実装した。
+`chartdata.same_bucket` が「第1四半期だけは単独＝累計」を判定し、
+`chartdata._cross_bucket` は `master.yaml` の `fiscal_year_end` を使って
+単独四半期キー（`Q2026-04_2026-06`）が年度の第何四半期かを決める。
+`checks._tanshin_cross` は同じ関数を import して使う（表示と検査が同じ判定になる）。
+結果、150A は7項目・6570 は5項目が一致として機械で確認できるようになった。
+
+**同時に見つかった実バグ**: `cross_check_tanshin` は期キーを読めないとき
+「フィルタだけを外して全期を比べる」形になっており、通期の実績が1Qの観測値と
+突き合わされ得た。読めないときは**1件も比べない**（＝突き合わせていないと表示する）
+に直した。
+
+以下は解決前の記録。
+
+
 
 `checks._tanshin_cross` は front matter の `tanshin_cross_period` に書いた期キーで
 短信（一次情報）とまとめサイト（二次情報）を突き合わせる。ところが 150A の1Q短信では:

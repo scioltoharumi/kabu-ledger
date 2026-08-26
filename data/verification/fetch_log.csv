@@ -329,3 +329,6 @@ fetched_at,code,url,final_url,http_status,chars,sha256,note
 2026-08-23T22:35:16.542829+09:00,6570,https://www.nihon-ma.co.jp/news/20251112_6570-1/,https://www.nihon-ma.co.jp/news/20251112_6570-1/,200,6904,c318679cffad2b3d,text/html;charset=utf-8
 2026-08-23T22:35:33.680778+09:00,6570,https://www.release.tdnet.info/inbs/140120260810516597.pdf,https://www.release.tdnet.info/inbs/140120260810516597.pdf,200,82,aa9a388305468395,application/pdf
 2026-08-23T22:35:37.618810+09:00,6570,https://www.release.tdnet.info/inbs/140120260810516625.pdf,https://www.release.tdnet.info/inbs/140120260810516625.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-26T15:13:48.747035+09:00,4073,https://kabuyoho.jp/sp/reportTarget?bcode=4073,https://kabuyoho.jp/sp/reportTarget?bcode=4073,200,1775,51281a815525ed09,text/html; charset=UTF-8
+2026-08-26T15:14:00.350830+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4498,efbceaea699d100f,text/html; charset=UTF-8
+2026-08-26T15:14:06.831945+09:00,4073,https://kabutan.jp/stock/?code=4073,https://kabutan.jp/stock/?code=4073,200,4498,d2aab402d57e7e15,text/html; charset=UTF-8

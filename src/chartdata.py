@@ -71,6 +71,8 @@ from dataclasses import dataclass, field
 from datetime import date as _date, timedelta
 from pathlib import Path
 
+import yamlio as Y
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 
@@ -159,13 +161,40 @@ _FUND_FY_RE = re.compile(r"^FY(\d{4})-(\d{2})$")
 _FUND_SPAN_RE = re.compile(r"^([QHC])(\d{4})-(\d{2})_(\d{4})-(\d{2})$")
 
 
-def _cross_bucket(text: str) -> tuple | None:
+def fiscal_year_of(year: int, month: int, fy_end: int) -> int:
+    """その年月が属する年度の「決算年」（2026年4月・3月決算 → 2027）。"""
+    return year + 1 if month > fy_end else year
+
+
+def quarter_of(month: int, fy_end: int) -> int:
+    """その月が年度の第何四半期か（年度は決算月の翌月に始まる）。"""
+    return ((month - (fy_end % 12) - 1) % 12) // 3 + 1
+
+
+def same_bucket(a: tuple | None, b: tuple | None) -> bool:
+    """2つの期バケットが同じ期を指すか。
+
+    **第1四半期だけは「単独」と「累計」が同じ3か月を指す**（定義上同一）。
+    ここを区別したままだと、1Qしか開示の無い銘柄で一次情報と二次情報の
+    突き合わせが永久に成立しない（6570 で実際に0件になった）。
+    """
+    if a is None or b is None:
+        return False
+    if a == b:
+        return True
+    return a[0] == b[0] and a[1] == b[1] == 1
+
+
+def _cross_bucket(text: str, fy_end: int | None = None) -> tuple | None:
     """期の表記を (年度末年, 四半期数, 累計か) に正規化する。
 
     決算短信の期表記（"FY2026Q3cum"）と fundamentals の期キー
     （"C2025-07_2026-03"）は同じ期を指せても文字列が違う。読めなければ
     None（＝比べない）。1銘柄が複数の開示（3Q・通期…）を持つようになると、
     metric 名だけで突き合わせた行は違う期どうしを比べて必ず食い違う。
+
+    単独四半期（"Q2026-04_2026-06"）は決算月（`fy_end`）が分からないと
+    年度の第何四半期かが決まらない。渡されなければ None（＝比べない）。
     """
     t = str(text or "").strip()
     m = _TANSHIN_PERIOD_RE.match(t)
@@ -175,7 +204,14 @@ def _cross_bucket(text: str) -> tuple | None:
     if m:
         tag = m.group(1)
         if tag == "Q":
-            return None   # 単独四半期は累計と比べない（別の量）
+            if fy_end is None:
+                return None      # 決算月が分からない＝第何四半期か決められない
+            y1, m1 = int(m.group(2)), int(m.group(3))
+            y2, m2 = int(m.group(4)), int(m.group(5))
+            if (y2 * 12 + m2) - (y1 * 12 + m1) != 2:
+                return None      # 3か月でない＝単独四半期ではない
+            return (fiscal_year_of(y1, m1, fy_end),
+                    quarter_of(m1, fy_end), False)
         start = int(m.group(2)) * 12 + int(m.group(3))
         end = int(m.group(4)) * 12 + int(m.group(5))
         months = end - start + 1
@@ -904,7 +940,32 @@ class Verification:
         return self.fund_rows - self.fund_ok
 
 
-def cross_check_tanshin(code: str, cross_period: str) -> tuple[list, list, list, list]:
+def fiscal_year_end(code: str) -> int | None:
+    """master.yaml の決算月（`fiscal_year_end: "03"` → 3）。無ければ None。
+
+    単独四半期の期キーが年度の第何四半期かを決めるのに要る。読めなければ
+    None を返し、呼び手は**突き合わせを行わない**（推測で比べない）。
+    """
+    path = DATA / "master.yaml"
+    if not path.exists():
+        return None
+    try:
+        master = Y.safe_load(path.read_text(encoding="utf-8")) or {}
+    except Exception:                                    # noqa: BLE001
+        return None
+    for stock in master.get("stocks") or []:
+        if str(stock.get("code", "")).strip() != str(code):
+            continue
+        try:
+            month = int(str(stock.get("fiscal_year_end", "")).strip())
+        except ValueError:
+            return None
+        return month if 1 <= month <= 12 else None
+    return None
+
+
+def cross_check_tanshin(code: str, cross_period: str,
+                        fy_end: int | None = None) -> tuple[list, list, list, list]:
     """決算短信（一次情報）と まとめサイト（二次情報）の突き合わせ。
 
     同じ metric・同じ期について、両者の観測値が表示解像度の範囲で一致するかを
@@ -920,7 +981,14 @@ def cross_check_tanshin(code: str, cross_period: str) -> tuple[list, list, list,
     other: list[str] = []
     if not cross_period:
         return agree, disagree, nopair, other
-    target_bucket = _cross_bucket(cross_period)
+    if fy_end is None:
+        fy_end = fiscal_year_end(code)
+    target_bucket = _cross_bucket(cross_period, fy_end)
+    if target_bucket is None:
+        # **期を確定できないなら1件も比べない。** 以前はここで
+        # 「フィルタだけを外して全期を比べる」形になっており、通期の実績が
+        # 1Qの観測値と突き合わされ得た（偶然一致した銘柄では気づけない）。
+        return agree, disagree, nopair, other
     fund = fundamentals(code)
     for fact in tanshin(code)["facts"]:
         if fact.value is None:
@@ -931,7 +999,7 @@ def cross_check_tanshin(code: str, cross_period: str) -> tuple[list, list, list,
         # 短信は複数の開示（3Q累計・通期…）が同じ metric 名で並ぶ。
         # 自分の期が cross_period と同じ期を指していない行は比べない
         # （通期の実績を3Q累計の観測値と突き合わせると必ず食い違う）。
-        if target_bucket is not None and _cross_bucket(fact.label) != target_bucket:
+        if not same_bucket(_cross_bucket(fact.label, fy_end), target_bucket):
             continue
         key = (fact.metric, cross_period)
         obs = fund["observed"].get(key) or []

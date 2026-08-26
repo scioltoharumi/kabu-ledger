@@ -131,6 +131,9 @@ from judge import HOLDING_STATUSES  # noqa: E402
 
 # 裏取り記録の語彙・読み方は verification.py が正（SSoT）。ここで再定義しない。
 import verification as VF  # noqa: E402
+# 期の同一判定は chartdata と**同じ関数**を使う（表示と検査が
+# 食い違うと「台帳では一致、検査では0件」のような嘘が出る）。
+from chartdata import _cross_bucket, same_bucket  # noqa: E402
 
 # =============================================================================
 # 定数ブロック（閾値・語彙はすべてここ。根拠を併記する）
@@ -2887,8 +2890,22 @@ def _front_matter(path: Path) -> tuple[dict, str]:
     return (meta if isinstance(meta, dict) else {}), m.group(2)
 
 
+def _fy_end_of(master: dict, code: str) -> int | None:
+    """master.yaml の決算月（`fiscal_year_end: "03"` → 3）。無ければ None。"""
+    for stock in (master or {}).get("stocks") or []:
+        if str(stock.get("code", "")).strip() != str(code):
+            continue
+        try:
+            month = int(str(stock.get("fiscal_year_end", "")).strip())
+        except ValueError:
+            return None
+        return month if 1 <= month <= 12 else None
+    return None
+
+
 def _tanshin_cross(rep: Report, target: str, data_dir: Path, code: str,
-                   rows: list[dict], cross_period: str) -> None:
+                   rows: list[dict], cross_period: str,
+                   fy_end: int | None = None) -> None:
     """決算短信（一次情報）と まとめサイト（二次情報）の突き合わせ（D33）。
 
     chartdata が同じ照合を**表示のためだけ**に行っていて、結果が
@@ -2899,11 +2916,13 @@ def _tanshin_cross(rep: Report, target: str, data_dir: Path, code: str,
     採用値ではない。まとめサイト側が1サイトしか持たない期でも、
     一次情報と一致すればそれ自体が独立した2つの出所の一致になる。
     """
-    target_period = parse_period(cross_period)
-    if not target_period:
+    # 期の同一判定は chartdata（台帳の表示）と同じ関数を使う。単独四半期の
+    # 期キーは決算月が無いと第何四半期か決まらないので、読めなければ比べない。
+    target_bucket = _cross_bucket(cross_period, fy_end)
+    if target_bucket is None:
         rep.warn("tanshin", target,
-                 f"tanshin_cross_period を期として読めない（{cross_period!r}）。"
-                 "一次情報と二次情報の突き合わせを行っていない")
+                 f"tanshin_cross_period を期として読めない（{cross_period!r}"
+                 f"・決算月 {fy_end}）。一次情報と二次情報の突き合わせを行っていない")
         return
     fpath = data_dir / "fundamentals" / f"{code}.csv"
     if not fpath.exists():
@@ -2942,8 +2961,9 @@ def _tanshin_cross(rep: Report, target: str, data_dir: Path, code: str,
         # 短信は複数の開示（Q3累計・通期など）が同じ metric 名で並ぶ。
         # definition 先頭の期を見て、この cross_period と同じ期の行だけを比べる
         # （でないと通期の実績値が3Q累計の観測値と突き合わされ、必ず食い違う）。
-        row_period = parse_period(str(r.get("definition") or "").split("|", 1)[0])
-        if row_period is None or not row_period.matches(target_period):
+        row_bucket = _cross_bucket(
+            str(r.get("definition") or "").split("|", 1)[0], fy_end)
+        if not same_bucket(row_bucket, target_bucket):
             continue
         value = _f(r.get("value"))
         if value is None:
@@ -3062,7 +3082,8 @@ def check_tanshin(rep: Report, data_dir: Path, master: dict, reports_dir: Path,
             meta, _body = _front_matter(report)
             cross = str(meta.get("tanshin_cross_period") or "")
             if cross:
-                _tanshin_cross(rep, target, data_dir, code, rows, cross)
+                _tanshin_cross(rep, target, data_dir, code, rows, cross,
+                               _fy_end_of(master, code))
             else:
                 rep.warn("tanshin", target,
                          "レポートに tanshin_cross_period が無い"
