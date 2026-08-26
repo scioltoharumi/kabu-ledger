@@ -1134,3 +1134,370 @@ runs:
         tier: dataset
         sources: ["data/tanshin"]
         evidence: "reports/6570.md 全文を機械検索した結果、記号†が現れるのは凡例の1行（『†=決算短信（一次情報）から機械抽出。**この銘柄では†は未使用**…』）のみで、本文の数値に†は付いていない。凡例が理由として挙げる data/tanshin/6570.csv の未取り込みも事実（data/tanshin/ には 150A.csv・4073.csv のみで 6570.csv は存在しない）。"
+
+  - run: "2026-08-26T15:40:00+09:00"
+    report_updated: "2026-08-23"
+    report_sha256: "f1c31adfd05faee58f76edefe703e8268e5e0e41cb13f4f54c373860b7fd929a"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3・決算短信の機械取り込み（data/tanshin/6570.csv 新設・tanshin_cross_period 設定・出典節の凡例と注記の書き換え）への追い run・全量スナップショット）"
+    urls_refetched:
+      - {url: "https://kabutan.jp/stock/?code=6570", http_status: 200}
+      - {url: "https://minkabu.jp/stock/6570", http_status: 403}
+      - {url: "https://kabuyoho.jp/sp/reportTarget?bcode=6570", http_status: 200}
+      - {url: "https://www.kyowa-corp.co.jp/ir/", http_status: 200}
+      - {url: "https://www.strike.co.jp/ma_news/detail.html?id=20251112a", http_status: 200}
+      - {url: "https://www.nihon-ma.co.jp/news/20251112_6570-1/", http_status: 200}
+      - {url: "https://www.release.tdnet.info/inbs/140120260810516597.pdf", http_status: 200}
+      - {url: "https://www.release.tdnet.info/inbs/140120260810516625.pdf", http_status: 200}
+    urls_delegated:
+      - {url: "https://kabutan.jp/stock/finance?code=6570", to: "data/fundamentals/6570.csv"}
+      - {url: "https://irbank.net/E33822/results", to: "data/fundamentals/6570.csv"}
+      - {url: "https://irbank.net/E33822/quarter", to: "data/fundamentals/6570.csv"}
+      - {url: "https://www.release.tdnet.info/inbs/140120260810516597.pdf", to: "data/tanshin/6570.csv"}
+    claims:
+      - id: V36
+        section: company
+        quote: "時価総額は約240億円（8/20の採用終値3,970円✓×発行済株式数※）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://kabutan.jp/stock/?code=6570"]
+        evidence: "data/prices/daily.csv の 2026-08-20,6570 行は close=3970.0・status=OK。株探を再取得（200）した本文に「発行済株式数 | 6,080,130 株」。3,970×6,080,130=24,138,116,100円=約241.4億円で「約240億円」と整合。なお同じ再取得で株探の表示時価総額は232億円（08/25終値ベース・本文の8/20基準とは別時点）。"
+
+      - id: V37
+        section: company
+        quote: "2026年6月末時点の総店舗数は**76店舗**※で、1Q中に3店舗を新規出店した"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516597.pdf"]
+        evidence: "今回 data/tanshin/6570.csv が新設されたが、収録されているのは10行・metric は revenue／operating_income／ordinary_income／net_income／eps とその _prev_year の5項目だけで、店舗数・出店数は含まれない。短信PDFの再取得は200だが content-type application/pdf・82文字のプレースホルダのみ（fetch_source.py はPDFをテキスト化しない）。前run V37 の理由（CSV未取り込み）は解消したが、確認できない状態は変わらない。"
+        action: "店舗数は短信の定性情報でCSVの語彙に無い。企業IRの店舗一覧など、別の一次情報を出典に足すか、この数字を落とす"
+
+      - id: V39
+        section: company
+        quote: "| アミューズメント施設運営 | 5,085 | +26.4% | 541 |"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516597.pdf"]
+        evidence: "V37と同じ理由。data/tanshin/6570.csv の10行にセグメント別の売上・利益は無く（全社の5項目のみ）、data/fundamentals/6570.csv の Q2026-04_2026-06 にもセグメント行が無い。PDFはテキスト化されないため確認できない。"
+        action: "セグメント別数値の data/ への記録を検討（前run V39 と同じ提案）"
+
+      - id: V40
+        section: company
+        quote: "| アミューズメント機器販売 | 292 | +244.1% | 85 |"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516597.pdf"]
+        evidence: "V39と同じ理由。"
+        action: "V39と同じ"
+
+      - id: V41
+        section: company
+        quote: "| その他（トレカ・ブルーム・広告ほか） | 2,005 | +704.5% | 320 |"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516597.pdf"]
+        evidence: "V39と同じ理由。"
+        action: "V39と同じ"
+
+      - id: V42
+        section: company
+        quote: "| 3区分合計（調整前） | 7,383 | +69.4% | 946 |"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516597.pdf"]
+        evidence: "行のうち売上高7,383百万円と前年同期比+69.4%は今回機械で確認できるようになった（data/tanshin/6570.csv revenue=7383・revenue_prev_year=4357、7383÷4357-1=+69.45%。data/fundamentals/6570.csv も Q2026-04_2026-06 revenue=7383（OK|ROUNDING）・Q2025-04_2025-06 revenue=4357（OK|ROUNDING））。しかしセグメント利益合計946百万円はセグメント情報由来でCSVに無く、PDF未テキスト化のため確認できない。行として見ると裏が取れない要素が残る。"
+        action: "V39と同じ"
+
+      - id: V43
+        section: company
+        quote: "およそ6割は「その他」区分の伸びで説明できる"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516597.pdf"]
+        evidence: "元になるセグメント別増加額が data/tanshin/6570.csv にも data/fundamentals/6570.csv にも無く、PDFもテキスト化されないため、当台帳計算の比率をこの経路では再計算・確認できない（前run V43 と同じ状態）。"
+        action: "V39と同じ。セグメント実額が記録されれば機械で再現可能になる"
+
+      - id: V44
+        section: financials
+        quote: "短信は「業績予想に変更はありません」と通期・2Q計画の据え置きを明言している（短信PDF本文で直接確認）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516597.pdf"]
+        evidence: "短信の機械取り込みは行われたが、data/tanshin/fetch_log.csv の該当行（2026-08-10,6570,…,OK,12,10925,10）には note として「行ラベルを解釈できない: 第2四半期(累計) / 行ラベルを解釈できない: 通期」が記録されており、通期・2Q累計の計画行は抽出されていない（CSVは実績5項目とその前年同期のみ）。据え置きの文言はPDF本文の定性記述で、この経路では確認できない。"
+        action: "計画行のラベル解釈を fetch_tanshin.py 側で扱えるようにするか、据え置きの文言を別の一次出典（適時開示本文）で裏付ける"
+
+      - id: V45
+        section: financials
+        quote: "2Q累計計画（営業9.3億円※）に対してはすでに約82%"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516597.pdf"]
+        evidence: "分母の2Q累計営業利益計画925百万円は短信由来。V44のとおり data/tanshin/fetch_log.csv が「行ラベルを解釈できない: 第2四半期(累計)」を記録しており、data/tanshin/6570.csv にその行は無い。data/fundamentals/6570.csv にも H 期間の plan 行が無い。925を前提にすれば 756（data/tanshin/6570.csv operating_income・data/fundamentals も OK）÷925=81.7%≈約82% と式は整合するが、前提の925自体の裏が取れない。"
+        action: "V44と同じ"
+
+      - id: V47
+        section: company
+        quote: "中間20円・期末20円の内訳は短信PDF本文で直接確認"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516597.pdf"]
+        evidence: "V37と同じ理由。配当は data/tanshin/6570.csv の metric 語彙に無く（収録は売上高・営業利益・経常利益・純利益・EPSとその前年同期のみ）、data/fundamentals/6570.csv にも中間・期末の内訳は無い。"
+        action: "V37と同じ"
+
+      - id: V48
+        section: sources
+        quote: "通期計画EPS（決算短信原文203.85円／採用値203.82円✓）の0.03円の差"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516597.pdf"]
+        evidence: "原文側の203.85円は通期計画の行で、V44のとおり「行ラベルを解釈できない: 通期」として抽出されておらず data/tanshin/6570.csv に無い。PDFもテキスト化されないため確認できない。採用値側の203.82円は V49 のとおり data/fundamentals/6570.csv で確認済み。"
+        action: "V44と同じ。通期計画行が取り込まれれば0.03円差は機械で説明できる"
+
+      - id: V49
+        section: outlook
+        quote: "今期予想1株益は203.82円✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6570.csv"]
+        evidence: "data/fundamentals/6570.csv の FY2027-03,6570,eps_plan 行: value=203.82, status=OK|ROUNDING, sources_all=kabutan_fy=203.8|kabutan_fy10=203.8|kabutan_fy_profit=203.8|irbank_pl_consolidated=203.82。本文と一致。"
+
+      - id: V50
+        section: outlook
+        quote: "会社計画ベースのPERは約19.5倍"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "data/fundamentals/6570.csv"]
+        evidence: "3970（data/prices/daily.csv 2026-08-20・status=OK）÷203.82（FY2027-03 eps_plan・OK|ROUNDING）=19.4779…≈約19.5倍。本文の計算根拠（8/20終値・会社予想EPS）と一致。"
+
+      - id: V51
+        section: price
+        quote: "株価3,970円✓に対しPBRは期末BPSベースで約4.0倍"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "data/fundamentals/6570.csv"]
+        evidence: "3970（2026-08-20 採用終値・OK）÷986.13（FY2026-03 bps・status=OK・kabutan_bs=986.13|irbank_bs=986.13）=4.0258…≈約4.0倍。同じ文の「Q1末の簡易BPSベースで約3.8倍」は 3970÷1048.4=3.7867…と式は整合するが、分母の簡易BPSは未検証（V53）。"
+
+      - id: V53
+        section: financials
+        quote: "決算短信のQ1末（2026年6月末）の自己資本から計算した簡易BPSは約1,048円※"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516597.pdf"]
+        evidence: "data/tanshin/6570.csv に自己資本（equity）の行は無く、EQUITY_CROSS 系のフラグも立っていない（収録は損益5項目とその前年同期のみ）。data/fundamentals/6570.csv の Q2026-04_2026-06 equity=6270 は kabutan_bs のみの SINGLE_SOURCE で採用値ではなく、裏付けに使えない（D7）。PDFもテキスト化されないため確認できない。"
+        action: "V37と同じ"
+
+      - id: V54
+        section: outlook
+        quote: "25日移動平均線から+48.1%上に離れ"
+        verdict: superseded
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: "本文は as_of 2026-08-13 を明記しており、その時点の値+48.11%は run 2026-08-16T15:30:00+09:00 の V54 で judge.py 出力との一致を確認済み。今回の `python src/judge.py --indicators-only` も as_of=2026-08-20・ma_deviation_pct=63.5737…で、2026年8月20日時点では+63.6%。前run（2026-08-23）から指標側の更新は無い。「大きく超えている」という判定の方向は変わらない。"
+        action: "指標の日次スナップショット保存（過去runと同じ提案）"
+
+      - id: V55
+        section: outlook
+        quote: "RSI(14)は90.4"
+        verdict: superseded
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: "as_of 2026-08-13 時点の90.37…は run 2026-08-16T15:30:00+09:00 の V55 で一致を確認済み。今回の judge.py --indicators-only は as_of=2026-08-20・rsi14=90.2804…（2026年8月20日時点は90.3）。8割超えという判定の方向は変わらない。"
+        action: "V54と同じ"
+
+      - id: V56
+        section: price
+        quote: "20日平均売買代金は約6,500万円、**中央値は約1,200万円**（as_of 2026-08-13）"
+        verdict: superseded
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: "as_of 2026-08-13 時点の6,471万円／1,225万円は run 2026-08-16T15:30:00+09:00 の V56 で一致を確認済み。今回の judge.py --indicators-only は as_of=2026-08-20 で avg_turnover_20d=142,466,210円（約1.42億円）・median_turnover_20d=17,363,150円（約1,736万円）。2026年8月20日時点でも中央値は流動性ゲート3,000万円を下回っており、「平均は通過・中央値は下回る」という本文の結論は現時点でも成立する。"
+        action: "V54と同じ"
+
+      - id: V57
+        section: updates
+        quote: "8月13日終値は**3,160円**（前日比+6.4%）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv の 2026-08-13,6570 行は close=3160.0・status=OK。前日 2026-08-12 の close=2970.0（OK）から (3160-2970)÷2970=+6.397%≈+6.4%。"
+
+      - id: V59
+        section: updates
+        quote: "8月14日の株価は、当台帳の定期取得では**kabutanが未反映でyahoo_jpの値のみ**（`status=SINGLE_SOURCE`）"
+        verdict: superseded
+        tier: dataset
+        sources: ["data/prices/daily.csv", "data/revisions.csv"]
+        evidence: "記述はエントリ執筆時点（fetched_at 2026-08-16T11:07:51）のCSVの状態として正しかったが、2026-08-21T13:08:34 の取得で kabutan=yahoo_jp=3095.0 が一致し、data/revisions.csv に repair（SINGLE_SOURCE→OK・close 空→3095.0）が記録されている。現在の 2026-08-14,6570 行は close=3095.0・status=OK。「2026年8月16日時点」と読めば正しい（前run V59 と同じ判定）。"
+
+      - id: V60
+        section: outlook
+        quote: "2026年9月末に100株以上を保有する株主へ、iBLOOM のスクイーズと記念デザインの七味缶を各1点贈呈"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516625.pdf"]
+        evidence: "再取得（200、application/pdf、82文字のプレースホルダのみ）。記念株主優待の開示は決算短信ではないため data/tanshin/ の取り込み対象外で、今回の短信取り込みでも状況は変わらない。優待内容はこの経路では確認できない。"
+        action: "非財務PDF（適時開示全般）をテキスト化する手段が無いという既知の制約（過去runの提案を引き継ぐ）"
+
+      - id: V61
+        section: outlook
+        quote: "**今回限りで、通常の優待制度に変更はない**と開示PDF本文に明記"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260810516625.pdf"]
+        evidence: "V60と同じ理由。"
+        action: "V60と同じ"
+
+      - id: V16
+        section: price
+        quote: "目標株価 1,775円"
+        verdict: unverifiable
+        tier: secondary
+        sources: ["https://minkabu.jp/stock/6570"]
+        evidence: "再取得を試みたが http_status=403（Forbidden、本文27文字）。到達できず、裏付けも反証もできない（前run V16 から変化なし。みんかぶは恒常的に403）。"
+        action: "前run V16 と同じ（みんかぶ由来の数値は当面『未検証』のまま扱う）"
+
+      - id: V17
+        section: price
+        quote: "PSR 0.92倍・PBR 3.25倍"
+        verdict: unverifiable
+        tier: secondary
+        sources: ["https://minkabu.jp/stock/6570"]
+        evidence: "V16と同じ再取得で http_status=403。みんかぶの株価診断の数値は到達できず確認できない。なお本文は同じ表の前置きで「2026年8月12〜13日時点。その後の急騰は未反映」と時点を明示している。"
+        action: "V16と同じ"
+
+      - id: V18
+        section: price
+        quote: "レーティングを出している証券会社が0社"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=6570"]
+        evidence: "再取得（200）本文に「強気(5点) | 0 人」「やや強気(4点) | 0 人」「中立(3点) | 0 人」「やや弱気(2点) | 0 人」「弱気(1点) | 0 人」「平均 | -- | 人数 | -- 人」「目標株価 … -- 円」が存在。カバー0社という記述と整合（2026-08-26 の再取得でも変化なし）。"
+
+      - id: V19
+        section: price
+        quote: "1,894円（下値目途1,301円／上値目途2,487円）"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://kabuyoho.jp/sp/reportTarget?bcode=6570"]
+        evidence: "再取得（200）した株予報Proの現在の表示は「理論株価 2,153 円 (2.05 倍)」「下値目途 934 円 (0.89 倍)」「上値目途 3,372 円 (3.22 倍)」「株価(2026/08/25) | 4,230 円」で、本文の1,894円／1,301円／2,487円とは別の値になっている。本文は表の前置きで「2026年8月12〜13日時点」と明示しているので、その時点の値としては否定しない。判定「割高」は再取得後も「理論株価 (PBR基準) | 割高」で変わらない。2026年8月25日時点の理論株価は2,153円。"
+        action: "時点依存の外部指標なので、次の更新時に2026-08-25時点の値へ差し替えるか、時点表記を更新する"
+
+      - id: V35
+        section: sources
+        quote: "IR情報（決算短信・説明資料・適時開示）"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://www.kyowa-corp.co.jp/ir/"]
+        evidence: "再取得（200、276文字）。中身はナビゲーションの見出し（『IRライブラリ』『IRライブラリ一覧』『決算短信』『決算説明資料』『有価証券報告書等』『株主通信』『株主総会関連資料』『適時開示情報』『株式情報』『株主メモ』）のみで、決算短信・説明資料・適時開示の実体（日付・数値・PDFリンク）は含まれない＝目次だけ。SKILL.mdの『一次の欄のURLが再取得すると目次だけなら unsupported』に該当（前run V35 から変化なし）。"
+        action: "出典表の一次情報欄で、このURLが実際に裏付ける内容を明示するか tier の見直しを検討（前run V35 と同じ提案）"
+
+      - id: V08
+        section: company
+        quote: "買収時点（2025年3月期）の売上9.7億円・営業利益18百万円・純資産82百万円※（M&A仲介1サイトのみの記載で、2つめの出典が無い）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.strike.co.jp/ma_news/detail.html?id=20251112a", "https://www.nihon-ma.co.jp/news/20251112_6570-1/"]
+        evidence: "ストライク再取得（200）本文に「同社は売上高9億7400万円、営業利益1800万円、純資産8200万円（2025年3月期）。」が存在（9.74億円→本文の9.7億円は丸め）。日本M&Aセンターの記事も再取得（200）したが本文は「道楽は、トレーディングカードの買取と販売事業を、国内4店舗及びECにて行っている。」までで財務3項目の記載は無く、『1サイトのみの記載で2つめの出典が無い』という自己申告も事実と一致。"
+
+      - id: V13
+        section: financials
+        quote: "今期の会社予想20.0億円は+13.8%にとどまり"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6570.csv"]
+        evidence: "data/fundamentals/6570.csv: FY2027-03 operating_income_plan=2000（status=OK）＝20.0億円、FY2026-03 operating_income=1757（OK|ROUNDING）。2000÷1757-1=+13.83%≈+13.8%。同じcaptionの売上+29.6%も revenue_plan 26870（OK|ROUNDING）÷revenue 20729（OK|ROUNDING）-1=+29.62%で整合。"
+
+      - id: V23
+        section: price
+        quote: "週足13週移動平均の傾き：**+3.710%/週（上向き）**"
+        verdict: superseded
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: "+3.710%/週は run 2026-08-16T11:57:34+09:00 の V23 で judge.py 出力との一致を確認済みの2026-08-13時点の値。今回の `python src/judge.py --indicators-only` は as_of=2026-08-20 で weekly_ma_mid_slope_pct=4.4565…・weekly_ma_mid_direction=up。値は動いたが上向きという判定は変わらず、鉄則（下向きなら買わない）に引っかからないという本文の結論も維持される。"
+        action: "V54と同じ（時点依存の指標は日次記録がないと再現できない）"
+
+      - id: V62
+        section: updates
+        quote: "週間 +28.3%（3095→3970円・採用終値ベース、照合成立 4日、週内 3035〜3970円）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv: 前週末 2026-08-14 close=3095.0（OK）、週内のOK行は 08-17=3035.0／08-18=3250.0／08-19=3510.0／08-20=3970.0 の4日（08-21は SINGLE_SOURCE で close 空・採用値なし）。(3970-3095)÷3095=+28.27%≈+28.3%、週内OK終値の範囲も3035〜3970円で一致。"
+
+      - id: V63
+        section: price
+        quote: "直近1年の値幅は、照合済みの終値で**1,077円〜3,970円**✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv の6570で2025-08-21以降・status に OK を含み close のある243行のうち、最小値=1077.0（2025-11-21）・最大値=3970.0（2026-08-20）。events_52w の「2025-11-21 直近1年の安値」とも整合。"
+
+      - id: V64
+        section: sources
+        quote: "凡例: ✓=2ソース照合済みの採用値 ／ ※=未照合・参考値 ／ †=決算短信（一次情報）から機械抽出（まとめサイトとの照合なし）"
+        verdict: supported
+        tier: dataset
+        sources: ["src/build.py"]
+        evidence: "3記号の定義は src/build.py の VERIFY_MARKS（✓=『2ソース照合済みの採用値（status OK）』／※=『未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）』／†=『決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし』）と一致する。前run V64 の quote（**この銘柄では†は未使用**）は今回の書き換えで本文から消えたため、同じ id にこの新しい凡例文を割り当てた。なお本文を機械検索すると † が現れるのはこの凡例行だけで、値に付いた † は0件（＝†は依然として未使用だが、その旨の断り書きは無くなった）。"
+        action: "1Qの純利益・EPS は data/fundamentals では株探1サイトのみ（SINGLE_SOURCE）で、短信と一致した項目である。✓ではなく † が定義どおりの記号にあたるので、†の使い所として検討する"
+
+      - id: V65
+        section: sources
+        quote: "売上高・営業利益・経常利益・純利益・EPSの5項目が二次情報（株探・IR BANK）と一致している"
+        verdict: supported
+        tier: dataset
+        sources: ["data/tanshin/6570.csv", "data/fundamentals/6570.csv"]
+        evidence: "data/tanshin/6570.csv（2026-08-26T15:05:59 取り込み・10行）と data/fundamentals/6570.csv の Q2026-04_2026-06 の観測値（sources_all）を1項目ずつ突き合わせた。revenue: 短信7383 / 観測 kabutan_ytd_h1=7383・kabutan_q=7383・kabutan_q10=7383・kabutan_record_q=7383・irbank_q=7380（tolerance 10 → 全て一致）。operating_income: 短信756 / 観測 …・irbank_q=756（tolerance 1 → 一致）。ordinary_income: 短信788 / 観測 …・irbank_q=788（tolerance 1 → 一致）。net_income: 短信459 / 観測 kabutan_ytd_h1=459・kabutan_q=459（tolerance 1 → 一致）。eps: 短信76.76 / 観測 kabutan_ytd_h1=76.8・kabutan_q=76.8・kabutan_q10=76.8（tolerance 0.1、差0.04 → 一致）。食い違い0件・相手なし0件。src/chartdata.py の verify('6570', …, 'Q2026-04_2026-06') も cross_agree=[eps, net_income, operating_income, ordinary_income, revenue]・cross_disagree=[]・cross_nopair=[] を返し、5項目一致は機械で再現できる。ただし括弧書きの「株探・IR BANK」は5項目すべてに当てはまらない。IR BANK（irbank_q）が値を持つのは revenue・operating_income・ordinary_income の3項目だけで、純利益とEPSの相手は株探（kabutan）のみである。"
+        action: "括弧書きを実態に合わせる（IR BANKと一致したのは売上高・営業利益・経常利益の3項目、純利益・EPSは株探のみ）"
+
+      - id: V66
+        section: sources
+        quote: "このためこれらは✓で示す"
+        verdict: contradicted
+        tier: dataset
+        sources: ["data/fundamentals/6570.csv", "data/tanshin/6570.csv"]
+        evidence: "「これら」＝直前で挙げた5項目（売上高・営業利益・経常利益・純利益・EPS）。本文を機械検索すると、1Q節（財務の推移と健全性）の表記は「1Qは売上73.8億円✓…営業利益7.6億円✓…経常利益7.9億円✓…純利益4.6億円※（取得元1つのみ…）」で、純利益だけが✓ではなく※である。1QのEPS（76.76円）は本文に数値として一度も現れず、✓でも※でも示されていない。データ側も本文の※と整合しており、data/fundamentals/6570.csv の Q2026-04_2026-06 net_income は status=SINGLE_SOURCE・value 空（採用値なし・sources_all は kabutan_ytd_h1=459|kabutan_q=459 の株探のみ）、eps も同じく SINGLE_SOURCE・value 空。凡例（V64）とsrc/build.pyのVERIFY_MARKSが定める✓＝『2ソース照合済みの採用値（status OK）』の条件を、この2項目は満たしていない。つまり5項目を✓で示すという記述は、本文の実際の表記ともデータの状態とも一致しない。"
+        action: "どちらかに揃える。(a)『✓で示す』を『売上高・営業利益・経常利益は✓、純利益・EPSは短信と株探の一致にとどまるため†（または※）』と書き分ける、または (b) 短信と株探の運営2社一致を✓と認める規約変更を先に決めて data/fundamentals 側の status に反映する。本文の修正は人間の判断（検証者は本文を書き換えない）"
+
+      - id: V67
+        section: financials
+        quote: "1Qは売上73.8億円✓（前年同期比+69.4%）・営業利益7.6億円✓（同3.2倍）・経常利益7.9億円✓（同3.4倍）・純利益4.6億円※（取得元1つのみ。ただし決算短信PDFの実額と一致することは直接確認済み）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/tanshin/6570.csv", "data/fundamentals/6570.csv"]
+        evidence: "実額と倍率を採用値どうしの式で確認した。売上: 7383百万円=73.83億円≈73.8億円（fundamentals Q2026-04_2026-06 revenue=7383・OK|ROUNDING）、7383÷4357=1.6945→+69.4%（前年同期 revenue=4357・OK|ROUNDING、短信の revenue_prev_year=4357 とも一致）。営業利益: 756百万円=7.56億円≈7.6億円（operating_income=756・OK）、756÷238=3.176→3.2倍（前年同期 operating_income=238・OK|ROUNDING、短信 operating_income_prev_year=238）。経常利益: 788百万円=7.88億円≈7.9億円（ordinary_income=788・OK）、788÷234=3.368→3.4倍（前年同期 ordinary_income=234・OK、短信 ordinary_income_prev_year=234）。純利益: 459百万円=4.59億円≈4.6億円。「取得元1つのみ」は fundamentals 側の事実（net_income は SINGLE_SOURCE・株探のみ）と一致し、「決算短信PDFの実額と一致することは直接確認済み」は data/tanshin/6570.csv の net_income=459（status OK）で機械的にも確認できた。"
+        action: "純利益の「取得元1つのみ」は、短信取り込み後は『まとめサイト側が株探1サイトのみ・短信とは一致』と書いたほうが実態に近い（V66の始末と合わせて検討）"
+
+      - id: V68
+        section: sources
+        quote: "1Q決算短信は`data/tanshin/6570.csv`へ機械取り込み済み（2026-08-26。URLは`data/sources.yaml`の`known_pdfs`にも記録した）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/tanshin/6570.csv", "data/tanshin/fetch_log.csv", "data/sources.yaml"]
+        evidence: "data/tanshin/6570.csv は10行あり全行が fetched_at=2026-08-26T15:05:59+09:00・source_url=https://www.release.tdnet.info/inbs/140120260810516597.pdf・tier=primary。data/tanshin/fetch_log.csv の末尾行は 2026-08-10,6570,https://www.release.tdnet.info/inbs/140120260810516597.pdf,OK,12,10925,10,…,2026-08-26T15:05:59+09:00 で、12ページ・10,925文字から10項目を書き出したことを記録している。data/sources.yaml の known_pdfs.6570 に同じURLが disclosed_on 2026-08-10・verified_on 2026-08-26 で登録されている。"
+
+      - id: V69
+        section: sources
+        quote: "（内訳はページ末尾の「数値の検証状況」）"
+        verdict: supported
+        tier: dataset
+        sources: ["src/build.py", "src/chartdata.py"]
+        evidence: "src/build.py の render_verification は見出し「数値の検証状況」を出し、tanshin_cross_period が空でなければ render_cross(v) を続けて描く。本文の front matter に tanshin_cross_period: Q2026-04_2026-06 があるため、この銘柄では内訳が描画される。src/chartdata.py の verify('6570', …, 'Q2026-04_2026-06') は cross_period=Q2026-04_2026-06・cross_agree 5件・cross_disagree 0件・cross_nopair 0件・tanshin_rows=10・tanshin_dates=[2026-08-10] を返す。参照先は実在する。"
+
+      - id: V70
+        section: price
+        quote: "週足26週移動平均の傾き：**+2.205%/週（上向き）**"
+        verdict: superseded
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: "今回の `python src/judge.py --indicators-only` は as_of=2026-08-20 で weekly_ma_long_slope_pct=2.9325…・weekly_ma_long_direction=up。本文の+2.205%/週は as_of 2026-08-13 時点の値とみられるが、過去のrunでこの行を判定した記録は無く（この id は今回が初出）、2026-08-13時点の再現もできない。2026年8月20日時点では+2.933%/週・上向きで、上向きという判定の方向は変わらない。"
+        action: "V54と同じ。次の更新時に as_of 2026-08-20 の値へ差し替える"
+resolutions:
+  # V66（contradicted）の始末。「5項目が一致 → だから✓」と書いたのが誤り。
+  # 記号は一致件数ではなく採用値の有無で決まる（build.py の VERIFY_MARKS）。
+  # data/fundamentals/6570.csv の Q2026-04_2026-06 は net_income と eps が
+  # SINGLE_SOURCE（株探のみ）で value が空＝採用値ではない。凡例を書き分け、
+  # 本文の1Q純利益も ※ から †（一次情報から機械抽出）に改めた。
+  - {id: V66, resolved_at: "2026-08-26", how: rewritten,
+     quote: "まとめサイト2社（株探・IR BANK）が揃って値を持ち一致しているのは売上高・営業利益・経常利益の3項目で、これが✓",
+     note: "指摘のとおり過大表示だった。一致5件は事実だが✓の根拠にはならない。
+            純利益・EPSは†に降格し、IR BANKが3項目しか持たないことも明記した"}
