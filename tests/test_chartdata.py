@@ -266,6 +266,94 @@ def test_unit_family_mismatch_becomes_a_gap_not_a_wrong_number():
 
 
 # =============================================================================
+# 実額から導く率
+# =============================================================================
+
+def test_ratio_is_derived_from_adopted_amounts_and_labelled():
+    """率の採用値が無くても、照合済みの実額から導く。ただし黙ってやらない。"""
+    sb = Sandbox()
+    try:
+        sb.fundamentals("9999", [
+            frow("FY2025-06", "revenue", 2000, "OK"),
+            frow("FY2025-06", "operating_income", 150, "OK"),
+        ])
+        chart = {"type": "bar", "unit": "%",
+                 "source": {"metric": "operating_margin",
+                            "periods": ["FY2025-06"]}}
+        res = CD.resolve_chart("9999", "c", chart)
+        eq(values_of(res), [7.5], "150 / 2000 = 7.5%")
+        eq(res.used, 1, "採用1")
+        note = res.spec["data"][0]["note"]
+        assert "実額から導出" in note, f"導出だと言っていない: {note!r}"
+    finally:
+        sb.close()
+
+
+def test_derived_ratio_needs_both_inputs_adopted():
+    """分子・分母のどちらかが照合を通っていなければ導かない。片肺の率を作らない。"""
+    sb = Sandbox()
+    try:
+        sb.fundamentals("9999", [
+            frow("FY2025-06", "revenue", 2000, "SINGLE_SOURCE"),
+            frow("FY2025-06", "operating_income", 150, "OK"),
+        ])
+        chart = {"type": "bar", "unit": "%",
+                 "source": {"metric": "operating_margin",
+                            "periods": ["FY2025-06"]}}
+        res = CD.resolve_chart("9999", "c", chart)
+        eq(values_of(res), [None], "導出しない")
+        eq(res.used, 0, "採用0")
+        assert res.empty_reason, "描けない理由が出ること"
+    finally:
+        sb.close()
+
+
+def test_unadopted_ratio_row_falls_back_to_derivation_and_says_so():
+    """CSV の率が MISMATCH でも実額から導く。**その MISMATCH を注記に残す。**"""
+    sb = Sandbox()
+    try:
+        sb.fundamentals("9999", [
+            frow("FY2025-06", "operating_margin", 7.4, "MISMATCH",
+                 unit="pct", tol="0.1"),
+            frow("FY2025-06", "revenue", 2000, "OK"),
+            frow("FY2025-06", "operating_income", 150, "OK"),
+        ])
+        chart = {"type": "bar", "unit": "%",
+                 "source": {"metric": "operating_margin",
+                            "periods": ["FY2025-06"]}}
+        res = CD.resolve_chart("9999", "c", chart)
+        eq(values_of(res), [7.5], "CSV の 7.4 ではなく実額からの 7.5")
+        note = res.spec["data"][0]["note"]
+        assert "MISMATCH" in note, f"CSV 側の不一致を隠している: {note!r}"
+    finally:
+        sb.close()
+
+
+def test_only_unambiguous_ratios_are_derived():
+    """分母の定義が取得元ごとに違う率は導かない（ROE・ROA）。
+
+    粗利率は分子の売上原価を取得していないので、そもそも導けない。
+    ここを緩めると「定義の違う数字」が同じ図に並ぶ。
+    """
+    assert "roe" not in CD.DERIVED_RATIOS, "ROE は分母の定義が一意でない"
+    assert "roa" not in CD.DERIVED_RATIOS, "ROA は分母の定義が一意でない"
+    assert "cost_ratio" not in CD.DERIVED_RATIOS, "売上原価を取得していない"
+    sb = Sandbox()
+    try:
+        sb.fundamentals("9999", [
+            frow("FY2025-06", "net_income", 100, "OK"),
+            frow("FY2025-06", "equity", 1000, "OK"),
+        ])
+        chart = {"type": "bar", "unit": "%",
+                 "source": {"metric": "roe", "periods": ["FY2025-06"]}}
+        res = CD.resolve_chart("9999", "c", chart)
+        eq(values_of(res), [None], "ROE は導出しない")
+        eq(res.used, 0, "採用0")
+    finally:
+        sb.close()
+
+
+# =============================================================================
 # 決算短信（一次情報）との突き合わせ
 # =============================================================================
 
@@ -693,6 +781,13 @@ def test_real_reports_never_show_unadopted_fundamentals():
                 shown = [p for p in resolved.spec.get("data", [])
                          if p.get("value") is not None
                          and str(p.get("label")) == label]
+                # 唯一の例外: 照合済みの実額から導いた率。**必ず注記でそう言う。**
+                # 分子・分母のどちらかが未照合なら値自体が出ない（shown が空）。
+                if metric in CD.DERIVED_RATIOS:
+                    for pt in shown:
+                        assert "実額から導出" in str(pt.get("note", "")), \
+                            f"{code}/{cid} {metric} {period} の導出に注記が無い"
+                    continue
                 eq(shown, [], f"{code}/{cid} {metric} {period} は採用値でない")
     assert checked > 0, "実データの図を1件も検査できていない（結線が切れている）"
 
