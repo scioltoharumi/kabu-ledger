@@ -103,7 +103,7 @@ git add -A ; if ($?) { git commit -m "銘柄を追加（0000 / 1111）" }
 git pull --rebase origin main ; if ($?) { git push origin main }
 ```
 
-**push が公開を起こす**（`deploy.yml` の push 契機）。`gh workflow run` は叩かない。
+**push が公開を起こす**（`ci.yml` の push 契機 → `publish.yml`）。`gh workflow run` は叩かない。
 
 ### 7. 到達を確認する
 
@@ -118,7 +118,7 @@ git pull --rebase origin main ; if ($?) { git push origin main }
 - 取得時間は **1銘柄あたり約49秒**（株価13s / 信用残4s / 財務7s / 短信1s / 死活24s）。
   20銘柄の初回登録なら取得だけで約16分かかる
 - レポート作成は逐次だと1銘柄あたり約35分。**必ず並列で回す**
-- `deploy.yml` の `build` ジョブは 15分 timeout。銘柄が増えて `checks.py` が
+- `ci.yml` の `test` ジョブは 15分 timeout。銘柄が増えて `checks.py` が
   重くなったら上げる
 
 ## このスキルがやらないこと
@@ -129,4 +129,4 @@ git pull --rebase origin main ; if ($?) { git push origin main }
 | レポート本文の執筆 | `kabu-ledger-report` |
 | 記述の裏取り | `kabu-ledger-verify`（別コンテキストで） |
 | 決算の実額抽出 | `kabu-ledger` |
-| 公開 | `deploy.yml`（push すれば勝手に走る） |
+| 公開 | `ci.yml` → `publish.yml`（push すれば勝手に走る） |
