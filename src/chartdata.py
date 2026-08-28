@@ -144,6 +144,24 @@ METRIC_ALIASES = {
     "roa_pct": "roa",
 }
 
+# 照合済みの実額から導ける率。**CSV に採用値が無いときだけ**使う。
+#
+# なぜ要るか:
+#   率（operating_margin・cost_ratio）は取得元ごとに計算方法と丸めが違い、
+#   二重照合がほとんど通らない。実データでは通期の採用済み営業利益率が
+#   銘柄あたり1〜2期しかなく、**傾向を引けない**（率が構造的に上がって
+#   いるのか、循環で上下しているだけなのかを区別できない）。一方その
+#   分子・分母である営業利益と売上は照合が通っている期が4〜6期ある。
+#
+#   ここに置くのは**定義が一意に決まる率だけ**。ROE / ROA は分母（自己資本か
+#   株主資本か・期末か期中平均か）が取得元ごとに違うので入れない。粗利率
+#   （cost_ratio）は分子の売上原価を取得していないので、そもそも導けない。
+#
+#   metric -> (分子, 分母, 注記に出す式)
+DERIVED_RATIOS: dict[str, tuple[str, str, str]] = {
+    "operating_margin": ("operating_income", "revenue", "営業利益 ÷ 売上高"),
+}
+
 
 # metric 名の接尾辞 -> 表示。長いものから順に見る（_fy_plan が _plan より先）。
 METRIC_SUFFIX = (
@@ -488,15 +506,50 @@ def _cross_note(code: str, fact: Fact, cross_period: str) -> str:
     return "照合不成立"
 
 
+def _derive_ratio(code: str, metric: str, period: str, unit: str,
+                  csv_flags: str = "") -> Picked | None:
+    """採用済みの実額から率を導く。導けなければ None（欠測の理由は呼び出し側）。
+
+    **導出値は採用値ではない。** CSV には書かない（append-only を侵さない）し、
+    図に出るときは注記で必ず「実額から導出」と言う。黙って採用値と同じ顔で
+    並べないのは、手書き `data:` に「手書き（未検証）」が必ず付くのと同じ規律
+    （D30/D31/D54）。分子・分母の**どちらかが照合を通っていなければ導かない**。
+    """
+    spec = DERIVED_RATIOS.get(metric)
+    if spec is None:
+        return None
+    num_metric, den_metric, expr = spec
+    fund = fundamentals(code)
+    num = fund["by_key"].get((num_metric, period))
+    den = fund["by_key"].get((den_metric, period))
+    if num is None or den is None or not num.adopted or not den.adopted:
+        return None
+    n = convert(num.value, num.unit, den.unit)   # 分子と分母の単位を揃える
+    if n is None or not den.value:               # 0 除算は導出しない
+        return None
+    v = convert(n / den.value * 100.0, "pct", unit)
+    if v is None:                                # 率を円で描けと言われた等
+        return None
+    detail = "実額から導出（" + expr + "）。分子・分母とも照合済み"
+    if csv_flags:
+        detail = detail + "／CSV の率は " + csv_flags
+    return Picked(label=period_label(period), value=v,
+                  origin="fundamentals", detail=detail)
+
+
 def _pick_fundamentals(code: str, metric: str, period: str,
                        unit: str) -> Picked:
     fund = fundamentals(code)
     fact = fund["by_key"].get((metric, period))
     label = period_label(period)
     if fact is None:
-        return Picked(label=label, reason="CSV に行が無い")
+        return _derive_ratio(code, metric, period, unit) or Picked(
+            label=label, reason="CSV に行が無い")
     if not fact.adopted:
         flags = "／".join(flags_of(fact.status)) or "不明"
+        derived = _derive_ratio(code, metric, period, unit, csv_flags=flags)
+        if derived is not None:
+            return derived
         return Picked(label=label, reason="照合が成立していない（" + flags + "）")
     v = convert(fact.value, fact.unit, unit)
     if v is None:

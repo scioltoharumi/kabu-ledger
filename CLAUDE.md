@@ -103,10 +103,15 @@
 ```text
 fetch*.py → checks.py → score.py → fetch_news.py
   → weekly_note.py（機械追記＋一筆）→ build.py → push
-→（CI・無人）tests → checks → build → deploy-pages → notify
+→（CI・無人）main への push  : test → site → deploy-pages → notify
+              PR（draft 以外）: test → automerge → site → deploy-pages → notify
 ```
 
 - 取得はルーティンと intake だけが行う（CI・cron には無い）
+- **PR は test が緑になると自動でマージされ、そのまま公開まで走る。**
+  止めたければ **draft のままにする**（draft と fork は automerge を通らない）。
+  automerge の後ろに site を繋いであるのは、GITHUB_TOKEN の push が
+  ワークフローを再起動しないため。別 run に頼ると公開だけ止まる
 - 裏取り（verify）は初回レポートと deep_dive のときだけ。週次エントリは
   data 由来の事実＋出典URL付き見出し＋解釈のみで構成し、検証対象を発生させない
 - **`gh workflow run` を通常手順に入れない。** push だけで公開まで走る
