@@ -8,8 +8,11 @@ predictions:
   reference: 0.61
   resolve_by: '2026-08-21'
   confidence: 0.6
-  status: open
+  status: expired
   note: 2026-08-14 本決算で確認
+  result: 判定不能
+  metric_source: kpi
+  reason: 2026-08-21 以前の決算行が data/kpi/4073.csv に無い（KPI未取得）
 - id: P-2026W33-02
   code: '4073'
   metric: operating_income
@@ -17,8 +20,11 @@ predictions:
   reference: 0
   resolve_by: '2026-08-21'
   confidence: 0.7
-  status: open
+  status: expired
   note: 通期黒字化計画の達成可否
+  result: 判定不能
+  metric_source: kpi
+  reason: 2026-08-21 以前の決算行が data/kpi/4073.csv に無い（KPI未取得）
 - id: P-2026W33-03
   code: '4937'
   metric: avg_turnover_20d

@@ -1,9 +1,9 @@
-as_of: '2026-08-21'
+as_of: '2026-08-28'
 total: 3
 hit: 0
 miss: 0
-unresolvable: 0
-open: 3
+unresolvable: 2
+open: 1
 hit_rate: null
 brier: null
 brier_baseline: 0.25
