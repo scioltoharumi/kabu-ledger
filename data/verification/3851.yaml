@@ -1502,6 +1502,436 @@ runs:
           変更報告書の記事で、決算発表予定日の記事も無い。
           「確認できていない」という自己申告は今回も正しい。
 
+  - run: "2026-08-29T04:28:00+09:00"
+    report_updated: "2026-08-28"
+    report_sha256: "39493e3ea7af6121565405671c1f409ee101552dce6efddddb9304231138d934"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3。前run〈2026-08-23〉を書いた文脈とも別）"
+    note: >-
+      2026-08-28の業績予想上方修正を受けた本文更新（コミット3763c2b「再調査
+      2026-W35: 3851 業績予想の上方修正を反映」。W35週次追記に加え、
+      financials節に「業績予想の上方修正」小節を新設し、リード文/展望/
+      値動き/出典節を改訂）を対象にした run。新規記述を中心に
+      V54〜V73 を切り出した（V60 は週次アップデート節のprose起因で
+      append-only により claim 化できず後述の理由で除外。V73は
+      V69のactionを反映した本文修正の追加検証）。最重要の一次情報は適時開示PDF
+      「業績予想の修正に関するお知らせ」（会社サイト掲載
+      https://www.nippon1.co.jp/news/pdf/2026/20260828_01.pdf）で、これは
+      fetch_source.py が「PDFはテキスト化しない」設計のため、requests で直接
+      バイト取得し pypdf でテキスト抽出して本文と突き合わせた（sources.yaml の
+      fetch_policy と同じ User-Agent・3秒間隔を使用。取得の痕跡は
+      data/verification/fetch_log.csv に log_fetch() 経由で記録した。理由:
+      fetch_source.py の --url はレポート本文に実在する文字列と完全一致が
+      要るが、本文の TDnet URL は〈`https://...pdf`〉とバッククォートで
+      囲われ空白で区切られていないため、report_urls() の正規表現が末尾の
+      日本語文（「のsha256が一致することを確認済み」まで）を巻き込んで
+      誤抽出する。この誤抽出URLで --url を叩くと実際に404になることを
+      確認した（下記 unfetched_source 節参照）。よって TDnet直リンクは、
+      抽出後のクリーンなURL文字列に対して直接 requests で取得し、その結果を
+      fetch_log.csv に記録した。会社サイト掲載PDFとTDnet掲載PDF
+      （https://www.release.tdnet.info/inbs/140120260828527655.pdf）の両方を
+      独立にダウンロードし、sha256を自分で計算して一致を確認した
+      （前run担当者の報告を引き継がず、独立に再実行した）。
+      あわせて4件のkabutanニュース記事（上方修正2本・STM HERITAGE No.3・
+      決算開示PDFのkabutanミラーページ）とIRページを再取得し、
+      data/prices/daily.csv・data/margin/3851.csv・data/fundamentals/3851.csv・
+      data/tanshin/・python src/judge.py --indicators-only の出力とも突き合わせた。
+      再取得した本文・PDFいずれにも指示めいた文字列は検出していない
+      （fetch_source.py の scan_injection にも掛からなかった）。
+      なお本検証は Claude Code Remote のworktree隔離下で実行しており、
+      作業開始時点でこのworktreeは直近コミット462d466（W35の機械追記のみ・
+      財務節の上方修正小節は未反映）で止まっていた。verify対象の記述が
+      実在するか確認するため、このworktree内で `git merge --ff-only
+      origin/main` を実行してコミット3763c2b まで進めてから検証した
+      （ローカルの未コミット差分は fetch_log.csv のみで、事前に
+      `git checkout -- data/verification/fetch_log.csv` で作業前の状態へ
+      戻してからmergeしたため、過去の記録・ログを書き換えてはいない）。
+      V01〜V53（前run分）はこの run では拾い直していない（本文が変わって
+      いない節の記述はそのまま残っており、folded() により判定は維持される）。
+
+    urls_refetched:
+      - {url: "https://www.nippon1.co.jp/ir/ir.html", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=3851&b=n202608280882", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=3851&b=k202608280007", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=3851&b=n202608270792", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260828/140120260828527655/", http_status: 200}
+      - {url: "https://www.nippon1.co.jp/news/pdf/2026/20260828_01.pdf", http_status: 200}
+      - {url: "https://www.release.tdnet.info/inbs/140120260828527655.pdf", http_status: 200}
+
+    urls_delegated:
+      - url: "https://kabutan.jp/stock/finance?code=3851"
+        to: "data/fundamentals/3851.csv"
+      - url: "https://irbank.net/E02489/results"
+        to: "data/fundamentals/3851.csv"
+      - url: "https://irbank.net/E02489/quarter"
+        to: "data/fundamentals/3851.csv"
+      - url: "https://irbank.net/E02489"
+        to: "data/fundamentals/3851.csv"
+
+    claims:
+      # --- 一行でいうと・リード -----------------------------------------------
+      - id: V54
+        section: company
+        quote: "会社は2026-08-28に27年3月期の業績予想を上方修正した（通期経常利益449→906百万円、上期は3.1倍）"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/news/pdf/2026/20260828_01.pdf"]
+        evidence: >-
+          適時開示PDFをrequests+pypdfで直接取得・抽出（2ページ・200）。
+          通期表: 経常利益 前回予想（Ａ）449 → 今回修正（Ｂ）906（百万円）。
+          上期表: 経常利益 前回予想（Ａ）274 → 今回修正（Ｂ）848、848÷274=3.095≒3.1倍。
+          いずれも本文の数値と一致。
+
+      # --- 業績予想の上方修正（financials 新設小節） --------------------------
+      - id: V55
+        section: financials
+        quote: "「業績予想の修正に関するお知らせ」本文を直接確認・単一の一次情報で`data/fundamentals/3851.csv`への機械反映前のため※。会社のIRページ〈<https://www.nippon1.co.jp/ir/ir.html>〉にも同日付・同ファイルサイズ（122KB）で掲載されており、両者は同一ファイルであることを確認済み"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.nippon1.co.jp/news/pdf/2026/20260828_01.pdf"
+          - "https://www.release.tdnet.info/inbs/140120260828527655.pdf"
+          - "https://www.nippon1.co.jp/ir/ir.html"
+          - "data/fundamentals/3851.csv"
+        evidence: >-
+          会社サイト掲載PDF（nippon1.co.jp）とTDnet掲載PDF
+          （release.tdnet.info）を、それぞれ独立に requests で直接ダウンロードし
+          （前run担当者の報告を引き継がず、この run で再実行）、sha256を
+          自分で計算した。両方とも 200・124,218バイト・
+          sha256=d403f00fbf0831c5ce11f8c85dbb95df5415de6e930c2ac2c90eb4369c10a2dd
+          で完全一致（**独立に確認できた**）。IRページ再取得（200・5,191字）の
+          先頭は「2026.08.28 業績予想の修正に関するお知らせ （122KB）」で、
+          日付・ファイルサイズ表記とも本文と一致。data/fundamentals/3851.csv の
+          FY2027-03計画4指標（revenue_plan=4784/operating_income_plan=296/
+          ordinary_income_plan=449/net_income_plan=331、いずれも fetched_at
+          2026-08-13）は今回も変わっておらず、「機械反映前」という自己申告も
+          正しい。data/tanshin/ にも3851.csvは無い（従来どおり）。
+        action: >-
+          本文のTDnet URLはMarkdown中で〈`https://...pdf`〉とバッククォートで
+          囲われ直後に全角記号が続くため、fetch_source.py の report_urls() が
+          URLの終端を誤認識し、末尾の日本語文まで一続きのURLとして抽出してしまう
+          （--url に渡すと404）。次に直すときは
+          「TDnet掲載PDF（<https://www.release.tdnet.info/...pdf>）」のように
+          `<>`で囲むか前後に空白を入れ、fetch_source.py で再取得できる形にする
+
+      - id: V56
+        section: financials
+        quote: "修正後の通期予想は、売上高54.1億円※（旧47.8億円✓・+13.1%）、営業利益715百万円※（旧296百万円✓・+141.4%）、経常利益906百万円※（旧449百万円✓・+101.7%）、親会社株主に帰属する当期純利益718百万円※（旧331百万円✓・+116.8%）。EPSは65円53銭※→142円05銭※。"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/news/pdf/2026/20260828_01.pdf"]
+        evidence: >-
+          PDF「1．令和9年3月期 連結業績予想（連結）（2）通期連結累計期間」の表を
+          そのまま転記する: 前回予想（Ａ）売上高4,784／営業利益296／経常利益449／
+          親会社株主に帰属する当期純利益331／１株当たり当期純利益65円53銭。
+          今回修正（Ｂ）売上高5,411／営業利益715／経常利益906／
+          同純利益718／同EPS142円05銭。増減率の行は
+          「13.1% 141.4% 101.7% 116.8%」——**PDFが自ら計算した増減率であり、
+          rounded後の百万円単位の値を素朴に割り算した値（715/296-1=141.55%等）
+          とは小数点以下がわずかに異なる（PDFは丸め前の内部値で計算している
+          とみられる）。本文の141.4%・101.7%・116.8%はPDFの増減率欄と
+          一字一句一致しており、正しい**（一度141.55%等で計算し直して
+          「本文の誤りでは」と疑ったが、PDF原本の増減率欄がまさに141.4%・
+          101.7%・116.8%であることを確認し、本文が正しいと判定した）。
+
+      - id: V57
+        section: financials
+        quote: "上期（2Q累計）はさらに大きく修正された：売上高33.7億円※（旧27.9億円✓・+21.0%）、営業利益729百万円※（旧193百万円✓・+276.1%）、**経常利益848百万円※（旧274百万円✓・+209.1%＝約3.1倍）**、当期純利益685百万円※（旧205百万円✓・+233.0%）。"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/news/pdf/2026/20260828_01.pdf"]
+        evidence: >-
+          PDF「（1）令和9年3月期 第2四半期連結累計期間」の表: 前回予想（Ａ）
+          売上高2,789／営業利益193／経常利益274／同純利益205。今回修正（Ｂ）
+          売上高3,374／営業利益729／経常利益848／同純利益685。増減率
+          「21.0% 276.1% 209.1% 233.0%」がそのまま本文の数値と一致。
+          848÷274=3.095…≒3.1倍。
+
+      - id: V58
+        section: financials
+        quote: "修正理由として会社が挙げているのは1点のみ：**「売上高につきましては、国内市場におきまして、『ほの暮しの庭』が発売開始から堅調に推移したことにより、前回予想を上回る見込み」**（PDF原文）。営業利益・経常利益・純利益の上振れも「上記事項を理由として」と書かれており、コスト構造や為替など他の要因は開示文に記載がない。個別（単体）業績も同じ理由で上方修正されている。"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/news/pdf/2026/20260828_01.pdf"]
+        evidence: >-
+          PDF「3．業績予想修正の理由（1）連結業績」に「売上高につきましては、
+          国内市場におきまして、『ほの暮しの庭』が発売開始から堅調に推移した
+          ことにより、前回予想を上回る見込みとなっております。営業利益、
+          経常利益および親会社に帰属する当期純利益につきましては、上記事項を
+          理由として、前回予想を上回る見込みとなっております。」を確認
+          （本文の引用は「見込み」で止め、「となっております」を省いた部分
+          引用だが、切れ目まではPDF原文と一字一致）。「（2）個別業績」にも
+          「連結業績に記載の内容を主たる要因として、売上高、経常利益、
+          当期純利益のいずれにおいても、前回予想を上回る見込みとなって
+          おります。」があり、個別業績も同じ理由づけである。価格・原価・
+          広告費・為替への言及はPDF全2ページのどこにも無い。
+
+      - id: V59
+        section: outlook
+        quote: "**上方修正後の通期営業利益予想715百万円※で計算し直すと、1Q実績（−145百万円✓）との差は860百万円**"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/3851.csv"
+          - "https://www.nippon1.co.jp/news/pdf/2026/20260828_01.pdf"
+        evidence: >-
+          1Q（Q2026-04_2026-06）operating_income の採用値は −145
+          （data/fundamentals/3851.csv・status OK）。修正後通期計画715
+          （PDFの今回修正（Ｂ）営業利益715、V56で確認済み）との差は
+          715 − (−145) = 860（百万円）で本文の860百万円と一致する。
+
+      - id: V72
+        section: outlook
+        quote: "会社はこれを理由に通期売上高を47.8億円✓→54.1億円※（+13.1%）、経常利益を449百万円✓→906百万円※（+101.7%）に引き上げた"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/news/pdf/2026/20260828_01.pdf"]
+        evidence: >-
+          V56と同じPDF表・増減率欄（売上高13.1%・経常利益101.7%）と一致。
+          「期待できること」項目5の「449→906百万円（+101.7%）、上期は274→848
+          百万円（3.1倍）」も同じPDF表（V54・V57）で確認済みの値と一致する。
+
+      # --- STM HERITAGE と上方修正の日付関係 ----------------------------------
+      # 週次アップデート節（### 2026-W35）の一筆に日付誤りを見つけたが、
+      # この節は CLAUDE.md「週次エントリは…検証対象を発生させない」の対象で、
+      # かつ append-only のため本文を直接書き換えられない。claim として
+      # 記録すると contradicted は resolutions（quote が本文から消えることが
+      # 前提）でしか解除できず、frozen な文には原理的に適用できず永久 FAIL に
+      # なる（6570.yaml 2026-08-16run の前例と同じ構造の問題）。よって
+      # ここでは claim 化せず、発見事実は reports/3851.md に
+      # `### 2026-W35（続報）` を新設して訂正済み（append-only を守ったまま
+      # 読者に見える形で訂正）。裏付けの詳細（変更報告書No.3の提出日=8/27、
+      # 上方修正の開示日=8/28、日付が1日ずれている旨）はこの note に残す：
+      # 変更報告書No.3の記事を再取得（200）。見出しの日時は
+      # 「2026年08月27日15時34分」、本文にも「STM HERITAGE PTE. LTD.は
+      # 8月27日受付で財務省に変更報告書…を提出した」「保有比率は
+      # 6.48%→5.24%に減少した。報告義務発生日は8月20日」とある。
+      # 一方、業績予想の修正は同じ記事一覧・本文表とも8月28日
+      # （見出し「2026年08月28日15時49分」）。「同日に」は日付として
+      # 誤りだった（1日ずれている）。なお参考として、保有比率の減少幅
+      # （6.48%→5.24%）はこの記事本文に明記されている一方、保有目的は
+      # 記事に記載が無い（`reports/3851.md` の展望節「減少幅・保有目的は
+      # 未確認」の記述はこの点で不正確——減少幅は分かる）。
+
+      - id: V63
+        section: updates
+        quote: "ニュース: 08/28 日本一ソフトが２７年３月期業績予想を上方修正 <https://kabutan.jp/stock/news?code=3851&b=n202608280882>"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3851&b=n202608280882"]
+        evidence: >-
+          再取得（200）。見出し「日本一ソフトが２７年３月期業績予想を
+          上方修正」、配信時刻「2026年08月28日15時49分」を確認。
+          本文「日本一ソフトウェア<3851>がこの日の取引終了後に、２７年
+          ３月期の連結業績予想について、売上高を４７億８４００万円から
+          ５４億１１００万円…へ、営業利益を２億９６００万円から
+          ７億１５００万円…へ、最終利益を…７億１８００万円…へ上方修正した。
+          国内市場において、「ほの暮しの庭」が…発売から堅調に推移している
+          ことが要因としている。」も、独立した二次ソースとしてV56・V58の
+          数値・理由づけを裏付ける。
+
+      - id: V64
+        section: updates
+        quote: "ニュース: 08/28 日本一ソフト、上期経常を3.1倍上方修正、通期も増額 <https://kabutan.jp/stock/news?code=3851&b=k202608280007>"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3851&b=k202608280007"]
+        evidence: >-
+          再取得（200）。見出し「日本一ソフトウェア【3851】、上期経常を
+          3.1倍上方修正、通期も増額」、配信時刻「2026年08月28日15時30分」を
+          確認。記事内の「業績予想の修正」表（今上期・今期の新旧比較表）は
+          V56・V57で転記したPDFの数値・増減率と1マスずつ完全一致する
+          （売上高5,411/715/906/718・修正率13.1%/141.4%/101.7%/116.8%、
+          上期3,374/729/848/685・修正率21.0%/276.1%/209.1%/233.0%）。
+          独立した二次ソース（MINKABU PRESS発）が一次PDFと一致することも
+          確認できた。
+
+      - id: V65
+        section: updates
+        quote: "ニュース: 08/27 日本一ソフトについて、STM HERITAGE PTE. LTD.は保有割合が減少したと報告 [変更報告書No.3] <https://kabutan.jp/stock/news?code=3851&b=n202608270792>"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3851&b=n202608270792"]
+        evidence: >-
+          再取得（200）。見出し「日本一ソフトについて、STM HERITAGE PTE.
+          LTD.は保有割合が減少したと報告 [変更報告書No.3]」、配信時刻
+          「2026年08月27日15時34分」を確認（本文の08/27表記と一致）。
+
+      - id: V69
+        section: outlook
+        quote: "| 大株主の持分減少 | STM HERITAGE PTE. LTD.の保有割合減少報告が2026-08-21・08-27と続いている（週次アップデート節）。減少幅・保有目的は未確認 |"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3851&b=n202608270792"]
+        evidence: >-
+          日付関係（2026-08-21・08-27の2回）は正しい。ただし「減少幅…は
+          未確認」は、変更報告書No.3の記事本文（再取得・200）に
+          「保有比率は6.48％→5.24％に減少した」と明記されており、
+          この出典1件だけで減少幅（1.24ポイント／保有株数269,700株）は
+          確認できる。「保有目的」のほうは記事に記載が無く、こちらは
+          「未確認」で正しい。複合的な記述の片方（減少幅）だけが
+          この出典と食い違う。
+        action: >-
+          「減少幅・保有目的は未確認」を「減少幅は6.48%→5.24%（No.3。
+          No.2は7.60%→6.48%）、保有目的は未確認」のように直せる
+          （情報は既に取得済みの出典に載っている。前run V47 の
+          action と同じ指摘）
+
+      - id: V73
+        section: outlook
+        quote: "No.3（08-27）の記事本文によれば保有比率は6.48%→5.24%に減少。保有目的は記事に記載が無く未確認"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3851&b=n202608270792"]
+        evidence: >-
+          V69 の action を反映した書き直し（この run 内で本文を更新した）。
+          V69 の evidence と同じ再取得記事に基づく: 「保有比率は6.48％→5.24％
+          に減少した」の1文があり、保有目的の記載は無い。No.2（08-21）分の
+          7.60%→6.48%はこの run では再取得・引用しておらず未確認のため、
+          本文には含めていない。
+
+      - id: V70
+        section: sources
+        quote: "STM HERITAGE PTE. LTD.の保有割合減少（変更報告書No.2・No.3）の減少幅・保有目的・継続性（週次アップデート節。本開示と同日〈08-27・08-28〉に集中しており偶然か関連かは未確認）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3851&b=n202608270792"]
+        evidence: >-
+          この一文は08-27と08-28を別の日付として括弧内に書き分けており
+          （「同日」と一括りにしていない）、V60で確認した実際の日付関係
+          （変更報告書No.3=8/27、業績予想修正=8/28）と整合する。
+          「偶然か関連かは未確認」という留保も、PDF・記事のいずれにも
+          両者の関連を示す記述が無いことと整合する。
+
+      # --- 値幅の陳腐化 --------------------------------------------------------
+      - id: V66
+        section: price
+        quote: "直近1年の値幅は、照合済みの終値✓で**776円〜1,254円**。本レポート初回作成の8月12日時点で、株価は3週間で+27%（7月22日の900円→8月12日の1,140円）上がって52週高値にいる状態だった。その後も更新は続き、8月20日の終値1,254円✓がいまの52週高値そのものになっている。"
+        verdict: superseded
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          data/prices/daily.csv の直近52週（2025-08-29〜2026-08-28）で
+          status に OK を含む終値241件を集計すると、最小は変わらず
+          2025-12-22の776円だが、最大は**2026-08-26／08-27の1,297円**
+          （2026-08-24=1250・08-25=1266・08-26=1297・08-27=1297、
+          いずれもOK）で、本文が「いまの52週高値そのもの」と書く1,254円
+          （8月20日）をすでに上回っている。本文は2026-08-28更新（front
+          matterの updated: 2026-08-28）だが、この段落だけ8月20日時点の
+          値幅で止まっており、8月21日以降（W34後半〜W35）の値上がりが
+          反映されていない。front matterのprice_range／events_52wの図
+          自体はsourceがdatasetなので自動で現在の776〜1,297を描くが、
+          この本文の地の文（776〜1,254円・1,254円が現在の52週高値）は
+          取得日時点で既に古い（値が動いた＝superseded）。
+        action: >-
+          「776円〜1,254円（8月20日時点）」のように取得日を明示するか、
+          週次更新のたびにこの段落の終値も取り直す。図（データ駆動）と
+          地の文（手書きの数値）がずれる典型例
+
+      # --- W35週次アップデートの実測値 ------------------------------------------
+      - id: V61
+        section: updates
+        quote: "株価: 週間 +4.8%（1238→1297円・採用終値ベース、照合成立 4日、週内 1250〜1297円）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          data/prices/daily.csv（採用値・status OK）: 前週最終
+          2026-08-21 close=1238。今週08-24〜08-28のうちOKは
+          08-24=1250・08-25=1266・08-26=1297・08-27=1297の4日
+          （08-28はSINGLE_SOURCEでclose欠測）。週の最終OK終値1297、
+          1297÷1238−1=4.766%≒+4.8%。週内OK終値の最小1250・最大1297も
+          本文の「1250〜1297円」と一致。照合成立日数4日も一致。
+
+      - id: V62
+        section: updates
+        quote: "出来高: 前週比 -28.5%（今週 292,200株／前週 408,900株）※／信用倍率: 4.8倍（買残 473.3千株・売残 98.6千株、08/21時点）※"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "data/margin/3851.csv"]
+        evidence: >-
+          出来高（1ソース参考値）: 今週08-24〜08-28の合計
+          45900+42200+76100+38000+90000=292,200株。前週08-17〜08-21の合計
+          91600+80600+57700+105300+73700=408,900株。
+          292200÷408900−1=−28.55%≒−28.5%。信用は
+          data/margin/3851.csv の2026-08-21行（status OK）:
+          long_balance=473.3・short_balance=98.6・ratio=4.8（千株）で一致。
+
+      - id: V71
+        section: updates
+        quote: "判定: 「様子見(過熱)」／開示: なし"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py", "data/prices/daily.csv", "src/weekly_note.py"]
+        evidence: >-
+          python src/judge.py --indicators-only（as_of 2026-08-27・
+          直近営業日）で rsi14=73.97（70超で過熱域）・
+          ma_deviation_pct=+16.73%（依然としてプラス乖離）を確認。
+          過熱側の指標が続いていることは「様子見(過熱)」という判定文言と
+          矛盾しない。「開示: なし」はsrc/weekly_note.pyのdisclosures
+          フィールドの実装を確認したところ、決算短信（`data/tanshin/`由来）
+          の有無だけを見る変数で、業績予想の修正やSTM HERITAGEの5%報告は
+          この判定対象に含まれない設計であることをコードで確認した。
+          したがって「開示: なし」は同じ週に上方修正の適時開示があった
+          事実と矛盾しない（別の変数を指している）。
+        action: >-
+          「開示」の語が決算短信限定であることは読み手には伝わりにくい。
+          直後の解釈文で上方修正に触れているので実害は無いが、
+          「開示（決算短信）: なし」のように注記すると誤解が減る
+
+      - id: V67
+        section: sources
+        quote: "この銘柄は決算短信PDF（一次情報）の取り込みがまだ無く、†の数値は本文にない。2026-08-28の業績予想修正PDFは本文を直接確認したが（下表）、`src/fetch_tanshin.py`の機械抽出は決算短信専用で本開示は対象外のため、`data/tanshin/`には入っておらず、値には※を付けている。"
+        verdict: supported
+        tier: dataset
+        sources: ["data/tanshin/fetch_log.csv"]
+        evidence: >-
+          data/tanshin/ に存在するのは150A.csv・4073.csv・6570.csv・
+          fetch_log.csvのみで、3851.csvは今回も無い（決算短信の取り込みが
+          まだ無いという自己申告は正しい）。本文にも†付きの数値は無い
+          （凡例行のみ）。今回追加された修正後の数値（54.1億円・715百万円・
+          906百万円・718百万円など）はすべて※が付いており、「決算短信専用の
+          機械抽出の対象外」という説明とも整合する。
+
+      - id: V68
+        section: financials
+        quote: "上表の「2027/3期（会社予想・2026-05-15時点）」行はこの修正**前**の値（2ソース照合済み✓）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3851.csv"]
+        evidence: >-
+          data/fundamentals/3851.csv のFY2027-03計画4指標（fetched_at
+          2026-08-13、変更なし）: revenue_plan=4784・
+          operating_income_plan=296・ordinary_income_plan=449・
+          net_income_plan=331、いずれもstatusにOKを含む採用値。
+          直近5期＋今期計画の表（V05・前run）が引くのはこの旧計画のままで、
+          上方修正後の新計画（5411/715/906/718）には未反映であることを確認した。
+
+      - id: V27
+        section: sources
+        quote: "「業績予想の修正に関するお知らせ」2025.06.20・2026.02.13・2026.08.28、「業績予想の差異発生に関するお知らせ」2025.05.09・2025.11.14・2026.05.15 の開示日"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/ir/ir.html"]
+        evidence: >-
+          IRページを再取得（200・5,191字）。「2026.08.28 業績予想の修正に
+          関するお知らせ」（今回・122KB）に加え、「2026.02.13」
+          「2025.06.20」の同名開示、「2026.05.15」「2025.11.14」
+          「2025.05.09」の「業績予想の差異発生に関するお知らせ」を確認。
+          出典節の一次情報表の記載と一致する。
+
+      - id: V29
+        section: sources
+        quote: "実際の2Q累計実績が確認できるのは次の2Q決算発表（2025年の同時期は11月14日開示。日程は本レポート作成時点で未確認）"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.nippon1.co.jp/ir/ir.html"]
+        evidence: >-
+          IRページ再取得（200）に「2025.11.14　2026年3月期 第2四半期決算短信」
+          を確認（前年の同時期の2Q決算短信の開示日）。IR新着情報の先頭は
+          依然として2026.08.28の今回の修正PDFで、今期（2027年3月期）の
+          2Q決算発表予定日を示す開示は無く、「日程は…未確認」という
+          自己申告も正しい。
+
 # ---------------------------------------------------------------------------
 # 判定の始末（resolutions）
 #
