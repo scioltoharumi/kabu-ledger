@@ -41,6 +41,11 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+    # ready_for_review が要る。既定は opened/synchronize/reopened だけで、
+    # **draft を ready に変えても再起動しない**。それだと「draft で止めて、
+    # ready にしたら流す」という非常口が機能しない（人が空コミットを
+    # 押す羽目になる）。
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:          # 非常口。通常の手順には登場させない
 
 concurrency:
