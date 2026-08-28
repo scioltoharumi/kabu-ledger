@@ -1,0 +1,125 @@
+name: ci
+
+# テスト → データ品質検査。PR なら、緑のときだけ自動マージまでする。
+# **公開はここではしない**（`publish.yml` が ci の完了を受けて行う）。
+#
+# なぜ公開を別ワークフローに出したか:
+#   github-pages environment には「既定ブランチからのみデプロイ可」という
+#   保護がかかっている。PR 契機の run は ref が refs/pull/N/merge なので、
+#   deploy ジョブが**ランナーも付かずに2秒で弾かれる**（2026-08-28 に実測）。
+#   workflow_run で起きた run は既定ブランチの文脈（ref=refs/heads/main）で
+#   走るため、この保護を満たす。詳細は publish.yml の冒頭。
+#
+# 取得（fetch*.py）と予測の採点（score.py）はここでも publish でもやらない。
+# 取得はスケジュールで回すものではなく、**起こったことに反応して**回す:
+#
+#   スクショを貼った  → 新しい銘柄を master.yaml に登録し、その銘柄の履歴を取る
+#                        （.claude/skills/kabu-ledger-intake/）
+#   週次ルーティン     → 既存銘柄の差分取得 → レポートの週次アップデート → 裏取り
+#                        （.claude/skills/kabu-ledger-weekly/）
+#
+# どちらも最後に push する。**push がこの ci を起こし、publish が公開まで運ぶ。**
+# cron はここには無い。週次の起点はルーティン1本だけで、スケジュールを二重に持たない。
+#
+# **CI では Claude を動かさない。** 判断を伴う作業（レポートの週次追記・出典の裏取り・
+# 弱気材料の生成）はルーティンが担当し、結果を commit する。
+# CI に OAuth トークンを置かないための構成。ここに残るのは決定論的なコードだけ。
+#
+# 自動マージが動かないのは次のとき。**止めたければ draft のままにする。**
+#   - draft のまま        （人が ready にするまでマージされない＝非常口）
+#   - fork からの PR      （他人のブランチを自動で main に入れない）
+#   - test が緑でない     （needs: test。落ちればマージまで届かない）
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    # ready_for_review が要る。既定は opened/synchronize/reopened だけで、
+    # **draft を ready に変えても再起動しない**。それだと「draft で止めて、
+    # ready にしたら流す」という非常口が機能しない（人が空コミットを
+    # 押す羽目になる）。
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:          # 非常口。通常の手順には登場させない
+
+permissions:
+  contents: write             # automerge のマージに要る
+  pull-requests: write        # automerge の gh pr merge に要る
+
+env:
+  PYTHONIOENCODING: utf-8     # 日本語の標準出力が化けないようにする
+
+jobs:
+  # --- 1. テスト → 検査 ----------------------------------------------------
+  #
+  # ★テストが落ちるとマージも公開も止まる。つまり「翌週かならず落ちる
+  #   テスト」は公開を止める仕掛けと同じである。実データの日付・値・件数を
+  #   テストにべた書きしないこと（期待値は tests/realdata.py から引く）。
+  #
+  # 下の glob は `tests/test_*.py` を1本ずつ実行する。**共用ヘルパを
+  # `test_` で始まる名前にしない**（テストとして実行され、0件パスで通ってしまう）。
+  #
+  # checkout に ref を渡さない。PR では既定の refs/pull/N/merge ＝
+  # **マージ後の姿**が取れる。マージしてから落ちるのを防ぐにはこちらで検査する。
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # checks.py の append-only 検査が履歴を見る
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+
+      - name: tests
+        run: |
+          set -e
+          shopt -s nullglob
+          files=(tests/test_*.py)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "テストが1本も無い"; exit 1
+          fi
+          for f in "${files[@]}"; do
+            echo "=== $f ==="
+            python "$f"
+          done
+
+      - name: データ品質検査
+        run: python src/checks.py        # FAIL があればここで停止＝マージも公開もしない
+
+      - name: サイトが生成できることの確認（成果物は捨てる。公開は publish が行う）
+        run: python src/build.py
+
+  # --- 2. PR を自動マージ（PR 契機のときだけ） -----------------------------
+  #
+  # test が緑でなければ needs で届かない。draft と fork は上の if で外す。
+  # ブランチは消さない（同じブランチで追い作業を続けることがあるため）。
+  #
+  # マージ後に state を確かめる。gh の戻りだけを信じると、反映前に publish が
+  # main を checkout して**マージ前の内容を公開しうる**。
+  automerge:
+    needs: test
+    if: >-
+      github.event_name == 'pull_request'
+      && github.event.pull_request.draft == false
+      && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR: ${{ github.event.pull_request.number }}
+    steps:
+      - name: squash merge
+        run: gh pr merge "$PR" --squash --repo "${{ github.repository }}"
+
+      - name: マージされたことを確認する
+        run: |
+          set -e
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            state=$(gh pr view "$PR" --repo "${{ github.repository }}" --json state -q .state)
+            echo "state=$state"
+            if [ "$state" = "MERGED" ]; then exit 0; fi
+            sleep 3
+          done
+          echo "マージが確認できない"; exit 1

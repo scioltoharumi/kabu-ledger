@@ -14,7 +14,7 @@
     data/link_status.csv      出典URLの死活記録（append-only・`--check-links` のときだけ書く）
     reports/{code}.md         銘柄レポート（v2.0 の主役。**数値は人間が転記している**）
 
-    FAIL -> ビルドを止める（deploy.yml の build ジョブ「データ品質検査」ステップが
+    FAIL -> ビルドを止める（ci.yml の test ジョブ「データ品質検査」ステップが
             非0終了で止まり、サイト生成・公開に進まない）
     WARN -> 続行する（F2-6）。build.py は run_checks() を呼ばない。WARN が読まれる
             経路は checks.py --json（CI と人間が読む機械可読出力）と素の実行の出力。

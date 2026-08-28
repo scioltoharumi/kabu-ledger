@@ -1,0 +1,156 @@
+name: publish
+
+# 台帳を GitHub Pages に出す。**ci が緑で終わったときだけ**走る。
+# 公開の実装はこの1本だけ。push 契機も PR 契機も同じ ci → publish を通る。
+#
+# --- なぜ workflow_run で、別ファイルなのか --------------------------------
+#
+# 罠が2つあり、どちらも実測で踏んでいる。
+#
+# 1. **GITHUB_TOKEN が起こした push はワークフローを再起動しない**（再帰防止仕様）。
+#    ci の automerge が main にマージしても、その push は何も起こさない。
+#    「マージされたら push 契機で公開される」は成立しない。
+#
+# 2. **github-pages environment は既定ブランチからのデプロイしか許さない。**
+#    そこで公開を ci の中（PR 契機の run）に置くと、ref が refs/pull/N/merge
+#    なので deploy ジョブがランナーも付かず2秒で failure になる
+#    （2026-08-28・run 33170784158 で実測。ログすら残らない）。
+#
+# workflow_run は **run の完了**が契機なのでトークンの制限を受けず（1の解）、
+# かつ起きた run は**既定ブランチの文脈**（ref=refs/heads/main）で走る（2の解）。
+# 別ファイルなのは、同じワークフローを workflow_run で自分に繋ぐと
+# 完了→起動→完了…と空 run が無限に続くため。
+#
+# --- マージされたかを見ていないのはなぜか ----------------------------------
+#
+# ci が緑なら、PR がマージされていなくても main を作り直して出す。
+# build.py は決定論で、差分が無ければ commit しないので**結果は同じ**。
+# 「マージされたか」を run をまたいで持ち回るより単純で、壊れ方が少ない。
+
+on:
+  workflow_run:
+    workflows: ["ci"]
+    types: [completed]
+
+concurrency:
+  group: pages
+  cancel-in-progress: false   # デプロイ中のキャンセルは避ける
+
+permissions:
+  contents: write             # docs/ と stamps.json の commit に要る
+  issues: write               # notify.py の起票
+  pages: write
+  id-token: write
+
+env:
+  PYTHONIOENCODING: utf-8     # 日本語の標準出力が化けないようにする
+
+jobs:
+  # --- 1. サイト生成 -------------------------------------------------------
+  #
+  # build.py は docs/ と **scoring/stamps.json** を出力する。
+  # stamps.json は notify の入力なので **commit する**。
+  # commit しないと notify の checkout に無く、判定変化を検出できない（F-04）。
+  #
+  # ★ルーティン（裏取り・週次追記）の成否は公開に影響しない。
+  #   回らなかった週も、build.py が data/verification/ を読んで
+  #   「未検証」「裏が取れなかった記述」をページに出すので、読み手は誤らない
+  #   （印を消す方法は用意していない）。
+  site:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+
+      - name: サイト生成（生成時刻を埋め込まない・差分が変化そのもの）
+        run: python src/build.py
+
+      # ルーティンが build.py を回してから push していれば、決定論的生成なので
+      # ここは「差分なし」になる。差分が出るのは push 前の再生成を忘れたときで、
+      # その場合だけ bot が追いつく。
+      #
+      # この commit は GITHUB_TOKEN による push なので、**ci を再起動しない**
+      # （GitHub のループ防止仕様）。だから無限ループにならない。
+      - name: commit（docs/ と判定スタンプ）
+        env:
+          TARGET: ${{ github.event.repository.default_branch }}
+        run: |
+          set -e
+          git config user.name  "kabu-ledger[bot]"
+          git config user.email "actions@github.com"
+          git add docs/ scoring/stamps.json
+          if git diff --staged --quiet; then
+            echo "台帳の差分なし"
+          else
+            git commit -m "site: $(date -u +%Y-%m-%d)"
+            git pull --rebase origin "$TARGET"
+            git push origin HEAD:"$TARGET"
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: docs }
+
+  # --- 2. 公開 -------------------------------------------------------------
+  deploy:
+    needs: site
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  # --- 3. 判定が変わった銘柄だけ Issue 起票。何もなければ0件 --------------
+  #
+  # last_stamps.json を commit しないと前回状態が残らず、毎回全銘柄が
+  # 「変化」扱いになる。stamps.json が無い場合、notify.py は状態を更新せずに
+  # 終了する（F-04）。
+  notify:
+    needs: deploy
+    if: ${{ always() && needs.deploy.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # site が push した stamps.json を取り込む
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+
+      - name: 判定変化を検出して起票
+        run: python src/notify.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: commit（前回スタンプ）
+        if: always()                     # 起票が一部失敗しても、成功ぶんの状態は残す
+        env:
+          TARGET: ${{ github.event.repository.default_branch }}
+        run: |
+          set -e
+          git config user.name  "kabu-ledger[bot]"
+          git config user.email "actions@github.com"
+          # 初回や stamps.json 不在のときは last_stamps.json が作られない。
+          # `[ -f x ] && git add x` は set -e の下で「ファイル無し＝失敗」になるので使わない
+          if [ -f scoring/last_stamps.json ]; then
+            git add scoring/last_stamps.json
+          fi
+          if git diff --staged --quiet; then
+            echo "スタンプの差分なし"
+          else
+            git commit -m "stamps: $(date -u +%Y-%m-%d)"
+            git pull --rebase origin "$TARGET"
+            git push origin HEAD:"$TARGET"
+          fi
