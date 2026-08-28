@@ -91,6 +91,11 @@
 - `reports/{code}.md` 銘柄レポート（主役）。`theses/` `predictions/` は人間が書く
 - `estimates/{code}.yaml` 次期売上・利益のフェルミ推定（追記型・過去版は消さない。
   値の選定は basis 明示で Claude 起案→人間確認、計算・感度は `src/estimate.py`）
+- `segments/{slug}.yaml` セグメント分析（estimates の1階層上。銘柄を先に決めず、
+  需要ゲート→層に切る→供給者を実名で数える→取り分、の順で降ろす。**思考の道具で
+  あって記録ではない**ので二重照合は課さないが、他人の計算済み数字には
+  `computed_by` と `definition` を必ず付ける。`candidates` は master.yaml に
+  入れない＝まだ監視対象ではない）
 - `docs/` Pages 出力。**直接編集しない**（build.py が生成。CI が上書きする）
 - `src/` 取得・検査・判定・生成（fetch_news=見出し収集・weekly_note=週次追記の機械化）／
   `tests/` 素の python で動く test_*.py ／
