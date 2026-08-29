@@ -839,7 +839,8 @@ def _has_kpi(code: str) -> bool:
 def test_real_data_judges_without_exception():
     master = J.load_master()
     verdicts = J.judge_all(master)
-    eq([v.code for v in verdicts], rd.codes(), "証券コード順（master.yaml と一致）")
+    eq([v.code for v in verdicts], rd.watched_codes(),
+       "証券コード順（judge は watch: excluded を判定しない）")
     for v in verdicts:
         assert v.stamp in J.STAMPS, f"{v.code}: 未定義のスタンプ {v.stamp!r}"
         assert v.reason, f"{v.code}: 根拠が空"

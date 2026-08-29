@@ -250,7 +250,7 @@ def test_new_day_is_covered_for_every_code():
     day = advance(base, 1, confirmed=False)[0]
     path = base / "data" / "prices" / "daily.csv"
     fields, rows = rd.read_csv(path)
-    dropped = rd.codes()[0]
+    dropped = rd.watched_codes()[0]   # 対象外は coverage が見ないので題材にできない
     rd.write_csv(path, fields,
                  [r for r in rows
                   if not (r["date"] == day and r["code"] == dropped)])
@@ -327,7 +327,7 @@ def test_judge_is_unchanged_by_an_unconfirmed_day():
     with patched_root(after):
         b = J.judge_all()
 
-    eq([v.code for v in b], rd.codes(), "証券コード順")
+    eq([v.code for v in b], rd.watched_codes(), "証券コード順（judge は監視対象だけ）")
     eq(b, a, "未確定の1日で判定が変わった")
     for v in b:
         eq(v.as_of, last_confirmed(after, v.code), f"{v.code}: 基準日")

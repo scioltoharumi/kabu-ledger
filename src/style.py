@@ -133,6 +133,10 @@ border-radius:8px;padding:1rem 1rem .8rem;box-shadow:var(--shadow);
 padding:.35rem .55rem;background:var(--soft);border-left:2px solid var(--good);
 border-radius:2px;overflow-wrap:anywhere}
 .viz-src-hand{border-left-color:var(--warn);background:#f8ecd4;color:var(--warn)}
+/* 監視対象から外した銘柄の注記。図の「手書き（未検証）」と同じ扱いで、
+   同じ見た目のまま黙って並べない（消す方法は用意しない） */
+.note-warn{border-left:3px solid var(--warn);background:#f8ecd4;color:var(--warn);
+padding:.6rem .8rem;border-radius:3px;font-size:.86rem;line-height:1.8;margin:.9rem 0}
 .viz-tick{fill:#898781;font-size:12px;font-family:inherit}
 .viz-value{fill:#0b0b0b;font-size:13px;font-weight:700;font-family:inherit}
 .viz-bar rect,.viz-dot circle{transition:opacity .12s ease}

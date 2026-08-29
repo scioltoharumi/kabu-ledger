@@ -87,12 +87,16 @@ def _read_csv(path: Path) -> list[dict]:
 
 
 def load_master() -> list[tuple[str, str]]:
-    """master.yaml の (code, name) を辞書順で返す。"""
+    """**監視対象の** (code, name) を辞書順で返す。
+
+    `watch: excluded` は週次追記の対象にしない。取得を止めているので
+    「今週の事実」を機械生成する材料が増えず、書けば前週の焼き直しになる。
+    """
     path = DATA / "master.yaml"
     with path.open(encoding="utf-8") as f:
         master = Y.safe_load(f) or {}
     out: list[tuple[str, str]] = []
-    for s in master.get("stocks") or []:
+    for s in Y.watched_stocks(master):
         code = str(s.get("code", "") or "").strip()
         if code:
             out.append((code, str(s.get("name") or code)))

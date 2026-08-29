@@ -390,10 +390,21 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
     date, close = load_weekly_close(code)
     close_txt = f"{close:,.0f}" if close is not None else "—"
 
+    # 監視から外した銘柄は**消さずに、外したと分かる形で**残す。
+    # 取得も判定も止まっているので、印が無いと「先週と同じ」が
+    # 「変わっていない」に読めてしまう（手書き図に「未検証」を必ず出すのと同じ規律）。
+    watch_pill = ""
+    if not Y.is_watched(stock):
+        why = html.escape(" ".join(str(stock.get("watch_reason") or "").split()))
+        since = html.escape(str(stock.get("watch_since") or ""))
+        watch_pill = ('<span class="pill pill-warn" title="' + why + '">'
+                      + "対象外" + (f"（{since}〜）" if since else "")
+                      + "・更新を止めている</span>")
+
     if rep is None:
         return (
             f'<tr><td data-l="銘柄"><span class="nm">{name}</span>'
-            f'<span class="sub">{html.escape(code)}／{market}</span></td>'
+            f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}</span></td>'
             f'<td data-l="終値" class="num">{close_txt}</td>'
             f'<td data-l="状態"><span class="pill">レポート未作成</span></td>'
             f"</tr>"
@@ -442,7 +453,7 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
         f"<tr>"
         f'<td data-l="銘柄"><span class="nm">'
         f'<a href="stock/{html.escape(code)}.html">{name}</a>{flag}{site}</span>'
-        f'<span class="sub">{html.escape(code)}／{market}／{earn_pill}'
+        f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}{earn_pill}'
         f"{verify_pill_html}</span>"
         f'<span class="one">{oneline}</span></td>'
         f'<td data-l="終値" class="num"><span class="price">{close_txt}</span>'
@@ -1206,7 +1217,8 @@ def render_estimate(code: str) -> str:
                 wide=True)
 
 
-def build_stock_page(rep: R.Report, as_of: str) -> None:
+def build_stock_page(rep: R.Report, as_of: str,
+                     stock: dict | None = None) -> None:
     (DOCS / "stock").mkdir(parents=True, exist_ok=True)
     name = html.escape(rep.name)
     code = html.escape(rep.code)
@@ -1218,11 +1230,29 @@ def build_stock_page(rep: R.Report, as_of: str) -> None:
     links = "".join(ext_link(str(lk.get("url", "")), str(lk.get("label", "")))
                     for lk in rep.links if lk.get("url"))
     verify_line = verify_headline(rep.code)
+
+    # 監視から外した銘柄は、ページを直接開いた人にも必ず見えるようにする。
+    # 一覧の印だけだと、リンクや検索で直接来た読み手が
+    # 「これは今の話だ」と読んでしまう。
+    watch_note = ""
+    if stock is not None and not Y.is_watched(stock):
+        why = html.escape(" ".join(str(stock.get("watch_reason") or "").split()))
+        since = html.escape(str(stock.get("watch_since") or ""))
+        watch_note = (
+            '<p class="note note-warn"><strong>この銘柄は監視対象から外している'
+            + (f"（{since}〜）" if since else "")
+            + "。</strong>株価・財務の取得も判定も止めているので、"
+            "以下の数値と判定は<strong>その時点で凍ったもの</strong>であり、"
+            "現在の姿ではない。記録は消していない。"
+            + (f"<br>外した理由: {why}" if why else "")
+            + "</p>")
+
     head = (
         f"<h1>{name}（{code}）{flag}</h1>"
         f'<p class="lede">{market}／レポート更新 {html.escape(rep.updated)}'
         f"{verify_line}"
         f"<br>{links}</p>"
+        + watch_note
         + nav(1)
     )
     lead_md = strip_title(rep.lead)
@@ -1481,6 +1511,7 @@ def main() -> int:
 
     master = load_master()
     codes = [s["code"] for s in master["stocks"]]
+    by_code = {str(s["code"]): s for s in master["stocks"]}
     reports = R.load_all(codes)
     as_of = as_of_date()
 
@@ -1492,7 +1523,7 @@ def main() -> int:
     build_data_page(master, reports, as_of)
     build_about_page(as_of)
     for code in sorted(reports):
-        build_stock_page(reports[code], as_of)
+        build_stock_page(reports[code], as_of, by_code.get(code))
 
     made = ", ".join(sorted(reports)) or "なし"
     print(f"docs/ を生成（基準日 {as_of}）")

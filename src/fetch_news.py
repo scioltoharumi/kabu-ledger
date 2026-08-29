@@ -163,7 +163,7 @@ def main() -> int:
         codes = [c.strip() for c in args.codes.split(",") if c.strip()]
     else:
         master = Y.safe_load((ROOT / "data" / "master.yaml").read_text(encoding="utf-8"))
-        codes = [str(s["code"]) for s in master["stocks"]]
+        codes = [str(s["code"]) for s in Y.watched_stocks(master)]
 
     today = datetime.now(JST).date()
     stocks: dict[str, list[dict]] = {}

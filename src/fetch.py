@@ -31,6 +31,7 @@ except ImportError:
 
 import requests
 import yaml
+import yamlio as Y
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -410,7 +411,8 @@ def main() -> int:
     all_rows: list[dict] = []
     failed: list[str] = []
 
-    for s in master["stocks"]:
+    # 監視対象だけ取りに行く（watch: excluded は取得しない）。
+    for s in Y.watched_stocks(master):
         code = s["code"]
         label = f"（遡り {days}営業日）" if days else "（直近）"
         print(f"取得中: {code} {s['name']}{label}")

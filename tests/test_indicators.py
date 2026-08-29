@@ -504,12 +504,20 @@ def test_real_data_all_indicators():
     #   求めるこの検査は落ちた。ここで確かめたいのは「途中が抜けていないこと」
     #   なので、**全銘柄の日付が全体の営業日の連続した末尾になっている**ことを見る。
     #   途中の穴（＝取得漏れ）はこの形を必ず壊す。
+    #   ★対象外（watch: excluded）の銘柄は取得を止めているので、末尾ではなく
+    #     **途中で終わる**。末尾を要求するとフラグを立てた翌週に必ず落ちる
+    #     （＝公開を止める仕掛けになる）。対象外には「穴が無いこと」だけを課す。
     all_days = sorted({r["date"] for r in rows})
+    watched = set(rd.watched_codes())
     for c in codes:
         days = sorted({r["date"] for r in rows if r["code"] == c})
-        eq(days, all_days[-len(days):],
-           f"{c}: 営業日が全体の連続した末尾になっていない"
+        i = all_days.index(days[0])
+        eq(days, all_days[i:i + len(days)],
+           f"{c}: 営業日が全体の連続した並びになっていない"
            f"（{len(days)}日 / 全体 {len(all_days)}日・途中に穴がある疑い）")
+        if c in watched:
+            eq(days[-1], all_days[-1],
+               f"{c}: 監視対象なのに最新営業日で終わっていない（取得漏れの疑い）")
 
     for code in codes:
         bars = ind.bars_from_rows(rows, code=code)

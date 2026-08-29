@@ -358,20 +358,44 @@ def test_ohlc_index_is_checked():
 # =============================================================================
 
 def test_coverage_latest_day_missing_for_one_code():
+    # 題材は**監視対象**の銘柄でなければならない。対象外は取得を止めており
+    # 最新営業日が無くて当然なので、coverage は何も言わない（下のテスト）。
+    code = rd.watched_codes()[0]
     day = latest_date()
     def mutate(d: Path) -> None:
         edit_prices(d, lambda rows: [r for r in rows
-                                     if not (r["code"] == "4073"
+                                     if not (r["code"] == code
                                              and r["date"] == day)])
     rep = run(make_data(mutate))
-    expect(rep, checks.FAIL, "coverage", f"4073: 最新営業日 {day} の行が無い")
+    expect(rep, checks.FAIL, "coverage", f"{code}: 最新営業日 {day} の行が無い")
 
 
 def test_coverage_code_completely_absent():
+    code = rd.watched_codes()[0]
     def mutate(d: Path) -> None:
-        edit_prices(d, lambda rows: [r for r in rows if r["code"] != "4937"])
+        edit_prices(d, lambda rows: [r for r in rows if r["code"] != code])
     rep = run(make_data(mutate))
-    expect(rep, checks.FAIL, "coverage", "4937: 行が1つも無い")
+    expect(rep, checks.FAIL, "coverage", f"{code}: 行が1つも無い")
+
+
+def test_coverage_ignores_excluded_stocks():
+    """**監視から外した銘柄の取得が止まっても FAIL にしない。**
+
+    ここを見落とすと、フラグを立てた翌週に coverage が必ず落ちて公開が止まる
+    （ci.yml が言う「翌週かならず落ちるテスト＝公開を止める仕掛け」と同じ形）。
+    """
+    excluded = rd.excluded_codes()
+    if not excluded:
+        return                      # 対象外が1件も無い週は確かめるものが無い
+    code, day = excluded[0], latest_date()
+    def mutate(d: Path) -> None:
+        edit_prices(d, lambda rows: [r for r in rows
+                                     if not (r["code"] == code
+                                             and r["date"] == day)])
+    rep = run(make_data(mutate))
+    hits = [r.line() for r in rep.results
+            if r.level == checks.FAIL and code in r.line() and "最新営業日" in r.line()]
+    assert not hits, f"対象外の {code} が coverage で FAIL している: {hits}"
 
 
 def test_coverage_history_hole_is_warned():
@@ -486,6 +510,45 @@ def test_master_schema_holding_status_typo():
                                   "buy_date": "2026-06-01"}))
         rep = run(make_data(mutate))
         expect(rep, checks.FAIL, "master_schema", "holding.status が語彙外")
+
+
+def test_master_schema_watch_out_of_vocab():
+    """`watch` の語彙外は FAIL。
+
+    yamlio.watch_state は語彙外を **active に倒す**（打ち間違いで銘柄が黙って
+    台帳から消える方が悪いため）。倒した結果「対象外にしたつもりが取得も判定も
+    続いている」状態になるので、**ここで言わないと誰も気づかない**。
+    """
+    for bad in ("exclude", "除外", "off", True):
+        def mutate(d: Path, bad=bad) -> None:
+            _edit_master(d, lambda doc: doc["stocks"][0].update({"watch": bad}))
+        rep = run(make_data(mutate))
+        expect(rep, checks.FAIL, "master_schema", "watch が語彙外")
+
+
+def test_master_schema_watch_excluded_needs_a_reason():
+    """理由を書かずに監視から外させない。
+
+    外した理由が残っていないと、半年後に「なぜ止まっているのか」が誰にも
+    分からなくなる。判断の記録が台帳の主役なので、ここは FAIL にする。
+    """
+    def mutate(d: Path) -> None:
+        def f(doc):
+            doc["stocks"][0]["watch"] = "excluded"
+            doc["stocks"][0].pop("watch_reason", None)
+        _edit_master(d, f)
+    rep = run(make_data(mutate))
+    expect(rep, checks.FAIL, "master_schema", "watch_reason が無い")
+
+
+def test_master_schema_watch_excluded_with_a_reason_is_accepted():
+    def mutate(d: Path) -> None:
+        _edit_master(d, lambda doc: doc["stocks"][0].update(
+            {"watch": "excluded", "watch_reason": "テスト用に外した"}))
+    rep = run(make_data(mutate))
+    hits = [r.line() for r in rep.results
+            if r.level == checks.FAIL and "watch" in r.line()]
+    assert not hits, f"正しく書かれた watch で FAIL している: {hits}"
 
 
 def test_master_schema_none_with_buy_price():

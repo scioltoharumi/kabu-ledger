@@ -690,6 +690,21 @@ def check_master_schema(rep: Report, master: dict) -> None:
 
     for s in master.get("stocks") or []:
         code = str(s.get("code"))
+        # `watch` は取得・判定・週次追記の対象を決める固定語彙。
+        # yamlio.watch_state は**語彙外を active に倒す**（黙って台帳から
+        # 消える方が悪いため）ので、打ち間違いはここで言わないと誰も気づかない。
+        raw_watch = s.get("watch")
+        if raw_watch is not None:
+            text_w = str(raw_watch).strip().lower()
+            if text_w not in Y.WATCH_VOCAB:
+                rep.fail("master_schema", target,
+                         f"{code}: watch が語彙外（{raw_watch!r}）。"
+                         f"使えるのは {' / '.join(Y.WATCH_VOCAB)} のみ"
+                         "（語彙外は active に倒れるので、対象外にしたつもりでも取得が続く）")
+            elif text_w == Y.WATCH_EXCLUDED and not str(s.get("watch_reason") or "").strip():
+                rep.fail("master_schema", target,
+                         f"{code}: watch=excluded なのに watch_reason が無い。"
+                         "**なぜ外したかを書かずに監視から外さない**")
         h = s.get("holding")
         if h is None:
             rep.fail("master_schema", target, f"{code}: holding が無い（D18）")
@@ -738,7 +753,9 @@ def check_coverage(rep: Report, rows: list[dict], master: dict, target: str) -> 
     latest = all_dates[-1]
 
     holes: list[str] = []
-    for stock in sorted(master.get("stocks", []), key=lambda s: str(s["code"])):
+    # **対象外（watch: excluded）は取得を止めているので、最新営業日が無くて当然。**
+    # ここを見落とすと、監視から外した翌週に必ず FAIL して公開が止まる。
+    for stock in sorted(Y.watched_stocks(master), key=lambda s: str(s["code"])):
         code = str(stock["code"])
         dates = by_code.get(code)
         if not dates:
@@ -1641,10 +1658,15 @@ def check_margin(rep: Report, data_dir: Path, master: dict,
     止まる理由が台帳から見えるように、ここで欠測を明示する。
     """
     margin_dir = data_dir / "margin"
+    # 2つの集合を分ける。**兼ねると、監視から外した銘柄の既存ファイルが
+    # 「マスタ未登録＝取り違え」に化ける。**
+    #   known    master.yaml に載っている全コード。ファイルの正当性を見る用
+    #   expected 取得を続けている銘柄。欠測を WARN で言う用（対象外は言わない）
     known = {str(s["code"]) for s in master.get("stocks", [])}
+    expected = {str(s["code"]) for s in Y.watched_stocks(master)}
     files = {p.stem: p for p in sorted(margin_dir.glob("*.csv"))} if margin_dir.exists() else {}
 
-    for code in sorted(known):
+    for code in sorted(expected):
         if code not in files:
             rep.warn("margin", f"data/margin/{code}.csv",
                      f"{code}: 信用残高が取得できていない"
@@ -4218,7 +4240,10 @@ def check_links(rep: Report, reports_dir: Path, data_dir: Path,
 def check_stamps(rep: Report, data_dir: Path, master: dict) -> None:
     path = data_dir.parent / "scoring" / "stamps.json"
     target = "scoring/stamps.json"
-    known = {str(s["code"]) for s in master.get("stocks", [])}
+    # check_margin と同じ理由で2つに分ける。judge は対象外を判定しないので、
+    # **スタンプが無いのが正しい**。known で lacking を見ると必ず FAIL する。
+    known = {str(s["code"]) for s in master.get("stocks", [])}      # 正当性（extra）用
+    expected = {str(s["code"]) for s in Y.watched_stocks(master)}   # 網羅（lacking）用
     if not path.exists():
         rep.warn("stamps", target,
                  "判定スタンプが無い（notify.py は状態を更新せずに終了する＝"
@@ -4236,7 +4261,7 @@ def check_stamps(rep: Report, data_dir: Path, master: dict) -> None:
         return
     got = {str(k) for k in data}
     extra = sorted(got - known)
-    lacking = sorted(known - got)
+    lacking = sorted(expected - got)
     if extra:
         rep.fail("stamps", target, f"マスタに無い銘柄がある: {extra}")
     if lacking:

@@ -117,6 +117,7 @@ except ImportError:
 
 import requests
 import yaml
+import yamlio as Y
 from bs4 import BeautifulSoup
 
 try:
@@ -1480,8 +1481,11 @@ def main(argv: list[str] | None = None) -> int:
 
     tcfg = cfg.get("tanshin") or {}
     pol = cfg["fetch_policy"]
+    # stocks は対象外も持つ（--code で名指しすれば取れる抜け道を残す）。
+    # **既定の対象は監視中の銘柄だけ。**
     stocks = {str(s["code"]): s for s in master["stocks"]}
-    codes = {args.code} if args.code else set(stocks)
+    codes = ({args.code} if args.code
+             else {str(s["code"]) for s in Y.watched_stocks(master)})
     unknown = sorted(c for c in codes if c not in stocks)
     if unknown:
         print("master.yaml に無いコード: " + ", ".join(unknown), file=sys.stderr)

@@ -38,6 +38,7 @@ except ImportError:
 
 import requests
 import yaml
+import yamlio as Y
 from bs4 import BeautifulSoup
 
 from fetch import _num, find_table
@@ -205,7 +206,9 @@ def main() -> int:
     na_marks = mcfg.get("ratio_unavailable_marks", [])
     today = datetime.now(JST).date()
 
-    stocks = [s for s in master["stocks"] if not args.code or s["code"] == args.code]
+    # --code を明示したときだけ対象外も取れる（動作確認用の抜け道）。
+    stocks = ([s for s in master["stocks"] if s["code"] == args.code]
+              if args.code else Y.watched_stocks(master))
     failed: list[str] = []
 
     for s in stocks:
