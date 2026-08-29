@@ -160,6 +160,55 @@ def test_non_period_rows_are_skipped():
 # 照合（本モジュールの中核）
 # =============================================================================
 
+class _StubFetcher:
+    """resolve_irbank_code に渡す最小の取得役。**ネットワークは使わない。**"""
+
+    def __init__(self, html: str) -> None:
+        self.html = html
+
+    def get(self, url: str) -> str:
+        return self.html
+
+
+_IRBANK_CFG = {"irbank_index": {"url": "https://irbank.net/{code}"}}
+
+
+def test_irbank_code_ignores_links_to_companies_it_holds_shares_in():
+    """一覧ページに並ぶ「その会社が株を持つ他社」へのリンクを掴まない。
+
+    IR BANK の銘柄ページには、自社の企業コードのほかに
+    `/E04065/share?e=E00146` の形で**保有先の上場企業**が並ぶ。href だけで
+    拾うと候補が複数になり「一意に決められない」で取得ごと落ちる
+    （実測: 1959 で E00146 / E04065 / E01760 の3件が出て、財務が
+    174行すべて SINGLE_SOURCE・採用0件になった）。
+
+    自社の行はアンカー文字列が**自分の証券コードで始まる**ので、そこで絞る。
+    """
+    html = ("<html><head><title>1959 テスト社 | 株式情報</title></head><body>"
+            '<a href="/E00146">1959 テスト社</a>'
+            '<a href="/E04065/share?e=E00146">3238 保有先A</a>'
+            '<a href="/E01760/share?e=E00146">6653 保有先B</a>'
+            "</body></html>")
+    got = FF.resolve_irbank_code(_StubFetcher(html), _IRBANK_CFG, "1959", "テスト社")
+    eq(got, "E00146", "自社の企業コード")
+
+
+def test_irbank_code_still_resolves_when_there_is_only_one_link():
+    html = ("<html><head><title>1944 テスト社 | 株式情報</title></head><body>"
+            '<a href="/E00075">1944 テスト社</a></body></html>')
+    eq(FF.resolve_irbank_code(_StubFetcher(html), _IRBANK_CFG, "1944", "テスト社"),
+       "E00075", "リンクが1本なら従来どおり")
+
+
+def test_irbank_code_gives_up_when_it_cannot_pick_one():
+    """**推測しない。** 自分の証券コードで絞っても複数なら None を返す。"""
+    html = ("<html><head><title>1959 テスト社 | 株式情報</title></head><body>"
+            '<a href="/E00146">1959 テスト社</a>'
+            '<a href="/E09999">1959 テスト社（別実体）</a></body></html>')
+    is_none(FF.resolve_irbank_code(_StubFetcher(html), _IRBANK_CFG, "1959", "テスト社"),
+            "絞れなければ諦める")
+
+
 def test_two_sites_exactly_equal_is_ok():
     rows = FF.reconcile("9999", [obs("a", "s1", 1588.0, 1.0, 0),
                                  obs("b", "s2", 1588.0, 1.0, 1)], 2, "t")

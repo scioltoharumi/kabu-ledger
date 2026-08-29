@@ -650,16 +650,29 @@ def resolve_irbank_code(fetcher: Fetcher, cfg: dict, code: str,
               file=sys.stderr)
         return None
     pattern = re.compile(spec.get("company_link_re", r"^/?(E\d{5})(/|$)"))
-    found = []
+    # **リンク先だけでは足りない。** 一覧ページには、その会社が株式を持つ
+    # 他の上場企業へのリンク（/E04065/share?e=E00146 の形）も並ぶ。href だけで
+    # 拾うと候補が複数になり、「一意に決められない」で取得ごと落ちる
+    # （実測: 1959 クラフティアで E00146 / E04065 / E01760 の3件）。
+    # 自社の行はアンカー文字列が「1959 クラフティア」のように**自分の証券コードで
+    # 始まる**ので、そこで絞る。推測はしない——絞った結果が1件でなければ諦める。
+    found: list[str] = []
+    own: list[str] = []
     for a in soup.find_all("a", href=True):
         m = pattern.match(a["href"])
-        if m and m.group(1) not in found:
-            found.append(m.group(1))
-    if len(found) != 1:
-        print("  [%s] IR BANK の企業コードを一意に決められない: %r" % (code, found),
-              file=sys.stderr)
+        if not m:
+            continue
+        ecode = m.group(1)
+        if ecode not in found:
+            found.append(ecode)
+        if code in squeeze(a.get_text()) and ecode not in own:
+            own.append(ecode)
+    picked = own or found
+    if len(picked) != 1:
+        print("  [%s] IR BANK の企業コードを一意に決められない: "
+              "自社候補 %r / 全候補 %r" % (code, own, found), file=sys.stderr)
         return None
-    return found[0]
+    return picked[0]
 
 
 # =============================================================================
