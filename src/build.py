@@ -457,9 +457,24 @@ def stamp_pill(stamp: str) -> str:
             f'<span class="st-p">判定 </span>{html.escape(stamp)}</span>')
 
 
-def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
-    """一覧の1行。銘柄が増えても詰まらないよう、1銘柄1行に収める。
+# 判定スタンプ → 行クラス・絞り込みチップの固定キー（語彙は judge.py が正。
+# CSS 側は全キーぶんの規則を静的に持つので、キーをここで増やしたら
+# style.py 末尾の絞り込み規則にも同じキーを足すこと）
+STAMP_KEYS = {
+    J.STAMP_BUY: "buy", J.STAMP_WATCH: "watch", J.STAMP_PROBE: "probe",
+    J.STAMP_OVERHEAT: "hot", J.STAMP_SELL: "sell",
+    J.STAMP_LIQUIDITY: "liq", J.STAMP_TREND: "trend",
+}
+VF_LABELS = {"ok": "裏取り済", "part": "裏取り未達あり",
+             "stale": "裏取りが古い", "none": "裏取り未実施"}
 
+
+def render_row(stock: dict, rep: R.Report | None,
+               as_of: str = "") -> tuple[str, str | None, str, str]:
+    """一覧の1行。(HTML, 判定スタンプ, 判定キー, 裏取りキー) を返す。
+
+    キーは絞り込みチップの件数集計と行クラスに使う（対象外の行は空。
+    対象外は f-excluded のトグルだけが束ねる）。
     スマホでは CSS 側でカード状に積み替える（横スクロールさせない）。
     """
     code = stock["code"]
@@ -483,7 +498,22 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
                       + "対象外" + (f"（{since}〜）" if since else "")
                       + "・更新を止めている</span>")
 
-    tr_cls = ' class="row-excluded"' if watch_pill else ""
+    # 判定・裏取りの状態を先に確定する（行クラスと絞り込みチップの材料）。
+    # 対象外はキーを付けない——凍った記録をチップの母数に混ぜない
+    passed, claims, present, stale = verify_stat(code)
+    st: str | None = None
+    st_key = vf_key = ""
+    if not watch_pill:
+        st = load_stamp(code)
+        if st:
+            st_key = STAMP_KEYS.get(st, "other")
+        vf_key = ("none" if not present else "stale" if stale
+                  else "ok" if passed == claims else "part")
+    classes = " ".join(
+        (["row-excluded"] if watch_pill else [])
+        + ([f"st-{st_key}"] if st_key else [])
+        + ([f"vf-{vf_key}"] if vf_key else []))
+    tr_cls = f' class="{classes}"' if classes else ""
 
     # 終値セル。監視中の銘柄には前週末比・スパークライン・判定も重ねて、
     # 一覧だけで「いま見に行く価値があるか」を判断できるようにする。
@@ -499,18 +529,18 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
                            f'title="前週末（{html.escape(d1)}）の採用終値比">'
                            f"前週末比 {pct:+.1f}%</span>")
         price_cell += sparkline(series)
-        st = load_stamp(code)
         if st:
             price_cell += stamp_pill(st)
 
     if rep is None:
-        return (
+        row = (
             f'<tr{tr_cls}><td data-l="銘柄"><span class="nm">{name}</span>'
             f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}</span></td>'
             f'<td data-l="終値・判定" class="num">{price_cell}</td>'
             f'<td data-l="状態"><span class="pill">レポート未作成</span></td>'
             f"</tr>"
         )
+        return row, st, st_key, vf_key
 
     flag = '<span class="flag">再調査</span>' if rep.deep_dive else ""
     site = ""
@@ -539,7 +569,6 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
         week_txt = mark_badges(html.escape(first_sentence(latest[1])))
 
     # 裏取りの状態を一覧にも出す。銘柄ページを開かないと分からない状態にしない。
-    passed, claims, present, stale = verify_stat(code)
     if not present:
         verify_pill_html = '<span class="pill pill-warn">裏取り未実施</span>'
     elif stale:
@@ -551,7 +580,7 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
         verify_pill_html = (f'<span class="pill pill-warn">裏取り '
                             f"{passed}/{claims}</span>")
 
-    return (
+    row = (
         f"<tr{tr_cls}>"
         f'<td data-l="銘柄"><span class="nm">'
         f'<a href="stock/{html.escape(code)}.html">{name}</a>{flag}{site}</span>'
@@ -563,6 +592,7 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
         f'<span class="wk-txt">{week_txt}</span></td>'
         f"</tr>"
     )
+    return row, st, st_key, vf_key
 
 
 _ORDER_MARKS = "①②③④⑤⑥⑦⑧⑨⑩"
@@ -589,8 +619,18 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     watched = [x for x in stocks if Y.is_watched(x)]
     excluded = [x for x in stocks if not Y.is_watched(x)]
     # 行は**コード順のまま1本**にする。フィルターを外すと対象外が元の位置に戻る。
-    rows = [render_row(x, reports.get(x["code"]), as_of) for x in stocks]
+    row_data = [render_row(x, reports.get(x["code"]), as_of) for x in stocks]
+    rows = [r[0] for r in row_data]
     rows_excluded = excluded
+    # 絞り込みチップの件数（監視中のみ。対象外はキーを持たない）
+    st_counts: dict[str, tuple[str, int]] = {}
+    vf_counts: dict[str, int] = {}
+    for _, st, st_key, vf_key in row_data:
+        if st_key:
+            _, n = st_counts.get(st_key, (st, 0))
+            st_counts[st_key] = (str(st), n + 1)
+        if vf_key:
+            vf_counts[vf_key] = vf_counts.get(vf_key, 0) + 1
     scr = master.get("screening", {})
     scr_name = html.escape(str(scr.get("name", "")))
     n_deep = sum(1 for r in reports.values() if r.deep_dive)
@@ -621,28 +661,60 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     #
     # 隠した行は Ctrl+F でも当たらないので、**ボタンに件数を出すのが生命線**。
     # 「見えない＝無い」に見せないという規律は、畳むときも隠すときも同じ。
-    # 表示の切り替えは checkbox + label + 兄弟セレクタ（規則は CSS 末尾）。
-    # 下の小さなスクリプトは**選んだ表示を localStorage に覚えるだけ**の
-    # 上乗せで、JS が無くてもボタン自体は動く（決定論的な固定文字列。D8）。
-    inputs = '<input type="checkbox" id="v-compact" class="filter-toggle">'
-    buttons = ('<label for="v-compact" class="filter-btn">'
-               '<span class="f-on">コンパクト表示</span>'
-               '<span class="f-off">詳細表示に戻す</span></label>')
+    # 表示の切り替えは checkbox + label（input は label の直前。行の表示は
+    # CSS 末尾の :has() 規則が引く）。下の小さなスクリプトは**選んだ表示を
+    # localStorage に覚えるだけ**の上乗せで、JS が無くてもボタン自体は動く
+    # （決定論的な固定文字列。D8）。
+    def _toggle(cid: str, on: str, off: str, checked: bool = False,
+                cls: str = "filter-btn", title: str = "") -> str:
+        chk = " checked" if checked else ""
+        t = f' title="{html.escape(title)}"' if title else ""
+        return (f'<input type="checkbox" id="{cid}" class="filter-toggle"{chk}>'
+                f'<label for="{cid}" class="{cls}"{t}>'
+                f'<span class="f-on">{html.escape(on)}</span>'
+                f'<span class="f-off">{html.escape(off)}</span></label>')
+
+    # 既定はコンパクト（checked）。詳細はボタンで開く
+    toolbar = _toggle("v-compact", "コンパクト表示", "詳細表示", checked=True)
     note = ""
     if rows_excluded:
         n = len(rows_excluded)
-        inputs += '<input type="checkbox" id="f-excluded" class="filter-toggle">'
-        buttons += ('<label for="f-excluded" class="filter-btn">'
-                    f'<span class="f-on">対象外 {n}銘柄を表示</span>'
-                    f'<span class="f-off">対象外 {n}銘柄を隠す</span></label>')
+        toolbar += _toggle("f-excluded", f"対象外 {n}銘柄を表示",
+                           f"対象外 {n}銘柄を隠す")
         note = ('<span class="filter-note">対象外は取得も判定も止めている。'
                 "数値と判定はその時点で凍ったもの</span>")
-    filter_ui = inputs + '<div class="list-toolbar">' + buttons + note + "</div>"
+    filter_ui = '<div class="list-toolbar">' + toolbar + note + "</div>"
+
+    # 絞り込みチップ（既定=すべて表示。外すとその行を隠す）。
+    # 見えない行があっても件数はチップに常時出る（「見えない＝無い」にしない）
+    chips = []
+    st_order = [STAMP_KEYS[s] for s in J.STAMPS if STAMP_KEYS[s] in st_counts]
+    if "other" in st_counts:
+        st_order.append("other")
+    if st_order:
+        chips.append('<span class="fl-cap">判定</span>')
+        for key in st_order:
+            lbl, n = st_counts[key]
+            chips.append(_toggle(f"f-st-{key}", f"{lbl} {n}", f"{lbl} {n}",
+                                 checked=True, cls="filter-btn chip",
+                                 title="外すと、この判定の行を隠す"))
+    vf_order = [k for k in ("ok", "part", "stale", "none") if k in vf_counts]
+    if vf_order:
+        chips.append('<span class="fl-cap">裏取り</span>')
+        for key in vf_order:
+            lbl = f"{VF_LABELS[key]} {vf_counts[key]}"
+            chips.append(_toggle(f"f-vf-{key}", lbl, lbl,
+                                 checked=True, cls="filter-btn chip",
+                                 title="外すと、この裏取り状態の行を隠す"))
+    if chips:
+        filter_ui += ('<div class="list-toolbar list-filters">'
+                      + "".join(chips) + "</div>")
+
     remember = (
         "<script>(function(){try{"
-        '["v-compact","f-excluded"].forEach(function(id){'
-        "var el=document.getElementById(id);if(!el)return;"
-        'var k="kabu:"+id,v=localStorage.getItem(k);'
+        'document.querySelectorAll(".list-wrap .filter-toggle")'
+        ".forEach(function(el){"
+        'var k="kabu:"+el.id,v=localStorage.getItem(k);'
         'if(v==="1")el.checked=true;if(v==="0")el.checked=false;'
         'el.addEventListener("change",function(){'
         'localStorage.setItem(k,el.checked?"1":"0")})})'
@@ -672,8 +744,10 @@ def howto_block() -> str:
         "<h2>台帳一覧の読み方</h2>"
         "<ul>"
         "<li>銘柄名を押すと、その会社の調査レポートが開く</li>"
-        "<li>「コンパクト表示」ボタンで概要文を畳み、1行1銘柄で見渡せる。"
-        "選んだ表示は次回も覚えている</li>"
+        "<li>一覧は既定でコンパクト（1行1銘柄）。「詳細表示」ボタンで"
+        "概要文とスパークラインが開く</li>"
+        "<li>「判定」「裏取り」のチップを外すと、その状態の行を一時的に隠せる"
+        "（件数はチップに常時出る）。選んだ表示・絞り込みは次回も覚えている</li>"
         "<li>対象外の銘柄は既定で隠している。「対象外を表示」ボタンで元の位置に出る"
         "（記録は消えない。<a href=\"data.html\">データの出どころ</a>には常に全銘柄が載る）</li>"
         "<li>レポートは<strong>「週次アップデート」と「会社概要」の2つ</strong>に"

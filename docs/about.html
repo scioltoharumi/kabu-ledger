@@ -151,21 +151,29 @@ transition:background .12s ease,color .12s ease,border-color .12s ease}
 .filter-btn::before{content:"";width:.55rem;height:.55rem;border-radius:50%;
 background:var(--rule);transition:background .12s ease}
 .filter-btn:hover{background:var(--soft);color:var(--ink)}
-/* トグルは2つ（#f-excluded=対象外の表示 / #v-compact=コンパクト表示）。
-   :checked の見た目は **自分の label だけ** に効かせるため id で結ぶ */
-#f-excluded:focus-visible~.list-toolbar [for="f-excluded"],
-#v-compact:focus-visible~.list-toolbar [for="v-compact"]{
+/* トグルの input は自分の label の**直前**に置く（build.py の _toggle が正）。
+   見た目は隣接セレクタ + で自分の label だけに効かせる。
+   行の表示・非表示は末尾の :has() 規則が担う */
+.filter-toggle:focus-visible+.filter-btn{
 outline:2px solid var(--accent);outline-offset:2px}
-#f-excluded:checked~.list-toolbar [for="f-excluded"],
-#v-compact:checked~.list-toolbar [for="v-compact"]{background:var(--accent-soft);
+.filter-toggle:checked+.filter-btn{background:var(--accent-soft);
 border-color:var(--accent);color:var(--accent)}
-#f-excluded:checked~.list-toolbar [for="f-excluded"]::before,
-#v-compact:checked~.list-toolbar [for="v-compact"]::before{background:var(--accent)}
+.filter-toggle:checked+.filter-btn::before{background:var(--accent)}
 .filter-btn .f-off{display:none}
-#f-excluded:checked~.list-toolbar [for="f-excluded"] .f-on,
-#v-compact:checked~.list-toolbar [for="v-compact"] .f-on{display:none}
-#f-excluded:checked~.list-toolbar [for="f-excluded"] .f-off,
-#v-compact:checked~.list-toolbar [for="v-compact"] .f-off{display:inline}
+.filter-toggle:checked+.filter-btn .f-on{display:none}
+.filter-toggle:checked+.filter-btn .f-off{display:inline}
+/* 絞り込みチップ。既定=表示（checked）なので、checked を強調色にせず
+   「外した（隠している）」側を消し込みの見た目にする */
+.filter-btn.chip{padding:.16rem .6rem;font-size:.74rem;box-shadow:none;
+margin:0}
+.filter-toggle:checked+.filter-btn.chip{background:var(--card);
+border-color:var(--rule);color:var(--dim)}
+.filter-toggle:checked+.filter-btn.chip::before{background:var(--good)}
+.filter-toggle:not(:checked)+.filter-btn.chip{opacity:.5;border-style:dashed;
+text-decoration:line-through}
+.list-filters{margin:.1rem 0 .2rem;gap:.35rem .45rem}
+.fl-cap{font-size:.72rem;font-weight:700;color:var(--dim);margin-left:.3rem}
+.fl-cap:first-child{margin-left:0}
 .filter-note{font-size:.74rem;color:var(--dim);line-height:1.7;flex:1 1 16rem}
 /* 表示中の対象外行は「凍った記録」だと分かる見た目にする（PC・スマホ共通） */
 tr.row-excluded td{background:#f6f3ea}
@@ -331,40 +339,57 @@ main{padding:1.1rem .85rem 3rem}
 /* ★表示切り替えの規則は必ずスタイルシートの末尾に置く（!important 併用）。
    スマホのカード積み替え（.list-table tr{display:block}）と同じ詳細度の
    display 規則は後勝ちで負けるため、位置と !important の両方で守る。
-   トグルが2つあるので **id で結ぶ**（.filter-toggle:not(:checked) だと
-   もう片方のトグルが外れているだけで誤発動する）。 */
+   トグルが増えたため、状態は :has() で引く（input が label の直前にあり、
+   .scroll の兄弟ではないので兄弟セレクタでは届かない）。input が
+   描画されないキーは :has が成立せず**表示側に倒れる**（隠れて消えない）。 */
 /* 対象外: チェックが外れている間だけ隠す（既定＝隠す） */
-#f-excluded:not(:checked)~.scroll tr.row-excluded{display:none!important}
-/* コンパクト表示: 概要文・外部リンク・スパークラインを畳み、
-   1行1銘柄で 20〜30 銘柄を見渡せるようにする（終値・判定・今週は残す） */
-#v-compact:checked~.scroll .one,
-#v-compact:checked~.scroll .ext,
-#v-compact:checked~.scroll .spark{display:none!important}
+.list-wrap:has(#f-excluded:not(:checked)) tr.row-excluded{display:none!important}
+/* 判定・裏取りの絞り込み。チップを外すとその状態の行を隠す。
+   キーは build.py の STAMP_KEYS / VF_LABELS と一対（固定語彙・全キーぶん置く） */
+.list-wrap:has(#f-st-buy:not(:checked)) tr.st-buy{display:none!important}
+.list-wrap:has(#f-st-watch:not(:checked)) tr.st-watch{display:none!important}
+.list-wrap:has(#f-st-probe:not(:checked)) tr.st-probe{display:none!important}
+.list-wrap:has(#f-st-hot:not(:checked)) tr.st-hot{display:none!important}
+.list-wrap:has(#f-st-sell:not(:checked)) tr.st-sell{display:none!important}
+.list-wrap:has(#f-st-liq:not(:checked)) tr.st-liq{display:none!important}
+.list-wrap:has(#f-st-trend:not(:checked)) tr.st-trend{display:none!important}
+.list-wrap:has(#f-st-other:not(:checked)) tr.st-other{display:none!important}
+.list-wrap:has(#f-vf-ok:not(:checked)) tr.vf-ok{display:none!important}
+.list-wrap:has(#f-vf-part:not(:checked)) tr.vf-part{display:none!important}
+.list-wrap:has(#f-vf-stale:not(:checked)) tr.vf-stale{display:none!important}
+.list-wrap:has(#f-vf-none:not(:checked)) tr.vf-none{display:none!important}
+/* コンパクト表示（既定=ON。build.py が checked で出す）: 概要文・外部リンク・
+   スパークラインを畳み、1行1銘柄で 20〜30 銘柄を見渡せるようにする */
+.list-wrap:has(#v-compact:checked) .one,
+.list-wrap:has(#v-compact:checked) .ext,
+.list-wrap:has(#v-compact:checked) .spark{display:none!important}
 /* セルの中身を流し込んで行高を最小にする（.sub/.wchg は通常 block）。
    終値セルは nowrap のままだと固定列幅を突き抜けて隣に重なるので折り返す。
    繰り返しの日付・週ラベル（全行同じ）はこの表示では出さない */
-#v-compact:checked~.scroll .list-table .sub{display:inline!important;
+.list-wrap:has(#v-compact:checked) .list-table .sub{display:inline!important;
 margin:0 0 0 .5rem}
-#v-compact:checked~.scroll td[data-l="終値・判定"]{white-space:normal;
+.list-wrap:has(#v-compact:checked) td[data-l="終値・判定"]{white-space:normal;
 overflow-wrap:normal}
-#v-compact:checked~.scroll td[data-l="終値・判定"] .sub{display:none!important}
-#v-compact:checked~.scroll td[data-l="今週"] .sub{display:none!important}
-#v-compact:checked~.scroll .wk-txt{display:-webkit-box;
+.list-wrap:has(#v-compact:checked) td[data-l="終値・判定"] .sub{display:none!important}
+.list-wrap:has(#v-compact:checked) td[data-l="今週"] .sub{display:none!important}
+.list-wrap:has(#v-compact:checked) .wk-txt{display:-webkit-box;
 -webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-#v-compact:checked~.scroll .wchg{display:inline-block!important;margin:0}
-#v-compact:checked~.scroll .stamp{display:inline-block!important;
+.list-wrap:has(#v-compact:checked) .wchg{display:inline-block!important;margin:0}
+.list-wrap:has(#v-compact:checked) .stamp{display:inline-block!important;
 margin:0;padding:.02rem .5rem}
-#v-compact:checked~.scroll .stamp .st-p{display:none}
-#v-compact:checked~.scroll .list-table .nm{font-size:.95rem}
-#v-compact:checked~.scroll .list-table .price{font-size:1rem;margin-right:.5rem}
+.list-wrap:has(#v-compact:checked) .stamp .st-p{display:none}
+.list-wrap:has(#v-compact:checked) .list-table .nm{font-size:.95rem}
+.list-wrap:has(#v-compact:checked) .list-table .price{font-size:1rem;
+margin-right:.5rem}
 @media(min-width:641px){
-#v-compact:checked~.scroll .list-table td{padding:.4rem .6rem}
-#v-compact:checked~.scroll .list-table th:nth-child(2),
-#v-compact:checked~.scroll .list-table td:nth-child(2){width:12.5rem}
+.list-wrap:has(#v-compact:checked) .list-table td{padding:.4rem .6rem}
+.list-wrap:has(#v-compact:checked) .list-table th:nth-child(2),
+.list-wrap:has(#v-compact:checked) .list-table td:nth-child(2){width:12.5rem}
 }
 @media(max-width:640px){
 /* スマホのコンパクトはカードの見出しラベルと余白も詰める */
-#v-compact:checked~.scroll .list-table td[data-l]::before{content:none}
-#v-compact:checked~.scroll .list-table tr{padding:.5rem .75rem;margin:.45rem 0}
+.list-wrap:has(#v-compact:checked) .list-table td[data-l]::before{content:none}
+.list-wrap:has(#v-compact:checked) .list-table tr{padding:.5rem .75rem;
+margin:.45rem 0}
 }
-</style></head><body><header class="site"><div class="site-in"><a class="brand" href="index.html">銘柄調査台帳</a><nav><a href="index.html">台帳</a><a href="data.html">データの出どころ</a><a href="about.html">読み方</a></nav></div></header><main><h1>この台帳の読み方</h1><p class="lede">この台帳は、スクリーニングを通過した銘柄について<strong>その会社が何をしている会社なのか</strong>を調べ、毎週の動きを記録するためのもの。売買の判断は人間が行い、台帳は候補の提示と記録に徹する。数値は出所と検証状態をすべて開示し、調べきれなかったことは「未確認」のまま残す（分かったふりをしない）。</p><h2>台帳一覧の読み方</h2><ul><li>銘柄名を押すと、その会社の調査レポートが開く</li><li>「コンパクト表示」ボタンで概要文を畳み、1行1銘柄で見渡せる。選んだ表示は次回も覚えている</li><li>対象外の銘柄は既定で隠している。「対象外を表示」ボタンで元の位置に出る（記録は消えない。<a href="data.html">データの出どころ</a>には常に全銘柄が載る）</li><li>レポートは<strong>「週次アップデート」と「会社概要」の2つ</strong>に畳んである。見出しを押すと開く</li><li>節は <strong>① 週次アップデート → ② この会社は何者か → ③ 財務の推移と健全性 → ④ 今後の展望とリスク → ⑤ 値動きと市場の評価 → ⑥ 出典</strong> の順に並んでいる</li><li>「判定」の札は <code>src/judge.py</code> の機械判定。「買」は実装済みのゲートを通過したという意味しかない（下の<a href="#unevaluated">「この台帳が見ていない鉄則」</a>を併読）。売買の判断は人間が行う</li><li>終値の下の小さな線は直近約3か月の採用終値（2ソース照合済みの値のみ）。傾向の手がかりで、数値は銘柄ページの図が正</li><li><span class="flag">再調査</span> が付いた銘柄は毎週すべての項目を見直している。付いていない銘柄はニュースと値動きだけ追っている</li><li>再調査の対象を変えたいときは Claude に「4073 を再調査して」と言えばよい</li><li>銘柄名の横の小さなリンクは会社の公式サイト。各レポートの末尾には、使ったすべての出典 URL を載せている</li></ul><h2>数値の3段階と記号</h2><p>レポートの数値には検証の段階が3つあり、本文では値の直後の記号で見分けられるようにしている。</p><div class="scroll"><table class="prose-table"><thead><tr><th>段階</th><th>記号</th><th>意味</th><th>どこで見分けるか</th></tr></thead><tbody><tr><td><strong>2ソース照合済み</strong></td><td><span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span></td><td>運営の異なる2つの取得元から機械で抜き、表示されている桁の範囲で一致した値だけを採用値にしている。図の数値は原則これで描き、例外（手書き・一次情報のみ）は図の下の注記が明示する</td><td>本文では値の直後の ✓。図の下に「出所: data/… の採用値」と出る</td></tr><tr><td><strong>一次情報から直接</strong></td><td><span class="vm vm-pri" title="決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし">†</span></td><td>決算短信PDF（会社が自分で出した一次情報）から機械で抜いた値。まとめサイトの値との突き合わせ結果は各銘柄ページの「数値の検証状況」に併記している</td><td>本文では値の直後の †。図の下に「決算短信（一次情報）」と出る</td></tr><tr><td><strong>未照合・参考値</strong></td><td><span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span></td><td>取得元が1つしかない、2つが一致しなかった、または出来高・信用残のように照合の仕組みが無い値。<strong>採用値にしていない</strong>。断定形では書かない</td><td>本文では値の直後の ※</td></tr></tbody></table></div><p class="lede">凡例: ✓=2ソース照合済みの採用値 ／ ※=未照合・参考値 ／ †=決算短信（一次情報）から直接。記号に指を載せる（マウスを重ねる）と意味が出る。段階ごとの件数は、各銘柄ページ末尾の<strong>「数値の検証状況」</strong>に機械が出している。</p><h2>「記述の裏取り」とは</h2><p>数値の照合が届かない散文——「導入180社以上」「カバーは0社」のような記述——は、レポートを書いたのとは<strong>別の文脈</strong>が出典URLを実際にもう一度取りに行き、その記述がその出典で裏付けられるかを1件ずつ判定している。書き手が「こう書いてある」と言っていることは根拠にしない。裏が取れなかった記述は、各銘柄ページの「記述の裏取り」欄に理由つきで残している（消す方法は用意していない）。</p><h2>図の出どころ</h2><ul><li><strong>検証済みCSVから自動</strong>: 図の数値は検証済みデータ（<code>data/</code> 配下のCSV）からコードが引いて描いている。照合が成立しなかった点は欠測として抜く（0 で埋めない）</li><li><strong>手書き（未検証）</strong>: 人が front matter に書き写した数値で描いた図には、図そのものに「手書き（未検証）」と表示される。この表示を消す方法は用意していない</li><li><strong>定性図</strong>: ビジネスモデルの構造など、数値を含まない図。数値が混ざった定性図は描画自体を拒否する（数値は検証済みデータ由来の図でしか出さない）</li></ul><h2 id="unevaluated">この台帳が見ていない鉄則</h2><p class="lede">判定スタンプの「買」は、この台帳が実装しているゲートを通過したという意味しかない。<strong>鉄則には、まだ機械が評価していない観点が 4 件ある。</strong>通過しなかったのではなく、<strong>見ていない</strong>。実装したらこの表から消える（<code>src/judge.py</code> の <code>UNEVALUATED_RULES</code> が正）。</p><div class="scroll"><table class="prose-table"><thead><tr><th>鉄則の観点</th><th>なぜ評価していないか</th></tr></thead><tbody><tr><td data-l="観点">季節性の要因を検討したか（I-15）</td><td data-l="なぜ見ていないか">数年分の日足が要る。現在の保有履歴は1年分で、季節性の推定に足りない</td></tr><tr><td data-l="観点">同業他社の決算に引っ張られていないか（I-16）</td><td data-l="なぜ見ていないか">master.yaml の peers が TO_VERIFY のままで、ピアの株価・決算日を持っていない</td></tr><tr><td data-l="観点">トレンドは明確で出来高を伴っているか（I-06）</td><td data-l="なぜ見ていないか">出来高は流動性ゲートと3か月前比にしか使っておらず、「上昇に出来高が伴っているか」は判定していない</td></tr><tr><td data-l="観点">マクロ（CPI・投資部門別売買動向・海外投資家）（I-18）</td><td data-l="なぜ見ていないか">外部指標を取得していない。指数は TOPIX / グロース250 の株価のみ</td></tr></tbody></table></div><footer>集計基準日 2026-08-27／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
+</style></head><body><header class="site"><div class="site-in"><a class="brand" href="index.html">銘柄調査台帳</a><nav><a href="index.html">台帳</a><a href="data.html">データの出どころ</a><a href="about.html">読み方</a></nav></div></header><main><h1>この台帳の読み方</h1><p class="lede">この台帳は、スクリーニングを通過した銘柄について<strong>その会社が何をしている会社なのか</strong>を調べ、毎週の動きを記録するためのもの。売買の判断は人間が行い、台帳は候補の提示と記録に徹する。数値は出所と検証状態をすべて開示し、調べきれなかったことは「未確認」のまま残す（分かったふりをしない）。</p><h2>台帳一覧の読み方</h2><ul><li>銘柄名を押すと、その会社の調査レポートが開く</li><li>一覧は既定でコンパクト（1行1銘柄）。「詳細表示」ボタンで概要文とスパークラインが開く</li><li>「判定」「裏取り」のチップを外すと、その状態の行を一時的に隠せる（件数はチップに常時出る）。選んだ表示・絞り込みは次回も覚えている</li><li>対象外の銘柄は既定で隠している。「対象外を表示」ボタンで元の位置に出る（記録は消えない。<a href="data.html">データの出どころ</a>には常に全銘柄が載る）</li><li>レポートは<strong>「週次アップデート」と「会社概要」の2つ</strong>に畳んである。見出しを押すと開く</li><li>節は <strong>① 週次アップデート → ② この会社は何者か → ③ 財務の推移と健全性 → ④ 今後の展望とリスク → ⑤ 値動きと市場の評価 → ⑥ 出典</strong> の順に並んでいる</li><li>「判定」の札は <code>src/judge.py</code> の機械判定。「買」は実装済みのゲートを通過したという意味しかない（下の<a href="#unevaluated">「この台帳が見ていない鉄則」</a>を併読）。売買の判断は人間が行う</li><li>終値の下の小さな線は直近約3か月の採用終値（2ソース照合済みの値のみ）。傾向の手がかりで、数値は銘柄ページの図が正</li><li><span class="flag">再調査</span> が付いた銘柄は毎週すべての項目を見直している。付いていない銘柄はニュースと値動きだけ追っている</li><li>再調査の対象を変えたいときは Claude に「4073 を再調査して」と言えばよい</li><li>銘柄名の横の小さなリンクは会社の公式サイト。各レポートの末尾には、使ったすべての出典 URL を載せている</li></ul><h2>数値の3段階と記号</h2><p>レポートの数値には検証の段階が3つあり、本文では値の直後の記号で見分けられるようにしている。</p><div class="scroll"><table class="prose-table"><thead><tr><th>段階</th><th>記号</th><th>意味</th><th>どこで見分けるか</th></tr></thead><tbody><tr><td><strong>2ソース照合済み</strong></td><td><span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span></td><td>運営の異なる2つの取得元から機械で抜き、表示されている桁の範囲で一致した値だけを採用値にしている。図の数値は原則これで描き、例外（手書き・一次情報のみ）は図の下の注記が明示する</td><td>本文では値の直後の ✓。図の下に「出所: data/… の採用値」と出る</td></tr><tr><td><strong>一次情報から直接</strong></td><td><span class="vm vm-pri" title="決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし">†</span></td><td>決算短信PDF（会社が自分で出した一次情報）から機械で抜いた値。まとめサイトの値との突き合わせ結果は各銘柄ページの「数値の検証状況」に併記している</td><td>本文では値の直後の †。図の下に「決算短信（一次情報）」と出る</td></tr><tr><td><strong>未照合・参考値</strong></td><td><span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span></td><td>取得元が1つしかない、2つが一致しなかった、または出来高・信用残のように照合の仕組みが無い値。<strong>採用値にしていない</strong>。断定形では書かない</td><td>本文では値の直後の ※</td></tr></tbody></table></div><p class="lede">凡例: ✓=2ソース照合済みの採用値 ／ ※=未照合・参考値 ／ †=決算短信（一次情報）から直接。記号に指を載せる（マウスを重ねる）と意味が出る。段階ごとの件数は、各銘柄ページ末尾の<strong>「数値の検証状況」</strong>に機械が出している。</p><h2>「記述の裏取り」とは</h2><p>数値の照合が届かない散文——「導入180社以上」「カバーは0社」のような記述——は、レポートを書いたのとは<strong>別の文脈</strong>が出典URLを実際にもう一度取りに行き、その記述がその出典で裏付けられるかを1件ずつ判定している。書き手が「こう書いてある」と言っていることは根拠にしない。裏が取れなかった記述は、各銘柄ページの「記述の裏取り」欄に理由つきで残している（消す方法は用意していない）。</p><h2>図の出どころ</h2><ul><li><strong>検証済みCSVから自動</strong>: 図の数値は検証済みデータ（<code>data/</code> 配下のCSV）からコードが引いて描いている。照合が成立しなかった点は欠測として抜く（0 で埋めない）</li><li><strong>手書き（未検証）</strong>: 人が front matter に書き写した数値で描いた図には、図そのものに「手書き（未検証）」と表示される。この表示を消す方法は用意していない</li><li><strong>定性図</strong>: ビジネスモデルの構造など、数値を含まない図。数値が混ざった定性図は描画自体を拒否する（数値は検証済みデータ由来の図でしか出さない）</li></ul><h2 id="unevaluated">この台帳が見ていない鉄則</h2><p class="lede">判定スタンプの「買」は、この台帳が実装しているゲートを通過したという意味しかない。<strong>鉄則には、まだ機械が評価していない観点が 4 件ある。</strong>通過しなかったのではなく、<strong>見ていない</strong>。実装したらこの表から消える（<code>src/judge.py</code> の <code>UNEVALUATED_RULES</code> が正）。</p><div class="scroll"><table class="prose-table"><thead><tr><th>鉄則の観点</th><th>なぜ評価していないか</th></tr></thead><tbody><tr><td data-l="観点">季節性の要因を検討したか（I-15）</td><td data-l="なぜ見ていないか">数年分の日足が要る。現在の保有履歴は1年分で、季節性の推定に足りない</td></tr><tr><td data-l="観点">同業他社の決算に引っ張られていないか（I-16）</td><td data-l="なぜ見ていないか">master.yaml の peers が TO_VERIFY のままで、ピアの株価・決算日を持っていない</td></tr><tr><td data-l="観点">トレンドは明確で出来高を伴っているか（I-06）</td><td data-l="なぜ見ていないか">出来高は流動性ゲートと3か月前比にしか使っておらず、「上昇に出来高が伴っているか」は判定していない</td></tr><tr><td data-l="観点">マクロ（CPI・投資部門別売買動向・海外投資家）（I-18）</td><td data-l="なぜ見ていないか">外部指標を取得していない。指数は TOPIX / グロース250 の株価のみ</td></tr></tbody></table></div><footer>集計基準日 2026-08-27／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>

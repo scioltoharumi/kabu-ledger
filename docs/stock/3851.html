@@ -151,21 +151,29 @@ transition:background .12s ease,color .12s ease,border-color .12s ease}
 .filter-btn::before{content:"";width:.55rem;height:.55rem;border-radius:50%;
 background:var(--rule);transition:background .12s ease}
 .filter-btn:hover{background:var(--soft);color:var(--ink)}
-/* トグルは2つ（#f-excluded=対象外の表示 / #v-compact=コンパクト表示）。
-   :checked の見た目は **自分の label だけ** に効かせるため id で結ぶ */
-#f-excluded:focus-visible~.list-toolbar [for="f-excluded"],
-#v-compact:focus-visible~.list-toolbar [for="v-compact"]{
+/* トグルの input は自分の label の**直前**に置く（build.py の _toggle が正）。
+   見た目は隣接セレクタ + で自分の label だけに効かせる。
+   行の表示・非表示は末尾の :has() 規則が担う */
+.filter-toggle:focus-visible+.filter-btn{
 outline:2px solid var(--accent);outline-offset:2px}
-#f-excluded:checked~.list-toolbar [for="f-excluded"],
-#v-compact:checked~.list-toolbar [for="v-compact"]{background:var(--accent-soft);
+.filter-toggle:checked+.filter-btn{background:var(--accent-soft);
 border-color:var(--accent);color:var(--accent)}
-#f-excluded:checked~.list-toolbar [for="f-excluded"]::before,
-#v-compact:checked~.list-toolbar [for="v-compact"]::before{background:var(--accent)}
+.filter-toggle:checked+.filter-btn::before{background:var(--accent)}
 .filter-btn .f-off{display:none}
-#f-excluded:checked~.list-toolbar [for="f-excluded"] .f-on,
-#v-compact:checked~.list-toolbar [for="v-compact"] .f-on{display:none}
-#f-excluded:checked~.list-toolbar [for="f-excluded"] .f-off,
-#v-compact:checked~.list-toolbar [for="v-compact"] .f-off{display:inline}
+.filter-toggle:checked+.filter-btn .f-on{display:none}
+.filter-toggle:checked+.filter-btn .f-off{display:inline}
+/* 絞り込みチップ。既定=表示（checked）なので、checked を強調色にせず
+   「外した（隠している）」側を消し込みの見た目にする */
+.filter-btn.chip{padding:.16rem .6rem;font-size:.74rem;box-shadow:none;
+margin:0}
+.filter-toggle:checked+.filter-btn.chip{background:var(--card);
+border-color:var(--rule);color:var(--dim)}
+.filter-toggle:checked+.filter-btn.chip::before{background:var(--good)}
+.filter-toggle:not(:checked)+.filter-btn.chip{opacity:.5;border-style:dashed;
+text-decoration:line-through}
+.list-filters{margin:.1rem 0 .2rem;gap:.35rem .45rem}
+.fl-cap{font-size:.72rem;font-weight:700;color:var(--dim);margin-left:.3rem}
+.fl-cap:first-child{margin-left:0}
 .filter-note{font-size:.74rem;color:var(--dim);line-height:1.7;flex:1 1 16rem}
 /* 表示中の対象外行は「凍った記録」だと分かる見た目にする（PC・スマホ共通） */
 tr.row-excluded td{background:#f6f3ea}
@@ -331,41 +339,58 @@ main{padding:1.1rem .85rem 3rem}
 /* ★表示切り替えの規則は必ずスタイルシートの末尾に置く（!important 併用）。
    スマホのカード積み替え（.list-table tr{display:block}）と同じ詳細度の
    display 規則は後勝ちで負けるため、位置と !important の両方で守る。
-   トグルが2つあるので **id で結ぶ**（.filter-toggle:not(:checked) だと
-   もう片方のトグルが外れているだけで誤発動する）。 */
+   トグルが増えたため、状態は :has() で引く（input が label の直前にあり、
+   .scroll の兄弟ではないので兄弟セレクタでは届かない）。input が
+   描画されないキーは :has が成立せず**表示側に倒れる**（隠れて消えない）。 */
 /* 対象外: チェックが外れている間だけ隠す（既定＝隠す） */
-#f-excluded:not(:checked)~.scroll tr.row-excluded{display:none!important}
-/* コンパクト表示: 概要文・外部リンク・スパークラインを畳み、
-   1行1銘柄で 20〜30 銘柄を見渡せるようにする（終値・判定・今週は残す） */
-#v-compact:checked~.scroll .one,
-#v-compact:checked~.scroll .ext,
-#v-compact:checked~.scroll .spark{display:none!important}
+.list-wrap:has(#f-excluded:not(:checked)) tr.row-excluded{display:none!important}
+/* 判定・裏取りの絞り込み。チップを外すとその状態の行を隠す。
+   キーは build.py の STAMP_KEYS / VF_LABELS と一対（固定語彙・全キーぶん置く） */
+.list-wrap:has(#f-st-buy:not(:checked)) tr.st-buy{display:none!important}
+.list-wrap:has(#f-st-watch:not(:checked)) tr.st-watch{display:none!important}
+.list-wrap:has(#f-st-probe:not(:checked)) tr.st-probe{display:none!important}
+.list-wrap:has(#f-st-hot:not(:checked)) tr.st-hot{display:none!important}
+.list-wrap:has(#f-st-sell:not(:checked)) tr.st-sell{display:none!important}
+.list-wrap:has(#f-st-liq:not(:checked)) tr.st-liq{display:none!important}
+.list-wrap:has(#f-st-trend:not(:checked)) tr.st-trend{display:none!important}
+.list-wrap:has(#f-st-other:not(:checked)) tr.st-other{display:none!important}
+.list-wrap:has(#f-vf-ok:not(:checked)) tr.vf-ok{display:none!important}
+.list-wrap:has(#f-vf-part:not(:checked)) tr.vf-part{display:none!important}
+.list-wrap:has(#f-vf-stale:not(:checked)) tr.vf-stale{display:none!important}
+.list-wrap:has(#f-vf-none:not(:checked)) tr.vf-none{display:none!important}
+/* コンパクト表示（既定=ON。build.py が checked で出す）: 概要文・外部リンク・
+   スパークラインを畳み、1行1銘柄で 20〜30 銘柄を見渡せるようにする */
+.list-wrap:has(#v-compact:checked) .one,
+.list-wrap:has(#v-compact:checked) .ext,
+.list-wrap:has(#v-compact:checked) .spark{display:none!important}
 /* セルの中身を流し込んで行高を最小にする（.sub/.wchg は通常 block）。
    終値セルは nowrap のままだと固定列幅を突き抜けて隣に重なるので折り返す。
    繰り返しの日付・週ラベル（全行同じ）はこの表示では出さない */
-#v-compact:checked~.scroll .list-table .sub{display:inline!important;
+.list-wrap:has(#v-compact:checked) .list-table .sub{display:inline!important;
 margin:0 0 0 .5rem}
-#v-compact:checked~.scroll td[data-l="終値・判定"]{white-space:normal;
+.list-wrap:has(#v-compact:checked) td[data-l="終値・判定"]{white-space:normal;
 overflow-wrap:normal}
-#v-compact:checked~.scroll td[data-l="終値・判定"] .sub{display:none!important}
-#v-compact:checked~.scroll td[data-l="今週"] .sub{display:none!important}
-#v-compact:checked~.scroll .wk-txt{display:-webkit-box;
+.list-wrap:has(#v-compact:checked) td[data-l="終値・判定"] .sub{display:none!important}
+.list-wrap:has(#v-compact:checked) td[data-l="今週"] .sub{display:none!important}
+.list-wrap:has(#v-compact:checked) .wk-txt{display:-webkit-box;
 -webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-#v-compact:checked~.scroll .wchg{display:inline-block!important;margin:0}
-#v-compact:checked~.scroll .stamp{display:inline-block!important;
+.list-wrap:has(#v-compact:checked) .wchg{display:inline-block!important;margin:0}
+.list-wrap:has(#v-compact:checked) .stamp{display:inline-block!important;
 margin:0;padding:.02rem .5rem}
-#v-compact:checked~.scroll .stamp .st-p{display:none}
-#v-compact:checked~.scroll .list-table .nm{font-size:.95rem}
-#v-compact:checked~.scroll .list-table .price{font-size:1rem;margin-right:.5rem}
+.list-wrap:has(#v-compact:checked) .stamp .st-p{display:none}
+.list-wrap:has(#v-compact:checked) .list-table .nm{font-size:.95rem}
+.list-wrap:has(#v-compact:checked) .list-table .price{font-size:1rem;
+margin-right:.5rem}
 @media(min-width:641px){
-#v-compact:checked~.scroll .list-table td{padding:.4rem .6rem}
-#v-compact:checked~.scroll .list-table th:nth-child(2),
-#v-compact:checked~.scroll .list-table td:nth-child(2){width:12.5rem}
+.list-wrap:has(#v-compact:checked) .list-table td{padding:.4rem .6rem}
+.list-wrap:has(#v-compact:checked) .list-table th:nth-child(2),
+.list-wrap:has(#v-compact:checked) .list-table td:nth-child(2){width:12.5rem}
 }
 @media(max-width:640px){
 /* スマホのコンパクトはカードの見出しラベルと余白も詰める */
-#v-compact:checked~.scroll .list-table td[data-l]::before{content:none}
-#v-compact:checked~.scroll .list-table tr{padding:.5rem .75rem;margin:.45rem 0}
+.list-wrap:has(#v-compact:checked) .list-table td[data-l]::before{content:none}
+.list-wrap:has(#v-compact:checked) .list-table tr{padding:.5rem .75rem;
+margin:.45rem 0}
 }
 </style></head><body><header class="site"><div class="site-in"><a class="brand" href="../index.html">銘柄調査台帳</a><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav></div></header><main><h1>日本一ソフトウェア（3851）</h1><p class="lede">東証スタンダード／レポート更新 2026-08-28<br><span class="pill pill-warn">記録が古い</span><a href="#verify">本文がこの検証のあとに書き換えられている（件数は現在の本文に適用できない）</a><br><a class="ext" href="https://www.nippon1.co.jp/ir/ir.html" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://irbank.net/E02489" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=3851" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://www.nippon1.co.jp/company/company.html" target="_blank" rel="noopener">会社概要 ↗</a></p><p class="note note-warn"><strong>この銘柄は監視対象から外している（2026-08-28〜）。</strong>株価・財務の取得も判定も止めているので、以下の数値と判定は<strong>その時点で凍ったもの</strong>であり、現在の姿ではない。記録は消していない。<br>外した理由: セグメント判定で対象外。需要ゲート・供給集中・優位性のいずれも立たず、営業利益率が 27.40→15.41→7.51→-5.17→-11.3 4% と単調悪化して赤字。収益はフロー型（発売日依存）で積み上がらない</p><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">1,297<span class="k-unit">円</span></span><span class="k-sub">2026-08-27・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+0.0%</span></span><span class="k-sub">2026-08-26 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">776 〜 1,297</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">記録が古い</span></span><span class="k-sub">本文が更新されてから未実施</span></div></div><blockquote>
 <p><strong>一行でいうと</strong>：岐阜県各務原市のゲームソフトメーカー。『魔界戦記ディスガイア』『夜廻』などの自社IPを自分で作り、自分の名前で売る。2026年3月期まで2期連続の営業赤字だったが、7月30日発売の新作『ほの暮しの庭』の堅調な販売を受け、会社は2026-08-28に27年3月期の業績予想を上方修正した（通期経常利益449→906百万円、上期は3.1倍）。株価は52週高値圏にあるが、修正後計画も含め実績で確かめられるのは2Q（7-9月）決算から。</p>
