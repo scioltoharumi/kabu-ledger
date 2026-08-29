@@ -23,7 +23,8 @@ stocks:
     # 適時開示PDFの発信者欄「（コード番号：150A 東証グロース市場）」（2026-07-15・一次情報）と
     # 決算短信の「上場取引所 東」（2026-08-13）。スクショの「東G」表示からは取っていない。
     market: "東証グロース"
-    sector: TO_VERIFY                 # 出所が1サイトに閉じており二重照合が成立しない（既知）
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "サービス業"
     # 設備・拠点型で償却負担が重く（1Q減価償却費66.5百万円）、今期が黒字転換の初年度で
     # PER が安定しない。会社自身も EBITDA を KPI に置き、時価総額を EBITDA 倍率で語っている
     # （2027年3月期1Q決算説明資料 p.8・p.11）。**この選択は人間の確認待ち。**
@@ -50,7 +51,8 @@ stocks:
   - code: "3851"
     name: "日本一ソフトウェア"
     market: "東証スタンダード"
-    sector: TO_VERIFY
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "情報・通信業"
     valuation_model: per_netcash      # ゲーム: 純現金控除後PER
     # data/fundamentals/3851.csv の期が FY####-03。株探と IR BANK の別サイト2件が
     # 一致した行（status=OK・例 FY2012-03 revenue 2460）で裏付いている。
@@ -131,7 +133,8 @@ stocks:
   - code: "6570"
     name: "共和コーポレーション"
     market: "東証スタンダード"
-    sector: TO_VERIFY
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "サービス業"
     valuation_model: ev_ebitda        # 設備型: 償却影響が大きくPER不適
     # 過去に9月期→3月期の変更がある（data/fundamentals/6570.csv の FY2015-03 に PERIOD_CHANGED）。
     # 変更後は FY####-03 で、株探と IR BANK の別サイト2件が一致した行
@@ -175,13 +178,18 @@ stocks:
 
   - code: "1942"
     name: "関電工"
-    market: TO_VERIFY
-    sector: TO_VERIFY
-    valuation_model: TO_VERIFY    # 提案: per_netcash（手元流動性が厚い）。マスター確認待ち
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証プライム"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "建設業"
+    # サブコンは手元流動性が厚く、純現金を控除しないと割高に見える。
+    # マスター確認済み（2026-08-29）
+    valuation_model: per_netcash
     # 各社の「2026年3月期／2027年3月期」決算報道が一致している（二次情報）。
     # 一次情報での確認は決算短信の取得後に行う。
     fiscal_year_end: "03"
-    ir_url: TO_VERIFY
+    # 公式サイトを直接取得し HTTP 200・title に社名を確認（2026-08-29）
+    ir_url: "https://www.kandenko.co.jp/ir/index.html"
     # segments/ai-datacenter-build.yaml の D2 電気設備工事 の顔ぶれ（自社を除く）
     peers: ["1934", "1941", "1944", "1946", "1949", "1959"]
     watch: active
@@ -197,13 +205,18 @@ stocks:
 
   - code: "1944"
     name: "きんでん"
-    market: TO_VERIFY
-    sector: TO_VERIFY
-    valuation_model: TO_VERIFY    # 提案: per_netcash（手元流動性が厚い）。マスター確認待ち
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証プライム"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "建設業"
+    # サブコンは手元流動性が厚く、純現金を控除しないと割高に見える。
+    # マスター確認済み（2026-08-29）
+    valuation_model: per_netcash
     # 各社の「2026年3月期／2027年3月期」決算報道が一致している（二次情報）。
     # 一次情報での確認は決算短信の取得後に行う。
     fiscal_year_end: "03"
-    ir_url: TO_VERIFY
+    # 公式サイトを直接取得し HTTP 200・title に社名を確認（2026-08-29）
+    ir_url: "https://www.kinden.co.jp/ir/"
     # segments/ai-datacenter-build.yaml の D2 電気設備工事 の顔ぶれ（自社を除く）
     peers: ["1934", "1941", "1942", "1946", "1949", "1959"]
     watch: active
@@ -220,12 +233,16 @@ stocks:
   - code: "1959"
     name: "クラフティア"
     market: "東証プライム"
-    sector: TO_VERIFY
-    valuation_model: TO_VERIFY    # 提案: per_netcash（手元流動性が厚い）。マスター確認待ち
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "建設業"
+    # サブコンは手元流動性が厚く、純現金を控除しないと割高に見える。
+    # マスター確認済み（2026-08-29）
+    valuation_model: per_netcash
     # 各社の「2026年3月期／2027年3月期」決算報道が一致している（二次情報）。
     # 一次情報での確認は決算短信の取得後に行う。
     fiscal_year_end: "03"
-    ir_url: TO_VERIFY
+    # 公式サイトを直接取得し HTTP 200・title に社名を確認（2026-08-29）
+    ir_url: "https://www.kraftia.co.jp/ir/"
     # segments/ai-datacenter-build.yaml の D2 電気設備工事 の顔ぶれ（自社を除く）
     peers: ["1934", "1941", "1942", "1944", "1946", "1949"]
     watch: active
@@ -241,13 +258,18 @@ stocks:
 
   - code: "1969"
     name: "高砂熱学工業"
-    market: TO_VERIFY
-    sector: TO_VERIFY
-    valuation_model: TO_VERIFY    # 提案: per_netcash（手元流動性が厚い）。マスター確認待ち
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証プライム"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "建設業"
+    # サブコンは手元流動性が厚く、純現金を控除しないと割高に見える。
+    # マスター確認済み（2026-08-29）
+    valuation_model: per_netcash
     # 各社の「2026年3月期／2027年3月期」決算報道が一致している（二次情報）。
     # 一次情報での確認は決算短信の取得後に行う。
     fiscal_year_end: "03"
-    ir_url: TO_VERIFY
+    # 公式サイトを直接取得し HTTP 200・title に社名を確認（2026-08-29）
+    ir_url: "https://www.tte-net.com/ir/"
     # segments/ai-datacenter-build.yaml の D3 空調・冷却工事 の顔ぶれ（自社を除く）
     peers: ["1952", "1961", "1979", "1980"]
     watch: active
