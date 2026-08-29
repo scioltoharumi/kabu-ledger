@@ -481,7 +481,13 @@ def section_order_text() -> str:
 
 def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     stocks = sorted(master["stocks"], key=lambda s: s["code"])
-    rows = [render_row(s, reports.get(s["code"]), as_of) for s in stocks]
+    # 監視対象と対象外を分ける。対象外は**既定で畳む**が、消しはしない。
+    # 件数を summary に常時出すので「見えない＝無い」にはならない
+    # （閉じた details は Ctrl+F でも当たらないため、件数の明示が生命線）。
+    watched = [x for x in stocks if Y.is_watched(x)]
+    excluded = [x for x in stocks if not Y.is_watched(x)]
+    rows = [render_row(x, reports.get(x["code"]), as_of) for x in watched]
+    rows_excluded = [render_row(x, reports.get(x["code"]), as_of) for x in excluded]
     scr = master.get("screening", {})
     scr_name = html.escape(str(scr.get("name", "")))
     n_deep = sum(1 for r in reports.values() if r.deep_dive)
@@ -497,8 +503,9 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
 
     summary = (
         '<div class="kpi">'
-        + _tile("登録", f'{len(stocks)}<span class="k-unit">銘柄</span>',
-                "スクリーニング通過ぶん")
+        + _tile("監視中", f'{len(watched)}<span class="k-unit">銘柄</span>',
+                (f"ほかに対象外 {len(excluded)}銘柄（下に畳んである）"
+                 if excluded else "対象外は無し"))
         + _tile("レポートあり", f"{len(reports)}", "調査済みの銘柄数")
         + _tile("再調査", f"{n_deep}", "全節を見直しなおす対象")
         + _tile("基準日",
@@ -507,11 +514,24 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         + "</div>"
     )
 
-    table = (
-        '<div class="scroll"><table class="list-table prose-table"><thead><tr>'
-        "<th>銘柄</th><th>終値</th><th>今週の動き</th>"
-        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div>"
-    )
+    def _table(body_rows: list[str]) -> str:
+        return ('<div class="scroll"><table class="list-table prose-table"><thead><tr>'
+                "<th>銘柄</th><th>終値</th><th>今週の動き</th>"
+                "</tr></thead><tbody>" + "".join(body_rows) + "</tbody></table></div>")
+
+    table = _table(rows)
+    if rows_excluded:
+        # 既定は閉じる（開くと出る）。**消す方法は用意しない。**
+        table += (
+            '<details class="sec excluded-sec"><summary>'
+            f'<span class="sec-title">対象外 {len(rows_excluded)}銘柄</span>'
+            '<span class="sec-hint">取得も判定も止めている。'
+            '数値と判定はその時点で凍ったもので、現在の姿ではない</span>'
+            '</summary><div class="sec-body">'
+            + _table(rows_excluded)
+            + '<p class="note note-warn">外した理由は各銘柄のページに書いてある。'
+            '記録は消していないので、監視に戻せば続きから追える。</p>'
+            "</div></details>")
 
     # 節の並びは `report.SECTIONS` が正。ここに順序を手書きすると、並びを変えた
     # 週に案内文だけが取り残される（「週次アップデートを最上部に」で実際に起きた）。
@@ -1312,6 +1332,10 @@ def verification_rows(master: dict, reports: dict[str, R.Report]) -> tuple[str, 
             link = name
         else:
             link = f'<a href="stock/{html.escape(code)}.html">{name}</a>'
+        # このページは**出どころの開示**が目的で、合計値もここから出る。
+        # 対象外も隠さず載せ、代わりに印を付ける（一覧の方は既定で畳む）。
+        if not Y.is_watched(s):
+            link += '<span class="pill pill-warn">対象外</span>'
         price = f"{v.price_ok}/{v.price_rows}"
         passed, claims, present, stale = verify_stat(code)
         if not present:
@@ -1352,6 +1376,8 @@ def build_data_page(master: dict, reports: dict[str, R.Report], as_of: str) -> N
         date, close = load_weekly_close(code)
         close_txt = f"{close:,.0f}" if close is not None else "—"
         name = html.escape(s.get("name", code))
+        if not Y.is_watched(s):
+            name += '<span class="pill pill-warn">対象外</span>'
         rows.append(
             f"<tr><td>{html.escape(code)}</td><td>{name}</td>"
             f'<td class="num">{close_txt}</td><td>{html.escape(date)}</td>'
