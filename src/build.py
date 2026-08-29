@@ -16,6 +16,7 @@ v1.0 との違い:
 from __future__ import annotations
 
 import csv
+import datetime as _dt
 import html
 import json
 import re
@@ -57,13 +58,16 @@ DISCLAIMER = ("本サイトは個人の検討用であり、投資助言では�
 
 # --- 骨組み ---------------------------------------------------------------
 
-def nav(depth: int = 0) -> str:
-    """depth はサブディレクトリの深さ。stock/ 配下は depth=1。"""
+def site_header(depth: int = 0) -> str:
+    """全ページ共通の固定ヘッダー。depth はサブディレクトリの深さ
+    （stock/ 配下は depth=1）。ページ内に nav を重ねて置かない。"""
     prefix = "../" * depth
     links = []
     for href, label in NAV_ITEMS:
         links.append(f'<a href="{prefix}{href}">{html.escape(label)}</a>')
-    return "<nav>" + "".join(links) + "</nav>"
+    return ('<header class="site"><div class="site-in">'
+            f'<a class="brand" href="{prefix}index.html">銘柄調査台帳</a>'
+            "<nav>" + "".join(links) + "</nav></div></header>")
 
 
 def page(title: str, body: str, as_of: str, depth: int = 0) -> str:
@@ -75,7 +79,8 @@ def page(title: str, body: str, as_of: str, depth: int = 0) -> str:
         '<meta name="robots" content="noindex,nofollow">'
         f"<title>{esc_title}</title><style>{CSS}</style></head>"
     )
-    return f"{head}<body><main>{body}{foot}</main></body></html>"
+    return (f"{head}<body>{site_header(depth)}"
+            f"<main>{body}{foot}</main></body></html>")
 
 
 # 検証状態の記号（表記規約 2026-08-23）。本文の値の直後に付ける。
@@ -370,6 +375,10 @@ def first_sentence(text: str, limit: int = 78) -> str:
     """最新週の要約を1文だけ取り出す（一覧を詰まらせないため）。"""
     plain = re.sub(r"[*_`>#\-]", "", text).strip()
     plain = re.sub(r"\s+", " ", plain)
+    # 「（台帳への新規登録週。…）」のような括弧書きの冒頭は、1文で切ると
+    # 閉じ括弧が落ちて「（台帳への新規登録週。」と壊れて見える。開き括弧を落とす
+    if plain.startswith("（"):
+        plain = plain[1:]
     for sep in ("。", "．"):
         if sep in plain:
             plain = plain.split(sep)[0] + sep
@@ -377,6 +386,70 @@ def first_sentence(text: str, limit: int = 78) -> str:
     if len(plain) > limit:
         plain = plain[: limit - 1] + "…"
     return plain
+
+
+def week_change(series: list[tuple[str, float]]) -> tuple[str, float] | None:
+    """前週末比。最新採用日の週（月曜起点）より前の、最後の採用終値と比べる。
+
+    実行日は使わない（D8）。両端とも2ソース照合済みの採用値なので断定形でよい。
+    前週の採用値が無い（新規登録直後など）ときは None（出さない）。
+    """
+    if len(series) < 2:
+        return None
+    d0, c0 = series[-1]
+    day = _dt.date.fromisoformat(d0)
+    monday = (day - _dt.timedelta(days=day.weekday())).isoformat()
+    prev = [(d, c) for d, c in series if d < monday]
+    if not prev or not prev[-1][1]:
+        return None
+    d1, c1 = prev[-1]
+    return d1, (c0 - c1) / c1 * 100.0
+
+
+SPARK_DAYS = 60   # 一覧のスパークラインに使う採用日数（約3か月）
+
+
+def sparkline(series: list[tuple[str, float]]) -> str:
+    """一覧に置く小さな値動きの線。採用終値（2ソース照合済み）だけで描く。
+
+    数値軸・目盛は持たない（傾向の手がかり。数値は銘柄ページの図が正）。
+    座標は固定小数1桁で出す（D8 決定論）。
+    """
+    pts = series[-SPARK_DAYS:]
+    if len(pts) < 2:
+        return ""
+    vals = [c for _, c in pts]
+    lo, hi = min(vals), max(vals)
+    w, h, pad = 120, 30, 3
+    xs = [pad + i * (w - 2 * pad) / (len(pts) - 1) for i in range(len(pts))]
+    if hi == lo:
+        ys = [h / 2.0] * len(pts)
+    else:
+        ys = [pad + (hi - v) * (h - 2 * pad) / (hi - lo) for v in vals]
+    d = " ".join(f"{'M' if i == 0 else 'L'}{x:.1f} {y:.1f}"
+                 for i, (x, y) in enumerate(zip(xs, ys)))
+    label = html.escape(
+        f"{pts[0][0]}〜{pts[-1][0]} の採用終値 {len(pts)}日"
+        "（2ソース照合済みの値のみ。数値は銘柄ページの図で）")
+    return (f'<svg class="spark" viewBox="0 0 {w} {h}" role="img" '
+            f'aria-label="{label}"><title>{label}</title>'
+            f'<path d="{d}" fill="none" stroke="currentColor" stroke-width="1.5" '
+            'stroke-linejoin="round" stroke-linecap="round"/>'
+            f'<circle cx="{xs[-1]:.1f}" cy="{ys[-1]:.1f}" r="2.4" '
+            'fill="currentColor"/></svg>')
+
+
+def stamp_pill(stamp: str) -> str:
+    """一覧に出す判定スタンプ。色だけに意味を持たせない（語が常に見える）。"""
+    cls = "stamp"
+    if stamp == J.STAMP_BUY:
+        cls += " stamp-buy"
+    elif stamp == J.STAMP_SELL:
+        cls += " stamp-sell"
+    elif stamp == J.STAMP_OVERHEAT:
+        cls += " stamp-hot"
+    return (f'<span class="{cls}" title="src/judge.py の機械判定">'
+            f"判定 {html.escape(stamp)}</span>")
 
 
 def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
@@ -387,8 +460,12 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
     code = stock["code"]
     name = html.escape(stock.get("name", code))
     market = html.escape(str(stock.get("market", "")))
-    date, close = load_weekly_close(code)
-    close_txt = f"{close:,.0f}" if close is not None else "—"
+    series = load_adopted_series(code)
+    if series:
+        date, close = series[-1]
+        close_txt = f"{close:,.0f}"
+    else:
+        date, close_txt = "—", "—"
 
     # 監視から外した銘柄は**消さずに、外したと分かる形で**残す。
     # 取得も判定も止まっているので、印が無いと「先週と同じ」が
@@ -403,11 +480,29 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
 
     tr_cls = ' class="row-excluded"' if watch_pill else ""
 
+    # 終値セル。監視中の銘柄には前週末比・スパークライン・判定も重ねて、
+    # 一覧だけで「いま見に行く価値があるか」を判断できるようにする。
+    # 対象外は凍った記録なので終値と日付だけにする（動きの表現を足さない）。
+    price_cell = (f'<span class="price">{close_txt}</span>'
+                  f'<span class="sub">{html.escape(date)}</span>')
+    if not watch_pill:
+        wc = week_change(series)
+        if wc is not None:
+            d1, pct = wc
+            cls = "chg-pos" if pct >= 0 else "chg-neg"
+            price_cell += (f'<span class="wchg {cls}" '
+                           f'title="前週末（{html.escape(d1)}）の採用終値比">'
+                           f"前週末比 {pct:+.1f}%</span>")
+        price_cell += sparkline(series)
+        st = load_stamp(code)
+        if st:
+            price_cell += stamp_pill(st)
+
     if rep is None:
         return (
             f'<tr{tr_cls}><td data-l="銘柄"><span class="nm">{name}</span>'
             f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}</span></td>'
-            f'<td data-l="終値" class="num">{close_txt}</td>'
+            f'<td data-l="終値・判定" class="num">{price_cell}</td>'
             f'<td data-l="状態"><span class="pill">レポート未作成</span></td>'
             f"</tr>"
         )
@@ -458,8 +553,7 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
         f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}{earn_pill}'
         f"{verify_pill_html}</span>"
         f'<span class="one">{oneline}</span></td>'
-        f'<td data-l="終値" class="num"><span class="price">{close_txt}</span>'
-        f'<span class="sub">{html.escape(date)}</span></td>'
+        f'<td data-l="終値・判定" class="num">{price_cell}</td>'
         f'<td data-l="今週"><span class="sub">{week_head}</span>{week_txt}</td>'
         f"</tr>"
     )
@@ -501,13 +595,12 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         "<strong>その会社が何をしている会社なのか</strong>を調べて記録する。"
         "スクリーニング通過は入口であって結論ではない。"
         "毎週の動きを積み重ねて理解を深めることを目的にしている。</p>"
-        + nav(0)
     )
 
     summary = (
         '<div class="kpi">'
         + _tile("監視中", f'{len(watched)}<span class="k-unit">銘柄</span>',
-                (f"ほかに対象外 {len(excluded)}銘柄（下に畳んである）"
+                (f"ほかに対象外 {len(excluded)}銘柄（既定で隠す。一覧のボタンで表示）"
                  if excluded else "対象外は無し"))
         + _tile("レポートあり", f"{len(reports)}", "調査済みの銘柄数")
         + _tile("再調査", f"{n_deep}", "全節を見直しなおす対象")
@@ -527,17 +620,18 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         n = len(rows_excluded)
         filter_ui = (
             '<input type="checkbox" id="f-excluded" class="filter-toggle">'
+            '<div class="list-toolbar">'
             '<label for="f-excluded" class="filter-btn">'
             f'<span class="f-on">対象外 {n}銘柄を表示</span>'
             f'<span class="f-off">対象外 {n}銘柄を隠す</span>'
             "</label>"
             '<span class="filter-note">対象外は取得も判定も止めている。'
-            "数値と判定はその時点で凍ったもので、現在の姿ではない</span>")
+            "数値と判定はその時点で凍ったもので、現在の姿ではない</span></div>")
 
     table = (
         '<div class="list-wrap">' + filter_ui
         + '<div class="scroll"><table class="list-table prose-table"><thead><tr>'
-        "<th>銘柄</th><th>終値</th><th>今週の動き</th>"
+        "<th>銘柄</th><th>終値・判定</th><th>今週の動き</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div></div>"
     )
 
@@ -552,6 +646,11 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         "<li>レポートは<strong>「週次アップデート」と「会社概要」の2つ</strong>に"
         "畳んである。見出しを押すと開く</li>"
         f"<li>節は <strong>{order}</strong> の順に並んでいる</li>"
+        "<li>「判定」の札は <code>src/judge.py</code> の機械判定。「買」は実装済みの"
+        'ゲートを通過したという意味しかない（下の<a href="#unevaluated">'
+        "「この台帳が見ていない鉄則」</a>を併読）。売買の判断は人間が行う</li>"
+        "<li>終値の下の小さな線は直近約3か月の採用終値"
+        "（2ソース照合済みの値のみ）。傾向の手がかりで、数値は銘柄ページの図が正</li>"
         '<li><span class="flag">再調査</span> が付いた銘柄は毎週すべての項目を'
         "見直している。付いていない銘柄はニュースと値動きだけ追っている</li>"
         "<li>再調査の対象を変えたいときは Claude に「4073 を再調査して」と言えばよい</li>"
@@ -1281,7 +1380,6 @@ def build_stock_page(rep: R.Report, as_of: str,
         f"{verify_line}"
         f"<br>{links}</p>"
         + watch_note
-        + nav(1)
     )
     lead_md = strip_title(rep.lead)
     body = head + kpi_tiles(rep.code, rep.meta, as_of) + to_html(lead_md, charts)
@@ -1412,7 +1510,6 @@ def build_data_page(master: dict, reports: dict[str, R.Report], as_of: str) -> N
         "<h1>データの出どころ</h1>"
         '<p class="lede">数値がどこから来たのかを開示する。'
         "各銘柄の詳しい出典は、それぞれのレポート末尾「出典」にある。</p>"
-        + nav(0)
         + "<h2>どこまで確かめられているか</h2>"
         + '<p class="lede">財務の数値は、2つのまとめサイトから'
         "<strong>別々に機械で抜いて突き合わせている</strong>。"
@@ -1503,7 +1600,6 @@ def build_about_page(as_of: str) -> None:
         "記録するためのもの。売買の判断は人間が行い、台帳は候補の提示と記録に徹する。"
         "数値は出所と検証状態をすべて開示し、"
         "調べきれなかったことは「未確認」のまま残す（分かったふりをしない）。</p>"
-        + nav(0)
         + "<h2>数値の3段階と記号</h2>"
         + '<p>レポートの数値には検証の段階が3つあり、本文では値の直後の記号で'
         "見分けられるようにしている。</p>"

@@ -1,25 +1,46 @@
 """台帳の見た目。build.py を小さく保つために分離している。
 
-方針（v2.1）:
+方針（v3.0）:
   - 落ち着いた紙面調。読み物としてのレポートが主役
   - スマホ閲覧を一級市民とする
   - 表は横スクロールを内側に閉じ込め、ページ本体は横に流れない
-  - v2.1: 「字の壁」対策。背景とカードの2層で面を作り、重要数値は
+  - 「字の壁」対策。背景とカードの2層で面を作り、重要数値は
     KPI タイル（.kpi-tile）で大きく出す。表はゼブラで行を追いやすくする。
     検証状態の印（未検証・手書き等）の見え方は変えない（隠せないことが目的）
+  - v3.0: 全ページ共通の固定ヘッダー・一覧の判定/前週末比/スパークライン。
+    一覧のフィルターはカスケードの教訓（下記）を踏まえ、隠す規則を
+    **スタイルシート末尾に !important で1本だけ**置く
+
+カスケードの教訓（2026-08-29 のフィルター不発）:
+  `tr.row-excluded{display:none}` と スマホ用の `.list-table tr{display:block}` は
+  同じ詳細度 (0,1,1) で、**後に書いたスマホ用が勝つ**。結果、640px 以下では
+  フィルターが完全に無効だった（スマホ閲覧が一級市民のサイトで）。
+  display を条件で切り替える規則は、必ず末尾 + !important で置くこと。
 """
 
 CSS = """
-:root{--paper:#f4f3ef;--card:#ffffff;--ink:#1c1c1a;--dim:#63625c;--rule:#dedcd4;
---soft:#f2f0ea;--accent:#23548c;--accent-soft:#eef3f9;--warn:#8a5a00;
+:root{--paper:#f5f4f0;--card:#ffffff;--ink:#1c1c1a;--dim:#5f5e58;--rule:#dedcd4;
+--soft:#f0eee8;--accent:#23548c;--accent-soft:#eef3f9;--warn:#8a5a00;
 --danger:#9a3324;--good:#1f6f43;--flag:#7a4f9a;
 --pos:#1d5fae;--neg:#b32e2e;
---shadow:0 1px 2px rgba(28,28,26,.05)}
+--shadow:0 1px 2px rgba(28,28,26,.05);--shadow-2:0 2px 8px rgba(28,28,26,.07)}
 *{box-sizing:border-box}
-body{background:var(--paper);color:var(--ink);margin:0;padding:2rem 1.25rem 4rem;
+body{background:var(--paper);color:var(--ink);margin:0;
 font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
 line-height:1.85;font-size:15.5px;-webkit-text-size-adjust:100%}
-main{max-width:52rem;margin:0 auto}
+main{max-width:52rem;margin:0 auto;padding:1.6rem 1.25rem 4rem}
+/* 全ページ共通の固定ヘッダー。どのページからでも1タップで台帳へ戻れる */
+.site{position:sticky;top:0;z-index:30;background:var(--paper);
+border-bottom:1px solid var(--rule)}
+@supports (backdrop-filter:blur(8px)){
+.site{background:color-mix(in srgb,var(--paper) 86%,transparent);
+backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}}
+.site-in{max-width:52rem;margin:0 auto;display:flex;align-items:center;
+gap:.4rem .9rem;padding:.5rem 1.25rem;flex-wrap:wrap}
+.brand{font-weight:700;color:var(--ink);text-decoration:none;font-size:.95rem;
+letter-spacing:.02em;white-space:nowrap}
+.brand:hover{color:var(--accent)}
+.site nav{margin:0 0 0 auto;display:flex;gap:.4rem;flex-wrap:wrap}
 h1{font-size:1.7rem;font-weight:700;letter-spacing:.02em;margin:0 0 .4rem;line-height:1.35}
 h2{font-size:1.15rem;font-weight:700;margin:3rem 0 1rem;padding:.15rem 0 .15rem .7rem;
 border-left:4px solid var(--accent);border-bottom:0;line-height:1.5}
@@ -27,11 +48,12 @@ h3{font-size:1rem;font-weight:700;margin:2rem 0 .4rem;color:var(--ink)}
 h4{font-size:.92rem;font-weight:700;margin:1.4rem 0 .3rem;color:var(--dim)}
 p{margin:.7rem 0}
 .lede{color:var(--dim);margin:0 0 1.5rem;font-size:.92rem}
-nav{font-size:.85rem;margin:0 0 2rem;color:var(--dim)}
-nav a{display:inline-block;margin-right:.5rem;padding:.18rem .75rem;
+nav{font-size:.82rem;color:var(--dim)}
+nav a{display:inline-block;padding:.16rem .7rem;
 background:var(--card);border:1px solid var(--rule);border-radius:999px;
 text-decoration:none;color:var(--dim)}
 nav a:hover{color:var(--ink);border-color:var(--ink)}
+nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:1rem 0;
 background:var(--card);border:1px solid var(--rule);border-radius:6px;
 box-shadow:var(--shadow)}
@@ -133,26 +155,45 @@ border-radius:8px;padding:1rem 1rem .8rem;box-shadow:var(--shadow);
 padding:.35rem .55rem;background:var(--soft);border-left:2px solid var(--good);
 border-radius:2px;overflow-wrap:anywhere}
 .viz-src-hand{border-left-color:var(--warn);background:#f8ecd4;color:var(--warn)}
-/* 一覧のフィルター。**JS を使わない**（checkbox + label + 兄弟セレクタ）。
+/* 一覧のフィルター（checkbox + label + 兄弟セレクタ。JS なし）。
    既定は対象外を隠し、ボタンで出す。隠した行は Ctrl+F でも当たらないので、
-   ボタンのラベルに件数を必ず出す（build.py 側で組み立てている） */
+   ボタンのラベルに件数を必ず出す（build.py 側で組み立てている）。
+   ★行を隠す規則そのものは**スタイルシート末尾**にある（カスケードの教訓） */
 .list-wrap{position:relative}
 .filter-toggle{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
-.filter-btn{display:inline-block;cursor:pointer;user-select:none;
-padding:.3rem .8rem;margin:0 .6rem .7rem 0;border:1px solid var(--rule);
+.list-toolbar{display:flex;align-items:center;gap:.5rem .8rem;flex-wrap:wrap;
+margin:1rem 0 .2rem}
+.filter-btn{display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;
+user-select:none;padding:.34rem .9rem;border:1px solid var(--rule);
 border-radius:999px;background:var(--card);color:var(--dim);
-font-size:.8rem;line-height:1.6;transition:background .12s ease,color .12s ease}
+font-size:.8rem;font-weight:700;line-height:1.6;box-shadow:var(--shadow);
+transition:background .12s ease,color .12s ease,border-color .12s ease}
+.filter-btn::before{content:"";width:.55rem;height:.55rem;border-radius:50%;
+background:var(--rule);transition:background .12s ease}
 .filter-btn:hover{background:var(--soft);color:var(--ink)}
-.filter-toggle:focus-visible+.filter-btn{outline:2px solid var(--accent);outline-offset:2px}
-.filter-toggle:checked+.filter-btn{background:var(--accent-soft);
+.filter-toggle:focus-visible~.list-toolbar .filter-btn{
+outline:2px solid var(--accent);outline-offset:2px}
+.filter-toggle:checked~.list-toolbar .filter-btn{background:var(--accent-soft);
 border-color:var(--accent);color:var(--accent)}
+.filter-toggle:checked~.list-toolbar .filter-btn::before{background:var(--accent)}
 .filter-btn .f-off{display:none}
-.filter-toggle:checked+.filter-btn .f-on{display:none}
-.filter-toggle:checked+.filter-btn .f-off{display:inline}
-.filter-note{font-size:.74rem;color:var(--dim);line-height:1.7}
-tr.row-excluded{display:none}
-.filter-toggle:checked~.scroll tr.row-excluded{display:table-row}
-@media (max-width:640px){.filter-note{display:block;margin:0 0 .6rem}}
+.filter-toggle:checked~.list-toolbar .filter-btn .f-on{display:none}
+.filter-toggle:checked~.list-toolbar .filter-btn .f-off{display:inline}
+.filter-note{font-size:.74rem;color:var(--dim);line-height:1.7;flex:1 1 16rem}
+/* 表示中の対象外行は「凍った記録」だと分かる見た目にする（PC・スマホ共通） */
+tr.row-excluded td{background:#f6f3ea}
+.list-table tr.row-excluded:hover td{background:#f6f3ea}
+tr.row-excluded .nm a{color:var(--dim)}
+/* 一覧の判定スタンプと前週末比・スパークライン */
+.stamp{display:inline-block;padding:.1rem .6rem;border-radius:6px;
+font-size:.76rem;font-weight:700;background:var(--soft);color:var(--dim);
+border:1px solid var(--rule);margin-top:.4rem}
+.stamp-buy{background:#e2efe6;color:var(--good);border-color:#bcd9c6}
+.stamp-sell{background:#f7e5e1;color:var(--danger);border-color:#e5c0b8}
+.stamp-hot{background:#f8ecd4;color:var(--warn);border-color:#e6d3a8}
+.wchg{display:block;font-size:.78rem;font-weight:700;margin-top:.25rem}
+.spark{display:block;width:7.5rem;max-width:100%;height:auto;
+color:var(--accent);margin:.4rem 0 0;opacity:.9}
 
 /* 監視対象から外した銘柄の注記。図の「手書き（未検証）」と同じ扱いで、
    同じ見た目のまま黙って並べない（消す方法は用意しない） */
@@ -264,13 +305,18 @@ max-width:100%;display:inline-block}
    長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */
 @media(min-width:641px){
 .list-table{table-layout:fixed}
-.list-table th:nth-child(2),.list-table td:nth-child(2){width:7.5rem}
-.list-table th:nth-child(3),.list-table td:nth-child(3){width:11rem}
+.list-table th:nth-child(2),.list-table td:nth-child(2){width:9.5rem}
+.list-table th:nth-child(3),.list-table td:nth-child(3){width:12rem}
 .list-table td:nth-child(2) .sub{white-space:nowrap}
+}
+/* PC の広い画面では一覧だけ本文列（52rem）より広く使う（sec-wide と同じ手法） */
+@media(min-width:1140px){
+.list-wrap{width:min(72rem,calc(100vw - 5rem));position:relative;
+left:50%;transform:translateX(-50%)}
 }
 
 @media(max-width:640px){
-body{padding:1.25rem .85rem 3rem;font-size:15px}
+body{font-size:15px}
 h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:2.2rem}
 table{font-size:.8rem}th,td{padding:.45rem .5rem}
 .card{padding:.9rem 1rem}
@@ -291,5 +337,13 @@ font-size:.72rem;font-weight:700}
 .viz{padding:.7rem .7rem .6rem}
 .viz figcaption{font-size:.78rem}
 .viz-tick{font-size:15px}.viz-value{font-size:16px}
+.site-in{padding:.45rem .85rem}
+main{padding:1.1rem .85rem 3rem}
 }
+
+/* ★この2行は必ずスタイルシートの末尾に置く（!important 併用）。
+   スマホのカード積み替え（.list-table tr{display:block}）と同じ詳細度の
+   display 規則は後勝ちで負けるため、位置と !important の両方で守る。
+   チェックが外れている間だけ対象外の行を隠す（既定＝隠す）。 */
+.filter-toggle:not(:checked)~.scroll tr.row-excluded{display:none!important}
 """

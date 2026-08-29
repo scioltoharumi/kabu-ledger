@@ -1,14 +1,26 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>この台帳の読み方</title><style>
-:root{--paper:#f4f3ef;--card:#ffffff;--ink:#1c1c1a;--dim:#63625c;--rule:#dedcd4;
---soft:#f2f0ea;--accent:#23548c;--accent-soft:#eef3f9;--warn:#8a5a00;
+:root{--paper:#f5f4f0;--card:#ffffff;--ink:#1c1c1a;--dim:#5f5e58;--rule:#dedcd4;
+--soft:#f0eee8;--accent:#23548c;--accent-soft:#eef3f9;--warn:#8a5a00;
 --danger:#9a3324;--good:#1f6f43;--flag:#7a4f9a;
 --pos:#1d5fae;--neg:#b32e2e;
---shadow:0 1px 2px rgba(28,28,26,.05)}
+--shadow:0 1px 2px rgba(28,28,26,.05);--shadow-2:0 2px 8px rgba(28,28,26,.07)}
 *{box-sizing:border-box}
-body{background:var(--paper);color:var(--ink);margin:0;padding:2rem 1.25rem 4rem;
+body{background:var(--paper);color:var(--ink);margin:0;
 font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
 line-height:1.85;font-size:15.5px;-webkit-text-size-adjust:100%}
-main{max-width:52rem;margin:0 auto}
+main{max-width:52rem;margin:0 auto;padding:1.6rem 1.25rem 4rem}
+/* 全ページ共通の固定ヘッダー。どのページからでも1タップで台帳へ戻れる */
+.site{position:sticky;top:0;z-index:30;background:var(--paper);
+border-bottom:1px solid var(--rule)}
+@supports (backdrop-filter:blur(8px)){
+.site{background:color-mix(in srgb,var(--paper) 86%,transparent);
+backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}}
+.site-in{max-width:52rem;margin:0 auto;display:flex;align-items:center;
+gap:.4rem .9rem;padding:.5rem 1.25rem;flex-wrap:wrap}
+.brand{font-weight:700;color:var(--ink);text-decoration:none;font-size:.95rem;
+letter-spacing:.02em;white-space:nowrap}
+.brand:hover{color:var(--accent)}
+.site nav{margin:0 0 0 auto;display:flex;gap:.4rem;flex-wrap:wrap}
 h1{font-size:1.7rem;font-weight:700;letter-spacing:.02em;margin:0 0 .4rem;line-height:1.35}
 h2{font-size:1.15rem;font-weight:700;margin:3rem 0 1rem;padding:.15rem 0 .15rem .7rem;
 border-left:4px solid var(--accent);border-bottom:0;line-height:1.5}
@@ -16,11 +28,12 @@ h3{font-size:1rem;font-weight:700;margin:2rem 0 .4rem;color:var(--ink)}
 h4{font-size:.92rem;font-weight:700;margin:1.4rem 0 .3rem;color:var(--dim)}
 p{margin:.7rem 0}
 .lede{color:var(--dim);margin:0 0 1.5rem;font-size:.92rem}
-nav{font-size:.85rem;margin:0 0 2rem;color:var(--dim)}
-nav a{display:inline-block;margin-right:.5rem;padding:.18rem .75rem;
+nav{font-size:.82rem;color:var(--dim)}
+nav a{display:inline-block;padding:.16rem .7rem;
 background:var(--card);border:1px solid var(--rule);border-radius:999px;
 text-decoration:none;color:var(--dim)}
 nav a:hover{color:var(--ink);border-color:var(--ink)}
+nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:1rem 0;
 background:var(--card);border:1px solid var(--rule);border-radius:6px;
 box-shadow:var(--shadow)}
@@ -122,26 +135,45 @@ border-radius:8px;padding:1rem 1rem .8rem;box-shadow:var(--shadow);
 padding:.35rem .55rem;background:var(--soft);border-left:2px solid var(--good);
 border-radius:2px;overflow-wrap:anywhere}
 .viz-src-hand{border-left-color:var(--warn);background:#f8ecd4;color:var(--warn)}
-/* 一覧のフィルター。**JS を使わない**（checkbox + label + 兄弟セレクタ）。
+/* 一覧のフィルター（checkbox + label + 兄弟セレクタ。JS なし）。
    既定は対象外を隠し、ボタンで出す。隠した行は Ctrl+F でも当たらないので、
-   ボタンのラベルに件数を必ず出す（build.py 側で組み立てている） */
+   ボタンのラベルに件数を必ず出す（build.py 側で組み立てている）。
+   ★行を隠す規則そのものは**スタイルシート末尾**にある（カスケードの教訓） */
 .list-wrap{position:relative}
 .filter-toggle{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
-.filter-btn{display:inline-block;cursor:pointer;user-select:none;
-padding:.3rem .8rem;margin:0 .6rem .7rem 0;border:1px solid var(--rule);
+.list-toolbar{display:flex;align-items:center;gap:.5rem .8rem;flex-wrap:wrap;
+margin:1rem 0 .2rem}
+.filter-btn{display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;
+user-select:none;padding:.34rem .9rem;border:1px solid var(--rule);
 border-radius:999px;background:var(--card);color:var(--dim);
-font-size:.8rem;line-height:1.6;transition:background .12s ease,color .12s ease}
+font-size:.8rem;font-weight:700;line-height:1.6;box-shadow:var(--shadow);
+transition:background .12s ease,color .12s ease,border-color .12s ease}
+.filter-btn::before{content:"";width:.55rem;height:.55rem;border-radius:50%;
+background:var(--rule);transition:background .12s ease}
 .filter-btn:hover{background:var(--soft);color:var(--ink)}
-.filter-toggle:focus-visible+.filter-btn{outline:2px solid var(--accent);outline-offset:2px}
-.filter-toggle:checked+.filter-btn{background:var(--accent-soft);
+.filter-toggle:focus-visible~.list-toolbar .filter-btn{
+outline:2px solid var(--accent);outline-offset:2px}
+.filter-toggle:checked~.list-toolbar .filter-btn{background:var(--accent-soft);
 border-color:var(--accent);color:var(--accent)}
+.filter-toggle:checked~.list-toolbar .filter-btn::before{background:var(--accent)}
 .filter-btn .f-off{display:none}
-.filter-toggle:checked+.filter-btn .f-on{display:none}
-.filter-toggle:checked+.filter-btn .f-off{display:inline}
-.filter-note{font-size:.74rem;color:var(--dim);line-height:1.7}
-tr.row-excluded{display:none}
-.filter-toggle:checked~.scroll tr.row-excluded{display:table-row}
-@media (max-width:640px){.filter-note{display:block;margin:0 0 .6rem}}
+.filter-toggle:checked~.list-toolbar .filter-btn .f-on{display:none}
+.filter-toggle:checked~.list-toolbar .filter-btn .f-off{display:inline}
+.filter-note{font-size:.74rem;color:var(--dim);line-height:1.7;flex:1 1 16rem}
+/* 表示中の対象外行は「凍った記録」だと分かる見た目にする（PC・スマホ共通） */
+tr.row-excluded td{background:#f6f3ea}
+.list-table tr.row-excluded:hover td{background:#f6f3ea}
+tr.row-excluded .nm a{color:var(--dim)}
+/* 一覧の判定スタンプと前週末比・スパークライン */
+.stamp{display:inline-block;padding:.1rem .6rem;border-radius:6px;
+font-size:.76rem;font-weight:700;background:var(--soft);color:var(--dim);
+border:1px solid var(--rule);margin-top:.4rem}
+.stamp-buy{background:#e2efe6;color:var(--good);border-color:#bcd9c6}
+.stamp-sell{background:#f7e5e1;color:var(--danger);border-color:#e5c0b8}
+.stamp-hot{background:#f8ecd4;color:var(--warn);border-color:#e6d3a8}
+.wchg{display:block;font-size:.78rem;font-weight:700;margin-top:.25rem}
+.spark{display:block;width:7.5rem;max-width:100%;height:auto;
+color:var(--accent);margin:.4rem 0 0;opacity:.9}
 
 /* 監視対象から外した銘柄の注記。図の「手書き（未検証）」と同じ扱いで、
    同じ見た目のまま黙って並べない（消す方法は用意しない） */
@@ -253,13 +285,18 @@ max-width:100%;display:inline-block}
    長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */
 @media(min-width:641px){
 .list-table{table-layout:fixed}
-.list-table th:nth-child(2),.list-table td:nth-child(2){width:7.5rem}
-.list-table th:nth-child(3),.list-table td:nth-child(3){width:11rem}
+.list-table th:nth-child(2),.list-table td:nth-child(2){width:9.5rem}
+.list-table th:nth-child(3),.list-table td:nth-child(3){width:12rem}
 .list-table td:nth-child(2) .sub{white-space:nowrap}
+}
+/* PC の広い画面では一覧だけ本文列（52rem）より広く使う（sec-wide と同じ手法） */
+@media(min-width:1140px){
+.list-wrap{width:min(72rem,calc(100vw - 5rem));position:relative;
+left:50%;transform:translateX(-50%)}
 }
 
 @media(max-width:640px){
-body{padding:1.25rem .85rem 3rem;font-size:15px}
+body{font-size:15px}
 h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:2.2rem}
 table{font-size:.8rem}th,td{padding:.45rem .5rem}
 .card{padding:.9rem 1rem}
@@ -280,5 +317,13 @@ font-size:.72rem;font-weight:700}
 .viz{padding:.7rem .7rem .6rem}
 .viz figcaption{font-size:.78rem}
 .viz-tick{font-size:15px}.viz-value{font-size:16px}
+.site-in{padding:.45rem .85rem}
+main{padding:1.1rem .85rem 3rem}
 }
-</style></head><body><main><h1>この台帳の読み方</h1><p class="lede">この台帳は、スクリーニングを通過した銘柄について<strong>その会社が何をしている会社なのか</strong>を調べ、毎週の動きを記録するためのもの。売買の判断は人間が行い、台帳は候補の提示と記録に徹する。数値は出所と検証状態をすべて開示し、調べきれなかったことは「未確認」のまま残す（分かったふりをしない）。</p><nav><a href="index.html">台帳</a><a href="data.html">データの出どころ</a><a href="about.html">読み方</a></nav><h2>数値の3段階と記号</h2><p>レポートの数値には検証の段階が3つあり、本文では値の直後の記号で見分けられるようにしている。</p><div class="scroll"><table class="prose-table"><thead><tr><th>段階</th><th>記号</th><th>意味</th><th>どこで見分けるか</th></tr></thead><tbody><tr><td><strong>2ソース照合済み</strong></td><td><span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span></td><td>運営の異なる2つの取得元から機械で抜き、表示されている桁の範囲で一致した値だけを採用値にしている。図の数値は原則これで描き、例外（手書き・一次情報のみ）は図の下の注記が明示する</td><td>本文では値の直後の ✓。図の下に「出所: data/… の採用値」と出る</td></tr><tr><td><strong>一次情報から直接</strong></td><td><span class="vm vm-pri" title="決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし">†</span></td><td>決算短信PDF（会社が自分で出した一次情報）から機械で抜いた値。まとめサイトの値との突き合わせ結果は各銘柄ページの「数値の検証状況」に併記している</td><td>本文では値の直後の †。図の下に「決算短信（一次情報）」と出る</td></tr><tr><td><strong>未照合・参考値</strong></td><td><span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span></td><td>取得元が1つしかない、2つが一致しなかった、または出来高・信用残のように照合の仕組みが無い値。<strong>採用値にしていない</strong>。断定形では書かない</td><td>本文では値の直後の ※</td></tr></tbody></table></div><p class="lede">凡例: ✓=2ソース照合済みの採用値 ／ ※=未照合・参考値 ／ †=決算短信（一次情報）から直接。記号に指を載せる（マウスを重ねる）と意味が出る。段階ごとの件数は、各銘柄ページ末尾の<strong>「数値の検証状況」</strong>に機械が出している。</p><h2>「記述の裏取り」とは</h2><p>数値の照合が届かない散文——「導入180社以上」「カバーは0社」のような記述——は、レポートを書いたのとは<strong>別の文脈</strong>が出典URLを実際にもう一度取りに行き、その記述がその出典で裏付けられるかを1件ずつ判定している。書き手が「こう書いてある」と言っていることは根拠にしない。裏が取れなかった記述は、各銘柄ページの「記述の裏取り」欄に理由つきで残している（消す方法は用意していない）。</p><h2>図の出どころ</h2><ul><li><strong>検証済みCSVから自動</strong>: 図の数値は検証済みデータ（<code>data/</code> 配下のCSV）からコードが引いて描いている。照合が成立しなかった点は欠測として抜く（0 で埋めない）</li><li><strong>手書き（未検証）</strong>: 人が front matter に書き写した数値で描いた図には、図そのものに「手書き（未検証）」と表示される。この表示を消す方法は用意していない</li><li><strong>定性図</strong>: ビジネスモデルの構造など、数値を含まない図。数値が混ざった定性図は描画自体を拒否する（数値は検証済みデータ由来の図でしか出さない）</li></ul><h2>この台帳が見ていないもの</h2><p>判定スタンプの「買」は、実装済みのゲートを通過したという意味しか持たない。機械がまだ評価していない観点は<a href="index.html#unevaluated">台帳トップの「この台帳が見ていない鉄則」</a>に一覧している。</p><footer>集計基準日 2026-08-27／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
+
+/* ★この2行は必ずスタイルシートの末尾に置く（!important 併用）。
+   スマホのカード積み替え（.list-table tr{display:block}）と同じ詳細度の
+   display 規則は後勝ちで負けるため、位置と !important の両方で守る。
+   チェックが外れている間だけ対象外の行を隠す（既定＝隠す）。 */
+.filter-toggle:not(:checked)~.scroll tr.row-excluded{display:none!important}
+</style></head><body><header class="site"><div class="site-in"><a class="brand" href="index.html">銘柄調査台帳</a><nav><a href="index.html">台帳</a><a href="data.html">データの出どころ</a><a href="about.html">読み方</a></nav></div></header><main><h1>この台帳の読み方</h1><p class="lede">この台帳は、スクリーニングを通過した銘柄について<strong>その会社が何をしている会社なのか</strong>を調べ、毎週の動きを記録するためのもの。売買の判断は人間が行い、台帳は候補の提示と記録に徹する。数値は出所と検証状態をすべて開示し、調べきれなかったことは「未確認」のまま残す（分かったふりをしない）。</p><h2>数値の3段階と記号</h2><p>レポートの数値には検証の段階が3つあり、本文では値の直後の記号で見分けられるようにしている。</p><div class="scroll"><table class="prose-table"><thead><tr><th>段階</th><th>記号</th><th>意味</th><th>どこで見分けるか</th></tr></thead><tbody><tr><td><strong>2ソース照合済み</strong></td><td><span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span></td><td>運営の異なる2つの取得元から機械で抜き、表示されている桁の範囲で一致した値だけを採用値にしている。図の数値は原則これで描き、例外（手書き・一次情報のみ）は図の下の注記が明示する</td><td>本文では値の直後の ✓。図の下に「出所: data/… の採用値」と出る</td></tr><tr><td><strong>一次情報から直接</strong></td><td><span class="vm vm-pri" title="決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし">†</span></td><td>決算短信PDF（会社が自分で出した一次情報）から機械で抜いた値。まとめサイトの値との突き合わせ結果は各銘柄ページの「数値の検証状況」に併記している</td><td>本文では値の直後の †。図の下に「決算短信（一次情報）」と出る</td></tr><tr><td><strong>未照合・参考値</strong></td><td><span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span></td><td>取得元が1つしかない、2つが一致しなかった、または出来高・信用残のように照合の仕組みが無い値。<strong>採用値にしていない</strong>。断定形では書かない</td><td>本文では値の直後の ※</td></tr></tbody></table></div><p class="lede">凡例: ✓=2ソース照合済みの採用値 ／ ※=未照合・参考値 ／ †=決算短信（一次情報）から直接。記号に指を載せる（マウスを重ねる）と意味が出る。段階ごとの件数は、各銘柄ページ末尾の<strong>「数値の検証状況」</strong>に機械が出している。</p><h2>「記述の裏取り」とは</h2><p>数値の照合が届かない散文——「導入180社以上」「カバーは0社」のような記述——は、レポートを書いたのとは<strong>別の文脈</strong>が出典URLを実際にもう一度取りに行き、その記述がその出典で裏付けられるかを1件ずつ判定している。書き手が「こう書いてある」と言っていることは根拠にしない。裏が取れなかった記述は、各銘柄ページの「記述の裏取り」欄に理由つきで残している（消す方法は用意していない）。</p><h2>図の出どころ</h2><ul><li><strong>検証済みCSVから自動</strong>: 図の数値は検証済みデータ（<code>data/</code> 配下のCSV）からコードが引いて描いている。照合が成立しなかった点は欠測として抜く（0 で埋めない）</li><li><strong>手書き（未検証）</strong>: 人が front matter に書き写した数値で描いた図には、図そのものに「手書き（未検証）」と表示される。この表示を消す方法は用意していない</li><li><strong>定性図</strong>: ビジネスモデルの構造など、数値を含まない図。数値が混ざった定性図は描画自体を拒否する（数値は検証済みデータ由来の図でしか出さない）</li></ul><h2>この台帳が見ていないもの</h2><p>判定スタンプの「買」は、実装済みのゲートを通過したという意味しか持たない。機械がまだ評価していない観点は<a href="index.html#unevaluated">台帳トップの「この台帳が見ていない鉄則」</a>に一覧している。</p><footer>集計基準日 2026-08-27／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
