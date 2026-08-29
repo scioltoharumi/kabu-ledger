@@ -157,6 +157,109 @@ stocks:
       shares: null
 
 # 流動性ゲート: 判定より上位。ここで落ちたら他の指標を見ない
+
+  # --- segments/ai-datacenter-build.yaml から降ろした4社（2026-08-29）-------
+  #
+  # スクリーニング起点ではなく**セグメント起点**で入れた最初の銘柄。
+  # 需要ゲート（DC 新増設の最大需要電力 47万kW→616万kW・施工側の受注残）を
+  # 通し、供給が絞られている層として D2（電力系サブコン7社）と
+  # D3（空調上場5社）を選び、そこから降ろした。
+  #
+  # **peers はセグメント定義がそのまま与える。** 従来 peers が全銘柄
+  # TO_VERIFY だったのは、株探の「比較される銘柄」という他人の分類を
+  # 二重照合しようとして詰まっていたため。層を自分で切れば、誰が競合かは
+  # 他人の意見ではなく自分の定義になる（judge の I-16 が動く土台）。
+  #
+  # valuation_model は**人間の確認待ち**。サブコンは手元流動性が厚く
+  # per_netcash が候補だが、提案の域を出ないので埋めない。
+
+  - code: "1942"
+    name: "関電工"
+    market: TO_VERIFY
+    sector: TO_VERIFY
+    valuation_model: TO_VERIFY    # 提案: per_netcash（手元流動性が厚い）。マスター確認待ち
+    # 各社の「2026年3月期／2027年3月期」決算報道が一致している（二次情報）。
+    # 一次情報での確認は決算短信の取得後に行う。
+    fiscal_year_end: "03"
+    ir_url: TO_VERIFY
+    # segments/ai-datacenter-build.yaml の D2 電気設備工事 の顔ぶれ（自社を除く）
+    peers: ["1934", "1941", "1944", "1946", "1949", "1959"]
+    watch: active
+    watch_reason: >-
+      セグメント起点で登録。D2 電気設備工事。供給の制約が有資格の人で年単位でしか
+      増えず、選別受注が成立している層
+    watch_since: "2026-08-29"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "1944"
+    name: "きんでん"
+    market: TO_VERIFY
+    sector: TO_VERIFY
+    valuation_model: TO_VERIFY    # 提案: per_netcash（手元流動性が厚い）。マスター確認待ち
+    # 各社の「2026年3月期／2027年3月期」決算報道が一致している（二次情報）。
+    # 一次情報での確認は決算短信の取得後に行う。
+    fiscal_year_end: "03"
+    ir_url: TO_VERIFY
+    # segments/ai-datacenter-build.yaml の D2 電気設備工事 の顔ぶれ（自社を除く）
+    peers: ["1934", "1941", "1942", "1946", "1949", "1959"]
+    watch: active
+    watch_reason: >-
+      セグメント起点で登録。D2 電気設備工事。供給の制約が有資格の人で年単位でしか
+      増えず、選別受注が成立している層
+    watch_since: "2026-08-29"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "1959"
+    name: "クラフティア"
+    market: "東証プライム"
+    sector: TO_VERIFY
+    valuation_model: TO_VERIFY    # 提案: per_netcash（手元流動性が厚い）。マスター確認待ち
+    # 各社の「2026年3月期／2027年3月期」決算報道が一致している（二次情報）。
+    # 一次情報での確認は決算短信の取得後に行う。
+    fiscal_year_end: "03"
+    ir_url: TO_VERIFY
+    # segments/ai-datacenter-build.yaml の D2 電気設備工事 の顔ぶれ（自社を除く）
+    peers: ["1934", "1941", "1942", "1944", "1946", "1949"]
+    watch: active
+    watch_reason: >-
+      セグメント起点で登録。D2 電気設備工事。供給の制約が有資格の人で年単位でしか
+      増えず、選別受注が成立している層
+    watch_since: "2026-08-29"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "1969"
+    name: "高砂熱学工業"
+    market: TO_VERIFY
+    sector: TO_VERIFY
+    valuation_model: TO_VERIFY    # 提案: per_netcash（手元流動性が厚い）。マスター確認待ち
+    # 各社の「2026年3月期／2027年3月期」決算報道が一致している（二次情報）。
+    # 一次情報での確認は決算短信の取得後に行う。
+    fiscal_year_end: "03"
+    ir_url: TO_VERIFY
+    # segments/ai-datacenter-build.yaml の D3 空調・冷却工事 の顔ぶれ（自社を除く）
+    peers: ["1952", "1961", "1979", "1980"]
+    watch: active
+    watch_reason: >-
+      セグメント起点で登録。D3 空調・冷却工事。供給の制約が有資格の人で年単位でしか
+      増えず、選別受注が成立している層
+    watch_since: "2026-08-29"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
 liquidity_gate:
   min_avg_turnover_20d_jpy: 30000000   # 20日平均売買代金 3,000万円
   on_fail: "見送(流動性)"
