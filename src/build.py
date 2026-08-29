@@ -452,8 +452,9 @@ def stamp_pill(stamp: str) -> str:
         cls += " stamp-sell"
     elif stamp == J.STAMP_OVERHEAT:
         cls += " stamp-hot"
+    # 「判定 」の接頭辞はコンパクト表示では CSS で省く（.st-p）
     return (f'<span class="{cls}" title="src/judge.py の機械判定">'
-            f"判定 {html.escape(stamp)}</span>")
+            f'<span class="st-p">判定 </span>{html.escape(stamp)}</span>')
 
 
 def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
@@ -558,7 +559,8 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
         f"{verify_pill_html}</span>"
         f'<span class="one">{oneline}</span></td>'
         f'<td data-l="終値・判定" class="num">{price_cell}</td>'
-        f'<td data-l="今週"><span class="sub">{week_head}</span>{week_txt}</td>'
+        f'<td data-l="今週"><span class="sub">{week_head}</span>'
+        f'<span class="wk-txt">{week_txt}</span></td>'
         f"</tr>"
     )
 
@@ -593,12 +595,12 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     scr_name = html.escape(str(scr.get("name", "")))
     n_deep = sum(1 for r in reports.values() if r.deep_dive)
 
+    # トップは繰り返し見るページ。説明の長文は about.html に寄せ、ここは短く保つ
     intro = (
         "<h1>銘柄調査台帳</h1>"
-        f'<p class="lede">楽天証券スクリーニング「{scr_name}」を通過した銘柄について、'
-        "<strong>その会社が何をしている会社なのか</strong>を調べて記録する。"
-        "スクリーニング通過は入口であって結論ではない。"
-        "毎週の動きを積み重ねて理解を深めることを目的にしている。</p>"
+        f'<p class="lede">楽天証券スクリーニング「{scr_name}」の通過銘柄を調査し、'
+        '週次で記録する。売買の判断は人間が行う。読み方・記号の意味は'
+        '<a href="about.html">「読み方」</a>へ。</p>'
     )
 
     summary = (
@@ -619,34 +621,61 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     #
     # 隠した行は Ctrl+F でも当たらないので、**ボタンに件数を出すのが生命線**。
     # 「見えない＝無い」に見せないという規律は、畳むときも隠すときも同じ。
-    filter_ui = ""
+    # 表示の切り替えは checkbox + label + 兄弟セレクタ（規則は CSS 末尾）。
+    # 下の小さなスクリプトは**選んだ表示を localStorage に覚えるだけ**の
+    # 上乗せで、JS が無くてもボタン自体は動く（決定論的な固定文字列。D8）。
+    inputs = '<input type="checkbox" id="v-compact" class="filter-toggle">'
+    buttons = ('<label for="v-compact" class="filter-btn">'
+               '<span class="f-on">コンパクト表示</span>'
+               '<span class="f-off">詳細表示に戻す</span></label>')
+    note = ""
     if rows_excluded:
         n = len(rows_excluded)
-        filter_ui = (
-            '<input type="checkbox" id="f-excluded" class="filter-toggle">'
-            '<div class="list-toolbar">'
-            '<label for="f-excluded" class="filter-btn">'
-            f'<span class="f-on">対象外 {n}銘柄を表示</span>'
-            f'<span class="f-off">対象外 {n}銘柄を隠す</span>'
-            "</label>"
-            '<span class="filter-note">対象外は取得も判定も止めている。'
-            "数値と判定はその時点で凍ったもので、現在の姿ではない</span></div>")
+        inputs += '<input type="checkbox" id="f-excluded" class="filter-toggle">'
+        buttons += ('<label for="f-excluded" class="filter-btn">'
+                    f'<span class="f-on">対象外 {n}銘柄を表示</span>'
+                    f'<span class="f-off">対象外 {n}銘柄を隠す</span></label>')
+        note = ('<span class="filter-note">対象外は取得も判定も止めている。'
+                "数値と判定はその時点で凍ったもの</span>")
+    filter_ui = inputs + '<div class="list-toolbar">' + buttons + note + "</div>"
+    remember = (
+        "<script>(function(){try{"
+        '["v-compact","f-excluded"].forEach(function(id){'
+        "var el=document.getElementById(id);if(!el)return;"
+        'var k="kabu:"+id,v=localStorage.getItem(k);'
+        'if(v==="1")el.checked=true;if(v==="0")el.checked=false;'
+        'el.addEventListener("change",function(){'
+        'localStorage.setItem(k,el.checked?"1":"0")})})'
+        "}catch(e){}})();</script>")
 
     table = (
         '<div class="list-wrap">' + filter_ui
         + '<div class="scroll"><table class="list-table prose-table"><thead><tr>'
         "<th>銘柄</th><th>終値・判定</th><th>今週の動き</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div></div>"
+        + remember
     )
 
+    # 読み方の説明と「見ていない鉄則」は about.html に置く。トップは繰り返し
+    # 見るページなので、毎回同じ長文を下に積まない（howto_block / unevaluated_block）。
+    body = intro + summary + table
+    (DOCS / "index.html").write_text(page("銘柄調査台帳", body, as_of, 0),
+                                     encoding="utf-8", newline="\n")
+
+
+def howto_block() -> str:
+    """台帳一覧の読み方。about.html に置く（トップには積まない）。"""
     # 節の並びは `report.SECTIONS` が正。ここに順序を手書きすると、並びを変えた
     # 週に案内文だけが取り残される（「週次アップデートを最上部に」で実際に起きた）。
     order = html.escape(section_order_text())
-
-    howto = (
-        "<h2>この台帳の読み方</h2>"
+    return (
+        "<h2>台帳一覧の読み方</h2>"
         "<ul>"
         "<li>銘柄名を押すと、その会社の調査レポートが開く</li>"
+        "<li>「コンパクト表示」ボタンで概要文を畳み、1行1銘柄で見渡せる。"
+        "選んだ表示は次回も覚えている</li>"
+        "<li>対象外の銘柄は既定で隠している。「対象外を表示」ボタンで元の位置に出る"
+        "（記録は消えない。<a href=\"data.html\">データの出どころ</a>には常に全銘柄が載る）</li>"
         "<li>レポートは<strong>「週次アップデート」と「会社概要」の2つ</strong>に"
         "畳んである。見出しを押すと開く</li>"
         f"<li>節は <strong>{order}</strong> の順に並んでいる</li>"
@@ -662,10 +691,6 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         "各レポートの末尾には、使ったすべての出典 URL を載せている</li>"
         "</ul>"
     )
-
-    body = intro + summary + table + howto + unevaluated_block()
-    (DOCS / "index.html").write_text(page("銘柄調査台帳", body, as_of, 0),
-                                     encoding="utf-8", newline="\n")
 
 
 def unevaluated_block() -> str:
@@ -955,12 +980,11 @@ def render_verify(rep: R.Report) -> str:
     code = rep.code
     rec = VF.load(code)
     head = '<h2 id="verify">記述の裏取り</h2>'
+    # 手法の説明は about.html に一元化。ここは1行に留める（このページは銘柄
+    # ごとに繰り返し読まれるため。リンクは stock/ 配下からなので ../）
     lede = (
-        '<p class="lede">'
-        "このレポートを書いたのとは<strong>別の文脈</strong>が、本文に書かれている"
-        "出典URLを実際にもう一度取りに行き、"
-        "<strong>その記述がその出典で裏付けられるか</strong>を1件ずつ判定した結果。"
-        "書き手が「こう書いてある」と言っていることは根拠にしていない。</p>"
+        '<p class="lede">本文の記述を、書いたのとは別の文脈が出典URLを取り直して'
+        '1件ずつ判定した結果（<a href="../about.html">読み方</a>）。</p>'
     )
     if rec is None or rec.latest is None:
         return (head + lede + '<p class="none">'
@@ -1052,13 +1076,11 @@ def render_verification(rep: R.Report, charts: dict) -> str:
         "</p>"
     )
 
+    # 手法の説明は about.html に一元化。ここは1行に留める
     lede = (
-        '<p class="lede">'
-        "この銘柄の数値が<strong>どこまで機械的に確かめられているか</strong>を開示する。"
-        "財務の数値は2つの取得元から別々に抜き、"
-        "<strong>値が一致したものだけを採用値</strong>にしている。"
-        "一致しなかったもの・1つの取得元しか持っていないものは採用せず、"
-        "図では欠測として抜いてある（0 で埋めない）。</p>"
+        '<p class="lede">2つの取得元で一致した値だけを採用し、欠測は0で埋めない。'
+        'この銘柄でどこまで確かめられているかの開示'
+        '（<a href="../about.html">読み方</a>）。</p>'
     )
 
     parts = ["<h2>数値の検証状況</h2>", lede, readout, chart_origin_rows(charts)]
@@ -1604,6 +1626,7 @@ def build_about_page(as_of: str) -> None:
         "記録するためのもの。売買の判断は人間が行い、台帳は候補の提示と記録に徹する。"
         "数値は出所と検証状態をすべて開示し、"
         "調べきれなかったことは「未確認」のまま残す（分かったふりをしない）。</p>"
+        + howto_block()
         + "<h2>数値の3段階と記号</h2>"
         + '<p>レポートの数値には検証の段階が3つあり、本文では値の直後の記号で'
         "見分けられるようにしている。</p>"
@@ -1627,11 +1650,7 @@ def build_about_page(as_of: str) -> None:
         "数値が混ざった定性図は描画自体を拒否する（数値は検証済みデータ由来の"
         "図でしか出さない）</li>"
         "</ul>"
-        + "<h2>この台帳が見ていないもの</h2>"
-        + "<p>判定スタンプの「買」は、実装済みのゲートを通過したという意味しか"
-        "持たない。機械がまだ評価していない観点は"
-        '<a href="index.html#unevaluated">台帳トップの'
-        "「この台帳が見ていない鉄則」</a>に一覧している。</p>"
+        + unevaluated_block()
     )
     (DOCS / "about.html").write_text(page("この台帳の読み方", body, as_of, 0),
                                      encoding="utf-8", newline="\n")

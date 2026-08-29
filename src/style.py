@@ -171,14 +171,21 @@ transition:background .12s ease,color .12s ease,border-color .12s ease}
 .filter-btn::before{content:"";width:.55rem;height:.55rem;border-radius:50%;
 background:var(--rule);transition:background .12s ease}
 .filter-btn:hover{background:var(--soft);color:var(--ink)}
-.filter-toggle:focus-visible~.list-toolbar .filter-btn{
+/* トグルは2つ（#f-excluded=対象外の表示 / #v-compact=コンパクト表示）。
+   :checked の見た目は **自分の label だけ** に効かせるため id で結ぶ */
+#f-excluded:focus-visible~.list-toolbar [for="f-excluded"],
+#v-compact:focus-visible~.list-toolbar [for="v-compact"]{
 outline:2px solid var(--accent);outline-offset:2px}
-.filter-toggle:checked~.list-toolbar .filter-btn{background:var(--accent-soft);
+#f-excluded:checked~.list-toolbar [for="f-excluded"],
+#v-compact:checked~.list-toolbar [for="v-compact"]{background:var(--accent-soft);
 border-color:var(--accent);color:var(--accent)}
-.filter-toggle:checked~.list-toolbar .filter-btn::before{background:var(--accent)}
+#f-excluded:checked~.list-toolbar [for="f-excluded"]::before,
+#v-compact:checked~.list-toolbar [for="v-compact"]::before{background:var(--accent)}
 .filter-btn .f-off{display:none}
-.filter-toggle:checked~.list-toolbar .filter-btn .f-on{display:none}
-.filter-toggle:checked~.list-toolbar .filter-btn .f-off{display:inline}
+#f-excluded:checked~.list-toolbar [for="f-excluded"] .f-on,
+#v-compact:checked~.list-toolbar [for="v-compact"] .f-on{display:none}
+#f-excluded:checked~.list-toolbar [for="f-excluded"] .f-off,
+#v-compact:checked~.list-toolbar [for="v-compact"] .f-off{display:inline}
 .filter-note{font-size:.74rem;color:var(--dim);line-height:1.7;flex:1 1 16rem}
 /* 表示中の対象外行は「凍った記録」だと分かる見た目にする（PC・スマホ共通） */
 tr.row-excluded td{background:#f6f3ea}
@@ -341,9 +348,43 @@ font-size:.72rem;font-weight:700}
 main{padding:1.1rem .85rem 3rem}
 }
 
-/* ★この2行は必ずスタイルシートの末尾に置く（!important 併用）。
+/* ★表示切り替えの規則は必ずスタイルシートの末尾に置く（!important 併用）。
    スマホのカード積み替え（.list-table tr{display:block}）と同じ詳細度の
    display 規則は後勝ちで負けるため、位置と !important の両方で守る。
-   チェックが外れている間だけ対象外の行を隠す（既定＝隠す）。 */
-.filter-toggle:not(:checked)~.scroll tr.row-excluded{display:none!important}
+   トグルが2つあるので **id で結ぶ**（.filter-toggle:not(:checked) だと
+   もう片方のトグルが外れているだけで誤発動する）。 */
+/* 対象外: チェックが外れている間だけ隠す（既定＝隠す） */
+#f-excluded:not(:checked)~.scroll tr.row-excluded{display:none!important}
+/* コンパクト表示: 概要文・外部リンク・スパークラインを畳み、
+   1行1銘柄で 20〜30 銘柄を見渡せるようにする（終値・判定・今週は残す） */
+#v-compact:checked~.scroll .one,
+#v-compact:checked~.scroll .ext,
+#v-compact:checked~.scroll .spark{display:none!important}
+/* セルの中身を流し込んで行高を最小にする（.sub/.wchg は通常 block）。
+   終値セルは nowrap のままだと固定列幅を突き抜けて隣に重なるので折り返す。
+   繰り返しの日付・週ラベル（全行同じ）はこの表示では出さない */
+#v-compact:checked~.scroll .list-table .sub{display:inline!important;
+margin:0 0 0 .5rem}
+#v-compact:checked~.scroll td[data-l="終値・判定"]{white-space:normal;
+overflow-wrap:normal}
+#v-compact:checked~.scroll td[data-l="終値・判定"] .sub{display:none!important}
+#v-compact:checked~.scroll td[data-l="今週"] .sub{display:none!important}
+#v-compact:checked~.scroll .wk-txt{display:-webkit-box;
+-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+#v-compact:checked~.scroll .wchg{display:inline-block!important;margin:0}
+#v-compact:checked~.scroll .stamp{display:inline-block!important;
+margin:0;padding:.02rem .5rem}
+#v-compact:checked~.scroll .stamp .st-p{display:none}
+#v-compact:checked~.scroll .list-table .nm{font-size:.95rem}
+#v-compact:checked~.scroll .list-table .price{font-size:1rem;margin-right:.5rem}
+@media(min-width:641px){
+#v-compact:checked~.scroll .list-table td{padding:.4rem .6rem}
+#v-compact:checked~.scroll .list-table th:nth-child(2),
+#v-compact:checked~.scroll .list-table td:nth-child(2){width:12.5rem}
+}
+@media(max-width:640px){
+/* スマホのコンパクトはカードの見出しラベルと余白も詰める */
+#v-compact:checked~.scroll .list-table td[data-l]::before{content:none}
+#v-compact:checked~.scroll .list-table tr{padding:.5rem .75rem;margin:.45rem 0}
+}
 """
