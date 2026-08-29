@@ -401,9 +401,11 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
                       + "対象外" + (f"（{since}〜）" if since else "")
                       + "・更新を止めている</span>")
 
+    tr_cls = ' class="row-excluded"' if watch_pill else ""
+
     if rep is None:
         return (
-            f'<tr><td data-l="銘柄"><span class="nm">{name}</span>'
+            f'<tr{tr_cls}><td data-l="銘柄"><span class="nm">{name}</span>'
             f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}</span></td>'
             f'<td data-l="終値" class="num">{close_txt}</td>'
             f'<td data-l="状態"><span class="pill">レポート未作成</span></td>'
@@ -450,7 +452,7 @@ def render_row(stock: dict, rep: R.Report | None, as_of: str = "") -> str:
                             f"{passed}/{claims}</span>")
 
     return (
-        f"<tr>"
+        f"<tr{tr_cls}>"
         f'<td data-l="銘柄"><span class="nm">'
         f'<a href="stock/{html.escape(code)}.html">{name}</a>{flag}{site}</span>'
         f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}{earn_pill}'
@@ -486,8 +488,9 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     # （閉じた details は Ctrl+F でも当たらないため、件数の明示が生命線）。
     watched = [x for x in stocks if Y.is_watched(x)]
     excluded = [x for x in stocks if not Y.is_watched(x)]
-    rows = [render_row(x, reports.get(x["code"]), as_of) for x in watched]
-    rows_excluded = [render_row(x, reports.get(x["code"]), as_of) for x in excluded]
+    # 行は**コード順のまま1本**にする。フィルターを外すと対象外が元の位置に戻る。
+    rows = [render_row(x, reports.get(x["code"]), as_of) for x in stocks]
+    rows_excluded = excluded
     scr = master.get("screening", {})
     scr_name = html.escape(str(scr.get("name", "")))
     n_deep = sum(1 for r in reports.values() if r.deep_dive)
@@ -514,24 +517,29 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         + "</div>"
     )
 
-    def _table(body_rows: list[str]) -> str:
-        return ('<div class="scroll"><table class="list-table prose-table"><thead><tr>'
-                "<th>銘柄</th><th>終値</th><th>今週の動き</th>"
-                "</tr></thead><tbody>" + "".join(body_rows) + "</tbody></table></div>")
-
-    table = _table(rows)
+    # 表は1つ。対象外の行は `row-excluded` を持ち、**既定では CSS で隠す**。
+    # 先頭のフィルターボタン（チェックボックス＋label・JS なし）を押すと出る。
+    #
+    # 隠した行は Ctrl+F でも当たらないので、**ボタンに件数を出すのが生命線**。
+    # 「見えない＝無い」に見せないという規律は、畳むときも隠すときも同じ。
+    filter_ui = ""
     if rows_excluded:
-        # 既定は閉じる（開くと出る）。**消す方法は用意しない。**
-        table += (
-            '<details class="sec excluded-sec"><summary>'
-            f'<span class="sec-title">対象外 {len(rows_excluded)}銘柄</span>'
-            '<span class="sec-hint">取得も判定も止めている。'
-            '数値と判定はその時点で凍ったもので、現在の姿ではない</span>'
-            '</summary><div class="sec-body">'
-            + _table(rows_excluded)
-            + '<p class="note note-warn">外した理由は各銘柄のページに書いてある。'
-            '記録は消していないので、監視に戻せば続きから追える。</p>'
-            "</div></details>")
+        n = len(rows_excluded)
+        filter_ui = (
+            '<input type="checkbox" id="f-excluded" class="filter-toggle">'
+            '<label for="f-excluded" class="filter-btn">'
+            f'<span class="f-on">対象外 {n}銘柄を表示</span>'
+            f'<span class="f-off">対象外 {n}銘柄を隠す</span>'
+            "</label>"
+            '<span class="filter-note">対象外は取得も判定も止めている。'
+            "数値と判定はその時点で凍ったもので、現在の姿ではない</span>")
+
+    table = (
+        '<div class="list-wrap">' + filter_ui
+        + '<div class="scroll"><table class="list-table prose-table"><thead><tr>'
+        "<th>銘柄</th><th>終値</th><th>今週の動き</th>"
+        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div></div>"
+    )
 
     # 節の並びは `report.SECTIONS` が正。ここに順序を手書きすると、並びを変えた
     # 週に案内文だけが取り残される（「週次アップデートを最上部に」で実際に起きた）。

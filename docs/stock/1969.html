@@ -122,6 +122,27 @@ border-radius:8px;padding:1rem 1rem .8rem;box-shadow:var(--shadow);
 padding:.35rem .55rem;background:var(--soft);border-left:2px solid var(--good);
 border-radius:2px;overflow-wrap:anywhere}
 .viz-src-hand{border-left-color:var(--warn);background:#f8ecd4;color:var(--warn)}
+/* 一覧のフィルター。**JS を使わない**（checkbox + label + 兄弟セレクタ）。
+   既定は対象外を隠し、ボタンで出す。隠した行は Ctrl+F でも当たらないので、
+   ボタンのラベルに件数を必ず出す（build.py 側で組み立てている） */
+.list-wrap{position:relative}
+.filter-toggle{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.filter-btn{display:inline-block;cursor:pointer;user-select:none;
+padding:.3rem .8rem;margin:0 .6rem .7rem 0;border:1px solid var(--rule);
+border-radius:999px;background:var(--card);color:var(--dim);
+font-size:.8rem;line-height:1.6;transition:background .12s ease,color .12s ease}
+.filter-btn:hover{background:var(--soft);color:var(--ink)}
+.filter-toggle:focus-visible+.filter-btn{outline:2px solid var(--accent);outline-offset:2px}
+.filter-toggle:checked+.filter-btn{background:var(--accent-soft);
+border-color:var(--accent);color:var(--accent)}
+.filter-btn .f-off{display:none}
+.filter-toggle:checked+.filter-btn .f-on{display:none}
+.filter-toggle:checked+.filter-btn .f-off{display:inline}
+.filter-note{font-size:.74rem;color:var(--dim);line-height:1.7}
+tr.row-excluded{display:none}
+.filter-toggle:checked~.scroll tr.row-excluded{display:table-row}
+@media (max-width:640px){.filter-note{display:block;margin:0 0 .6rem}}
+
 /* 監視対象から外した銘柄の注記。図の「手書き（未検証）」と同じ扱いで、
    同じ見た目のまま黙って並べない（消す方法は用意しない） */
 .note-warn{border-left:3px solid var(--warn);background:#f8ecd4;color:var(--warn);
