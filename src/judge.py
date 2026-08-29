@@ -58,6 +58,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import indicators as tech  # noqa: E402  （パラメータ名 ind と衝突させないため tech で束縛）
+import yamlio as Y
 
 
 # =============================================================================
@@ -1385,10 +1386,16 @@ def load_kpi(code: str) -> dict | None:
 
 
 def judge_all(master: dict | None = None) -> list[Verdict]:
-    """master.yaml の全銘柄を証券コード順に判定する（決定論的）。"""
+    """**監視対象の**銘柄を証券コード順に判定する（決定論的）。
+
+    `watch: excluded` は判定しない。取得を止めた銘柄のデータは凍るので、
+    そこから出した「買」「様子見」は**古い事実に基づく現在形の主張**になる。
+    黙って古い判定を出し続けるより、判定を持たない方が読み手を誤らせない
+    （台帳には build.py が「対象外」として出す）。
+    """
     m = master or load_master()
     out = []
-    for stock in sorted(m.get("stocks", []), key=lambda s: str(s["code"])):
+    for stock in sorted(Y.watched_stocks(m), key=lambda s: str(s["code"])):
         code = str(stock["code"])
         bars = load_bars(code)
         out.append(judge(stock, bars, compute(bars, m), load_margin(code),

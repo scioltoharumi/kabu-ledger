@@ -28,9 +28,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 import notify as N  # noqa: E402
+import realdata as rd  # noqa: E402
 import score as S  # noqa: E402
 
-CODES = ("3851", "4073", "4937", "6570")
+# **べた書きしない。** judge は `watch: excluded` を判定しないので、
+# 対象外の銘柄を並べると本物の判定表を引くところで KeyError になる。
+# 監視対象が増減しても追随するように master.yaml から引く。
+CODES = tuple(rd.watched_codes())
 
 
 # --- 検証ヘルパ ---------------------------------------------------------------
@@ -188,7 +192,7 @@ def test_first_run_can_be_forced_to_issue():
     def body(h: Harness):
         rc, _ = h.run("--seed-issues")
         eq(rc, 0, "終了コード")
-        eq(len(h.calls), 4, "--seed-issues なら初回でも起票する")
+        eq(len(h.calls), len(CODES), "--seed-issues なら初回でも起票する")
     with_harness({c: "監視" for c in CODES}, None, body)
 
 
@@ -272,15 +276,31 @@ def test_dry_run_does_not_write_state():
 # 本文
 # =============================================================================
 
-def _body(code: str = "4073") -> str:
+def _body(code: str | None = None) -> str:
+    """本文を組み立てる。**銘柄名をべた書きしない**（既定は監視対象の先頭）。"""
     repo = S.Repo()
     import judge as J
+    code = code or CODES[0]
     v = {x.code: x for x in J.judge_all()}[code]
     return N.build_body(code, "テスト", "監視", v.stamp, v, repo)
 
 
+def _watched_code_with(subdir: str) -> str | None:
+    """`{subdir}/{code}.*` を持つ監視対象の銘柄。無ければ None。
+
+    theses / bear は人間が銘柄ごとに書くもので、**どの銘柄にあるかは動く**
+    （theses と bear を持っていた銘柄が、のちに監視対象から外れた）。
+    銘柄名で選ぶと外した週に落ちるので、ファイルの有無で選ぶ。
+    """
+    d = ROOT / subdir
+    if not d.exists():
+        return None
+    have = {p.stem for p in d.iterdir() if p.is_file()}
+    return next((c for c in CODES if c in have), None)
+
+
 def test_body_contains_real_values():
-    b = _body("4073")
+    b = _body()
     assert "未実装" not in b, "「未実装」で埋めない"
     for section in ("判定に使った指標の実値", "スクリーニング5条件", "反証条件",
                     "相対パフォーマンス", "KPI差分", "ベアケース", "データ品質"):
@@ -289,13 +309,34 @@ def test_body_contains_real_values():
     # 値そのものはデータが1日増えれば動く。ベタ書きせず「数値が入っていること」を見る
     assert re.search(r"25日移動平均乖離率 \|\s*-?\d+\.\d+", b), \
         "判定に使った指標の実値が入る"
-    assert "ペイメントサービス" in b, "theses の反証条件が転記される"
+
+
+def test_body_transcribes_the_thesis_when_there_is_one():
+    """theses/{code}.md がある銘柄なら、その反証条件が本文に転記される。
+
+    **監視対象に theses を持つ銘柄が1つも無い週は確かめるものが無い**
+    （theses/ が対象外の銘柄にしか無い週は、まさにこの状態になる）。
+    黙って通すのではなく、何を確かめられなかったかを出して抜ける。
+    """
+    code = _watched_code_with("theses")
+    if code is None:
+        print("      （theses を持つ監視対象が無いので未確認）")
+        return
+    text = (ROOT / "theses" / f"{code}.md").read_text(encoding="utf-8")
+    marks = [ln.strip("- ").strip() for ln in text.splitlines()
+             if ln.strip().startswith("- ") and len(ln.strip()) > 12]
+    assert marks, f"theses/{code}.md に箇条書きの反証条件が無い"
+    b = _body(code)
+    assert any(m[:12] in b for m in marks), \
+        f"{code}: theses の反証条件が本文に転記されていない"
 
 
 def test_body_reports_missing_data_as_missing():
-    # 4073 は deep_dive 更新に合わせて bear/4073.yaml が生成済みのため、
-    # ベアケース「未生成」を確かめるにはまだ生成していない別銘柄を使う。
-    b = _body("3851")
+    # ベアケース「未生成」を確かめるので、bear/ をまだ持たない銘柄を選ぶ。
+    # 銘柄名でべた書きすると、その銘柄に bear が生成された週に落ちる。
+    code = next((c for c in CODES if not (ROOT / "bear" / f"{c}.yaml").exists()), None)
+    assert code, "bear/ を持たない監視対象が無い（このテストの前提が崩れている）"
+    b = _body(code)
     assert "未計算の指標:" in b, "取れていない指標を列挙する（空欄で流さない）"
     assert "1Q進捗率" in b, "決算が無いことが未計算として出る"
     assert "KPI未取得" in b or "未取得" in b, "KPI が無いことを書く"
@@ -343,14 +384,14 @@ def test_body_does_not_call_a_decided_metric_unknown():
 
 
 def test_body_has_no_wall_clock():
-    a, b = _body("4937"), _body("4937")
+    a, b = _body(), _body()
     eq(a, b, "同一入力→同一出力（生成時刻を埋め込まない）")
     assert "fetched_at" not in a, "取得時刻を本文に出さない"
 
 
 def test_body_points_to_master_yaml_not_decisions():
     """F-12・D18: 存在しない `decisions/` への記録を案内しない。"""
-    b = _body("4937")
+    b = _body()
     assert "decisions/" not in b, "実装されていない機能を書かない"
     assert "master.yaml" in b and "holding" in b, "実態（D18）に合わせた案内"
 

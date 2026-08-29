@@ -79,6 +79,23 @@ def codes() -> list[str]:
     return sorted(str(s["code"]) for s in master().get("stocks", []))
 
 
+def watched_codes() -> list[str]:
+    """**取得を続けている**銘柄（`watch: excluded` を除く・昇順）。
+
+    対象外にした銘柄はデータが凍るので、「最新営業日まで揃っている」を
+    要求する検査はこちらを使う。全銘柄が要るのは追記性の検査だけ。
+    """
+    import sys
+    sys.path.insert(0, str(DATA.parent / "src"))
+    import yamlio as Y
+    return sorted(str(s["code"]) for s in Y.watched_stocks(master()))
+
+
+def excluded_codes() -> list[str]:
+    """監視から外した銘柄（昇順）。データは凍っているが消してはいない。"""
+    return sorted(set(codes()) - set(watched_codes()))
+
+
 # --- 日付 ---------------------------------------------------------------------
 
 def dates(code: str | None = None) -> list[str]:

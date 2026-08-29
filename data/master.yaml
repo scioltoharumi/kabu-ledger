@@ -34,6 +34,13 @@ stocks:
     # reports/150A.md の primary リンクと同じURL。2026-08-21 に HTTP 200 を確認。
     ir_url: "https://www.jsh-japan.jp/ir/"
     peers: TO_VERIFY                  # 二重照合できていないので埋めない
+    # 監視対象フラグ（固定語彙 active / excluded）。**語彙外は active に倒れる**
+    # ので、対象外にしたつもりで取得が続くことは無い（checks が FAIL で言う）。
+    watch: excluded
+    watch_reason: >-
+      セグメント判定で対象外。需要は法定雇用率という制度で確定するが、障がい者雇用支援の層は参入が容易で供給が分散。営業利益率も 5.53→5.9
+      7→4.44→-2.22% と悪化（segments/ai-datacenter-build.yaml の物差し）
+    watch_since: "2026-08-28"
     holding:
       status: none
       buy_price: null
@@ -54,6 +61,13 @@ stocks:
     peers: TO_VERIFY                  # 株探「比較される銘柄」の1サイトのみ。二重照合できていないので埋めない
     screen_price: 1173.0
     screen_change_pct: 3.35
+    # 監視対象フラグ（固定語彙 active / excluded）。**語彙外は active に倒れる**
+    # ので、対象外にしたつもりで取得が続くことは無い（checks が FAIL で言う）。
+    watch: excluded
+    watch_reason: >-
+      セグメント判定で対象外。需要ゲート・供給集中・優位性のいずれも立たず、営業利益率が 27.40→15.41→7.51→-5.17→-11.3
+      4% と単調悪化して赤字。収益はフロー型（発売日依存）で積み上がらない
+    watch_since: "2026-08-28"
     holding:                          # D15/D18。保有していなければ status: none で全項目 null
       status: none                    # none / holding
       buy_price: null                 # 逆指値ライン・6か月2倍ラインの基準
@@ -73,6 +87,13 @@ stocks:
     screen_price: 531.0
     screen_change_pct: -0.75
     flags: ["制度信用: 買建のみ", "時価総額が極小"]
+    # 監視対象フラグ（固定語彙 active / excluded）。**語彙外は active に倒れる**
+    # ので、対象外にしたつもりで取得が続くことは無い（checks が FAIL で言う）。
+    watch: excluded
+    watch_reason: >-
+      セグメント判定で対象外。決済システムの層は供給が分散し、規模が極小で流動性ゲートが本丸。営業利益率は 14.63→-3.46→-17.62→
+      3.33→-4.34→3.06% と循環ですらなく予測不能で、精度を上げてもエッジが出ない
+    watch_since: "2026-08-28"
     holding:
       status: none
       buy_price: null
@@ -94,6 +115,13 @@ stocks:
     # 株探の信用区分が「制度信用銘柄のうち買建(信用買い)のみができる銘柄」（4073 と同じ表示）。
     # data/margin/4937.csv も全週 short_balance=0・RATIO_NA。D27 の扱いを適用する。
     flags: ["制度信用: 買建のみ"]
+    # 監視対象フラグ（固定語彙 active / excluded）。**語彙外は active に倒れる**
+    # ので、対象外にしたつもりで取得が続くことは無い（checks が FAIL で言う）。
+    watch: excluded
+    watch_reason: >-
+      セグメント判定で保留（対象外）。主力が D2C（広告依存・分散した層）からメディカルサポート（許認可と設備が要る・集中しうる層）へ逆転してい
+      る最中で、性格の違う2層が1社に混在し現状の形では判定できない。分解すれば再評価の余地あり
+    watch_since: "2026-08-28"
     holding:
       status: none
       buy_price: null
@@ -115,6 +143,13 @@ stocks:
     peers: TO_VERIFY                  # 株探「比較される銘柄」の1サイトのみ。二重照合できていないので埋めない
     screen_price: 2799.0
     screen_change_pct: 7.57
+    # 監視対象フラグ（固定語彙 active / excluded）。**語彙外は active に倒れる**
+    # ので、対象外にしたつもりで取得が続くことは無い（checks が FAIL で言う）。
+    watch: active
+    watch_reason: >-
+      既存5銘柄で唯一、営業利益率が 5.76→7.42→7.75→8.48% と4期単調上昇。需要ゲートは弱いが、利益率の持続的改善だけはきれい
+      に出ている
+    watch_since: "2026-08-28"
     holding:
       status: none
       buy_price: null

@@ -91,6 +91,7 @@ except ImportError:
 
 import requests
 import yaml
+import yamlio as Y
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -966,8 +967,9 @@ def main(argv=None) -> int:
     fetcher = Fetcher(pol)
     now = datetime.now(JST).isoformat()
 
-    stocks = [s for s in master["stocks"]
-              if not args.code or str(s["code"]) == args.code]
+    # --code を明示したときだけ対象外も取れる（動作確認用の抜け道）。
+    stocks = ([s for s in master["stocks"] if str(s["code"]) == args.code]
+              if args.code else Y.watched_stocks(master))
     failed = []
 
     for stock in stocks:
