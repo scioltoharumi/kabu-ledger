@@ -381,3 +381,72 @@ fetched_at,code,url,final_url,http_status,chars,sha256,note
 2026-08-29T04:35:20.608943+09:00,3851,https://www.release.tdnet.info/inbs/140120260828527655.pdf`〉のsha256が一致することを確認済み,https://www.release.tdnet.info/inbs/140120260828527655.pdf%60%E3%80%89%E3%81%AEsha256%E3%81%8C%E4%B8%80%E8%87%B4%E3%81%99%E3%82%8B%E3%81%93%E3%81%A8%E3%82%92%E7%A2%BA%E8%AA%8D%E6%B8%88%E3%81%BF,404,121,02a9e775dd5d7700,text/html; charset=iso-8859-1
 2026-08-29T04:35:45.792323+09:00,3851,https://www.release.tdnet.info/inbs/140120260828527655.pdf,https://www.release.tdnet.info/inbs/140120260828527655.pdf,200,0,e3b0c44298fc1c14,PDF。この道具はテキスト化しない。決算短信なら src/fetch_tanshin.py の抽出結果（data/tanshin/{code}.csv）を根拠に使う。裏取り検証者が requests で直接取得しsha256比較に使用（本文のURL表記がbacktick混入で report_urls() の正規表現が誤抽出するため、fetch_source.py --url では本文記載どおりの文字列を渡せなかった。抽出後のクリーンなURLで直接fetchした結果をここに記録する）。
 2026-08-29T04:36:05.054407+09:00,3851,https://www.nippon1.co.jp/ir/ir.html,https://www.nippon1.co.jp/ir/ir.html,200,5191,026e5498a7ace2ae,text/html; charset=UTF-8
+2026-08-29T11:50:15.584482+09:00,1942,https://kabutan.jp/stock/?code=1942,https://kabutan.jp/stock/?code=1942,200,4429,3facb141923f22b2,text/html; charset=UTF-8
+2026-08-29T11:50:34.478227+09:00,1942,https://www.kandenko.co.jp/ir/settled-account/2026/,https://www.kandenko.co.jp/ir/settled-account/2026/,200,1534,9a75ae4b9714ccc8,text/html
+2026-08-29T11:50:45.206689+09:00,1942,https://kabutan.jp/stock/news?code=1942,https://kabutan.jp/stock/news?code=1942,200,5229,a73803baa6cb4de1,text/html; charset=UTF-8
+2026-08-29T11:50:54.786314+09:00,1942,https://built.itmedia.co.jp/bt/articles/2604/30/news118.html,https://built.itmedia.co.jp/bt/articles/2604/30/news118.html,200,4173,880d0c3566c8311c,text/html
+2026-08-29T11:51:26.189714+09:00,1942,https://www.arc-navi.shikaku.co.jp/column/details.php?column_id=5899,https://www.arc-navi.shikaku.co.jp/column/details.php?column_id=5899,200,6191,5bd20ea44ad245ef,text/html; charset=UTF-8
+2026-08-29T11:51:36.727735+09:00,1942,https://www.arc-navi.shikaku.co.jp/column/details.php?column_id=5899,https://www.arc-navi.shikaku.co.jp/column/details.php?column_id=5899,200,6191,b7b2de6d0742eae9,text/html; charset=UTF-8
+2026-08-29T11:54:51.382066+09:00,1942,https://www.kandenko.co.jp/ir/calendar/,https://www.kandenko.co.jp/ir/calendar/,200,776,5cc33b775aff319d,text/html
+2026-08-29T11:55:25.131655+09:00,1942,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/fb01c1a21f0a5293afe8cb1f68568591185f4b73.pdf,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/fb01c1a21f0a5293afe8cb1f68568591185f4b73.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:55:29.604301+09:00,1942,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/bbf5b81283854b2bdc7d6e86423bf0098e72084b.pdf,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/bbf5b81283854b2bdc7d6e86423bf0098e72084b.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:55:33.504138+09:00,1942,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/87fdead5d55cbd5c97309ac429027aae61a24aa7.pdf,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/87fdead5d55cbd5c97309ac429027aae61a24aa7.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:55:37.818467+09:00,1942,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/e33bd07d3040479edea5ae4b946c48771837c577.pdf,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/e33bd07d3040479edea5ae4b946c48771837c577.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:55:42.579892+09:00,1942,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/e6e615a1030a8d09420cbba75f74b9e5a55f052b.pdf,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/e6e615a1030a8d09420cbba75f74b9e5a55f052b.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:55:46.509662+09:00,1942,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/7698201efaf4884784d12a30a5f3b6de897cd4cc.pdf,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/7698201efaf4884784d12a30a5f3b6de897cd4cc.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:55:51.963530+09:00,1942,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/90df0ec65b39be2757b186988b14d695a08fb86a.pdf,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/90df0ec65b39be2757b186988b14d695a08fb86a.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:55:56.251260+09:00,1942,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/44b8540dc5e4a8be73a976f23f89f4fda1d760fa.pdf,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/44b8540dc5e4a8be73a976f23f89f4fda1d760fa.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:56:00.528435+09:00,1942,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/e54e7bfa818b5e55c718d3df4353aaa771de5f69.pdf,https://www.kandenko.co.jp/ir/settled-account/assets/pdf/e54e7bfa818b5e55c718d3df4353aaa771de5f69.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:56:09.086358+09:00,1942,https://www.kandenko.co.jp/ir/settled-account/index.html,https://www.kandenko.co.jp/ir/settled-account/index.html,200,17,c6a37232a1f6bd63,text/html
+2026-08-29T11:56:12.952404+09:00,1942,https://www.kandenko.co.jp/ir/index.html,https://www.kandenko.co.jp/ir/index.html,200,559,deda2871ed249299,text/html
+2026-08-29T11:58:18.757297+09:00,1944,https://www.kinden.co.jp/ir/news/,https://www.kinden.co.jp/ir/news/,200,30314,1f00b6e9de6b1bf3,text/html; charset=UTF-8
+2026-08-29T11:58:23.326760+09:00,1944,https://www.kinden.co.jp/pdf/2026-07-29_2.pdf,https://www.kinden.co.jp/pdf/2026-07-29_2.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:58:27.922606+09:00,1944,https://www.kinden.co.jp/pdf/2026-04-27_5.pdf,https://www.kinden.co.jp/pdf/2026-04-27_5.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:58:32.461031+09:00,1944,https://www.kinden.co.jp/pdf/2026-04-27_3.pdf,https://www.kinden.co.jp/pdf/2026-04-27_3.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:58:41.493135+09:00,1944,https://www.kinden.co.jp/pdf/2026-07-29_2.pdf,https://www.kinden.co.jp/pdf/2026-07-29_2.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T11:59:07.512756+09:00,1944,https://www.kinden.co.jp/ir/news/,https://www.kinden.co.jp/ir/news/,200,30314,1f00b6e9de6b1bf3,text/html; charset=UTF-8
+2026-08-29T11:59:33.014534+09:00,1944,https://kabutan.jp/stock/?code=1944,https://kabutan.jp/stock/?code=1944,200,4429,d484658e040fbc88,text/html; charset=UTF-8
+2026-08-29T11:59:53.634394+09:00,1944,https://minkabu.jp/stock/1944,https://minkabu.jp/stock/1944,403,27,9fb94c9b1e18c413,text/html
+2026-08-29T11:59:59.428091+09:00,1944,https://kabutan.jp/stock/news?code=1944,https://kabutan.jp/stock/news?code=1944,200,5128,3a35c7883a651885,text/html; charset=UTF-8
+2026-08-29T12:00:13.905810+09:00,1944,https://kabutan.jp/stock/news?code=1944&b=n202608050707,https://kabutan.jp/stock/news?code=1944&b=n202608050707,200,4544,5f3be5f5ffe75029,text/html; charset=UTF-8
+2026-08-29T12:00:23.174502+09:00,1944,https://irbank.net/E00075,https://irbank.net/E00075,200,5522,9edcf8837cd3ca45,text/html; charset=UTF-8
+2026-08-29T12:00:27.239431+09:00,1944,https://www.kinden.co.jp/ir/,https://www.kinden.co.jp/ir/,200,441,fd2fff6a2647d08e,text/html; charset=UTF-8
+2026-08-29T12:00:32.557873+09:00,1944,https://irbank.net/E00075,https://irbank.net/E00075,200,5522,9edcf8837cd3ca45,text/html; charset=UTF-8
+2026-08-29T12:05:43.713798+09:00,1944,https://www.kinden.co.jp/pdf/2026-06-02_1.pdf,https://www.kinden.co.jp/pdf/2026-06-02_1.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:05:47.951605+09:00,1944,https://www.kinden.co.jp/pdf/2026-04-27_6.pdf,https://www.kinden.co.jp/pdf/2026-04-27_6.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:05:52.195867+09:00,1944,https://www.kinden.co.jp/pdf/2026-01-29_3.pdf,https://www.kinden.co.jp/pdf/2026-01-29_3.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:05:57.369633+09:00,1944,https://www.kinden.co.jp/pdf/112-2.pdf,https://www.kinden.co.jp/pdf/112-2.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:06:02.142780+09:00,1944,https://www.kinden.co.jp/pdf/2026-01-29_2.pdf,https://www.kinden.co.jp/pdf/2026-01-29_2.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:06:06.147584+09:00,1944,https://minkabu.jp/stock/1944,https://minkabu.jp/stock/1944,403,27,9fb94c9b1e18c413,text/html
+2026-08-29T12:06:16.445035+09:00,1944,https://www.kinden.co.jp/ir/,https://www.kinden.co.jp/ir/,200,441,fd2fff6a2647d08e,text/html; charset=UTF-8
+2026-08-29T12:09:24.409944+09:00,1959,https://www.kraftia.co.jp/company/about.html,https://www.kraftia.co.jp/company/about.html,200,1858,6564d427ab42a30f,text/html;charset=UTF-8
+2026-08-29T12:09:45.078590+09:00,1959,https://www.kraftia.co.jp/new/,https://www.kraftia.co.jp/new/,200,1915,c840b035917df183,text/html;charset=UTF-8
+2026-08-29T12:09:57.512713+09:00,1959,https://www.kraftia.co.jp/ir/trend.html,https://www.kraftia.co.jp/ir/trend.html,200,3843,f5efa36b80e33344,text/html;charset=UTF-8
+2026-08-29T12:10:54.759837+09:00,1959,https://www.kraftia.co.jp/ir/news/,https://www.kraftia.co.jp/ir/news/,200,13221,fbfef0dfa05131ea,text/html;charset=UTF-8
+2026-08-29T12:11:20.875905+09:00,1959,https://www.kraftia.co.jp/ir/news/,https://www.kraftia.co.jp/ir/news/,200,13221,fbfef0dfa05131ea,text/html;charset=UTF-8
+2026-08-29T12:11:33.574056+09:00,1959,https://www.kraftia.co.jp/ir/financial/financial_report.html,https://www.kraftia.co.jp/ir/financial/financial_report.html,200,4966,3f1ec5b00b252f67,text/html;charset=UTF-8
+2026-08-29T12:11:43.418214+09:00,1959,https://www.kraftia.co.jp/ir/docs/2026_260730_tanshin.pdf,https://www.kraftia.co.jp/ir/docs/2026_260730_tanshin.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:11:49.231671+09:00,1959,https://www.kraftia.co.jp/ir/news/docs/2026_260428_kessantanshin.pdf,https://www.kraftia.co.jp/ir/news/docs/2026_260428_kessantanshin.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:12:00.442014+09:00,1959,https://www.kraftia.co.jp/ir/news/docs/2026_260730_setsumeikai.pdf,https://www.kraftia.co.jp/ir/news/docs/2026_260730_setsumeikai.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:12:06.033118+09:00,1959,https://www.kraftia.co.jp/press/docs/a6a163112be93fc52d1958b6595d87ed.pdf,https://www.kraftia.co.jp/press/docs/a6a163112be93fc52d1958b6595d87ed.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:12:11.909281+09:00,1959,https://www.kraftia.co.jp/press/docs/2961e82f4881bca8e7fd84bdfdae329e_2.pdf,https://www.kraftia.co.jp/press/docs/2961e82f4881bca8e7fd84bdfdae329e_2.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:12:17.412074+09:00,1959,https://www.kraftia.co.jp/press/docs/6e809540fdf4af18c4b5544b3cfc86d3.pdf,https://www.kraftia.co.jp/press/docs/6e809540fdf4af18c4b5544b3cfc86d3.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:12:25.956269+09:00,1959,https://www.kraftia.co.jp/ir/,https://www.kraftia.co.jp/ir/,200,1659,eae8d64030ac03d3,text/html;charset=UTF-8
+2026-08-29T12:15:53.087537+09:00,1959,https://kabutan.jp/stock/?code=1959,https://kabutan.jp/stock/?code=1959,200,4295,9d610db40c76d70d,text/html; charset=UTF-8
+2026-08-29T12:20:34.668782+09:00,1969,https://www.tte-net.com/article_source/data/news/detail/2026/824.html,https://www.tte-net.com/article_source/data/news/detail/2026/824.html,200,2465,a6f80fcfc880e75b,text/html
+2026-08-29T12:20:44.084831+09:00,1969,https://www.tte-net.com/article_source/data/news/detail/2026/824.html,https://www.tte-net.com/article_source/data/news/detail/2026/824.html,200,2465,a6f80fcfc880e75b,text/html
+2026-08-29T12:20:50.481415+09:00,1969,https://www.tte-net.com/article_source/data/news/detail/2026/825.html,https://www.tte-net.com/article_source/data/news/detail/2026/825.html,200,2578,8a13e670007c037c,text/html
+2026-08-29T12:21:01.110391+09:00,1969,https://www.tte-net.com/ir/,https://www.tte-net.com/ir/index.html,200,2493,c65aa9f7672fdfb9,text/html
+2026-08-29T12:21:10.391663+09:00,1969,https://www.tte-net.com/ir/library/results/,https://www.tte-net.com/ir/library/results/index.html,200,1944,350f02c2b78f5ef2,text/html
+2026-08-29T12:21:20.666668+09:00,1969,https://ssl4.eir-parts.net/doc/1969/tdnet/2862735/00.pdf,https://ssl4.eir-parts.net/doc/1969/tdnet/2862735/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:21:28.258677+09:00,1969,https://ssl4.eir-parts.net/doc/1969/ir_material_for_fiscal_ym/209611/00.pdf,https://ssl4.eir-parts.net/doc/1969/ir_material_for_fiscal_ym/209611/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:21:37.547910+09:00,1969,https://ssl4.eir-parts.net/doc/1969/ir_material_for_fiscal_ym/210626/00.pdf,https://ssl4.eir-parts.net/doc/1969/ir_material_for_fiscal_ym/210626/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:21:42.790884+09:00,1969,https://ssl4.eir-parts.net/doc/1969/tdnet/2803194/00.pdf,https://ssl4.eir-parts.net/doc/1969/tdnet/2803194/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:21:47.621318+09:00,1969,https://ssl4.eir-parts.net/doc/1969/tdnet/2758553/00.pdf,https://ssl4.eir-parts.net/doc/1969/tdnet/2758553/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:21:53.727556+09:00,1969,https://ssl4.eir-parts.net/doc/1969/yuho_pdf/S100YDOU/00.pdf,https://ssl4.eir-parts.net/doc/1969/yuho_pdf/S100YDOU/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-29T12:22:05.637411+09:00,1969,https://www.tte-net.com/article_source/data/news/detail/2026/821.html,https://www.tte-net.com/article_source/data/news/detail/2026/821.html,200,2266,8e84f4d45ef37a8a,text/html
+2026-08-29T12:22:12.908019+09:00,1969,https://www.tte-net.com/article_source/data/news/detail/2026/821.html,https://www.tte-net.com/article_source/data/news/detail/2026/821.html,200,2266,8e84f4d45ef37a8a,text/html
+2026-08-29T12:22:20.149853+09:00,1969,https://eetimes.itmedia.co.jp/ee/articles/2607/28/news101.html,https://eetimes.itmedia.co.jp/ee/articles/2607/28/news101.html,200,4440,74b7b32de492048b,text/html
+2026-08-29T12:22:31.635770+09:00,1969,https://www.jpx.co.jp/markets/indices/jpx-nikkei400/index.html,https://www.jpx.co.jp/markets/indices/jpx-nikkei400/index.html,200,5199,48a17383f8feb2c1,text/html
+2026-08-29T12:24:23.744233+09:00,1969,https://kabutan.jp/stock/?code=1969,https://kabutan.jp/stock/?code=1969,200,4356,293e424209e25b80,text/html; charset=UTF-8
+2026-08-29T12:26:51.297675+09:00,1969,https://kabutan.jp/stock/?code=1969,https://kabutan.jp/stock/?code=1969,200,4356,293e424209e25b80,text/html; charset=UTF-8

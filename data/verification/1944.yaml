@@ -1,0 +1,815 @@
+# 裏取り記録（append-only）— reports/1944.md
+#
+# 手順の正: .claude/skills/kabu-ledger-verify/SKILL.md
+# 語彙の正: src/verification.py（VERDICTS / TIERS）
+#
+# レポートを書いた文脈とは別の文脈が、本文の出典URLを src/fetch_source.py で
+# 実際に再取得し、記述がその出典で裏付けられるかを1件ずつ判定した結果。
+# **過去の run は書き換えない。**新しい検証は runs の末尾に足す。
+code: "1944"
+runs:
+  - run: "2026-08-29T12:30:00+09:00"
+    report_updated: "2026-08-29"
+    report_sha256: "d5518cbef2259e05f8eb8ea0631cf9f4b5d02c476c40b8006f67aff163f08208"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    note: >-
+      本文に書かれている出典URL 18件のうち 15件を src/fetch_source.py で再取得し、
+      残り3件（kabutan の決算ページ・IR BANK の results / quarter）は
+      src/fetch_fundamentals.py が2サイトから抜いて突き合わせているので
+      data/fundamentals/1944.csv に委譲した。
+      指標（週足MA・売買代金・RSI・乖離率・一目均衡表）は
+      python src/judge.py --indicators-only と src/indicators.ichimoku を
+      data/prices/daily.csv に対して実行し、出力と突き合わせた。
+      **この銘柄の最大の制約: 本文の † 印（決算短信・適時開示・有価証券報告書の直読）が
+      依っている一次情報はすべて PDF で、fetch_source.py はテキスト化しない。
+      data/tanshin/1944.csv も存在しない。** そのため財務・資本政策・工事種別の
+      個別の金額は、この文脈では機械的に確かめられない（判定は unverifiable）。
+      一部は IR BANK・株探の再取得ページで水準が裏付けられ、そこは supported にした。
+      minkabu.jp は2回とも 403 で到達できず、市場評価表のみんかぶ行は裏付けが取れていない。
+      ページ本文に指示めいた文字列は検出していない。
+
+    urls_refetched:
+      - {url: "https://www.kinden.co.jp/ir/", http_status: 200}
+      - {url: "https://www.kinden.co.jp/ir/news/", http_status: 200}
+      - {url: "https://www.kinden.co.jp/pdf/2026-07-29_2.pdf", http_status: 200}
+      - {url: "https://www.kinden.co.jp/pdf/2026-04-27_5.pdf", http_status: 200}
+      - {url: "https://www.kinden.co.jp/pdf/2026-04-27_3.pdf", http_status: 200}
+      - {url: "https://www.kinden.co.jp/pdf/2026-04-27_6.pdf", http_status: 200}
+      - {url: "https://www.kinden.co.jp/pdf/2026-06-02_1.pdf", http_status: 200}
+      - {url: "https://www.kinden.co.jp/pdf/2026-01-29_3.pdf", http_status: 200}
+      - {url: "https://www.kinden.co.jp/pdf/2026-01-29_2.pdf", http_status: 200}
+      - {url: "https://www.kinden.co.jp/pdf/112-2.pdf", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=1944", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=1944", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=1944&b=n202608050707", http_status: 200}
+      - {url: "https://irbank.net/E00075", http_status: 200}
+      - {url: "https://minkabu.jp/stock/1944", http_status: 403}
+
+    urls_delegated:
+      - url: "https://kabutan.jp/stock/finance?code=1944"
+        to: "data/fundamentals/1944.csv"
+      - url: "https://irbank.net/E00075/results"
+        to: "data/fundamentals/1944.csv"
+      - url: "https://irbank.net/E00075/quarter"
+        to: "data/fundamentals/1944.csv"
+
+    claims:
+      # --- 週次アップデート ------------------------------------------------
+      - id: V01
+        section: updates
+        quote: "株価: 週間 **+2.3%**（6,820円→6,975円・採用終値ベース、照合成立4日）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          8/24〜8/28 の 1944 行のうち status に OK を含むのは 8/24=6,820・8/25=6,861・
+          8/26=6,950・8/27=6,975 の4日（8/28 は SINGLE_SOURCE）。照合成立4日は一致。
+          採用終値どうしの式 6975/6820-1=+2.2727% → +2.3%。
+      - id: V02
+        section: updates
+        quote: "週末終値どうしでは6,686円✓→6,975円✓の**+4.3%**で、3週続いた下げ（7,090→6,971→6,912→6,686円✓）が止まった"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          各週末（金）の採用終値は 7/31=7,090・8/7=6,971・8/14=6,912・8/21=6,686 で
+          3週続落は一致。6975/6686-1=+4.3225% → +4.3%。
+          今週の比較先が 8/28 ではなく 8/27 なのは 8/28 が SINGLE_SOURCE のためで、
+          本文もそう断っている。
+      - id: V03
+        section: updates
+        quote: "8月28日の終値は取得元が1つしかなく（`status=SINGLE_SOURCE`）、この台帳の採用値になっていない。参考値は6,837円※"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://kabutan.jp/stock/?code=1944"]
+        evidence: >-
+          daily.csv の 2026-08-28/1944 行は close 空・status=SINGLE_SOURCE。
+          株探の再取得（200）に「終値 | 6,837 | ( 15:30 )」があり参考値6,837円と一致。
+      - id: V04
+        section: updates
+        quote: "出来高: 今週合計 3,285,800株※（前週3,482,000株※から−5.6%）。8月28日だけ1,153,000株※と厚い"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://kabutan.jp/stock/?code=1944"]
+        evidence: >-
+          今週 612,800+529,400+525,600+465,000+1,153,000=3,285,800。
+          前週 604,900+636,700+994,400+803,800+442,200=3,482,000。
+          3285800/3482000-1=-5.634% → -5.6%。株探の再取得にも「出来高 | 1,153,000 株」（08月28日）。
+      - id: V05
+        section: updates
+        quote: "信用残: 8月21日時点で買残258.0千株・売残14.4千株・**信用倍率17.92倍**（`data/margin/1944.csv`）。7月24日時点の144.8千株／8.27倍から、買残は4週で+78.2%増えた"
+        verdict: supported
+        tier: dataset
+        sources: ["data/margin/1944.csv", "https://kabutan.jp/stock/?code=1944"]
+        evidence: >-
+          margin/1944.csv 最終行 2026-08-21 long=258.0 short=14.4 ratio=17.92（status OK）、
+          2026-07-24 long=144.8 ratio=8.27。258.0/144.8-1=+78.177% → +78.2%。
+          株探の再取得の信用取引表も 08/21 14.4/258.0/17.92、07/24 17.5/144.8/8.27 で一致。
+      - id: V06
+        section: updates
+        quote: "①流動性ゲートは通過（20日平均売買代金663,915万円・同期間の中央値507,392万円）、②トレンドゲートで停止（週足13週 −0.685%/週・26週 −0.496%/週でいずれも下向き。最終週は未了のため傾きの計算から除外）。RSI(14) 47.96、25日移動平均乖離率 −1.11%、一目均衡表は雲の下（上端7,651.00／下端7,511.50）"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py", "data/prices/daily.csv"]
+        evidence: >-
+          python src/judge.py --indicators-only の 1944（as_of 2026-08-27）は
+          avg_turnover_20d=6,639,149,155円（=663,915万円）、median_turnover_20d=5,073,924,000円
+          （=507,392万円）、weekly_ma_mid_slope_pct=-0.6850352（13週）、
+          weekly_ma_long_slope_pct=-0.4964052（26週）、いずれも direction=down、
+          rsi14=47.96418、ma_deviation_pct=-1.10816、ichimoku_position=below。
+          judge.py の weekly_trend_periods は [13, 26]。
+          雲の上下端は指標出力に無いため src/indicators.ichimoku を同じ bars（judge.load_bars('1944')・269本）
+          に当てて再計算し、cloud_top=7651.0／cloud_bottom=7511.5 を得た（本文と一致）。
+      - id: V07
+        section: updates
+        quote: "会社のIR新着一覧（<https://www.kinden.co.jp/ir/news/>・2026-08-29取得）の最新は7月29日の1Q決算短信と業績参考資料で、8月に入ってからの開示は確認できていない"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.kinden.co.jp/ir/news/"]
+        evidence: >-
+          再取得（200）の一覧先頭は「2026.07.29 決算情報 2027年3月期 第1四半期決算短信」
+          「2026.07.29 業績参考資料 2027年3月期 第1四半期業績参考資料」で、
+          2026.08 の行は1件も無い（次が 2026.07.23）。
+      - id: V08
+        section: updates
+        quote: "は8/25 MACD・8/26 パラボリックのテクニカル一覧のみで、この銘柄固有の材料は無い"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=1944"]
+        evidence: >-
+          再取得（200）の一覧で 8/24〜8/28 に載るのは
+          「26/08/26 15:38 テク 本日の【パラボリック｜買い／売り・転換】引け」と
+          「26/08/25 15:38 テク 本日の【ＭＡＣＤ｜買い／売りサイン】引け」の2件のみ。
+          その次は 26/08/05 の大量保有報告。
+      - id: V09
+        section: updates
+        quote: "JPモルガン・アセットとその共同保有者の保有割合が5.50%・9,156,310株になったとの大量保有報告書。報告義務発生日は7月31日"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=1944&b=n202608050707"]
+        evidence: >-
+          再取得（200）に「ＪＰモルガン・アセットと共同保有者のきんでん株式保有比率は5.50％となり、
+          新たに5％を超えたことが判明した。報告義務発生日は7月31日。」および
+          「2026/07/31　　― ％　→　5.50％　　　 9,156,310　 2026/08/05 11:35」。
+      - id: V10
+        section: updates
+        quote: "報告された9,156,310株※は、消却前の発行済株式数199,954,180株†で割れば4.58%、消却後の166,454,180株†で割れば5.50%になる（筆者の割り算）"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=1944", "https://irbank.net/E00075"]
+        evidence: >-
+          割り算は再現できる（9,156,310/166,454,180=5.5008%→5.50%、
+          9,156,310/199,954,180=4.5792%→4.58%）。分母のうち166,454,180株は株探の再取得
+          「発行済株式数 | 166,454,180 株」で確認できた。
+          **消却前の199,954,180株は再取得できたどの出典にも無い。**
+          IR BANK の株主情報（2026年3月31日）は「発行済み株式総数 199,824,700株」で
+          129,480株少なく、単元未満株を含むかどうかの定義差とみられるが確かめられない。
+        action: "消却前の発行済株式数を機械照合できる出典（決算短信の取り込み等）で残すか、IR BANK の199,824,700株との定義差を注記する"
+      # --- この会社は何者か --------------------------------------------------
+      - id: V11
+        section: company
+        quote: "発行済株式数は166,454,180株、8月28日の株価6,837円※ベースの時価総額は約1兆1,380億円※（株探・2026-08-29取得）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=1944"]
+        evidence: >-
+          再取得（200）に「発行済株式数 | 166,454,180 株」「時価総額 | 1 兆 1,380 億円」
+          「終値 | 6,837」。166,454,180×6,837=1,138,047,228,660円で1兆1,380億円と整合。
+      - id: V12
+        section: company
+        quote: "**報告セグメントは「設備工事業（建設事業）」1本だけ**で、事業別の内訳は開示されない（2027年3月期1Q決算短信のセグメント情報の注記）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-07-29_2.pdf"]
+        evidence: >-
+          出典の1Q決算短信PDFは再取得200だが、この道具はPDFをテキスト化しない
+          （本文は「PDF。この道具はテキスト化しない」の82文字）。
+          data/tanshin/1944.csv も存在しないので、セグメント注記は確かめられない。
+        action: "src/fetch_tanshin.py で data/tanshin/1944.csv を作り、機械照合できる形にする"
+      - id: V13
+        section: company
+        quote: "1944年8月、当時の軍需省の「電気工事業整備要綱」に基づいて近畿地方の電気工事業者が統合され、関西配電（現・関西電力の前身）の後援のもと**近畿電気工事株式会社**として大阪市に設立された。資本金は250万円から始まり"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/112-2.pdf"]
+        evidence: >-
+          出典の第112期有価証券報告書は再取得200だがPDFでテキスト化されない。
+          IR BANK の再取得（200）にも沿革の本文は載っておらず（所在地は
+          「大阪市北区本庄東二丁目3番41号」まで）、設立年月・軍需省・旧商号・資本金250万円は
+          この文脈では確かめられない。
+      - id: V14
+        section: company
+        quote: "いまは264億円†（第112期有価証券報告書）。従業員は連結15,440人†・単体8,676人†（2026年3月31日現在）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://irbank.net/E00075"]
+        evidence: >-
+          IR BANK の再取得（200）に「資本金 264億1100万円」「従業員数 連結 15,440名 単体 8,676名」。
+          本文の3つの数値と一致する（一次情報のPDFは読めていないので、裏付けは二次情報側）。
+      - id: V15
+        section: company
+        quote: "| 一般電気工事 | 405,157 | 66.1 | 427,242 |"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-04-27_5.pdf"]
+        evidence: >-
+          転記元の2026年3月期決算短信・業績参考資料はPDFで、再取得200だがテキスト化されない。
+          表の内部整合のみ確認した: 完成工事高の5行合計は
+          405,157+80,845+53,298+49,575+23,627=612,502 で、本文の合計612,505と3百万円ずれる。
+          手持工事高は 427,242+15,850+52,179+19,010+67,514=581,795 で、合計581,797と2百万円ずれる。
+          いずれも各行の百万円未満切り捨てで説明できる幅だが、原数値を読めないので確かめられない。
+          構成比は 405,157/612,505=66.15%→66.1% など全行が本文と一致する。
+      - id: V16
+        section: company
+        quote: "関西電力㈱（関西電力送配電㈱を含む）91,662百万円†（15.0%†）、関西電力グループ19,943百万円†（3.2%†）、一般得意先500,898百万円†（81.8%†）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-04-27_5.pdf"]
+        evidence: >-
+          出典PDFはテキスト化されず金額を確かめられない。内部整合のみ:
+          91,662+19,943+500,898=612,503（合計612,505と2百万円差）。
+          比率は 91,662/612,505=14.96%→15.0%、500,898/612,505=81.78%→81.8% と再現できるが、
+          19,943/612,505=3.256% は四捨五入すると3.3%で、本文の3.2%を丸め値からは再現できない
+          （開示側が原数値で計算していれば起こりうるが確かめられない）。
+      - id: V17
+        section: company
+        quote: "**合わせて約2割**が関西電力関係である"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=1944"]
+        evidence: >-
+          株探の再取得（200）の会社情報・概要に「電設工事でトップ級。関電系で依存度約2割。
+          情報通信工事など全国展開。」とあり、約2割という水準はこの出典で裏付けられる。
+          本文の内訳（15.0%+3.2%=18.2%）とも整合する。
+      - id: V18
+        section: company
+        quote: "「当期における当社の完成工事高のうち同社から受注した割合は**0.2%**」と書いている†"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-04-27_6.pdf"]
+        evidence: >-
+          出典「支配株主等に関する事項について」は再取得200だがPDFでテキスト化されない。
+          IR新着一覧（再取得200）に「2026.04.27 お知らせ 支配株主等に関する事項について
+          [PDF 1ページ / 123KB]」があり開示の存在と日付は裏付けられるが、
+          引用文と0.2%という数値は確かめられない。
+      - id: V19
+        section: company
+        quote: "関西電力グループ（関西電力㈱・関電不動産開発㈱・㈱かんでんエンジニアリング）はきんでん株を73,518,174株†・**37.13%**†持っていた"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://irbank.net/E00075"]
+        evidence: >-
+          IR BANK の再取得（200）の大株主（2026年3月31日）は「関西電力 29.75%」
+          「関電不動産開発 7.33%」で合計37.08%。かんでんエンジニアリングは大量保有の
+          提出者一覧にはあるが大株主上位には出ていない。**37.13%は方向として整合するが一致せず、
+          73,518,174株という株数はどの再取得可能な出典にも無い**（比率の分母が
+          自己株控除後かどうかも確かめられない）。
+        action: "株数と比率の分母（発行済総数か自己株控除後か）を機械照合できる出典で残す"
+      - id: V20
+        section: company
+        quote: "買付価格は6,677円†（決議前営業日までの3か月終値平均7,502円†に対し11.00%†のディスカウント。前営業日終値7,213円✓に対しては7.43%†）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-04-27_3.pdf"]
+        evidence: >-
+          出典の適時開示は再取得200だがPDFでテキスト化されない。
+          前営業日終値7,213円は data/prices/daily.csv の 2026-04-24 の採用終値（status OK）と一致し、
+          (7213-6677)/7213=7.431%→7.43%、(7502-6677)/7502=10.997%→11.00% と割り算は再現できる。
+          ただし6,677円と7,502円そのものは確かめられない。
+      - id: V21
+        section: company
+        quote: "あん分比例により33,500,000株†・**総額約2,237億円**†を取得した"
+        verdict: supported
+        tier: secondary
+        sources: ["https://irbank.net/E00075"]
+        evidence: >-
+          IR BANK の再取得（200）の自社株買い欄に「2026年 +2136億7983万 2236億7950万」とあり、
+          2026年の取得総額2,236億7,950万円が実在する。
+          33,500,000株×6,677円=223,679,500,000円=2,236億7,950万円で**完全に一致**するので、
+          株数と総額（および買付価格6,677円）はこの二次情報で裏付けられる。
+      - id: V22
+        section: company
+        quote: "応募は73,412,898株†（＝関西電力58,905,579株†と関電不動産開発14,507,319株†の**全部**）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-06-02_1.pdf"]
+        evidence: >-
+          出典「自己株式の公開買付けの結果及び取得終了に関するお知らせ」は再取得200だが
+          PDFでテキスト化されない。IR新着一覧（再取得200）に「2026.06.02 お知らせ
+          自己株式の公開買付けの結果及び取得終了に関するお知らせ [PDF 4ページ / 227KB]」があり
+          開示の存在は裏付けられる。内部整合は成立する（58,905,579+14,507,319=73,412,898）。
+      - id: V23
+        section: company
+        quote: "全額を株式会社みずほ銀行からの**2,300億円の借入**†でまかない、6月30日に取得分の全部を消却した†"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-04-27_3.pdf"]
+        evidence: >-
+          借入先・借入額・消却日はいずれもPDF（再取得200・テキスト化されず）にしか無い。
+          IR新着一覧（再取得200）にも6月30日付の消却完了の開示は載っていない
+          （6月台は 06.02 買付結果／06.15 投資単位の引下げ／06.22 有報／06.24 総会・株主通信・自己株処分）。
+        action: "消却の完了開示（または短信の注記）を出典表に足すか、6月30日という日付の根拠を示す"
+      - id: V24
+        section: company
+        quote: "発行済株式数は199,954,180株†から166,454,180株†へ**16.75%減**り、関西電力グループの持ち分は40,018,174株†・**24.33%**†になった"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=1944", "https://irbank.net/E00075"]
+        evidence: >-
+          消却後の166,454,180株は株探の再取得で確認（V11）。
+          内部整合は成立する（166,454,180+33,500,000=199,954,180、33,500,000/199,954,180=16.754%→16.75%、
+          73,518,174-33,500,000=40,018,174、40,018,174/164,481,718=24.330%→24.33%）。
+          しかし**消却前の199,954,180株・関西電力グループの40,018,174株・24.33%は
+          再取得できたどの出典にも無い**（IR BANK の2026年3月31日の発行済み株式総数は199,824,700株）。
+        action: "V10 と同じ。消却前株式数と買付後の持株比率を機械照合できる形で残す"
+      - id: V25
+        section: company
+        quote: "買付価格は1株11,501円†、期間は5月26日〜7月6日。応募3,714,499株†を全部買い付け、買付総額は約427億円†、議決権所有割合は**42.53%**†になった。決済開始日の7月13日付で弘電社はきんでんの**関連会社**になっている†"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: >-
+          **この記述の出典URLがレポートに書かれていない。** 出典表の一次情報8件に
+          弘電社TOBの開示（2026年5月25日の開始・2026年7月7日の結果）が無く、
+          fetch_source.py は本文に無いURLを取りに行けない。
+          IR新着一覧の再取得（200）には「2026.05.25 株式会社弘電社の株券に対する公開買付けの
+          開始に関するお知らせ [PDF 65ページ / 922KB]」と「2026.07.07 株式会社弘電社
+          (証券コード：1948)の株券に対する公開買付けの結果及び関連会社の異動に関するお知らせ
+          [PDF 9ページ / 390KB]」が実在し、**開示の存在・日付・関連会社化という事実の方向は
+          裏付けられる**が、価格・株数・総額・42.53%・7月13日という個別の数値は確かめられない。
+          内部整合のみ: 3,714,499×11,501=42,720,452,999円≒427億円。
+        action: "2026-05-25 と 2026-07-07 の弘電社TOB開示のURLを出典表に足す"
+      - id: V26
+        section: company
+        quote: "「旺盛な建築需要と設備投資を背景に堅調に推移し、業界全体の価格転嫁も進み、好調を維持している」"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: >-
+          会社の言葉としての直接引用だが、引用元（弘電社TOB開示）のURLが本文に無い（V25 と同じ）。
+          再取得できるどのページにもこの文字列は無い。**「会社自身の言葉」として
+          期待できることの3番目の根拠になっているので、出典が要る。**
+        action: "引用元の開示URLを出典表に足す（無ければ引用を落とす）"
+      - id: V27
+        section: company
+        quote: "**2027年3月期の連結業績予想への影響は「現在精査中」のまま**で、まだ計画に織り込まれていない†"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-07-29_2.pdf"]
+        evidence: >-
+          1Q決算短信PDF（再取得200・テキスト化されず）にしか根拠が無く、「精査中」という
+          文言は確かめられない。IR新着一覧にも7月7日以降に業績予想の修正開示は無い
+          （最新は7月29日の短信と業績参考資料）ので、予想が据え置かれていること自体は整合する。
+      # --- 財務 --------------------------------------------------------------
+      - id: V28
+        section: financials
+        quote: "| 2026/3期 | 750,742 | 90,256 | 94,493 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/1944.csv"]
+        evidence: >-
+          FY2026-03 の revenue=750742（OK|ROUNDING・kabutan_fy と irbank_q を含む2サイト）、
+          operating_income=90256（同）、ordinary_income=94493（同）。表の他の3期も
+          FY2023-03 609132/37430/40243、FY2024-03 654516/42677/45982、
+          FY2025-03 705058/60979/64546 がすべて採用値と一致し、
+          本文の「下表の数値はすべて✓（2ソース照合済みの採用値）」も成立している。
+      - id: V29
+        section: financials
+        quote: "3年で売上は+23.3%、営業利益は+141.1%になった。営業利益率は8.65%✓（2025年3月期）→12.02%✓（2026年3月期）である"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/1944.csv"]
+        evidence: >-
+          採用値どうしの式で 750742/609132-1=+23.248%→+23.3%、90256/37430-1=+141.13%→+141.1%。
+          operating_margin は FY2025-03=8.65（OK）・FY2026-03=12.02（OK）で一致。
+      - id: V30
+        section: financials
+        quote: "営業利益は前年同期と並べられる5組すべて、営業利益率は4組すべてが前年を上回っている"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/1944.csv"]
+        evidence: >-
+          採用値の営業利益（すべて OK|ROUNDING）: 4-6月 1,963→7,195→13,601、
+          7-9月 10,913→24,692、10-12月 17,831→20,070、1-3月 30,272→38,299。
+          前年同期と並ぶ組は5つで、全て増加。営業利益率は 4-6月 5.09→8.38、
+          7-9月 6.62→13.72、10-12月 10.71→11.28、1-3月 12.59→15.23 の4組で全て上昇。
+          図の caption（q_op・q_margin）の数値もこの採用値と一致する。
+      - id: V31
+        section: financials
+        quote: "2026年6月末の7,597億円†は、単体の年間完成工事高6,125億円†の**1.24年ぶん**にあたる（筆者の割り算）。うち一般電気工事が570,246百万円†・75.1%†を占め、前年同期比+25.4%†と最も伸びている"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-07-29_2.pdf"]
+        evidence: >-
+          単体の受注・完成・手持工事高は1Q決算短信の参考資料にしか無く、PDFはテキスト化されない。
+          割り算のみ再現: 759,715/612,505=1.2403→1.24年、570,246/759,715=75.06%→75.1%。
+          前年同期比+25.4%は前年同期の値が無いので再現できない。
+      - id: V32
+        section: financials
+        quote: "2027年3月期の単体受注工事高の予想は680,000百万円†で、2026年3月期実績722,197百万円†を**5.8%下回る**（筆者の割り算）。完成工事高の予想は670,000百万円†（+9.4%†）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-04-27_5.pdf"]
+        evidence: >-
+          単体の受注・完成工事高の会社予想は決算短信の参考資料のみで、PDFはテキスト化されない。
+          割り算は再現できる: 680,000/722,197-1=-5.843%→5.8%下回る、
+          670,000/612,505-1=+9.387%→+9.4%。元の3値そのものは確かめられない。
+      - id: V33
+        section: financials
+        quote: "| 2026/3期 | 72.4 | 913,763 | 524,359 | 182,308 | 3,340.44 | 0.0227 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/1944.csv", "https://irbank.net/E00075"]
+        evidence: >-
+          FY2026-03 の equity_ratio=72.4（OK）・total_assets=913763・retained_earnings=524359・
+          cash_equivalents=182308・bps=3340.44・interest_bearing_debt_ratio=0.0227 が
+          すべて採用値と一致。IR BANK の再取得も総資産9137億6300万・利益剰余金5243億5900万・
+          現金及び現金同等物の残高1823億800万で整合する。
+      - id: V34
+        section: financials
+        quote: "有利子負債倍率0.0227倍✓は**実質無借金**を意味する。2026年3月末の短期借入金は15,002百万円†しかなく、現金及び現金同等物182,308百万円✓"
+        verdict: supported
+        tier: secondary
+        sources: ["data/fundamentals/1944.csv", "https://irbank.net/E00075"]
+        evidence: >-
+          IR BANK の再取得（200）の貸借対照表欄に「有利子負債 +0.44% 150億200万」＝15,002百万円が
+          あり、本文の短期借入金15,002百万円と一致する。
+          現金及び現金同等物182,308百万円と有利子負債倍率0.0227倍は data/fundamentals の採用値。
+      - id: V35
+        section: financials
+        quote: "自己資本比率 72.4%✓ → **49.9%**†（△22.5ポイント†）"
+        verdict: supported
+        tier: secondary
+        sources: ["data/fundamentals/1944.csv", "https://irbank.net/E00075"]
+        evidence: >-
+          72.4%は FY2026-03 equity_ratio の採用値（OK）。
+          IR BANK の再取得（200）の株式指標欄に「株主資本比率（連） 49.91%」があり、
+          1Q末の49.9%を裏付ける。72.4-49.9=22.5ポイントも一致。
+      - id: V36
+        section: financials
+        quote: "短期借入金 15,002百万円† → **245,421百万円**†（自己株買いの2,300億円借入）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-07-29_2.pdf"]
+        evidence: >-
+          期首の15,002百万円は IR BANK で裏付けられる（V34）が、1Q末の245,421百万円は
+          1Q決算短信の貸借対照表にしか無く、PDFはテキスト化されない。
+          245,421-15,002=230,419百万円で「2,300億円の借入」と整合する向きだが確かめられない。
+          同じ節の純資産433,425百万円†・現金216,258百万円†・利益剰余金301,748百万円†も同様に確かめられない。
+      - id: V37
+        section: financials
+        quote: "現金216,258百万円†から借入245,421百万円†を引くと**約292億円の純有利子負債**になる（筆者の引き算）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-07-29_2.pdf"]
+        evidence: >-
+          引き算は再現できる（245,421-216,258=29,163百万円=約292億円）が、両方の元の値が
+          テキスト化されないPDFにしか無い。なお本文は短期借入金だけを「借入」として引いており、
+          リース債務等を含む有利子負債総額ではない（1Q末の有利子負債総額は確かめられない）。
+      - id: V38
+        section: financials
+        quote: "1Q末の自己資本432,889百万円†を期末株式数（自己株控除後）164,481,718株†で割ると約2,632円"
+        verdict: supported
+        tier: secondary
+        sources: ["https://irbank.net/E00075"]
+        evidence: >-
+          IR BANK の再取得（200）の株式指標に「BPS（連） 2631.83 円/株」があり、
+          本文の約2,632円と一致する（432,889,000,000/164,481,718=2,631.85）。
+          割り算の入力2値そのものはPDF由来で確かめられないが、結果は二次情報で裏付けられる。
+      - id: V39
+        section: financials
+        quote: "2026年3月期の営業CF 87,684百万円✓は前期の3.6倍で、営業利益90,256百万円✓とほぼ同じ大きさになった"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/1944.csv"]
+        evidence: >-
+          operating_cf は FY2025-03=24545・FY2026-03=87684（ともに OK|ROUNDING）。
+          87684/24545=3.572→3.6倍。営業利益90256も採用値。
+          CF表の他の値（investing_cf -22179/3605/-59884、financing_cf -15978/-24976/-30155、
+          free_cf 16341/28150/27800）もすべて採用値と一致する。
+      - id: V40
+        section: financials
+        quote: "| 2024年4-6月期以前の四半期利益率 | **1サイトのみ** | IR BANK のみ。図の左端がそこで切れている理由 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/1944.csv"]
+        evidence: >-
+          Q2024-04_2024-06 以前の operating_margin はすべて status=SINGLE_SOURCE で
+          sources_all が irbank_q 単独（例: Q2024-04_2024-06 irbank_q=1.47）。
+          採用値になるのは Q2024-07_2024-09 以降で、q_margin の periods の左端と一致する。
+      - id: V41
+        section: financials
+        quote: "| 設備投資額 | **1サイトのみ** | IR BANK のみ。しかも2026年3月期の値が投資CFとほぼ同額で、定義が「設備投資」なのか確認できていない。本文では使っていない |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/1944.csv", "https://irbank.net/E00075"]
+        evidence: >-
+          capex は全期 SINGLE_SOURCE で sources_all は irbank_cf 単独。
+          FY2026-03 の capex=-59,900 に対し investing_cf の採用値は -59,884 でほぼ同額。
+          IR BANK の再取得にも「投資額 設備投資 599億1500万円」があり同じ値。
+          本文の「定義が確認できていない」という自己申告は妥当である。
+      # --- 展望とリスク ------------------------------------------------------
+      - id: V42
+        section: outlook
+        quote: "2027年3月期の配当予想は年240円†"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=1944", "https://irbank.net/E00075"]
+        evidence: >-
+          株探の再取得（200）の業績推移に「予 2027.03 | 8,100 | 960 | 700 | 425.5 | 240」、
+          2026.03 の1株配は130。IR BANK にも「配当利回り 予 3.44% (240)」。
+          240/6,837=3.510% は株探の「利回り 3.51 ％」とも整合する。
+      - id: V43
+        section: outlook
+        quote: "連結配当性向は37.1%†→**59.0%**†の計画"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-04-27_5.pdf"]
+        evidence: >-
+          配当性向は決算短信にしか無く、PDFはテキスト化されない。
+          130/350.53=37.09%→37.1%、240/406.46=59.05%→59.0% と割り算は再現できるが、
+          分母の会社予想EPS 406.46円が確かめられない（V47 と同じ問題）。
+          同じ文の「特別配当が各50円」もPDFのみで確かめられない。
+      - id: V44
+        section: outlook
+        quote: "営業利益13,601百万円✓は通期計画97,000百万円†の14.0%だが、上期計画35,500百万円†に対しては**38.3%**（筆者の割り算）"
+        verdict: unsupported
+        tier: dataset
+        sources: ["data/fundamentals/1944.csv"]
+        evidence: >-
+          1Qの営業利益13,601は採用値（OK|ROUNDING）で正しい。割り算も再現できる
+          （13,601/97,000=14.02%、13,601/35,500=38.31%、前年の 7,195/90,256=7.97%→8.0%）。
+          しかし**分母の計画値は採用値ではない**: data/fundamentals の
+          FY2027-03 operating_income_plan=97,000 と H2026-04_2026-09 operating_income_plan=35,500 は
+          どちらも status=SINGLE_SOURCE（株探のみ）で、D7 により裏付けに使えない。
+          一次情報側の決算短信PDFはテキスト化されない。
+        action: "data/tanshin/1944.csv を作って計画値を2ソース照合に載せる"
+      - id: V45
+        section: outlook
+        quote: "2027年3月期の連結計画は営業利益+7.5%†・経常利益+1.6%†・純利益+0.8%†"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=1944"]
+        evidence: >-
+          株探の再取得（200）の業績推移の「前期比(%)」行に経常 +1.6・最終 +0.8 が実在し、
+          この2つは裏付けられる。**営業利益+7.5%はこのページに営業益の列が無く、
+          再取得できた出典のどこにも無い**（97,000/90,256-1=+7.47% と計算はできるが、
+          分母の計画値97,000は SINGLE_SOURCE で採用値ではない・V44）。
+        action: "営業利益の計画値を2ソース照合に載せるか、+7.5%を SINGLE_SOURCE 由来と明示する"
+      - id: V46
+        section: outlook
+        quote: "1Qの支払利息は183百万円†で前年同期の57百万円†から3.2倍"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-07-29_2.pdf"]
+        evidence: >-
+          支払利息は1Q決算短信の損益計算書にしか無く、PDFはテキスト化されない。
+          183/57=3.21→3.2倍 と割り算は再現できるが、両方の値は確かめられない。
+      - id: V47
+        section: outlook
+        quote: "単体の平均年間給与は約997万円†・前期比**+12.3%**†（第112期有価証券報告書）"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://irbank.net/E00075"]
+        evidence: >-
+          IR BANK の再取得（200）に「平均年収 997万円」があり水準は裏付けられる。
+          **前期比+12.3%は再取得できた出典に無い**（前期の平均年収が載っておらず、
+          997/1.123=887.8万円という前期値を確かめる手段がこの文脈には無い）。
+      - id: V48
+        section: outlook
+        quote: "（季節性があるので「前四半期比」では判定しない。4-6月期なら8.38%✓、7-9月期なら13.72%✓が比較の基準）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/1944.csv"]
+        evidence: >-
+          operating_margin の採用値 Q2026-04_2026-06=8.38、Q2025-07_2025-09=13.72
+          （ともに OK|ROUNDING）と一致する。
+      # --- 値動きと市場の評価 ------------------------------------------------
+      - id: V49
+        section: price
+        quote: "直近52週（2025年8月29日〜2026年8月27日）の採用終値の幅は**4,930円✓（2025年10月2日）〜8,525円✓（2026年5月7日）**。直近の採用終値6,975円✓（2026年8月27日）はその**56.9%の位置**（筆者の計算）。窓の始まりの5,272円✓（2025年8月29日）からは+32.3%である"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          2025-08-29〜2026-08-27 の 1944 の status OK 行は242本。最小 4,930（2025-10-02）、
+          最大 8,525（2026-05-07）、窓の先頭 5,272（2025-08-29）、末尾 6,975（2026-08-27）。
+          (6975-4930)/(8525-4930)=56.88%→56.9%、6975/5272-1=+32.31%→+32.3%。
+      - id: V50
+        section: price
+        quote: "3Q決算と同時に通期業績予想を**上方修正**（営業利益81,000→84,000百万円†）し、期末配当を60→65円†へ増配"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-01-29_3.pdf", "https://www.kinden.co.jp/ir/news/"]
+        evidence: >-
+          IR新着一覧の再取得（200）に「2026.01.29 決算情報 2026年3月期 通期業績予想の修正及び
+          配当予想の修正（増配）に関するお知らせ [PDF 2ページ / 140KB]」「2026.01.29 決算情報
+          2026年3月期 第3四半期決算短信」「2026.01.29 お知らせ 中期経営計画における資本政策について」
+          が実在し、**開示の日付・題名・同日開示という構図は裏付けられる**。
+          しかし修正額（81,000→84,000）と配当（60→65円）は当該PDF（再取得200）が
+          テキスト化されず確かめられない。
+      - id: V51
+        section: price
+        quote: "**それでも翌1月30日は7,562円✓→6,838円✓（−9.6%）と大きく下げた**（出来高1,997,400株※）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          2026-01-29 close=7,562（OK）、2026-01-30 close=6,838（OK）・volume=1,997,400。
+          6838/7562-1=-9.574%→-9.6%。
+      - id: V52
+        section: price
+        quote: "翌4月28日は**ストップ高**（高値・安値・終値がすべて7,932円✓、出来高279,100株※）、4月30日には8,382円✓まで上げた"
+        verdict: unsupported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          2026-04-28 は open=high=low=close=7,932・volume=279,100（status OK）で、
+          事実関係は daily.csv と一致する（前日 2026-04-27 close=6,932 に対し値幅制限
+          +1,000円ちょうど）。4/30 の close=8,382 も一致。
+          **ただし ✓ は本文の凡例で「2ソース照合済みの採用値」と定義されており、
+          daily.csv の照合対象（value_primary / value_secondary）は終値だけである。**
+          高値・安値は照合を通っておらず、レポート自身の front matter も
+          「ザラ場の高値・安値は照合を通っていないので使わない」と書いている。
+          高値・安値に付いた ✓ はこの出典では裏付けられない。
+        action: "高値・安値の ✓ を外す（※ か「同値」という書き方に改める）"
+      - id: V53
+        section: price
+        quote: "**2026年6月12日〜6月22日**：6,780円✓→8,367円✓（+23.4%）と急伸"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          2026-06-12 close=6,780（OK）、2026-06-22 close=8,367（OK）。
+          8367/6780-1=+23.407%→+23.4%。
+      - id: V54
+        section: price
+        quote: "**この上げを説明する会社の開示は確認できていない**（6月24日の定時株主総会と6月30日の自己株消却が控えていたが、いずれも4月27日に予告済みの日程である）"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://www.kinden.co.jp/ir/news/"]
+        evidence: >-
+          IR新着一覧の再取得（200）には、この上げの期間内にあたる
+          **「2026.06.15 お知らせ 投資単位の引下げに関する考え方及び方針について
+          [PDF 1ページ / 122KB]」が実在する**。株価は6月12日終値6,780円から
+          6月15日終値7,304円（+7.7%）へ動いており、本文の括弧内が挙げる
+          6月24日の総会・6月30日の消却だけが「控えていた」わけではない。
+          この開示を検討したうえで「説明できない」と言えるかは、本文からは分からない。
+        action: "6月15日の「投資単位の引下げに関する考え方及び方針について」を検討対象に入れて記述し直す"
+      - id: V55
+        section: price
+        quote: "翌7月30日は**直近1年で最大の出来高3,924,000株**※をこなして7,203円✓とほぼ変わらず"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          2025-08-29〜2026-08-28 の出来高上位は 2026-07-30=3,924,000、2026-04-30=3,084,200、
+          2026-06-19=2,174,500 で、7/30 が最大。同日 close=7,203（OK）、前日 7,202（OK）。
+      - id: V56
+        section: price
+        quote: "**2026年7月29日**：1Q決算（15:30開示）。営業利益は前年同期比+89.0%†だったが、当日終値は7,202円✓で前日比−6.4%"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "data/fundamentals/1944.csv", "https://kabutan.jp/stock/news?code=1944"]
+        evidence: >-
+          株探ニュース一覧の再取得（200）に「26/07/29 15:30 | 開示 | 2027年３月期　第１四半期
+          決算短信〔日本基準〕（連結）」があり開示時刻15:30と一致。
+          営業利益の前年同期比は**採用値どうしで再現できる**: 13,601/7,195-1=+89.03%→+89.0%
+          （Q2026-04_2026-06 と Q2025-04_2025-06 の operating_income はどちらも OK|ROUNDING）。
+          株価は 7/28 close=7,696、7/29 close=7,202 で 7202/7696-1=-6.42%→-6.4%。
+        action: "+89.0% は採用値から再現できるので、† ではなく ✓ で書ける（表示の格上げ）"
+      - id: V57
+        section: price
+        quote: "| **株探** | 指標 | PER 16.1倍・PBR 2.60倍・配当利回り3.51%・時価総額1兆1,380億円 |"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=1944"]
+        evidence: >-
+          再取得（200）に「PER | PBR | 利回り | 信用倍率」「16.1 倍 | 2.60 倍 | 3.51 ％ | 17.92 倍」
+          「時価総額 | 1 兆 1,380 億円」。4項目とも一致する。
+      - id: V58
+        section: price
+        quote: "| **みんかぶ（総合）** | **買い** | 目標株価 7,012円（8月28日の株価の約2.6%上） |"
+        verdict: unverifiable
+        tier: secondary
+        sources: ["https://minkabu.jp/stock/1944"]
+        evidence: >-
+          https://minkabu.jp/stock/1944 は2回とも HTTP 403 で本文を取得できなかった
+          （fetch_log に2件残っている）。目標株価7,012円・総合「買い」・株価診断「割高」・
+          個人予想「売り」・アナリスト「買い」・PER（調整後）19.50倍・PBR 1.72倍・PSR 1.51倍は
+          いずれもこの文脈では確かめられない。price_range 図のマーカー
+          「みんかぶ目標株価 7,012」も同じ。7,012/6,837-1=+2.56%→約2.6%上 という
+          割り算だけは再現できる。
+        action: "みんかぶが403で取れない状態が続くなら、目標株価の出典を別に立てるか図のマーカーを落とす"
+      - id: V59
+        section: price
+        quote: "株探の16.1倍は会社予想EPSを425.5円※として計算した値"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=1944"]
+        evidence: >-
+          再取得（200）の業績推移に「予 2027.03 … 425.5」（修正1株益）、PER は 16.1 倍。
+          6,837/425.5=16.068→16.1 で再現できる。
+      - id: V60
+        section: price
+        quote: "みんかぶの19.50倍は2026年3月期の実績EPS 350.53円†を使った値で、いずれも6,837円※から再現できる"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://irbank.net/E00075"]
+        evidence: >-
+          実績EPS 350.53円は IR BANK の再取得（200）に「EPS（連） 350.53 円/株」として実在し、
+          6,837/350.53=19.505→19.50 という計算も再現できる。
+          **しかし「みんかぶが19.50倍と表示している」ことは minkabu が403で確かめられない**（V58）。
+      - id: V61
+        section: price
+        quote: "**株探の会社予想EPS 425.5円※が、会社自身の予想EPS 406.46円†と違う**"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=1944"]
+        evidence: >-
+          株探側の425.5円は再取得で確認できる（V59）。**会社自身の406.46円は決算短信PDFにしかなく、
+          テキスト化されないので確かめられない。** 6,837/406.46=16.82→16.8倍 という
+          本文の計算だけは再現できる。
+      - id: V62
+        section: price
+        quote: "2.60倍※のほうは、1Q末の自己資本432,889百万円†÷期末株式数164,481,718株†＝約2,632円を分母にした値と一致する（筆者の計算）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=1944", "https://irbank.net/E00075"]
+        evidence: >-
+          IR BANK の「BPS（連） 2631.83 円/株」（再取得200）を分母にすると
+          6,837/2,631.83=2.598→2.60 となり、株探の PBR 2.60 倍（再取得200）と一致する。
+          本文の説明はこの2出典で裏付けられる。
+      - id: V63
+        section: price
+        quote: "| 流動性（20日平均売買代金3,000万円） | 平均663,915万円・中央値507,392万円 | 通過。板の薄さはこの銘柄の論点ではない |"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py", "data/prices/daily.csv"]
+        evidence: >-
+          judge.py --indicators-only の 1944 の avg_turnover_20d=6,639,149,155円・
+          median_turnover_20d=5,073,924,000円（V06 と同じ実行）。万円に直すと
+          663,915万円・507,392万円で一致。3,000万円の閾値は大きく上回る。
+      # --- 出典 --------------------------------------------------------------
+      - id: V64
+        section: sources
+        quote: "| 2027年3月期 第1四半期決算短信（1Q実績・通期および上期計画・貸借対照表・損益計算書・自己株式の取得と消却の注記・弘電社TOBの後発事象・単体の受注/完成/手持工事高） | <https://www.kinden.co.jp/pdf/2026-07-29_2.pdf> | 2026-08-29（開示日2026-07-29） |"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://www.kinden.co.jp/pdf/2026-07-29_2.pdf"]
+        evidence: >-
+          一次情報の表に載る8件のURLはすべて再取得で HTTP 200 だが、**8件とも PDF で
+          fetch_source.py はテキスト化しない**（本文は82文字の定型メッセージ）。
+          そのためURLと記載内容の対応（このURLが本当に1Q決算短信か、そこに列挙された
+          項目が載っているか）は、この文脈では1件も確かめられない。
+          data/tanshin/1944.csv も無いので委譲先も無い。
+          加えて、本文が † で引いている弘電社TOB（2026-05-25・2026-07-07）の開示URLが
+          この表に無い（V25/V26）。
+        action: "src/fetch_tanshin.py で data/tanshin/1944.csv を作る／弘電社TOB開示のURLを表に足す"
+      - id: V65
+        section: sources
+        quote: "| 通期の業績推移・財務指標・キャッシュフロー | <https://irbank.net/E00075/results> | 2026-08-29 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/1944.csv"]
+        evidence: >-
+          data/fundamentals/1944.csv の source_url_primary / source_url_secondary に実際に
+          記録されているURLは https://irbank.net/E00075/results（260行）・
+          https://kabutan.jp/stock/finance?code=1944（213行）・
+          https://irbank.net/E00075/quarter（82行）の3本だけで、
+          「二次情報（機械で突き合わせているもの）」の表と過不足なく一致する。
+      - id: V66
+        section: sources
+        quote: "この銘柄には `data/tanshin/1944.csv` がまだ無く、二次情報との2ソース照合を経ていない"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/1944.csv"]
+        evidence: >-
+          data/tanshin/ にあるのは 150A.csv・4073.csv・6570.csv と fetch_log.csv のみで、
+          1944.csv は存在しない。凡例の自己申告は正しい。
+          この事実がこの run の unverifiable 判定の大半の原因でもある。
+      - id: V67
+        section: sources
+        quote: "- **2026年6月15〜22日の+23.4%の理由。** 会社の開示では説明できていない"
+        verdict: contradicted
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          採用終値では 2026-06-15 close=7,304、2026-06-22 close=8,367 で
+          8367/7304-1=+14.55% であり、+23.4% にならない。
+          +23.4% は本文が「値動きと市場の評価」節で書いているとおり
+          **6月12日終値6,780円を起点**にした値である（8367/6780-1=+23.41%）。
+          同じレポートの中で同じ上げに違う期間が付いており、この行の期間は誤り。
+        action: "本文と同じ「2026年6月12日〜6月22日」に直す"
+
+resolutions:
+
+# --- 出典と食い違った記述の始末（D44: contradicted は機械確認でのみ解除）---
+#     本文を直したうえで、何をどう直したかをここに残す。
+#     how: rewritten は quote が現在の本文に実在することを checks が確かめる。
+  - id: V67
+    resolved_at: "2026-08-29T12:37:59+09:00"
+    how: rewritten
+    quote: '- **2026年6月12日〜6月22日の+23.4%の理由。**'
+    note: >-
+      本文の他の箇所は 6月12日〜22日 としており、この行だけ 6月15日 になっていた。本文に合わせた
