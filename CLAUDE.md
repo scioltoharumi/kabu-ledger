@@ -1,14 +1,16 @@
 # kabu-ledger
 
-楽天証券のスクリーニング通過銘柄を週次で監視し、GitHub Pages に台帳として公開する。
+監視銘柄を週次で追跡し、GitHub Pages に台帳として公開する。銘柄の入口は
+楽天証券のスクリーニング通過とセグメント分析からの割り出しの2系統。
 売買判断は人間。このリポジトリは候補提示と記録まで。投資助言ではない。
 
 公開先: GitHub Pages（`docs/`）。**公開は push が起こす**（`.github/workflows/ci.yml` が緑 → `publish.yml`）。
-起点は2つだけ。どちらも人の行動から始まり、スケジュールで勝手に取得しない:
+起点は3つだけ。いずれも人の行動から始まり、スケジュールで勝手に取得しない:
 
 | 起点 | 入口 |
 |---|---|
 | スクショを貼った | `.claude/skills/kabu-ledger-intake/` |
+| セグメント分析から降ろした | `segments/{slug}.yaml` の `candidates` → 人間の確認を経て master.yaml に登録（スキル化はまだ。登録後の履歴取得〜初回レポートは intake の後半と同じ） |
 | 週次ルーティン | `.claude/skills/kabu-ledger-weekly/` |
 
 参照ルーティング: 未確定論点・未解決タスク・改訂履歴 → `BACKLOG.md`（着手時だけ読む）／
@@ -101,7 +103,9 @@
   需要ゲート→層に切る→供給者を実名で数える→取り分、の順で降ろす。**思考の道具で
   あって記録ではない**ので二重照合は課さないが、他人の計算済み数字には
   `computed_by` と `definition` を必ず付ける。`candidates` は master.yaml に
-  入れない＝まだ監視対象ではない）
+  入れない＝まだ監視対象ではない。監視すると決めたら人間の確認を経て master.yaml に
+  **セグメント起点**として登録し、`watch_reason` に層を書く。peers はセグメント定義が
+  そのまま与える）
 - `docs/` Pages 出力。**直接編集しない**（build.py が生成。CI が上書きする）
 - `src/` 取得・検査・判定・生成（fetch_news=見出し収集・weekly_note=週次追記の機械化）／
   `tests/` 素の python で動く test_*.py ／
@@ -118,7 +122,7 @@ fetch*.py → checks.py → score.py → fetch_news.py
               publish : site → deploy-pages → notify（ci が緑のときだけ）
 ```
 
-- 取得はルーティンと intake だけが行う（CI・cron には無い）
+- 取得は上の3起点（ルーティン・intake・セグメント起点の登録）だけが行う（CI・cron には無い）
 - **PR は test が緑になると自動でマージされ、そのまま公開まで走る。**
   止めたければ **draft のままにする**（draft と fork は automerge を通らない）
 - 公開が `publish.yml`（`workflow_run`）に分かれているのは罠2つの回避:
