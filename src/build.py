@@ -70,7 +70,10 @@ def site_header(depth: int = 0) -> str:
             "<nav>" + "".join(links) + "</nav></div></header>")
 
 
-def page(title: str, body: str, as_of: str, depth: int = 0) -> str:
+def page(title: str, body: str, as_of: str, depth: int = 0,
+         wide: bool = False) -> str:
+    """wide=True は PC の広い画面で本文列を広げる（一覧が主役のトップ用。
+    読み物が主役の銘柄ページ・説明ページは 52rem のまま）。"""
     esc_title = html.escape(title)
     foot = f"<footer>集計基準日 {html.escape(as_of)}／{DISCLAIMER}</footer>"
     head = (
@@ -79,8 +82,9 @@ def page(title: str, body: str, as_of: str, depth: int = 0) -> str:
         '<meta name="robots" content="noindex,nofollow">'
         f"<title>{esc_title}</title><style>{CSS}</style></head>"
     )
+    main_cls = ' class="wide"' if wide else ""
     return (f"{head}<body>{site_header(depth)}"
-            f"<main>{body}{foot}</main></body></html>")
+            f"<main{main_cls}>{body}{foot}</main></body></html>")
 
 
 # 検証状態の記号（表記規約 2026-08-23）。本文の値の直後に付ける。
@@ -742,8 +746,9 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     # 読み方の説明と「見ていない鉄則」は about.html に置く。トップは繰り返し
     # 見るページなので、毎回同じ長文を下に積まない（howto_block / unevaluated_block）。
     body = intro + summary + table
-    (DOCS / "index.html").write_text(page("銘柄調査台帳", body, as_of, 0),
-                                     encoding="utf-8", newline="\n")
+    (DOCS / "index.html").write_text(
+        page("銘柄調査台帳", body, as_of, 0, wide=True),
+        encoding="utf-8", newline="\n")
 
 
 def howto_block() -> str:

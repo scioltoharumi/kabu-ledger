@@ -15,8 +15,10 @@ border-bottom:1px solid var(--rule)}
 @supports (backdrop-filter:blur(8px)){
 .site{background:color-mix(in srgb,var(--paper) 86%,transparent);
 backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}}
-.site-in{max-width:52rem;margin:0 auto;display:flex;align-items:center;
-gap:.4rem .9rem;padding:.5rem 1.25rem;flex-wrap:wrap}
+/* ヘッダーは全幅（ブランド左端・ナビ右端）。本文列の幅がページごとに
+   違っても（52rem / wide 74rem）、ヘッダーだけはどのページでも同じ見え方 */
+.site-in{margin:0 auto;display:flex;align-items:center;
+gap:.4rem .9rem;padding:.5rem 1.5rem;flex-wrap:wrap}
 .brand{font-weight:700;color:var(--ink);text-decoration:none;font-size:.95rem;
 letter-spacing:.02em;white-space:nowrap}
 .brand:hover{color:var(--accent)}
@@ -308,10 +310,10 @@ max-width:100%;display:inline-block}
 .list-table th:nth-child(3),.list-table td:nth-child(3){width:12rem}
 .list-table td:nth-child(2) .sub{white-space:nowrap}
 }
-/* PC の広い画面では一覧だけ本文列（52rem）より広く使う（sec-wide と同じ手法） */
+/* PC の広い画面では**トップページ全体**（main.wide）を広く使う。
+   一覧だけを translateX で広げると、見出し・KPI と左端が揃わず崩れて見える */
 @media(min-width:1140px){
-.list-wrap{width:min(72rem,calc(100vw - 5rem));position:relative;
-left:50%;transform:translateX(-50%)}
+main.wide{max-width:74rem}
 }
 
 @media(max-width:640px){
