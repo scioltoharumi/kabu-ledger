@@ -484,6 +484,52 @@ def stamp_legend() -> str:
     )
 
 
+def estimate_line(code: str) -> str:
+    """一覧に出す「次期推定と会社計画・市場予想の乖離」の1行。
+
+    この差が投資判断の核になるため、推定モデルのある銘柄は一覧（コンパクト
+    表示でも）に常時出す。値は estimates/{code}.yaml から src/estimate.py が
+    機械計算したもの。**推定は推定と明示する**（未確定の下書きにはピルを付け、
+    ツールチップで「会社計画でも的中予想でもない」ことを必ず言う）。
+    比べる相手が1つも無いときは出さない（乖離こそが載せる理由なので）。
+    """
+    data = EST.load_estimate(code, root=ROOT)
+    if data is None or data.get("errors") or not data.get("models"):
+        return ""
+    m = data["models"][-1]
+    try:
+        out = EST.outputs(m)
+    except Exception:  # noqa: BLE001 — 推定の形式劣化で一覧を壊さない
+        return ""
+    op = out.get("operating_income")
+    if op is None:
+        return ""
+    unit = str((m.get("revenue") or {}).get("unit") or "")
+    period = str(m.get("period", ""))
+    comp = EST.comparisons(code, period, root=ROOT, unit=unit)
+    plan_op = (comp.get("plan") or {}).get("operating_income")
+    mf = data.get("market_forecast") or {}
+    mf_op = mf.get("operating_income")
+    plan_pct = _rel_pct(op, plan_op)
+    mf_pct = _rel_pct(op, mf_op if isinstance(mf_op, (int, float)) else None)
+    if plan_pct is None and mf_pct is None:
+        return ""
+    parts = [f'推定OP {op:,.0f}<span class="k-unit">百万円</span>']
+    if plan_pct is not None:
+        parts.append(f"会社計画比 {_pct_span(plan_pct)}")
+    if mf_pct is not None:
+        parts.append(f"市場予想比 {_pct_span(mf_pct)}")
+    draft = ('<span class="pill pill-warn">未確定</span>'
+             if str(m.get("status", "draft")) != "confirmed" else "")
+    title = html.escape(
+        f"当台帳の次期推定（対象期 {period}）。検証済みデータと明示した仮定から "
+        "src/estimate.py が機械計算した概算で、会社計画でも的中予想でもない。"
+        "分解と根拠は銘柄ページの「次期売上・利益推定」にある")
+    # ラベルの途中で折り返さない（区切りの「・」でだけ折る）
+    joined = "・".join(f'<span class="nb">{p}</span>' for p in parts)
+    return f'<span class="est-line" title="{title}">{joined}{draft}</span>'
+
+
 # 判定スタンプ → 行クラス・絞り込みチップの固定キー（語彙は judge.py が正。
 # CSS 側は全キーぶんの規則を静的に持つので、キーをここで増やしたら
 # style.py 末尾の絞り込み規則にも同じキーを足すこと）
@@ -557,6 +603,9 @@ def render_row(stock: dict, rep: R.Report | None,
         price_cell += sparkline(series)
         if st:
             price_cell += stamp_pill(st)
+        # 推定と会社計画・市場予想の乖離。この差が投資判断の核なので
+        # 推定モデルのある銘柄は一覧に常時出す（コンパクト表示でも隠さない）
+        price_cell += estimate_line(code)
 
     if rep is None:
         row = (
@@ -795,6 +844,10 @@ def howto_block() -> str:
         "「この台帳が見ていない鉄則」</a>を併読）。売買の判断は人間が行う</li>"
         "<li>終値の下の小さな線は直近約3か月の採用終値"
         "（2ソース照合済みの値のみ）。傾向の手がかりで、数値は銘柄ページの図が正</li>"
+        "<li>「推定OP …・会社計画比 ±x%」は、推定モデルを作成済みの銘柄だけに出る。"
+        "当台帳の次期推定（<code>src/estimate.py</code> の機械計算）が会社計画・"
+        "市場予想からどれだけ乖離しているかで、<strong>この差が投資判断の核</strong>。"
+        "分解と根拠は銘柄ページの「次期売上・利益推定」にある</li>"
         '<li><span class="flag">再調査</span> が付いた銘柄は毎週すべての項目を'
         "見直している。付いていない銘柄はニュースと値動きだけ追っている</li>"
         "<li>再調査の対象を変えたいときは Claude に「4073 を再調査して」と言えばよい</li>"
