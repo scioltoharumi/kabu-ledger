@@ -302,6 +302,10 @@ background:var(--soft)}
 .list-table td{padding:.85rem .6rem;border-bottom:1px solid var(--rule);
 vertical-align:top}
 .list-table tr:hover td{background:#f8f7f3}
+/* 行全体がタップ領域（data-href。委譲スクリプトが拾う）。指す先が
+   分かるよう、ホバーで銘柄名をリンク色にする */
+.list-table tr[data-href]{cursor:pointer}
+.list-table tr[data-href]:hover .nm a{color:var(--accent)}
 .list-table .nm{font-weight:700;font-size:1.02rem}
 .list-table .nm a{color:var(--ink);text-decoration-color:var(--rule)}
 .list-table .sub{color:var(--dim);font-size:.76rem;display:block;margin-top:.15rem}

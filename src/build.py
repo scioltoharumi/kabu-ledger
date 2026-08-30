@@ -580,8 +580,11 @@ def render_row(stock: dict, rep: R.Report | None,
         verify_pill_html = (f'<span class="pill pill-warn">裏取り '
                             f"{passed}/{claims}</span>")
 
+    # data-href: 行のどこを押しても銘柄ページへ飛ばす（小さな委譲スクリプトが
+    # 拾う。リンク・ボタンの上と、文字列選択中は飛ばない）。銘柄名の <a> は
+    # 残す——JS が無くても届く経路であり、新しいタブで開く操作も効く
     row = (
-        f"<tr{tr_cls}>"
+        f'<tr{tr_cls} data-href="stock/{html.escape(code)}.html">'
         f'<td data-l="銘柄"><span class="nm">'
         f'<a href="stock/{html.escape(code)}.html">{name}</a>{flag}{site}</span>'
         f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}{earn_pill}'
@@ -717,7 +720,15 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         'var k="kabu:"+el.id,v=localStorage.getItem(k);'
         'if(v==="1")el.checked=true;if(v==="0")el.checked=false;'
         'el.addEventListener("change",function(){'
-        'localStorage.setItem(k,el.checked?"1":"0")})})'
+        'localStorage.setItem(k,el.checked?"1":"0")})});'
+        # 行のどこを押しても銘柄ページへ（リンクの上と文字列選択中は除く）
+        'var t=document.querySelector(".list-table");'
+        'if(t)t.addEventListener("click",function(e){'
+        'if(e.target.closest("a,label,input"))return;'
+        "var s=window.getSelection&&window.getSelection();"
+        "if(s&&String(s).length)return;"
+        'var tr=e.target.closest("tr[data-href]");'
+        'if(tr)location.href=tr.getAttribute("data-href")});'
         "}catch(e){}})();</script>")
 
     table = (
@@ -743,7 +754,8 @@ def howto_block() -> str:
     return (
         "<h2>台帳一覧の読み方</h2>"
         "<ul>"
-        "<li>銘柄名を押すと、その会社の調査レポートが開く</li>"
+        "<li>行のどこを押しても、その銘柄の調査レポートが開く"
+        "（「IR情報」など小さなリンクの上だけは、そのリンク先へ）</li>"
         "<li>一覧は既定でコンパクト（1行1銘柄）。「詳細表示」ボタンで"
         "概要文とスパークラインが開く</li>"
         "<li>「判定」「裏取り」のチップを外すと、その状態の行を一時的に隠せる"
