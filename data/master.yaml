@@ -295,7 +295,7 @@ stocks:
       shares: null
 liquidity_gate:
   min_avg_turnover_20d_jpy: 30000000   # 20日平均売買代金 3,000万円
-  on_fail: "見送(流動性)"
+  on_fail: "流動性低"
   rationale: "時価総額十数億規模では、判定が正しくても建てられず降りられない"
 
 # 6か月2倍ライン（信用の期限が6か月であることに由来・鉄則）

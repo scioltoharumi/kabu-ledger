@@ -443,8 +443,7 @@ def sparkline(series: list[tuple[str, float]]) -> str:
             'fill="currentColor"/></svg>')
 
 
-def stamp_pill(stamp: str) -> str:
-    """一覧に出す判定スタンプ。色だけに意味を持たせない（語が常に見える）。"""
+def _stamp_cls(stamp: str) -> str:
     cls = "stamp"
     if stamp == J.STAMP_BUY:
         cls += " stamp-buy"
@@ -452,9 +451,37 @@ def stamp_pill(stamp: str) -> str:
         cls += " stamp-sell"
     elif stamp == J.STAMP_OVERHEAT:
         cls += " stamp-hot"
+    return cls
+
+
+def stamp_pill(stamp: str) -> str:
+    """一覧に出す判定スタンプ。色だけに意味を持たせない（語が常に見える）。
+    ツールチップの文言は judge.STAMP_MEANINGS が正（手書きしない）。"""
+    meaning = J.STAMP_MEANINGS.get(stamp, "")
+    title = (f"{meaning}（src/judge.py の機械判定）" if meaning
+             else "src/judge.py の機械判定")
     # 「判定 」の接頭辞はコンパクト表示では CSS で省く（.st-p）
-    return (f'<span class="{cls}" title="src/judge.py の機械判定">'
+    return (f'<span class="{_stamp_cls(stamp)}" title="{html.escape(title)}">'
             f'<span class="st-p">判定 </span>{html.escape(stamp)}</span>')
+
+
+def stamp_legend() -> str:
+    """判定スタンプの凡例（about.html）。文言・並びは judge.STAMP_MEANINGS が正。"""
+    rows = "".join(
+        f'<tr><td data-l="判定"><span class="{_stamp_cls(stamp)}">'
+        f"{html.escape(stamp)}</span></td>"
+        f'<td data-l="意味">{html.escape(meaning)}</td></tr>'
+        for stamp, meaning in J.STAMP_MEANINGS.items())
+    return (
+        '<h2 id="stamps">判定スタンプの意味</h2>'
+        '<p class="lede">判定は <code>src/judge.py</code> の機械判定。'
+        "ゲートを上から順に評価し、該当した時点で確定する（下の表は評価順）。"
+        "未計算のゲートは「通過」扱いにせず「調査」で止める。"
+        "売買の判断は人間が行う。</p>"
+        '<div class="scroll"><table class="prose-table"><thead><tr>'
+        "<th>判定</th><th>意味</th></tr></thead><tbody>"
+        + rows + "</tbody></table></div>"
+    )
 
 
 # 判定スタンプ → 行クラス・絞り込みチップの固定キー（語彙は judge.py が正。
@@ -762,8 +789,9 @@ def howto_block() -> str:
         "<li>レポートは<strong>「週次アップデート」と「会社概要」の2つ</strong>に"
         "畳んである。見出しを押すと開く</li>"
         f"<li>節は <strong>{order}</strong> の順に並んでいる</li>"
-        "<li>「判定」の札は <code>src/judge.py</code> の機械判定。「買」は実装済みの"
-        'ゲートを通過したという意味しかない（下の<a href="#unevaluated">'
+        '<li>「判定」の札は <code>src/judge.py</code> の機械判定。7種の意味は下の'
+        '<a href="#stamps">「判定スタンプの意味」</a>にある。「買」は実装済みの'
+        'ゲートを通過したという意味しかない（<a href="#unevaluated">'
         "「この台帳が見ていない鉄則」</a>を併読）。売買の判断は人間が行う</li>"
         "<li>終値の下の小さな線は直近約3か月の採用終値"
         "（2ソース照合済みの値のみ）。傾向の手がかりで、数値は銘柄ページの図が正</li>"
@@ -1716,6 +1744,7 @@ def build_about_page(as_of: str) -> None:
         "数値が混ざった定性図は描画自体を拒否する（数値は検証済みデータ由来の"
         "図でしか出さない）</li>"
         "</ul>"
+        + stamp_legend()
         + unevaluated_block()
     )
     (DOCS / "about.html").write_text(page("この台帳の読み方", body, as_of, 0),
