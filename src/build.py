@@ -335,18 +335,14 @@ def kpi_tiles(code: str, meta: dict | None = None, as_of: str = "") -> str:
                            f'<span class="k-value-sm">{html.escape(earn)}</span>',
                            "発表予定日"))
 
-    passed, claims, present, stale = verify_stat(code)
+    passed, claims, present, checked = verify_stat(code)
     if not present:
         tiles.append(_tile("記述の裏取り",
                            '<span class="k-value-sm">未検証</span>', "記録なし"))
-    elif stale:
-        tiles.append(_tile("記述の裏取り",
-                           '<span class="k-value-sm">記録が古い</span>',
-                           "本文が更新されてから未実施"))
     else:
         tiles.append(_tile("記述の裏取り",
                            f'{passed}<span class="k-unit">/{claims}</span>',
-                           "裏付けあり／全記述"))
+                           f"裏付けあり／全記述・検証 {checked}"))
 
     return '<div class="kpi">' + "".join(tiles) + "</div>"
 
@@ -469,8 +465,7 @@ STAMP_KEYS = {
     J.STAMP_OVERHEAT: "hot", J.STAMP_SELL: "sell",
     J.STAMP_LIQUIDITY: "liq", J.STAMP_TREND: "trend",
 }
-VF_LABELS = {"ok": "裏取り済", "part": "裏取り未達あり",
-             "stale": "裏取りが古い", "none": "裏取り未実施"}
+VF_LABELS = {"ok": "裏取り済", "part": "裏取り未達あり", "none": "裏取り未実施"}
 
 
 def render_row(stock: dict, rep: R.Report | None,
@@ -504,14 +499,14 @@ def render_row(stock: dict, rep: R.Report | None,
 
     # 判定・裏取りの状態を先に確定する（行クラスと絞り込みチップの材料）。
     # 対象外はキーを付けない——凍った記録をチップの母数に混ぜない
-    passed, claims, present, stale = verify_stat(code)
+    passed, claims, present, checked = verify_stat(code)
     st: str | None = None
     st_key = vf_key = ""
     if not watch_pill:
         st = load_stamp(code)
         if st:
             st_key = STAMP_KEYS.get(st, "other")
-        vf_key = ("none" if not present else "stale" if stale
+        vf_key = ("none" if not present
                   else "ok" if passed == claims else "part")
     classes = " ".join(
         (["row-excluded"] if watch_pill else [])
@@ -573,16 +568,13 @@ def render_row(stock: dict, rep: R.Report | None,
         week_txt = mark_badges(html.escape(first_sentence(latest[1])))
 
     # 裏取りの状態を一覧にも出す。銘柄ページを開かないと分からない状態にしない。
+    # 件数には検証日を併記する（鮮度の判断は読み手。verify_stat 参照）
     if not present:
         verify_pill_html = '<span class="pill pill-warn">裏取り未実施</span>'
-    elif stale:
-        verify_pill_html = '<span class="pill pill-warn">裏取りの記録が古い</span>'
-    elif passed == claims:
-        verify_pill_html = (f'<span class="pill pill-good">裏取り '
-                            f"{passed}/{claims}</span>")
     else:
-        verify_pill_html = (f'<span class="pill pill-warn">裏取り '
-                            f"{passed}/{claims}</span>")
+        cls = "pill-good" if passed == claims else "pill-warn"
+        verify_pill_html = (f'<span class="pill {cls}">裏取り '
+                            f"{passed}/{claims}・{html.escape(checked)}</span>")
 
     # data-href: 行のどこを押しても銘柄ページへ飛ばす（小さな委譲スクリプトが
     # 拾う。リンク・ボタンの上と、文字列選択中は飛ばない）。銘柄名の <a> は
@@ -705,7 +697,7 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
             chips.append(_toggle(f"f-st-{key}", f"{lbl} {n}", f"{lbl} {n}",
                                  checked=True, cls="filter-btn chip",
                                  title="外すと、この判定の行を隠す"))
-    vf_order = [k for k in ("ok", "part", "stale", "none") if k in vf_counts]
+    vf_order = [k for k in ("ok", "part", "none") if k in vf_counts]
     if vf_order:
         chips.append('<span class="fl-cap">裏取り</span>')
         for key in vf_order:
@@ -1028,42 +1020,37 @@ def verify_rows(claims: list) -> str:
 
 
 def verify_stat(code: str) -> tuple:
-    """(裏付けあり, 総数, 記録あり, 本文が検証後に変わったか) を返す。
+    """(裏付けあり, 総数, 記録あり, 検証日) を返す。
 
     claim は **id で畳んで最新の判定**を数える（`VF.Record.folded`）。
     最新 run だけを見ると、claim 1件だけの run を足すだけで
     「15/26件」が「1/1件」に化け、過去の指摘が台帳から消える。
+
+    ★「記録が古い」表示は 2026-08-30 に廃止した。以前は本文の sha が
+    検証時と違うと件数を隠していたが、週次の機械追記だけでも毎週
+    全銘柄が「古い」になる（検証対象を生まない追記なのに）。代わりに
+    **検証日を件数に必ず併記**し、鮮度の判断は読み手が行う（オーナー判断）。
+    sha の不一致そのものは checks.py が WARN で運営者に知らせ続ける。
     """
     rec = VF.load(code)
     if rec is None or rec.latest is None:
-        return (0, 0, False, False)
-    run = rec.latest
-    now = VF.report_sha256(code)
-    stale = bool(run.report_sha256 and now and run.report_sha256 != now)
+        return (0, 0, False, "")
     folded = rec.folded()
     passed = sum(1 for c, _ in folded if c.passed)
-    return (passed, len(folded), True, stale)
+    return (passed, len(folded), True, rec.latest.run[:10])
 
 
 def verify_headline(code: str) -> str:
     """ページ冒頭に置く1行。**警告ブロックで埋めない**（F5-4）ので1行に収める。
-
-    ★本文が検証後に書き換わっているときは **件数を出さない**。
-      「15/26件が裏付けあり」の横に小さく「記録が古い」を添えると、
-      具体的な件数のほうが目立って打ち消しにならない（表示の嘘・D32 と同型）。
-    """
-    passed, total, present, stale = verify_stat(code)
+    件数には検証日を必ず併記する（verify_stat の docstring 参照）。"""
+    passed, total, present, checked = verify_stat(code)
     if not present:
         return ('<br><span class="pill pill-warn">未検証</span>'
                 "本文の記述はまだ出典に当て直していない")
-    if stale:
-        return ('<br><span class="pill pill-warn">記録が古い</span>'
-                '<a href="#verify">本文がこの検証のあとに書き換えられている'
-                "（件数は現在の本文に適用できない）</a>")
     rest = total - passed
     tail = "" if rest == 0 else f"／{rest}件は未確認・要修正"
     return (f'<br>記述の裏取り <a href="#verify">{passed}/{total}件が裏付けあり'
-            f"{tail}</a>")
+            f"{tail}</a>（検証 {html.escape(checked)}）")
 
 
 def render_verify(rep: R.Report) -> str:
@@ -1084,8 +1071,6 @@ def render_verify(rep: R.Report) -> str:
                 "出典に当て直した確認を経ていない。</p>")
 
     run = rec.latest
-    now = VF.report_sha256(code)
-    stale = bool(run.report_sha256 and now and run.report_sha256 != now)
     # claim は id で畳んで最新の判定を採る（最新 run だけを見ると過去の指摘が消える）。
     claims = [c for c, _owner in rec.folded()]
     counts: dict = {}
@@ -1094,26 +1079,19 @@ def render_verify(rep: R.Report) -> str:
 
     parts = [head, lede]
 
-    if stale:
-        # **件数を出さない。** 具体的な数字のほうが目立ち、小さな注記が
-        # 打ち消しにならない（表示の嘘・D32 と同型）。
-        parts.append(
-            '<p class="none"><span class="pill pill-warn">記録が古い</span>'
-            "この検証のあとにレポート本文が書き換えられている。"
-            "<strong>下の判定は現在の本文に適用できない。</strong>"
-            "件数は出さない（現在の本文について確かめられていないため）。</p>")
-    else:
-        readout = ['<p class="readout">',
-                   f"<span>検証した記述 <b>{len(claims)}</b></span>"]
-        for key in VF.VERDICTS:
-            n = counts.get(key, 0)
-            if n:
-                label = html.escape(VF.VERDICTS[key])
-                readout.append(f"<span>{label} <b>{n}</b></span>")
-        readout.append(
-            f"<span>再取得した出典 <b>{len(run.fetched_ok())}</b></span>")
-        readout.append("</p>")
-        parts.append("".join(readout))
+    # 検証日を先頭に必ず出す（鮮度の判断は読み手が行う。verify_stat 参照）
+    readout = ['<p class="readout">',
+               f"<span>検証日 <b>{html.escape(run.run[:10])}</b></span>",
+               f"<span>検証した記述 <b>{len(claims)}</b></span>"]
+    for key in VF.VERDICTS:
+        n = counts.get(key, 0)
+        if n:
+            label = html.escape(VF.VERDICTS[key])
+            readout.append(f"<span>{label} <b>{n}</b></span>")
+    readout.append(
+        f"<span>再取得した出典 <b>{len(run.fetched_ok())}</b></span>")
+    readout.append("</p>")
+    parts.append("".join(readout))
 
     failed = [c for c in claims if not c.passed]
     passed = [c for c in claims if c.passed]
@@ -1560,14 +1538,11 @@ def verification_rows(master: dict, reports: dict[str, R.Report]) -> tuple[str, 
         if not Y.is_watched(s):
             link += '<span class="pill pill-warn">対象外</span>'
         price = f"{v.price_ok}/{v.price_rows}"
-        passed, claims, present, stale = verify_stat(code)
+        passed, claims, present, checked = verify_stat(code)
         if not present:
             verify_cell = '<span class="pill pill-warn">未検証</span>'
-        elif stale:
-            # 件数を出さない（本文が書き換わっているので現在の本文に適用できない）
-            verify_cell = '<span class="pill pill-warn">記録が古い</span>'
         else:
-            verify_cell = f"{passed}/{claims}"
+            verify_cell = f"{passed}/{claims}（{html.escape(checked)}）"
             total["verify_ok"] += passed
             total["verify_all"] += claims
         rows.append(
