@@ -403,7 +403,95 @@ margin-right:.5rem}
 .list-wrap:has(#v-compact:checked) .list-table tr{padding:.5rem .75rem;
 margin:.45rem 0}
 }
-</style></head><body><header class="site"><div class="site-in"><a class="brand" href="../index.html">銘柄調査台帳</a><nav><a href="../index.html">台帳</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav></div></header><main><h1>関電工（1942）</h1><p class="lede">東証プライム／レポート更新 2026-08-29<br>記述の裏取り <a href="#verify">24/50件が裏付けあり／26件は未確認・要修正</a>（検証 2026-08-29）<br><a class="ext" href="https://www.kandenko.co.jp/ir/index.html" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://www.kandenko.co.jp/ir/settled-account/index.html" target="_blank" rel="noopener">決算情報等 ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=1942" target="_blank" rel="noopener">株探 ↗</a></p><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">5,483<span class="k-unit">円</span></span><span class="k-sub">2026-08-27・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+0.7%</span></span><span class="k-sub">2026-08-26 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">3,891 〜 7,346</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">見送(トレンド)</span></span><span class="k-sub">src/judge.py の機械判定</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value">24<span class="k-unit">/50</span></span><span class="k-sub">裏付けあり／全記述・検証 2026-08-29</span></div></div><blockquote>
+
+/* --- 前提知識（knowledge.html） -------------------------------------------
+   左カラム＝分類ツリー、右＝記事。表示切替は :target のみ（JSなし）。
+   どの記事も選ばれていないときは一覧（.kb-home）が出る。 */
+.kb-wrap{display:grid;grid-template-columns:14.5rem minmax(0,1fr);
+gap:1.4rem;align-items:start}
+@media(max-width:760px){.kb-wrap{grid-template-columns:1fr}}
+.kb-side{position:sticky;top:3.4rem;background:var(--card);
+border:1px solid var(--rule);border-radius:8px;padding:.9rem 1rem;
+font-size:.85rem;max-height:calc(100vh - 4.4rem);overflow-y:auto}
+@media(max-width:760px){.kb-side{position:static;max-height:none}}
+.kb-side .kb-cat{font-weight:700;margin:.8rem 0 .15rem;color:var(--ink)}
+.kb-side .kb-cat:first-child{margin-top:0}
+.kb-side .kb-cat.d1{margin-left:.6rem;font-size:.8rem;color:var(--dim)}
+.kb-side .kb-cat.d2{margin-left:1.2rem;font-size:.8rem;color:var(--dim)}
+.kb-side a{display:block;background:none;border:0;border-radius:0;
+border-left:2px solid var(--rule);margin:.12rem 0 .12rem .35rem;
+padding:.2rem .55rem;color:var(--accent);text-decoration:none;
+font-size:.85rem;line-height:1.5}
+.kb-side a:hover{border-left-color:var(--accent);color:var(--ink)}
+.kb-article{display:none;scroll-margin-top:3.6rem}
+.kb-article:target{display:block}
+.kb-main:has(.kb-article:target) .kb-home{display:none}
+.kb-crumb{font-size:.78rem;color:var(--dim);margin:0 0 .6rem}
+.kb-crumb .kb-date{margin-left:.8rem}
+.kb-index{padding-left:1.2rem}
+.kb-index li{margin:.6rem 0}
+.kb-index .kb-crumb{margin:0}
+/* 図（手描きSVG）。狭い画面では横スクロールで原寸を保つ */
+.kb-figure{margin:1.2rem 0 0;background:var(--card);
+border:1px solid var(--rule);border-radius:6px;padding:1rem .9rem .5rem}
+.kb-fig-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.kb-fig-scroll svg{display:block;min-width:760px;width:100%;height:auto}
+.kb-figure figcaption{font-size:.8rem;color:var(--dim);
+border-top:1px dashed var(--rule);margin-top:.7rem;
+padding:.6rem .2rem .4rem;line-height:1.7}
+.kb-kpis{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.2rem 0 0}
+.kb-kpi{flex:1 1 11rem;background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.7rem .9rem}
+.kb-kpi .v{font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.kb-kpi .l{font-size:.76rem;color:var(--dim);line-height:1.6;margin-top:.15rem}
+.kb-src,.kb-srcs{font-size:.72rem;color:var(--dim)}
+.kb-srcs{padding-left:1.2rem}
+.kb-srcs li{margin:.3rem 0;overflow-wrap:anywhere}
+.kb-note{background:var(--soft);border-left:3px solid var(--warn);
+padding:.7rem 1rem;border-radius:0 6px 6px 0;font-size:.86rem;margin:1.2rem 0 0}
+.kb-eq{display:flex;flex-wrap:wrap;gap:.5rem;align-items:stretch;
+justify-content:center;background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:1rem;margin:1.2rem 0 0}
+.kb-eq .term{flex:1 1 9rem;max-width:14rem;text-align:center;
+padding:.7rem .5rem;border:1px dashed var(--rule);border-radius:6px}
+.kb-eq .term.hot{border:1.5px solid var(--accent);background:var(--accent-soft)}
+.kb-eq .op{align-self:center;font-size:1.4rem;color:var(--dim)}
+.kb-eq .t-name{font-weight:700}
+.kb-eq .t-desc{font-size:.76rem;color:var(--dim);margin-top:.2rem;line-height:1.6}
+.kb-vs{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1.2rem 0 0}
+@media(max-width:640px){.kb-vs{grid-template-columns:1fr}}
+.kb-vs .col{background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.9rem 1rem}
+.kb-vs .col.hot{border-color:var(--accent)}
+.kb-vs .tag{font-size:.72rem;letter-spacing:.1em;color:var(--dim)}
+.kb-vs .col.hot .tag{color:var(--accent)}
+.kb-vs h3{margin:.3rem 0 .4rem}
+.kb-vs ul{margin:0;padding-left:1.2em;font-size:.84rem;color:var(--dim)}
+.kb-vs li{margin:.3em 0}
+.kb-vs .q{margin-top:.7rem;padding-top:.5rem;
+border-top:1px dashed var(--rule);font-size:.85rem}
+.kb-layers{display:flex;flex-direction:column;gap:.6rem;margin:1.2rem 0 0}
+.kb-layer{background:var(--card);border:1px solid var(--rule);
+border-left-width:4px;border-radius:6px;padding:.8rem 1rem}
+.kb-layer.v-takes{border-left-color:var(--good)}
+.kb-layer.v-open{border-left-color:var(--warn)}
+.kb-layer.v-pass,.kb-layer.v-out{border-left-color:var(--dim)}
+.kb-layer .who{font-size:.78rem;color:var(--dim);margin-top:.1rem}
+.kb-layer .why{font-size:.85rem;margin-top:.35rem}
+.kb-pill{display:inline-block;font-size:.68rem;font-weight:700;
+padding:.1rem .6rem;border-radius:999px;white-space:nowrap;
+vertical-align:.1em;background:var(--soft)}
+.kb-pill.p-takes{color:var(--good)}
+.kb-pill.p-open{color:var(--warn)}
+.kb-pill.p-pass,.kb-pill.p-out{color:var(--dim)}
+.kb-cands{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));
+gap:.6rem;margin:1.2rem 0 0}
+.kb-cand{background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.7rem .9rem}
+.kb-cand .code{font-size:.72rem;color:var(--accent);font-weight:700}
+.kb-cand .nm{font-weight:700;margin:.1rem 0 .3rem}
+.kb-cand p{font-size:.78rem;color:var(--dim);margin:0;line-height:1.65}
+</style></head><body><header class="site"><div class="site-in"><a class="brand" href="../index.html">銘柄調査台帳</a><nav><a href="../index.html">台帳</a><a href="../knowledge.html">前提知識</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav></div></header><main><h1>関電工（1942）</h1><p class="lede">東証プライム／レポート更新 2026-08-29<br>記述の裏取り <a href="#verify">24/50件が裏付けあり／26件は未確認・要修正</a>（検証 2026-08-29）<br><a class="ext" href="https://www.kandenko.co.jp/ir/index.html" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://www.kandenko.co.jp/ir/settled-account/index.html" target="_blank" rel="noopener">決算情報等 ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=1942" target="_blank" rel="noopener">株探 ↗</a></p><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">5,483<span class="k-unit">円</span></span><span class="k-sub">2026-08-27・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+0.7%</span></span><span class="k-sub">2026-08-26 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">3,891 〜 7,346</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">見送(トレンド)</span></span><span class="k-sub">src/judge.py の機械判定</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value">24<span class="k-unit">/50</span></span><span class="k-sub">裏付けあり／全記述・検証 2026-08-29</span></div></div><blockquote>
 <p><strong>一行でいうと</strong>：東京電力パワーグリッドを筆頭株主に持つ、首都圏最大手の電気設備工事会社。2026年3月期は売上高 7,420億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>・営業利益 831億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>・営業利益率 11.2%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>と過去最高を更新し、利益率の上昇が続いている。データセンター向け受注も伸びているが、株価は5月の高値から4分の1下げており、「上がった利益率を市場が何年ぶんと見ているか」が論点。</p>
 </blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W35・全 1 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W35（2026-08-24 週）</h3><p><strong>（台帳への新規登録週。会社からの開示は無く、株価は3週ぶりに市場を上回った）</strong></p>
 <ul>
