@@ -54,7 +54,8 @@ _TMPDIRS: list[Path] = []
 # chartdata は DATA を組み立てているので、それぞれ別に差し替える。
 _PATCH_TARGETS = (
     ("judge", {"ROOT": ""}),
-    ("build", {"ROOT": "", "DOCS": "docs", "STAMPS": "scoring/stamps.json"}),
+    ("build", {"ROOT": "", "DOCS": "docs", "STAMPS": "scoring/stamps.json",
+               "KNOWLEDGE": "knowledge"}),
     # STAMPS は import 時に実リポジトリを指したまま固定される。ROOT を差し替えても
     # 追随せず、判定が変わった週に build.main() が実リポジトリの
     # scoring/stamps.json を書き換える。data/ ではないので append-only 検査には

@@ -43,11 +43,13 @@ CHART_RE = re.compile(r"(?:<p>)?\{\{chart:([a-z0-9_]+)\}\}(?:</p>)?")
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 STAMPS = ROOT / "scoring" / "stamps.json"
+KNOWLEDGE = ROOT / "knowledge"
 
 MD_EXT = ["tables", "fenced_code", "sane_lists"]
 
 NAV_ITEMS = [
     ("index.html", "台帳"),
+    ("knowledge.html", "前提知識"),
     ("data.html", "データの出どころ"),
     ("about.html", "読み方"),
 ]
@@ -1804,6 +1806,105 @@ def build_about_page(as_of: str) -> None:
                                      encoding="utf-8", newline="\n")
 
 
+# --- 前提知識 --------------------------------------------------------------
+
+def load_knowledge() -> list[dict]:
+    """knowledge/*.html を読む。front matter: title / category（1〜3階層のリスト）/ date。
+
+    カテゴリは記事を書く側（Claude 起案・人間確認）が front matter で宣言し、
+    build は宣言どおりに束ねるだけ（本文から推測して分類し直すことはしない）。
+    第4階層以降は切り捨てる。順序はファイル名・カテゴリ名の辞書順で固定（D8）。
+    """
+    arts: list[dict] = []
+    if not KNOWLEDGE.is_dir():
+        return arts
+    for p in sorted(KNOWLEDGE.glob("*.html")):
+        meta, body = R._split_front_matter(p.read_text(encoding="utf-8"))
+        cat = meta.get("category") or ["未分類"]
+        if isinstance(cat, str):
+            cat = [cat]
+        arts.append({
+            "slug": p.stem,
+            "title": str(meta.get("title") or p.stem),
+            "category": [str(c) for c in cat][:3],
+            "date": str(meta.get("date") or ""),
+            "body": body,
+        })
+    return arts
+
+
+def _kb_tree(arts: list[dict]) -> dict:
+    """記事をカテゴリ階層に束ねる。ノード = {"sub": {名前: ノード}, "articles": []}"""
+    root: dict = {"sub": {}, "articles": []}
+    for a in arts:
+        node = root
+        for name in a["category"]:
+            node = node["sub"].setdefault(name, {"sub": {}, "articles": []})
+        node["articles"].append(a)
+    return root
+
+
+def _kb_nav(node: dict, depth: int = 0) -> str:
+    """左カラムの分類ツリー。カテゴリ見出し＋記事リンク（#kb-{slug}）。"""
+    out: list[str] = []
+    for a in sorted(node["articles"], key=lambda x: (x["title"], x["slug"])):
+        slug = html.escape(a["slug"])
+        out.append(f'<a href="#kb-{slug}">{html.escape(a["title"])}</a>')
+    for name in sorted(node["sub"]):
+        out.append(f'<div class="kb-cat d{depth}">{html.escape(name)}</div>')
+        out.append(_kb_nav(node["sub"][name], depth + 1))
+    return "".join(out)
+
+
+def _kb_article(a: dict) -> str:
+    crumb = " › ".join(html.escape(c) for c in a["category"])
+    date = (f'<span class="kb-date">作成 {html.escape(a["date"])}</span>'
+            if a["date"] else "")
+    slug = html.escape(a["slug"])
+    return (f'<section class="kb-article" id="kb-{slug}">'
+            f'<p class="kb-crumb">{crumb}{date}</p>{a["body"]}</section>')
+
+
+def build_knowledge_page(as_of: str) -> None:
+    """docs/knowledge.html。銘柄を判定する前に押さえる業界構造・商習慣・
+    方法論の記事集（原稿は knowledge/*.html）。
+
+    左カラムの分類から記事を選ぶと、その記事だけが表示される。
+    表示切替は CSS の :target（JS なし・URL の # で記事を指せる）。
+    どの記事も選ばれていないときは一覧（kb-home）が出る。
+    """
+    arts = load_knowledge()
+    tree = _kb_tree(arts)
+
+    rows = []
+    for a in sorted(arts, key=lambda x: (x["category"], x["title"])):
+        crumb = " › ".join(html.escape(c) for c in a["category"])
+        slug = html.escape(a["slug"])
+        rows.append(f'<li><span class="kb-crumb">{crumb}</span><br>'
+                    f'<a href="#kb-{slug}">{html.escape(a["title"])}</a></li>')
+    n = len(arts)
+    home = (
+        '<div class="kb-home">'
+        "<h2>この棚について</h2>"
+        "<p>セグメント分析で銘柄を降ろす前に、その業界の<strong>お金の流れ・商習慣・"
+        "ビジネスモデル</strong>を図で押さえるための記事集。判定の本体は "
+        "<code>segments/*.yaml</code>（出典・数値つき）が担い、ここは前提の理解を担当する。"
+        "記事中の ※ は二次情報または未照合の参考値（<a href='about.html'>読み方</a>の凡例と同じ）。</p>"
+        f"<p>左の分類から記事を選ぶ。現在 {n} 記事。</p>"
+        f'<ul class="kb-index">{"".join(rows)}</ul></div>'
+    )
+    articles = "".join(_kb_article(a)
+                       for a in sorted(arts, key=lambda x: x["slug"]))
+    side = f'<nav class="kb-side" aria-label="前提知識の分類">{_kb_nav(tree)}</nav>'
+    body = ("<h1>前提知識</h1>"
+            '<p class="lede">業界の構造を先に理解してから銘柄を見るための棚。'
+            "投資助言ではない。売買の判断は人間が行う。</p>"
+            f'<div class="kb-wrap">{side}<div class="kb-main">{home}{articles}</div></div>')
+    (DOCS / "knowledge.html").write_text(
+        page("前提知識", body, as_of, 0, wide=True),
+        encoding="utf-8", newline="\n")
+
+
 # --- main -----------------------------------------------------------------
 
 def main() -> int:
@@ -1823,6 +1924,7 @@ def main() -> int:
     build_index(master, reports, as_of)
     build_data_page(master, reports, as_of)
     build_about_page(as_of)
+    build_knowledge_page(as_of)
     for code in sorted(reports):
         build_stock_page(reports[code], as_of, by_code.get(code))
 

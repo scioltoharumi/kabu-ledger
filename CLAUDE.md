@@ -106,6 +106,11 @@
   入れない＝まだ監視対象ではない。監視すると決めたら人間の確認を経て master.yaml に
   **セグメント起点**として登録し、`watch_reason` に層を書く。peers はセグメント定義が
   そのまま与える）
+- `knowledge/` 前提知識の記事（HTML断片＋front matter: title / category 最大3階層 /
+  date。build.py が docs/knowledge.html に束ね、左カラムの分類から :target で
+  記事を切り替える。**セグメントの yaml 判定より先に**、業界の金の流れ・商習慣・
+  ビジネスモデルを図解する記事をここに書き、人間の理解を経てから判定に進む。
+  SVG の marker 等の id は記事 slug で名前空間を切る＝1ページに全記事が載るため）
 - `docs/` Pages 出力。**直接編集しない**（build.py が生成。CI が上書きする）
 - `src/` 取得・検査・判定・生成（fetch_news=見出し収集・weekly_note=週次追記の機械化）／
   `tests/` 素の python で動く test_*.py ／
