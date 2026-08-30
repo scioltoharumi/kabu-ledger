@@ -125,6 +125,9 @@ fetch*.py → checks.py → score.py → fetch_news.py
 - 取得は上の3起点（ルーティン・intake・セグメント起点の登録）だけが行う（CI・cron には無い）
 - **PR は test が緑になると自動でマージされ、そのまま公開まで走る。**
   止めたければ **draft のままにする**（draft と fork は automerge を通らない）
+- **Claude セッションが作る PR は draft のまま置かない**（方針 2026-08-30:
+  全て自動で公開する）。既定が draft 作成でも、作成後すぐ ready for review に
+  切り替えて automerge に乗せる。draft で止めるのは人間が明示したときだけ
 - 公開が `publish.yml`（`workflow_run`）に分かれているのは罠2つの回避:
   GITHUB_TOKEN の push はワークフローを再起動しない／github-pages environment は
   既定ブランチからのデプロイしか許さない（PR 契機の run は ref が弾かれる）。
