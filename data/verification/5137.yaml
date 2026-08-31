@@ -1,0 +1,745 @@
+# 裏取り記録（append-only）— reports/5137.md
+#
+# 手順の正: .claude/skills/kabu-ledger-verify/SKILL.md
+# 語彙の正: src/verification.py（VERDICTS / TIERS）
+#
+# レポートを書いた文脈とは別の文脈が、本文の出典URLを src/fetch_source.py で
+# 実際に再取得し、記述がその出典で裏付けられるかを1件ずつ判定した結果。
+# **過去の run は書き換えない。**新しい検証は runs の末尾に足す。
+code: "5137"
+runs:
+  - run: "2026-08-31T16:05:00+09:00"
+    report_updated: "2026-08-31"
+    report_sha256: "a7bedf4e6b0e057e74a522fcd9bfc507fdfd03e7f29d650e55a6e0c34eb007df"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    note: >-
+      初回レポートの初回検証。本文に書かれている出典URL 14件を**全件**再取得した
+      （すべて HTTP 200）。ただし 14件のうち 7件は f.irbank.net の PDF で、
+      fetch_source.py はテキスト化しない。この銘柄には data/tanshin/5137.csv が
+      **まだ存在しない**ため、本文が † を付けた会社開示由来の数値
+      （リカーリング売上・契約社数・FO/AO 別売上・のれん・有利子負債・
+      自己株式の株数・インターゾーンの財務など）は**この run では確かめられない**。
+      それらは unverifiable として記録した。「未確認」を消す方法は用意しない。
+      検証できたのは data/ の採用値（status に OK を含む行）で裏が取れるもの、
+      および HTML で読める4サイト（株探2ページ・株探ニュース記事・IR BANK・
+      会社サイト3ページ）に書かれているものに限る。
+
+    urls_refetched:
+      - {url: "https://smartdrive.co.jp/company/ir/", http_status: 200}
+      - {url: "https://smartdrive.co.jp/company/ir/library/financial-reports/", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=5137", http_status: 200}
+      - {url: "https://irbank.net/5137/ir", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20260813/140120260811517528.pdf", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20260813/140120260811517529.pdf", http_status: 200}
+      - {url: "https://kabutan.jp/news/marketnews/?b=n202608261057", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=5137", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20260721/140120260721596587.pdf", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20260616/140120260615571281.pdf", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20260514/140120260512527073.pdf", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20260129/140120260129540901.pdf", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20250514/140120250513544975.pdf", http_status: 200}
+      - {url: "https://smartdrive.co.jp/company/", http_status: 200}
+
+    claims:
+      # --- 週次アップデート --------------------------------------------------
+      - id: V01
+        section: updates
+        quote: "会社からの適時開示はこの2週間で8月13日の第3四半期決算短信と決算説明資料の2件だけ。以降は無い"
+        verdict: supported
+        tier: secondary
+        sources: ["https://irbank.net/5137/ir"]
+        evidence: >-
+          IR BANK の適時開示一覧を再取得（200・13,397字）。最新は
+          「2026/08/13 / 2026年9月期第3四半期決算説明資料（15:30） /
+          2026年9月期第3四半期決算短信〔日本基準〕(連結)（15:30）」の2件で、
+          それより新しい会社開示の行は無い。次に古いのは 2026/07/21
+          「自己株式の取得結果及び取得終了に関するお知らせ（11:30）」。
+        action: ""
+
+      - id: V02
+        section: updates
+        quote: "8月20日、アモーヴァ・アセットマネジメントが保有割合を5%未満に減らしたと変更報告書（No.7）で報告した"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=5137"]
+        evidence: >-
+          株探の銘柄ニュース一覧を再取得（200）。
+          「26/08/20 09:24 | ５％ | スマートＤについて、アモーヴァ・アセットマネジメントは
+          保有割合が5％未満に減少したと報告 [変更報告書No.7]」を確認。
+          日付・提出者・変更報告書番号のいずれも本文と一致する。
+          本文が「当台帳は変更報告書の原本を確認していない」と自ら断っている点も
+          そのとおりで、原本（EDINET）は出典に無い。
+        action: ""
+
+      - id: V03
+        section: updates
+        quote: "8月26日19時30分、株探が「ロボタクシー」特集で「ここから活躍期待の6銘柄」の筆頭に当社を挙げた"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://kabutan.jp/stock/news?code=5137"
+          - "https://kabutan.jp/news/marketnews/?b=n202608261057"
+        evidence: >-
+          ニュース一覧に「26/08/26 19:30 | 特集 | 「ロボタクシー」日本上陸、
+          自動運転技術の本領発揮で爆走前夜の銘柄を追え ＜株探トップ特集＞」。
+          記事本文を再取得（200・6,369字）すると
+          「●ここから活躍期待の6銘柄を選抜」の直後の1件目が
+          「◆スマートドライブ <5137> [東証Ｇ]」で、2件目以降はティアフォー・
+          ゼンリン・ヴィッツ等。日時・見出し・筆頭であることが一致する。
+        action: ""
+
+      - id: V04
+        section: updates
+        quote: "自動運転やロボタクシーに直接関連するセンサーなどは開発していない"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/news/marketnews/?b=n202608261057"]
+        evidence: >-
+          記事本文に「自動運転やロボタクシーに直接関連するセンサーなどは
+          開発していないものの、急ブレーキ・急ハンドルなどの挙動、道路状況、
+          独自の安全運転スコアリングデータを蓄積することで、ロボタクシーが走った後の
+          運行管理やデータ利活用の面で注目度が高い。」を一字一句確認。
+          本文の「挙げている理由は走行データの蓄積である」もこの一文で裏付く。
+        action: ""
+
+      - id: V05
+        section: updates
+        quote: "株価は 8月13日 232円✓ → 8月14日 266円✓ の +14.7%、8月17日 285円✓ でさらに +7.1%。8月27日は 302円✓ で、決算前日から +30.2%"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          採用終値（status に OK を含む行）: 08-13=232 / 08-14=266 / 08-17=285 /
+          08-27=302。266/232-1=+14.66%、285/266-1=+7.14%、302/232-1=+30.17%。
+          いずれも本文の丸めと一致する。
+        action: >-
+          「決算前日」は文字どおりには 8/12（採用終値 235円）を指し、
+          そこからだと +28.5% になる。起点 232円 は決算当日 8/13 の終値
+          （決算は引け後開示）なので、「決算当日の終値から」に直すのが正確。
+
+      - id: V06
+        section: updates
+        quote: "同じ期間の TOPIX（採用終値）は −1.4%"
+        verdict: supported
+        tier: dataset
+        sources: ["data/indices/topix.csv"]
+        evidence: >-
+          topix.csv の採用終値 2026-08-13=4176.04（OK）→ 2026-08-27=4117.22（OK）。
+          4117.22/4176.04-1 = -1.41%。
+        action: ""
+
+      - id: V07
+        section: updates
+        quote: "**8月28日は2つの取得元の照合が成立せず、採用終値が無い**（`status=SINGLE_SOURCE`）。主ソース単独の値は 317円※、出来高 1,165,300株※である"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://kabutan.jp/stock/?code=5137"]
+        evidence: >-
+          daily.csv の 2026-08-28 行は close 空・status=SINGLE_SOURCE・
+          source_primary=yahoo_jp・value_primary=317.0・volume=1,165,300。
+          株探を再取得すると 08/31 15:24 時点で「313円 / 前日比 -4 / -1.26%」と表示され、
+          前日終値 317円と整合する（313+4=317）。
+        action: ""
+
+      - id: V08
+        section: updates
+        quote: "直近25営業日平均 437,400株※・平均は当台帳の計算"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          daily.csv の 5137 の最後の25行（2026-07-24〜2026-08-28）の volume 平均は
+          437,400.0 で本文と完全一致。25日窓の終端を 08-27 にすると 394,460、
+          08-26 にすると 361,956 になるので、窓は 08-28 までで確定できる。
+        action: >-
+          比較対象は 8/27 の出来高なのに、平均の窓には翌日 8/28（採用終値が
+          成立していない SINGLE_SOURCE の日）が入っている。窓の終端を明示するか、
+          8/27 までの25日（394,400株）に揃えると読み手が誤解しない。
+
+      - id: V09
+        section: updates
+        quote: "8月31日14時03分の株探（15分ディレイ）は 319円※・PER 13.4倍※・PBR 8.61倍※・信用倍率 2.79倍※・時価総額 121億円※と表示している"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=5137"]
+        evidence: >-
+          同ページを 2026-08-31 15:42 に再取得（200）すると
+          「15:24 / 313円 / 前日比 -4 / -1.26%」「PER 13.1 倍 | PBR 8.45 倍 |
+          利回り － ％ | 信用倍率 2.79 倍」「時価総額 119 億円」。
+          値動きする項目（株価・PER・PBR・時価総額）は本文取得時点から動いており、
+          信用倍率 2.79倍だけが一致する（週次データのため）。
+          本文は「8月31日14時03分」と時点を明記しており、その時点の値としては
+          否定材料が無い。**2026-08-31 14:03 時点の値**として読む。
+        action: ""
+
+      - id: V10
+        section: updates
+        quote: "信用買残は 1,883.4千株※（8/21・前週 1,844.8千株※）、信用売残 675.4千株※、信用倍率 2.79倍※。7月24日の 3.96倍※からは下がっている"
+        verdict: supported
+        tier: dataset
+        sources: ["data/margin/5137.csv", "https://kabutan.jp/stock/?code=5137"]
+        evidence: >-
+          margin/5137.csv（status=OK）: 2026-08-21 long=1883.4 / short=675.4 /
+          ratio=2.79、2026-08-14 long=1844.8、2026-07-24 long=2005.5 /
+          short=506.3 / ratio=3.96。3.96→2.79 で低下、売残 506.3→675.4 で増加。
+          株探の再取得ページの信用倍率 2.79倍とも一致する。
+        action: ""
+
+      - id: V11
+        section: updates
+        quote: "第4四半期の必要額（売上 1,701百万円・営業利益 434百万円"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/5137.csv"]
+        evidence: >-
+          採用値どうしの式で確認。売上: revenue_plan(FY2026-09)=4,583(OK) −
+          四半期採用値の和 729(OK)+855(OK)+1,298(OK)=2,882 → 1,701。
+          営業利益: operating_income_plan(FY2026-09)=743(OK) −
+          87(OK)+52(OK)+170(OK)=309 → 434。
+        action: ""
+
+      # --- この会社は何者か --------------------------------------------------
+      - id: V12
+        section: company
+        quote: "2013年10月設立†、本社は東京都千代田区内幸町（WeWork 内）†、代表取締役は北川烈†"
+        verdict: supported
+        tier: primary
+        sources: ["https://smartdrive.co.jp/company/"]
+        evidence: >-
+          会社概要ページを再取得（200・6,406字）。会社概要欄に
+          「設立 2013年 10月」「代表取締役 北川 烈 Retsu Kitagawa」
+          「本社所在地 〒100-0011 東京都千代田区内幸町 2-1-6 日比谷パークフロント
+          19階（WeWork 内）」を確認。
+        action: >-
+          本文はこの3点に †（決算短信・会社開示資料）を付けているが、
+          裏が取れたのは会社サイトの会社概要ページ。記号の由来としては
+          出典表の「会社概要」行と対応しており実害は無い。
+
+      - id: V13
+        section: company
+        quote: "関西支社（大阪）・東海支社（名古屋）とマレーシアの現地法人 SmartDrive Sdn Bhd を持つ†"
+        verdict: supported
+        tier: primary
+        sources: ["https://smartdrive.co.jp/company/"]
+        evidence: >-
+          同ページ事業所欄に「関西支社 〒530-0002 大阪府大阪市北区曾根崎新地…」
+          「東海支社 〒450-6001 愛知県名古屋市中村区名駅…」
+          「マレーシアオフィス SmartDrive Sdn Bhd (1358038-U) … Kuala Lumpur」。
+          沿革にも「2020年3月 マレーシアに連結子会社SmartDrive Sdn. Bhd.設立」。
+        action: ""
+
+      - id: V14
+        section: company
+        quote: "2022年12月15日に東証グロース市場へ上場した（二次情報）"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://smartdrive.co.jp/company/"]
+        evidence: >-
+          会社概要ページの沿革は「2022年12月 東京証券取引所グロース市場に株式を上場」
+          までで、**日（15日）は書かれていない**。再取得した他の出典
+          （株探の基本情報・銘柄ニュース・IR BANK の適時開示一覧・記事）にも
+          上場日の記載は無い。年月は裏が取れるが、日は裏が取れない。
+        action: >-
+          日を落として「2022年12月に東証グロース市場へ上場」にするか、
+          上場日を示す一次出典（新規上場に関する適時開示・有報）を出典表に足す。
+          なお年月は会社サイト（一次情報）で確認できるので、
+          「（二次情報）」の但し書きは会社概要ページに差し替えられる。
+
+      - id: V15
+        section: company
+        quote: "決算上の報告セグメントは「モビリティDX事業」の**単一セグメント**で、短信にセグメント情報の内訳は載らない†"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: >-
+          出典は第3四半期決算短信の PDF
+          （https://f.irbank.net/pdf/20260813/140120260811517528.pdf）。
+          再取得は成功（HTTP 200・content-type application/pdf）だが、
+          fetch_source.py は PDF をテキスト化しない。
+          data/tanshin/5137.csv も存在しない（data/tanshin/ にあるのは
+          150A.csv・4073.csv・6570.csv のみ）ので、機械抽出の記録に委譲もできない。
+          **この run では確かめられない。**
+        action: >-
+          src/fetch_tanshin.py で第3四半期決算短信を data/tanshin/5137.csv に
+          取り込む。取り込むまで、この記述の裏付けは存在しない。
+
+      - id: V16
+        section: company
+        quote: "2026年1月29日に残る 380株を 1,385百万円†で買って完全子会社にした†"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: >-
+          IR BANK の適時開示一覧で「2026/01/29 株式会社インターゾーンの株式追加取得に
+          よる完全子会社化に関するお知らせ（16:00）」の**存在と日付**は確認した。
+          しかし 380株・1,385百万円 という数値は当該 PDF
+          （https://f.irbank.net/pdf/20260129/140120260129540901.pdf・HTTP 200）
+          の中にあり、テキスト化できないため確かめられない。
+          data/tanshin/5137.csv も data/kpi/5137.csv も無く、委譲先も無い。
+        action: >-
+          取得価額と株数を一次情報から機械で落とす経路（fetch_tanshin か kabu-ledger
+          スキル）を通すまで、この2数値は「未確認」のまま扱う。
+
+      # --- 財務の推移と健全性 ------------------------------------------------
+      - id: V17
+        section: financials
+        quote: "| 2025/9期 | 2,878 | 390 | — | 453 | 47.5 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/5137.csv"]
+        evidence: >-
+          FY2025-09 の採用値: revenue=2878(OK|ROUNDING)・operating_income=390(OK)・
+          net_income=453(OK|ROUNDING)・equity_ratio=47.5(OK)。
+          ordinary_income は MISMATCH（kabutan_fy=370 / irbank=353）で採用値が無く、
+          本文が「—」を置いているのは D53 の作法どおり。
+        action: ""
+
+      - id: V18
+        section: financials
+        quote: "3期で売上は 1,254百万円✓→2,878百万円✓の +130%、営業利益は 319百万円✓の赤字から 390百万円✓の黒字へ変わった"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/5137.csv"]
+        evidence: >-
+          FY2022-09 revenue=1254(OK)・operating_income=-319(OK)、
+          FY2025-09 revenue=2878(OK)・operating_income=390(OK)。
+          2878/1254-1 = +129.5%（本文の「+130%」と丸めで一致）。
+        action: ""
+
+      - id: V19
+        section: financials
+        quote: "単独四半期の営業利益は 2025年7-9月期 131百万円✓（利益率 17.11%✓）を付けたあと、2025年10-12月期 87百万円✓（11.93%✓）、2026年1-3月期 52百万円✓（6.09%✓）と2四半期続けて落ち、直近の2026年4-6月期に 170百万円✓（13.09%✓）へ戻した"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/5137.csv"]
+        evidence: >-
+          採用値（すべて status に OK を含む）: Q2025-07_2025-09 op=131 /
+          margin=17.11、Q2025-10_2025-12 op=87 / margin=11.93、
+          Q2026-01_2026-03 op=52 / margin=6.09、Q2026-04_2026-06 op=170 /
+          margin=13.09。6つの数値すべてが本文と一致し、増減の向きも本文どおり。
+        action: ""
+
+      - id: V20
+        section: financials
+        quote: "**この累計は当台帳の四半期採用値の和と一致する**（売上 729✓＋855✓＋1,298✓＝2,882、営業利益 87✓＋52✓＋170✓＝309）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/5137.csv"]
+        evidence: >-
+          729+855+1298 = 2882、87+52+170 = 309。左辺の6項はいずれも
+          Q2025-10_2025-12 / Q2026-01_2026-03 / Q2026-04_2026-06 の採用値（OK）。
+          株探の見出し「26/08/13 スマートＤ、10-6月期(3Q累計)経常は25％増益で着地」も
+          3Q累計の期間区切り（2025年10月〜2026年6月）と整合する。
+        action: ""
+
+      - id: V21
+        section: financials
+        quote: "**増収 770百万円のうち 529百万円が AO 側の増加**"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: >-
+          FO/AO 別の売上（第3四半期単独 FO 799・AO 499、9か月 FO 2,092・AO 789、
+          前年同期 FO 1,851・AO 260）はすべて決算説明資料 PDF 由来で、
+          テキスト化できず再取得で確かめられない。
+          内部整合だけは確認できる: 799+499=1,298 は Q2026-04_2026-06 の採用値
+          1,298(OK) と一致し、2,092+789=2,881・1,851+260=2,111 は
+          3Q累計 2,882・前年同期 2,112 と1百万円差（丸め）で整合、
+          差 2,881-2,111=770 と 789-260=529 も本文どおり。
+          ただしこれは**本文の数値どうしが矛盾しないこと**を言えるだけで、
+          その数値が会社開示にあることの裏付けにはならない。
+        action: >-
+          FO/AO 別売上を data/kpi/5137.csv などに機械で取り込むまで「未確認」。
+
+      - id: V22
+        section: financials
+        quote: "自己資本比率は 47.5%✓（2025年9月期末）から 30.6%†（第3四半期末）へ下がり、総資産は 2,394百万円✓から 4,515百万円†へ増えた"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: >-
+          左側は採用値で裏が取れる（FY2025-09 equity_ratio=47.5(OK)・
+          total_assets=2394(OK|ROUNDING)）。右側の 30.6% と 4,515百万円は
+          data/fundamentals では C2025-10_2026-06 の equity_ratio・total_assets が
+          いずれも **SINGLE_SOURCE（採用値なし・kabutan_bs 単独）**で、
+          D7 により裏付けに使えない。一次の PDF はテキスト化できない。
+        action: >-
+          第3四半期末の BS 数値は2つ目の取得元が揃うまで採用値にならない。
+          本文で ✓ と † を並べているので誤読はされにくいが、
+          「30.6%†」「4,515百万円†」は現時点で機械の裏付けが無い。
+
+      - id: V23
+        section: financials
+        quote: "有利子負債は第3四半期末で 1,896百万円†（1年内返済予定の長期借入金 442百万円†＋長期借入金 1,453百万円†）"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: >-
+          出典は第3四半期決算短信 PDF（HTTP 200・テキスト化不可）。
+          data/fundamentals の C2025-10_2026-06 に interest_bearing_debt の行は無く
+          （あるのは interest_bearing_debt_ratio=1.37 の SINGLE_SOURCE のみ）、
+          委譲先も無い。なお本文の内訳は 442+1,453=1,895 で、
+          本文が掲げる合計 1,896 と1百万円合わない。
+        action: >-
+          合計と内訳のどちらが原本どおりかを短信で確認する（端数処理の可能性が高いが、
+          当台帳は原本を機械で読めていない）。data/tanshin/5137.csv への取り込みが先。
+
+      - id: V24
+        section: financials
+        quote: "2026年6月16日に上限 1,580,000株†・300百万円†の取得枠を決議し†、7月16日までに 373,600株†・78,000,500円†を東京証券取引所の市場買付で取得して終了した†"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: >-
+          IR BANK の適時開示一覧で「2026/06/16 自己株式取得に係る事項の決定に関する
+          お知らせ（16:30）」「2026/07/21 自己株式の取得結果及び取得終了に関する
+          お知らせ（11:30）」の**存在と日付**は確認した（一覧にはこのほか
+          2026/07/03「自己株式の取得状況に関するお知らせ」もある）。
+          株数・金額・取得方法は両 PDF（いずれも HTTP 200）の中にあり、
+          テキスト化できないため確かめられない。
+          内部整合のみ: 373,600/1,580,000 = 23.6% で本文の「株数ベースで24%」と一致し、
+          78,000,500/373,600 = 208.8円 は6〜7月の採用終値の範囲（179〜232円）に収まる。
+        action: >-
+          自己株式の取得枠と取得結果を一次情報から機械で落とすまで「未確認」。
+
+      - id: V25
+        section: financials
+        quote: "キャッシュフローは通期しか採用値が無く、2025年9月期のフリーCF 89百万円✓（営業CFと投資CFは照合不成立）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/5137.csv"]
+        evidence: >-
+          FY2025-09 free_cf=89(OK・kabutan_cf=89 / irbank_cf=89)。
+          同期 operating_cf は MISMATCH（641 / 638）、investing_cf も MISMATCH
+          （-552 / -549）で採用値が空。四半期（Q…）行に CF 系の metric は1件も無い。
+        action: ""
+
+      # --- 今後の展望とリスク ------------------------------------------------
+      - id: V26
+        section: outlook
+        quote: "会社計画（2026年9月期・連結）は 売上高 4,583百万円✓・営業利益 743百万円✓・経常利益 725百万円✓・親会社株主に帰属する当期純利益 890百万円✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/5137.csv"]
+        evidence: >-
+          FY2026-09 の採用値: revenue_plan=4583(OK|ROUNDING)・
+          operating_income_plan=743(OK)・ordinary_income_plan=725(OK)・
+          net_income_plan=890(OK)。4本とも本文と一致。
+        action: ""
+
+      - id: V27
+        section: outlook
+        quote: "前年同期は 売上 766百万円✓・営業利益 131百万円✓なので、**+122%・+231% を1四半期で出す置き方**である"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/5137.csv"]
+        evidence: >-
+          Q2025-07_2025-09 revenue=766(OK)・operating_income=131(OK)。
+          必要額（V11）1,701/766-1 = +122.1%、434/131-1 = +231.3%。
+        action: ""
+
+      - id: V28
+        section: outlook
+        quote: "会社計画の1株当たり当期純利益 23.74円†に対して 12.7倍程度"
+        verdict: unsupported
+        tier: dataset
+        sources: ["data/fundamentals/5137.csv", "https://kabutan.jp/stock/?code=5137"]
+        evidence: >-
+          data/fundamentals の FY2026-09 eps_plan は **23.83**（status OK。
+          kabutan_fy=23.9 / kabutan_fy10=23.9 / irbank_pl_consolidated=23.83）で、
+          本文の 23.74 とは一致しない。再取得した株探も 313円で PER 13.1倍
+          （→ EPS 約23.9）、本文取得時点の 319円で PER 13.4倍（→ 約23.8）を示し、
+          23.74 を裏付ける出典はどれにも無い。890百万円÷37,349,352株 = 23.83 で
+          採用値側の由来は説明がつく。倍率そのものは 302/23.74=12.72、
+          302/23.83=12.67 でどちらでも「12.7倍程度」になる。
+        action: >-
+          短信の1株当たり当期純利益（予想）を data/tanshin/5137.csv に取り込んで
+          出所を確定させるか、採用値 23.83円に置き換える。
+          短信の予想EPSは期中平均株式数ベースなので採用値と差が出うるが、
+          現時点でその差を裏付ける材料が無い。
+
+      - id: V29
+        section: outlook
+        quote: "進捗率 売上63%†・営業利益42%†と、前年同期の 73%†・66%†"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/5137.csv"]
+        evidence: >-
+          4つとも採用値どうしの式で再現できる。
+          今期 売上 (729+855+1298)/4583 = 2882/4583 = 62.9% → 63%。
+          今期 営業利益 (87+52+170)/743 = 309/743 = 41.6% → 42%。
+          前年同期 売上 (641+790+681)/2878 = 2112/2878 = 73.4% → 73%。
+          前年同期 営業利益 (39+116+104)/390 = 259/390 = 66.4% → 66%。
+          分子分母の12項はすべて status に OK を含む採用値。
+        action: ""
+
+      - id: V30
+        section: outlook
+        quote: "（決算説明資料10頁†・https://f.irbank.net/pdf/20260813/140120260811517529.pdf ・2026-08-31 取得）"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: >-
+          当該 PDF を再取得（HTTP 200・content-type application/pdf）したが
+          fetch_source.py はテキスト化しない。**何頁に何が書いてあるか**は
+          この run では確かめられない。進捗率の数値自体は V29 のとおり
+          採用値から再現できるが、「会社自身が説明資料10頁にそう書いた」という
+          帰属は裏が取れていない。本文が引く「第4四半期の3点」
+          「受注から導入・検収までの時期により業績が変動する可能性」も同様。
+        action: >-
+          決算説明資料の記述に依る帰属は、data/tanshin/5137.csv 取り込み後に
+          再判定する。頁番号は機械で確かめられないので、引用は数値ではなく
+          出典行そのものに寄せるほうが安全。
+
+      # --- 値動きと市場の評価 ------------------------------------------------
+      - id: V31
+        section: price
+        quote: "採用終値は 491円✓（2025-09-01）から 302円✓（2026-08-27）へ、この一年で **−38.5%**。同じ期間の TOPIX（採用終値）は +34.4%"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "data/indices/topix.csv"]
+        evidence: >-
+          5137: 2025-09-01=491(OK) → 2026-08-27=302(OK)、302/491-1 = -38.49%。
+          topix: 2025-09-01=3063.19(OK) → 2026-08-27=4117.22(OK)、+34.41%。
+          差は -38.5 - 34.4 = -72.9 で本文の「73ポイント負けている」と一致。
+          2025-09-01 は 5137 の採用終値が成立している最初の日でもある。
+        action: ""
+
+      - id: V32
+        section: price
+        quote: "高値は 540円✓（2025-11-14）、安値は 179円✓（2026-06-11）で、高値から −44.1%、安値から +68.7% の位置にいる"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          2025-09-01 以降で status に OK を含む行だけを見ると、最高値の採用終値は
+          2025-11-14 の 540、最安値は 2026-06-11 の 179 で他に並ぶ日は無い。
+          302/540-1 = -44.07%、302/179-1 = +68.72%。
+        action: ""
+
+      - id: V33
+        section: price
+        quote: "**2025年11月11日**（2025年9月期の通期決算と2026年9月期計画）→ 11月13日に 438円✓→518円✓ の **+18.3%**"
+        verdict: contradicted
+        tier: secondary
+        sources: ["https://irbank.net/5137/ir", "data/prices/daily.csv"]
+        evidence: >-
+          IR BANK の適時開示一覧を再取得（200）すると、通期決算の開示日は
+          **2025/11/13**である:「2025/11/13 / 2025年9月期第4四半期決算説明の動画
+          及び書き起こし公開のお知らせ（14:30） / 2025年9月期第4四半期決算説明資料
+          （11:30） / 2025年9月期決算短信〔日本基準〕(連結)（11:30）」。
+          2025/11/11 の行は一覧に存在しない（前後は 2025/11/21 役員人事、
+          2025/08/13 の第3四半期関連）。
+          採用終値もこれと整合する: 11-11=430・11-12=438・11-13=518 で、
+          出来高は 190,600 / 186,600 / 407,300。11/11 引け後の開示なら 11/12 に
+          動くはずだが、実際に動いたのは 11/13。短信が 11/13 11:30（場中）に
+          出たと読むと、同日 +18.3% と出来高倍増が説明できる。
+          本文の「438円✓→518円✓ の +18.3%」という値そのものは採用値と一致する
+          （518/438-1 = +18.26%）。誤っているのは**開示日**である。
+        action: >-
+          「2025年11月11日」を「2025年11月13日（11:30・場中）」に直し、
+          「11月13日に 438円→518円」は同日の値動きとして書き直す
+          （前日 11/12 終値 438円 → 当日 11/13 終値 518円）。
+          本文は 6/5 の Geotab 開示（11:30・場中）を正しく同日の動きとして
+          書いているので、同じ扱いに揃える。
+
+      - id: V34
+        section: price
+        quote: '{date: "2025-11-11", label: "通期決算と、翌期の会社計画を開示"}'
+        verdict: contradicted
+        tier: secondary
+        sources: ["https://irbank.net/5137/ir"]
+        evidence: >-
+          events_52w の年表イベント。V33 と同じ根拠で、IR BANK の適時開示一覧は
+          2025年9月期決算短信・第4四半期決算説明資料をいずれも **2025/11/13
+          （11:30）**として並べており、2025/11/11 の開示行は存在しない。
+          図の見出し・イベントは全点に成立する主張だけを載せる規律（D40）に反する。
+        action: >-
+          date を "2025-11-13" に直す。図は charts.events_52w 経由で
+          src/chartdata.py が引くので、front matter を直せば図も直る。
+
+      - id: V35
+        section: price
+        quote: "**2026年5月14日**（中間決算・引け後）→ 5月15日に 295円✓→225円✓ の **−23.7%**、出来高 1,987,200株※"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://irbank.net/5137/ir"]
+        evidence: >-
+          採用終値 2026-05-14=295(OK) → 2026-05-15=225(OK)、225/295-1 = -23.73%、
+          05-15 の volume=1,987,200。IR BANK 側でも
+          「05/14 | 15:30 2026年9月期第2四半期決算説明資料」
+          「05/14 | 15:30 資金の借入に関するお知らせ」と、株価行
+          「05/15 | 255 | 255 | 224 | 225 | -23.73% | 1,987,200 …」を確認。
+          終値・下落率・出来高が別運営の出典でも一致する。
+        action: ""
+
+      - id: V36
+        section: price
+        quote: "**2026年6月5日**（Geotab との共同事業）→ 192円✓→214円✓ の +11.5%、出来高 3,547,600株※でこの一年の最大"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://irbank.net/5137/ir"]
+        evidence: >-
+          採用終値 2026-06-04=192(OK) → 2026-06-05=214(OK)、214/192-1 = +11.46%、
+          06-05 の volume=3,547,600。2025-09-01 以降の全行でこれが最大出来高。
+          IR BANK でも「06/05 | 11:30 世界をリードするテレマティクス企業 Geotabとの
+          共同事業展開に関するお知らせ」「06/05 | 196 | 238 | 193 | 214 | +11.46% |
+          3,547,600 …」を確認。場中開示で同日に動いた点も本文の書き方と整合する。
+        action: ""
+
+      - id: V37
+        section: price
+        quote: "第3四半期末の発行済株式数 37,959,480株†から自己株式 610,128株†を引いた 37,349,352株†に採用終値 302円✓を掛けると、時価総額はおよそ113億円"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=5137"]
+        evidence: >-
+          発行済株式数は株探を再取得して「発行済株式数 | 37,959,480 株」を確認できる。
+          一方 **自己株式 610,128株 はどの再取得出典にも書かれていない**
+          （短信 PDF はテキスト化不可）。引き算 37,959,480-610,128 = 37,349,352 と
+          302×37,349,352 = 112.8億 は計算として正しい。
+          差引株数の妥当性は傍証がある: 株探の PBR 8.45倍（313円時点）は
+          313/8.45 = 37.04 で、自己資本1,381百万円÷37,349,352株 = 36.98 と近く、
+          発行済株式数ベースの 36.38 とは合わない。
+        action: >-
+          自己株式数を data/tanshin/5137.csv に取り込むまで、610,128株 と
+          そこから導く時価総額113億円・1株純資産36.98円・PBR8.2倍は「未確認」。
+
+      - id: V38
+        section: price
+        quote: "株探が「比較される銘柄」に挙げるのはエイトレッド・ウネリー・エコモット（2026-08-31 取得・二次情報）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=5137"]
+        evidence: >-
+          再取得（200）した株探の基本情報ページに
+          「比較される銘柄 / エイトレッド / , / ウネリー / , / エコモット」。
+          3社・並び順とも本文と一致する。
+        action: ""
+
+      # --- 出典・当台帳のデータ・未確認事項 ----------------------------------
+      - id: V39
+        section: sources
+        quote: "| 2026年9月期 第3四半期決算短信〔日本基準〕（連結） | 2026-08-13 | https://f.irbank.net/pdf/20260813/140120260811517528.pdf |"
+        verdict: supported
+        tier: primary
+        sources: ["https://f.irbank.net/pdf/20260813/140120260811517528.pdf", "https://irbank.net/5137/ir"]
+        evidence: >-
+          URL を再取得して HTTP 200・content-type application/pdf を確認（到達可）。
+          開示日は IR BANK の一覧の「2026/08/13 … 2026年9月期第3四半期決算短信
+          〔日本基準〕(連結)（15:30）」と一致する。
+          本文が「PDFの中身は会社が提出した原本だが、URL自体は会社のドメインではない」
+          と断っているのはそのとおりで、f.irbank.net は TDnet のミラー。
+          **中身は当台帳の道具ではテキスト化できない**（V15・V16・V23・V24・V30）。
+        action: ""
+
+      - id: V40
+        section: sources
+        quote: "| IR情報（開示の入口） | — | https://smartdrive.co.jp/company/ir/ |"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://smartdrive.co.jp/company/ir/"]
+        evidence: >-
+          一次情報の表に置かれた URL を再取得（200）すると本文はわずか1,183字で、
+          グローバルナビゲーションと「IR情報 Investor Relations」
+          「IRお問い合わせ」「IRメルマガ登録」しか無い。
+          開示文書の一覧も、本文中のどの記述の根拠にもなる記述も載っていない。
+          **一次情報の欄にあるが、目次にもなっていない入口ページ**である。
+        action: >-
+          出典表から落とすか、「開示の入口（内容の根拠ではない）」と明記する。
+          実際に一覧を持つのは決算資料ページのほう（V41）。
+
+      - id: V41
+        section: sources
+        quote: "会社自身のIRサイトは開示文書の一覧を決算資料のページ以外では持たないため"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://smartdrive.co.jp/company/ir/"
+          - "https://smartdrive.co.jp/company/ir/library/financial-reports/"
+        evidence: >-
+          IR トップ（1,183字）に開示一覧は無い（V40）。決算資料ページ（2,073字）は
+          「最新の決算資料 / 2026年9月期：第3四半期 / 2026年9月期第3四半期-決算短信 /
+          …-決算説明資料 / …-よくある質問」と四半期別の一覧を持つ。
+          同ページで第3四半期の期間が「2026.4.1-2026.6.30」、第1四半期が
+          「2025.10.1-2025.12.31」であることも確認でき、本文の
+          「第3四半期累計（2025年10月〜2026年6月）」の期間区切りを裏付ける。
+        action: ""
+
+      - id: V42
+        section: sources
+        quote: "† を付けた数値は、下表の会社開示PDFから直接読み取ったもので、`data/tanshin/5137.csv` にはまだ取り込んでいない。"
+        verdict: supported
+        tier: dataset
+        sources: ["data/tanshin", "data/fundamentals/5137.csv"]
+        evidence: >-
+          data/tanshin/ に置かれているのは 150A.csv・4073.csv・6570.csv・
+          fetch_log.csv だけで、**5137.csv は存在しない**。
+          本文の自己申告はそのとおり。ただしその帰結として、
+          本文中の † 付き数値は当 run では1件も機械で確かめられない。
+        action: >-
+          この銘柄の裏取りが実質的に進むのは data/tanshin/5137.csv ができてから。
+          初回レポートの検証としては、†（会社開示PDF）に依る記述が本文の主要主張
+          （買収の中身・のれん・有利子負債・自己株式・進捗率の帰属）を
+          広く占めている点を人間に上げる。
+
+      - id: V43
+        section: sources
+        quote: "株価の採用終値は 241/270日ぶんで、2025年7月22日から8月29日までと2026年8月28日は照合が成立していない"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: >-
+          5137 の行数は 270（2025-07-22〜2026-08-28）、うち status に OK を含む行は
+          241。OK でない 29行の内訳は 2025-07-22〜2025-08-29 の28行と 2026-08-28 の
+          1行で、他に OK でない日は無い。最初の採用終値は 2025-09-01。
+          D53 のとおり close の有無ではなく status で数えた結果と一致する。
+        action: ""
+
+      - id: V44
+        section: sources
+        quote: "2023年9月期・2024年9月期の `bps` は `MISMATCH` で、株探と IR BANK の値がちょうど6倍ずれている"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/5137.csv"]
+        evidence: >-
+          FY2023-09 bps: kabutan_bs=77.67 / irbank_bs=12.94（77.67/12.94 = 6.002）。
+          FY2024-09 bps: kabutan_bs=122.79 / irbank_bs=20.47（122.79/20.47 = 5.998）。
+          いずれも status=MISMATCH で採用値は空。FY2025-09 は両者 30.36 で一致（OK）。
+          本文が採用値 30.36円✓だけを使っているのも確認した。
+        action: ""
+
+      - id: V45
+        section: sources
+        quote: "**従業員数。** 会社概要ページにも決算短信にも記載が無く、有価証券報告書を当台帳で取得していない"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://smartdrive.co.jp/company/"]
+        evidence: >-
+          会社概要ページを再取得して「従業員」「社員」で当てると、会社概要欄に
+          従業員数の項目は無い（当たるのは経営チームの略歴中の「社員第1号として
+          2014年に…入社」のみ）。**会社概要ページに記載が無いことは裏が取れる。**
+          一方「決算短信にも記載が無く」は PDF をテキスト化できないため
+          確かめられていない。data/tanshin/5137.csv も無い。
+        action: >-
+          決算短信側の断定を外すか、data/tanshin/5137.csv 取り込み後に再判定する。
+
+# --- 出典と食い違った記述の始末（D44: contradicted は機械確認でのみ解除）---
+resolutions:
+  - id: V33
+    resolved_at: "2026-08-31T16:35:00+09:00"
+    how: rewritten
+    quote: "- **2025年11月13日 11:30・場中**（2025年9月期の通期決算と2026年9月期計画）→ 前日終値 438円✓ から当日終値 518円✓ の **+18.3%**。"
+    note: >-
+      開示日が誤り。IR BANK の適時開示一覧では通期決算短信・第4四半期決算説明資料とも
+      2025/11/13 11:30 で、11/11 の行は存在しない。当台帳の採用終値
+      （11-11=430 / 11-12=438 / 11-13=518・出来高 190,600 / 186,600 / 407,300）とも
+      整合する。場中開示なので同日の値動きとして書き直した。+18.3% という値自体は
+      採用値どおりで変えていない
+  - id: V34
+    resolved_at: "2026-08-31T16:35:00+09:00"
+    how: rewritten
+    quote: '- {date: "2025-11-13", label: "通期決算と、翌期の会社計画を開示"}'
+    note: >-
+      V33 と同じ根拠で年表イベントの date を直した。図は charts.events_52w 経由で
+      src/chartdata.py が引くので front matter の修正がそのまま図に効く

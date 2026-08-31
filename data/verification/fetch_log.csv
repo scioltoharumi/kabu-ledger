@@ -450,3 +450,159 @@ fetched_at,code,url,final_url,http_status,chars,sha256,note
 2026-08-29T12:22:31.635770+09:00,1969,https://www.jpx.co.jp/markets/indices/jpx-nikkei400/index.html,https://www.jpx.co.jp/markets/indices/jpx-nikkei400/index.html,200,5199,48a17383f8feb2c1,text/html
 2026-08-29T12:24:23.744233+09:00,1969,https://kabutan.jp/stock/?code=1969,https://kabutan.jp/stock/?code=1969,200,4356,293e424209e25b80,text/html; charset=UTF-8
 2026-08-29T12:26:51.297675+09:00,1969,https://kabutan.jp/stock/?code=1969,https://kabutan.jp/stock/?code=1969,200,4356,293e424209e25b80,text/html; charset=UTF-8
+2026-08-31T15:14:10.477089+09:00,4707,https://kabutan.jp/stock/news?code=4707&b=k202608280005,https://kabutan.jp/stock/news?code=4707&b=k202608280005,200,5890,4d8718227b2df776,text/html; charset=UTF-8
+2026-08-31T15:15:27.180927+09:00,4707,https://kabutan.jp/stock/?code=4707,https://kabutan.jp/stock/?code=4707,200,4304,bd0a4de531af009c,text/html; charset=UTF-8
+2026-08-31T15:15:31.406561+09:00,4707,https://kabutan.jp/stock/news?code=4707&b=n202608310263,https://kabutan.jp/stock/news?code=4707&b=n202608310263,200,3675,712a0aea06d33d9d,text/html; charset=UTF-8
+2026-08-31T15:15:35.605819+09:00,4707,https://kabutan.jp/stock/news?code=4707&b=n202608280365,https://kabutan.jp/stock/news?code=4707&b=n202608280365,200,3662,bc565a82949bb2e1,text/html; charset=UTF-8
+2026-08-31T15:15:39.757282+09:00,4707,https://kabutan.jp/stock/news?code=4707,https://kabutan.jp/stock/news?code=4707,200,4990,0f819fdd04ce47e1,text/html; charset=UTF-8
+2026-08-31T15:16:36.509205+09:00,4707,https://kitac.co.jp/company/overview/,https://kitac.co.jp/company/overview/,200,993,e71c0310bfea57b6,text/html; charset=UTF-8
+2026-08-31T15:16:41.032514+09:00,4707,https://kitac.co.jp/company/office/,https://kitac.co.jp/company/office/,200,1350,ceb767e6c3ec3e6d,text/html; charset=UTF-8
+2026-08-31T15:16:45.434935+09:00,4707,https://kitac.co.jp/company/qualification/,https://kitac.co.jp/company/qualification/,200,1011,37b1f8d632aaac0b,text/html; charset=UTF-8
+2026-08-31T15:16:49.824681+09:00,4707,https://kitac.co.jp/ir/calendar/,https://kitac.co.jp/ir/calendar/,200,1029,72f57e6690e8281c,text/html; charset=UTF-8
+2026-08-31T15:16:53.993442+09:00,4707,https://kitac.co.jp/ir/report/,https://kitac.co.jp/ir/report/,200,19565,f90616d893ab2ff8,text/html; charset=UTF-8
+2026-08-31T15:18:13.787693+09:00,4707,https://kitac.co.jp/wp/wp-content/uploads/2026/08/%E5%90%8D%E5%8F%A4%E5%B1%8B%E8%A8%BC%E5%88%B8%E5%8F%96%E5%BC%95%E6%89%80%E3%83%A1%E3%82%A4%E3%83%B3%E5%B8%82%E5%A0%B4%E3%81%B8%E3%81%AE%E4%B8%8A%E5%A0%B4%E6%89%BF%E8%AA%8D%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E3%81%8A%E3%81%97%E3%82%89%E3%81%9B-1.pdf,https://kitac.co.jp/wp/wp-content/uploads/2026/08/%E5%90%8D%E5%8F%A4%E5%B1%8B%E8%A8%BC%E5%88%B8%E5%8F%96%E5%BC%95%E6%89%80%E3%83%A1%E3%82%A4%E3%83%B3%E5%B8%82%E5%A0%B4%E3%81%B8%E3%81%AE%E4%B8%8A%E5%A0%B4%E6%89%BF%E8%AA%8D%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E3%81%8A%E3%81%97%E3%82%89%E3%81%9B-1.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:18:18.967797+09:00,4707,https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260827.pdf,https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260827.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:18:23.900486+09:00,4707,https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf,https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:18:28.418743+09:00,4707,https://kitac.co.jp/wp/wp-content/uploads/2025/12/20251204-3.pdf,https://kitac.co.jp/wp/wp-content/uploads/2025/12/20251204-3.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:18:32.728971+09:00,4707,https://kitac.co.jp/wp/wp-content/uploads/2026/02/20260301.pdf,https://kitac.co.jp/wp/wp-content/uploads/2026/02/20260301.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:22:36.768898+09:00,4440,https://www.witz-inc.co.jp/company/overview,https://www.witz-inc.co.jp/company/overview/,200,3083,7e289efc0a093646,text/html; charset=UTF-8
+2026-08-31T15:22:54.328231+09:00,4440,https://kabutan.jp/stock/?code=4440,https://kabutan.jp/stock/?code=4440,200,4402,64ab6bd914f7da23,text/html; charset=UTF-8
+2026-08-31T15:24:06.566795+09:00,4440,https://irbank.net/4440/ir,https://irbank.net/4440/ir,200,17158,ac00484f7d643261,text/html; charset=UTF-8
+2026-08-31T15:24:53.298442+09:00,4440,https://car.watch.impress.co.jp/docs/news/2136234.html,https://car.watch.impress.co.jp/docs/news/2136234.html,200,2404,aff4920b6c713821,text/html; charset=utf-8
+2026-08-31T15:25:00.534272+09:00,4440,https://car.watch.impress.co.jp/docs/news/2136234.html,https://car.watch.impress.co.jp/docs/news/2136234.html,200,2404,aff4920b6c713821,text/html; charset=utf-8
+2026-08-31T15:25:17.961452+09:00,4440,https://s.kabutan.jp/news/n202608280819/,https://s.kabutan.jp/news/n202608280819/,200,3113,fceb1535c84973ba,text/html; charset=utf-8
+2026-08-31T15:25:34.835374+09:00,4440,https://kabutan.jp/news/marketnews/?b=n202608261057,https://kabutan.jp/news/marketnews/?b=n202608261057,200,6379,33f8891028438701,text/html; charset=UTF-8
+2026-08-31T15:26:06.830229+09:00,4440,https://www.witz-inc.co.jp/ir/news/result/,https://www.witz-inc.co.jp/ir/news/result/,200,2007,4a08ca00fdd0084e,text/html; charset=UTF-8
+2026-08-31T15:26:13.918305+09:00,4440,https://www.witz-inc.co.jp/ir/news/result/,https://www.witz-inc.co.jp/ir/news/result/,200,2007,4a08ca00fdd0084e,text/html; charset=UTF-8
+2026-08-31T15:26:32.266820+09:00,4440,https://www.witz-inc.co.jp/ir,https://www.witz-inc.co.jp/ir/,200,1968,2f770b5790db0614,text/html; charset=UTF-8
+2026-08-31T15:26:39.686826+09:00,4440,https://f.irbank.net/pdf/20260714/140120260709590234.pdf,https://f.irbank.net/pdf/20260714/140120260709590234.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:26:44.101814+09:00,4440,https://f.irbank.net/pdf/20260714/140120260710591515.pdf,https://f.irbank.net/pdf/20260714/140120260710591515.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:26:48.444366+09:00,4440,https://f.irbank.net/pdf/20251014/140120251009570632.pdf,https://f.irbank.net/pdf/20251014/140120251009570632.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:26:53.978951+09:00,4440,https://f.irbank.net/pdf/20251014/140120251006569161.pdf,https://f.irbank.net/pdf/20251014/140120251006569161.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:26:58.298267+09:00,4440,https://f.irbank.net/pdf/20260217/140120260217563258.pdf,https://f.irbank.net/pdf/20260217/140120260217563258.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:29:30.744376+09:00,5243,https://contents.xj-storage.jp/xcontents/AS05592/f9898ce2/249b/447a/a35d/657684558c33/140120260826526264.pdf,https://contents.xj-storage.jp/xcontents/AS05592/f9898ce2/249b/447a/a35d/657684558c33/140120260826526264.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:29:39.822565+09:00,5243,https://kabutan.jp/stock/?code=5243,https://kabutan.jp/stock/?code=5243,200,4354,d5ac79a8933ecdde,text/html; charset=UTF-8
+2026-08-31T15:29:59.205737+09:00,5243,https://kabutan.jp/stock/finance?code=5243,https://kabutan.jp/stock/finance?code=5243,200,8725,2d33addd611a698f,text/html; charset=UTF-8
+2026-08-31T15:31:10.179456+09:00,5243,https://kabutan.jp/stock/news?code=5243,https://kabutan.jp/stock/news?code=5243,200,4695,b963bf40f21ed51b,text/html; charset=UTF-8
+2026-08-31T15:31:27.140300+09:00,5243,https://finance.yahoo.co.jp/quote/5243.T/disclosure,https://finance.yahoo.co.jp/quote/5243.T/disclosure,200,5849,c5afedd0dfdd04d2,text/html; charset=utf-8
+2026-08-31T15:31:36.318834+09:00,5243,https://ir.note.jp/,https://ir.note.jp/,200,515,073fbe38411752a8,text/html
+2026-08-31T15:31:44.527207+09:00,5243,https://note.com/note_ir,https://note.com/note_ir,200,1430,00ee2d21c1407a21,text/html; charset=utf-8
+2026-08-31T15:31:49.091672+09:00,5243,https://irbank.net/5243,https://irbank.net/5243,200,5600,d5e3a419419e0fe6,text/html; charset=UTF-8
+2026-08-31T15:34:49.875904+09:00,5243,https://contents.xj-storage.jp/xcontents/AS05592/b6303b7a/398a/470b/a8f8/a7b6e580ca14/140120260707588920.pdf,https://contents.xj-storage.jp/xcontents/AS05592/b6303b7a/398a/470b/a8f8/a7b6e580ca14/140120260707588920.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:34:54.346235+09:00,5243,https://contents.xj-storage.jp/xcontents/AS05592/eb259f3b/8bb5/4b0c/bf2a/3e35bb152cca/140120260707588967.pdf,https://contents.xj-storage.jp/xcontents/AS05592/eb259f3b/8bb5/4b0c/bf2a/3e35bb152cca/140120260707588967.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:34:59.664518+09:00,5243,https://contents.xj-storage.jp/xcontents/AS05592/a4ea5483/a46e/4111/9347/89dede346794/140120260707589041.pdf,https://contents.xj-storage.jp/xcontents/AS05592/a4ea5483/a46e/4111/9347/89dede346794/140120260707589041.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:35:04.371264+09:00,5243,https://contents.xj-storage.jp/xcontents/AS05592/4eb303b6/1ad7/48a9/886c/b46097f80778/140120260324587697.pdf,https://contents.xj-storage.jp/xcontents/AS05592/4eb303b6/1ad7/48a9/886c/b46097f80778/140120260324587697.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:35:09.525278+09:00,5243,https://contents.xj-storage.jp/xcontents/AS05592/009d06cf/ab03/4be1/82ca/a478b9120969/140120251201512849.pdf,https://contents.xj-storage.jp/xcontents/AS05592/009d06cf/ab03/4be1/82ca/a478b9120969/140120251201512849.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:35:21.283282+09:00,5243,https://kabutan.jp/stock/finance?code=5243,https://kabutan.jp/stock/finance?code=5243,200,8720,6a3a147b10e47a81,text/html; charset=UTF-8
+2026-08-31T15:42:17.000773+09:00,5137,https://kabutan.jp/stock/?code=5137,https://kabutan.jp/stock/?code=5137,200,4400,efa3eb0eab0732c8,text/html; charset=UTF-8
+2026-08-31T15:42:30.058032+09:00,5137,https://kabutan.jp/stock/?code=5137,https://kabutan.jp/stock/?code=5137,200,4400,5e4caf4b672ced24,text/html; charset=UTF-8
+2026-08-31T15:42:38.755445+09:00,5137,https://kabutan.jp/stock/news?code=5137,https://kabutan.jp/stock/news?code=5137,200,4399,affbc9893ada878f,text/html; charset=UTF-8
+2026-08-31T15:42:52.302222+09:00,5137,https://irbank.net/5137/ir,https://irbank.net/5137/ir,200,13397,84322f7ffe6acf60,text/html; charset=UTF-8
+2026-08-31T15:43:00.440279+09:00,5137,https://irbank.net/5137/ir,https://irbank.net/5137/ir,200,13397,84322f7ffe6acf60,text/html; charset=UTF-8
+2026-08-31T15:43:16.526351+09:00,5137,https://irbank.net/5137/ir,https://irbank.net/5137/ir,200,13397,84322f7ffe6acf60,text/html; charset=UTF-8
+2026-08-31T15:43:36.313169+09:00,5137,https://irbank.net/5137/ir,https://irbank.net/5137/ir,200,13397,84322f7ffe6acf60,text/html; charset=UTF-8
+2026-08-31T15:43:49.156127+09:00,5137,https://kabutan.jp/news/marketnews/?b=n202608261057,https://kabutan.jp/news/marketnews/?b=n202608261057,200,6369,06da61a5a4278861,text/html; charset=UTF-8
+2026-08-31T15:44:01.298470+09:00,5137,https://smartdrive.co.jp/company/,https://smartdrive.co.jp/company/,200,6406,d7276d8008a2d954,text/html; charset=UTF-8
+2026-08-31T15:44:13.401114+09:00,5137,https://smartdrive.co.jp/company/,https://smartdrive.co.jp/company/,200,6406,d7276d8008a2d954,text/html; charset=UTF-8
+2026-08-31T15:44:33.404468+09:00,5137,https://smartdrive.co.jp/company/ir/,https://smartdrive.co.jp/company/ir/,200,1183,57b1074c53bc80fe,text/html; charset=UTF-8
+2026-08-31T15:44:43.242530+09:00,5137,https://smartdrive.co.jp/company/ir/library/financial-reports/,https://smartdrive.co.jp/company/ir/library/financial-reports/,200,2073,e1fb19eb36b79c55,text/html; charset=UTF-8
+2026-08-31T15:44:56.381540+09:00,5137,https://f.irbank.net/pdf/20260813/140120260811517528.pdf,https://f.irbank.net/pdf/20260813/140120260811517528.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:45:01.509539+09:00,5137,https://f.irbank.net/pdf/20260813/140120260811517529.pdf,https://f.irbank.net/pdf/20260813/140120260811517529.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:45:05.694507+09:00,5137,https://f.irbank.net/pdf/20260721/140120260721596587.pdf,https://f.irbank.net/pdf/20260721/140120260721596587.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:45:13.214004+09:00,6027,https://kabutan.jp/stock/?code=6027,https://kabutan.jp/stock/?code=6027,200,4445,4afcd075e86015dc,text/html; charset=UTF-8
+2026-08-31T15:45:17.212655+09:00,6027,https://kabutan.jp/stock/finance?code=6027,https://kabutan.jp/stock/finance?code=6027,200,9535,c8a18a318f5b954a,text/html; charset=UTF-8
+2026-08-31T15:45:23.170162+09:00,6027,https://kabutan.jp/stock/?code=6027,https://kabutan.jp/stock/?code=6027,200,4452,17200f21221753e0,text/html; charset=UTF-8
+2026-08-31T15:45:39.232703+09:00,5137,https://f.irbank.net/pdf/20260616/140120260615571281.pdf,https://f.irbank.net/pdf/20260616/140120260615571281.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:45:43.629042+09:00,5137,https://f.irbank.net/pdf/20260514/140120260512527073.pdf,https://f.irbank.net/pdf/20260514/140120260512527073.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:45:47.918030+09:00,5137,https://f.irbank.net/pdf/20260129/140120260129540901.pdf,https://f.irbank.net/pdf/20260129/140120260129540901.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:45:52.099643+09:00,5137,https://f.irbank.net/pdf/20250514/140120250513544975.pdf,https://f.irbank.net/pdf/20250514/140120250513544975.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:46:17.938748+09:00,6027,https://kabutan.jp/stock/finance?code=6027,https://kabutan.jp/stock/finance?code=6027,200,9535,d0bc09fc35d2d827,text/html; charset=UTF-8
+2026-08-31T15:46:43.550085+09:00,6027,https://tdnet-pdf.kabutan.jp/20260812/140120260810517022.pdf,https://tdnet-pdf.kabutan.jp/20260812/140120260810517022.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:47:00.953925+09:00,6027,https://tdnet-pdf.kabutan.jp/20260812/140120260812518086.pdf,https://tdnet-pdf.kabutan.jp/20260812/140120260812518086.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:47:05.457445+09:00,6027,https://tdnet-pdf.kabutan.jp/20260821/140120260821524358.pdf,https://tdnet-pdf.kabutan.jp/20260821/140120260821524358.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:47:09.516174+09:00,6027,https://tdnet-pdf.kabutan.jp/20260803/140120260803506948.pdf,https://tdnet-pdf.kabutan.jp/20260803/140120260803506948.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:47:15.287459+09:00,6027,https://tdnet-pdf.kabutan.jp/20260611/140120260611568426.pdf,https://tdnet-pdf.kabutan.jp/20260611/140120260611568426.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:47:21.543190+09:00,6027,https://kabutan.jp/stock/news?code=6027&b=n202608130484,https://kabutan.jp/stock/news?code=6027&b=n202608130484,200,3784,a7dfc2cbaaa6a0bd,text/html; charset=UTF-8
+2026-08-31T15:47:28.595561+09:00,5137,https://irbank.net/5137/ir,https://irbank.net/5137/ir,200,13397,84322f7ffe6acf60,text/html; charset=UTF-8
+2026-08-31T15:47:32.802724+09:00,6027,https://kabutan.jp/stock/news?code=6027&b=n202608130484,https://kabutan.jp/stock/news?code=6027&b=n202608130484,200,3784,85d5135371d9caa4,text/html; charset=UTF-8
+2026-08-31T15:47:48.968989+09:00,6027,https://kabutan.jp/stock/news?code=6027&b=n202608190410,https://kabutan.jp/stock/news?code=6027&b=n202608190410,200,3982,05e041a27d2e8d82,text/html; charset=UTF-8
+2026-08-31T15:47:59.844614+09:00,6027,https://kabutan.jp/stock/news?code=6027&b=n202608250941,https://kabutan.jp/stock/news?code=6027&b=n202608250941,200,3568,402e0cd7b0c3b0ad,text/html; charset=UTF-8
+2026-08-31T15:48:03.451235+09:00,5137,https://irbank.net/5137/ir,https://irbank.net/5137/ir,200,13397,84322f7ffe6acf60,text/html; charset=UTF-8
+2026-08-31T15:48:15.162654+09:00,6027,https://kabutan.jp/stock/news?code=6027,https://kabutan.jp/stock/news?code=6027,200,4992,e7bc64fe32e5994b,text/html; charset=UTF-8
+2026-08-31T15:48:20.656590+09:00,6027,https://kabutan.jp/stock/news?code=6027,https://kabutan.jp/stock/news?code=6027,200,4993,f314bb9db6293c7a,text/html; charset=UTF-8
+2026-08-31T15:48:36.674519+09:00,6027,https://www.bengo4.com/corporate/ir/,https://www.bengo4.com/corporate/ir/,200,1880,d2d9b1623ce069e6,text/html; charset=UTF-8
+2026-08-31T15:48:53.906225+09:00,6027,https://www.bengo4.com/corporate/,https://www.bengo4.com/corporate/,200,5485,924788e220e7bee4,text/html; charset=UTF-8
+2026-08-31T15:49:03.211498+09:00,6027,https://www.bengo4.com/corporate/,https://www.bengo4.com/corporate/,200,5485,924788e220e7bee4,text/html; charset=UTF-8
+2026-08-31T15:49:34.570070+09:00,6027,https://www.bengo4.com/corporate/,https://www.bengo4.com/corporate/,200,5485,924788e220e7bee4,text/html; charset=UTF-8
+2026-08-31T15:50:02.726018+09:00,6027,https://www.bengo4.com/corporate/,https://www.bengo4.com/corporate/,200,5485,924788e220e7bee4,text/html; charset=UTF-8
+2026-08-31T15:50:07.336742+09:00,6027,https://irbank.net/6027,https://irbank.net/6027,200,8416,215c8df7eabaf87b,text/html; charset=UTF-8
+2026-08-31T15:50:17.109017+09:00,6027,https://irbank.net/6027,https://irbank.net/6027,200,8416,215c8df7eabaf87b,text/html; charset=UTF-8
+2026-08-31T15:50:43.785145+09:00,6027,https://irbank.net/6027,https://irbank.net/6027,200,8416,215c8df7eabaf87b,text/html; charset=UTF-8
+2026-08-31T15:59:41.595189+09:00,6904,https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf,https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T15:59:50.003947+09:00,6904,https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf,https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:00:11.091061+09:00,6647,http://www.morio.co.jp/company/outline.html,http://www.morio.co.jp/company/outline.html,200,1134,ddde8c49f7c8fd55,text/html
+2026-08-31T16:00:21.373434+09:00,6647,https://kabutan.jp/stock/?code=6647,https://kabutan.jp/stock/?code=6647,200,4265,786604ad44de4c8f,text/html; charset=UTF-8
+2026-08-31T16:00:57.222851+09:00,6647,https://kabutan.jp/stock/finance?code=6647,https://kabutan.jp/stock/finance?code=6647,200,9772,e6cb22813b2a39a5,text/html; charset=UTF-8
+2026-08-31T16:01:23.542314+09:00,6904,https://www.harada.com/jp/ir/news/,https://www.harada.com/jp/ir/news/,200,1331,e9c371f7e80b865b,text/html
+2026-08-31T16:01:32.300788+09:00,6904,https://www.harada.com/jp/ir/event/calendar.html,https://www.harada.com/jp/ir/event/calendar.html,200,3320,4b93911a3e12704c,text/html
+2026-08-31T16:01:36.418092+09:00,6904,https://www.harada.com/jp/ir/library/earning.html,https://www.harada.com/jp/ir/library/earning.html,200,1378,c6757de45bf60655,text/html
+2026-08-31T16:01:53.328926+09:00,6904,https://www.harada.com/jp/ir/,https://www.harada.com/jp/ir/,200,1152,bca03d0537087225,text/html
+2026-08-31T16:01:54.359094+09:00,6647,https://kabutan.jp/stock/news?code=6647,https://kabutan.jp/stock/news?code=6647,200,4916,b0a500141ad30312,text/html; charset=UTF-8
+2026-08-31T16:01:57.446290+09:00,6904,https://www.harada.com/jp/ir/,https://www.harada.com/jp/ir/,200,1152,bca03d0537087225,text/html
+2026-08-31T16:02:03.481692+09:00,6904,https://s.kabutan.jp/news/k202608130043/,https://s.kabutan.jp/news/k202608130043/,200,5407,4f591548338c5ddf,text/html; charset=utf-8
+2026-08-31T16:02:07.121352+09:00,6647,https://www.xj-storage.jp/public-list/GetList.aspx?company=AS08360&len=10000&output=json,https://www.xj-storage.jp/public-list/GetList.aspx?company=AS08360&len=10000&output=json,200,196715,ac2521d73c3f08df,text/javascript; charset=UTF-8
+2026-08-31T16:02:18.204539+09:00,6647,https://www.xj-storage.jp/public-list/GetList.aspx?company=AS08360&len=10000&output=json,https://www.xj-storage.jp/public-list/GetList.aspx?company=AS08360&len=10000&output=json,200,196715,ac2521d73c3f08df,text/javascript; charset=UTF-8
+2026-08-31T16:02:39.739966+09:00,6647,http://www.morio.co.jp/ir/index.html,http://www.morio.co.jp/ir/index.html,200,631,3d5fd3df2556919f,text/html
+2026-08-31T16:02:49.987300+09:00,6647,https://irbank.net/E01912,https://irbank.net/E01912,200,4676,f7331ef1847b5713,text/html; charset=UTF-8
+2026-08-31T16:03:16.077697+09:00,6647,https://irbank.net/E01912/results,https://irbank.net/E01912/results,200,22597,d2c3c5b90c2e8b6c,text/html; charset=UTF-8
+2026-08-31T16:03:26.881691+09:00,6647,https://irbank.net/E01912/results,https://irbank.net/E01912/results,200,22597,d2c3c5b90c2e8b6c,text/html; charset=UTF-8
+2026-08-31T16:03:39.411062+09:00,6647,https://irbank.net/E01912/results,https://irbank.net/E01912/results,200,22597,d2c3c5b90c2e8b6c,text/html; charset=UTF-8
+2026-08-31T16:04:50.343020+09:00,6904,https://ssl4.eir-parts.net/doc/6904/ir_material_for_fiscal_ym/206844/00.pdf,https://ssl4.eir-parts.net/doc/6904/ir_material_for_fiscal_ym/206844/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:04:55.888381+09:00,6904,https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf,https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:05:01.343090+09:00,6904,https://ssl4.eir-parts.net/doc/6904/tdnet/2843210/00.pdf,https://ssl4.eir-parts.net/doc/6904/tdnet/2843210/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:05:06.562514+09:00,6904,https://ssl4.eir-parts.net/doc/6904/tdnet/2878075/00.pdf,https://ssl4.eir-parts.net/doc/6904/tdnet/2878075/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:05:45.210855+09:00,6647,https://contents.xj-storage.jp/xcontents/AS08360/87a751bf/d6dc/4bab/a38f/7cfd071ebd79/140120260806512218.pdf,https://contents.xj-storage.jp/xcontents/AS08360/87a751bf/d6dc/4bab/a38f/7cfd071ebd79/140120260806512218.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:05:49.198928+09:00,6647,https://contents.xj-storage.jp/xcontents/AS08360/10b689a4/6f7c/4865/af2c/be72e896d924/140120260514535527.pdf,https://contents.xj-storage.jp/xcontents/AS08360/10b689a4/6f7c/4865/af2c/be72e896d924/140120260514535527.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:05:54.155378+09:00,6647,https://contents.xj-storage.jp/xcontents/AS08360/39dcb488/010f/4eab/a8cb/60b44c2e9781/140120260612569445.pdf,https://contents.xj-storage.jp/xcontents/AS08360/39dcb488/010f/4eab/a8cb/60b44c2e9781/140120260612569445.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:05:58.804460+09:00,6647,https://contents.xj-storage.jp/xcontents/AS08360/d67b6367/9901/4520/93e0/f524db3f7090/140120251010571923.pdf,https://contents.xj-storage.jp/xcontents/AS08360/d67b6367/9901/4520/93e0/f524db3f7090/140120251010571923.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:08:27.204273+09:00,4707,https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf,https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:09:16.387819+09:00,4707,https://kabutan.jp/stock/news?code=4707&b=k202608280005,https://kabutan.jp/stock/news?code=4707&b=k202608280005,200,5905,dce8c14925fa80af,text/html; charset=UTF-8
+2026-08-31T16:13:48.324654+09:00,7093,https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf,https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:13:54.226588+09:00,7093,https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf,https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:14:12.454284+09:00,7093,https://kabutan.jp/stock/news?code=7093&b=n202608280944,https://kabutan.jp/stock/news?code=7093&b=n202608280944,200,4105,7c9406441d346a7e,text/html; charset=UTF-8
+2026-08-31T16:14:20.347734+09:00,7093,https://kabutan.jp/stock/news?code=7093&b=n202608280944,https://kabutan.jp/stock/news?code=7093&b=n202608280944,200,4105,7c9406441d346a7e,text/html; charset=UTF-8
+2026-08-31T16:14:33.477547+09:00,7093,https://kabutan.jp/stock/?code=7093,https://kabutan.jp/stock/?code=7093,200,4380,b30f6d19caec8053,text/html; charset=UTF-8
+2026-08-31T16:15:13.036528+09:00,9344,https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf,https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:15:21.074712+09:00,9344,https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf,https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:15:28.293539+09:00,9344,https://ssl4.eir-parts.net/doc/9344/tdnet/2615414/00.pdf,https://ssl4.eir-parts.net/doc/9344/tdnet/2615414/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:15:30.166452+09:00,7093,https://www.adish.co.jp/about/companyinfo/,https://www.adish.co.jp/about/companyinfo/,200,2900,07a253ef07b75222,text/html; charset=UTF-8
+2026-08-31T16:15:32.830705+09:00,9344,https://www2.jpx.co.jp/disc/93440/140120260513531621.pdf,https://www2.jpx.co.jp/disc/93440/140120260513531621.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:15:36.854967+09:00,9344,https://prtimes.jp/main/html/rd/p/000000131.000026996.html,https://prtimes.jp/main/html/rd/p/000000131.000026996.html,200,2510,6e7854a5d59894be,text/html; charset=utf-8
+2026-08-31T16:15:41.115584+09:00,9344,https://axc-g.co.jp/ir/,https://axc-g.co.jp/ir/,200,993,b0e325cf98caf59c,text/html; charset=UTF-8
+2026-08-31T16:15:45.309717+09:00,9344,https://kabutan.jp/stock/?code=9344,https://kabutan.jp/stock/?code=9344,200,4376,e98e9a973e399c6e,text/html; charset=UTF-8
+2026-08-31T16:15:49.519804+09:00,9344,https://kabutan.jp/stock/finance?code=9344,https://kabutan.jp/stock/finance?code=9344,200,9145,644208073cfd8356,text/html; charset=UTF-8
+2026-08-31T16:15:49.750761+09:00,7093,https://kabutan.jp/stock/news?code=7093,https://kabutan.jp/stock/news?code=7093,200,4626,962adc60d7495d1b,text/html; charset=UTF-8
+2026-08-31T16:15:54.493748+09:00,9344,https://irbank.net/E38452/results,https://irbank.net/E38452/results,200,9685,96abaf1d1e393276,text/html; charset=UTF-8
+2026-08-31T16:16:05.417330+09:00,9344,https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf,https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:16:19.761131+09:00,9344,https://prtimes.jp/main/html/rd/p/000000131.000026996.html,https://prtimes.jp/main/html/rd/p/000000131.000026996.html,200,2510,6e7854a5d59894be,text/html; charset=utf-8
+2026-08-31T16:16:19.786473+09:00,7093,https://www.adish.co.jp/ir/,https://www.adish.co.jp/ir/,200,1337,f25b3d8a7d193855,text/html; charset=UTF-8
+2026-08-31T16:16:30.221582+09:00,6904,https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf,https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:16:30.353767+09:00,7093,https://irbank.net/E35514/results,https://irbank.net/E35514/results,200,11457,d4688dd66f785a75,text/html; charset=UTF-8
+2026-08-31T16:16:37.296401+09:00,9344,https://axc-g.co.jp/ir/,https://axc-g.co.jp/ir/,200,993,b0e325cf98caf59c,text/html; charset=UTF-8
+2026-08-31T16:16:48.824752+09:00,7093,https://tdnet-pdf.kabutan.jp/20260814/140120260814520392.pdf,https://tdnet-pdf.kabutan.jp/20260814/140120260814520392.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:16:54.090030+09:00,7093,https://tdnet-pdf.kabutan.jp/20260213/140120260213559254.pdf,https://tdnet-pdf.kabutan.jp/20260213/140120260213559254.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:16:59.286070+09:00,7093,https://tdnet-pdf.kabutan.jp/20260224/140120260224567377.pdf,https://tdnet-pdf.kabutan.jp/20260224/140120260224567377.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:17:03.486503+09:00,9344,https://kabutan.jp/stock/?code=9344,https://kabutan.jp/stock/?code=9344,200,4376,7572518775f75599,text/html; charset=UTF-8
+2026-08-31T16:17:04.305183+09:00,7093,https://tdnet-pdf.kabutan.jp/20260213/140120260213559386.pdf,https://tdnet-pdf.kabutan.jp/20260213/140120260213559386.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:17:10.398330+09:00,7093,https://tdnet-pdf.kabutan.jp/20260715/140120260715593741.pdf,https://tdnet-pdf.kabutan.jp/20260715/140120260715593741.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:17:15.619895+09:00,7093,https://tdnet-pdf.kabutan.jp/20260701/140120260701585440.pdf,https://tdnet-pdf.kabutan.jp/20260701/140120260701585440.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:17:20.578293+09:00,7093,https://tdnet-pdf.kabutan.jp/20260626/140120260626581303.pdf,https://tdnet-pdf.kabutan.jp/20260626/140120260626581303.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:17:25.546514+09:00,7093,https://tdnet-pdf.kabutan.jp/20251027/140120251027579227.pdf,https://tdnet-pdf.kabutan.jp/20251027/140120251027579227.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:17:30.539137+09:00,7093,https://tdnet-pdf.kabutan.jp/20251029/140120251029581686.pdf,https://tdnet-pdf.kabutan.jp/20251029/140120251029581686.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:17:53.740666+09:00,6904,https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf,https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T16:18:50.752703+09:00,7093,https://irbank.net/E35514,https://irbank.net/E35514,200,4872,77dbffa8fe64768d,text/html; charset=UTF-8
+2026-08-31T16:19:05.551921+09:00,7093,https://www.adish.co.jp/about/companyinfo/,https://www.adish.co.jp/about/companyinfo/,200,2900,07a253ef07b75222,text/html; charset=UTF-8
+2026-08-31T16:19:17.436983+09:00,7093,https://www.adish.co.jp/about/companyinfo/,https://www.adish.co.jp/about/companyinfo/,200,2900,07a253ef07b75222,text/html; charset=UTF-8
+2026-08-31T16:19:48.945533+09:00,9344,https://kabutan.jp/stock/finance?code=9344,https://kabutan.jp/stock/finance?code=9344,200,9158,9218ba60c4661f4f,text/html; charset=UTF-8
+2026-08-31T16:20:18.482483+09:00,9344,https://kabutan.jp/stock/finance?code=9344,https://kabutan.jp/stock/finance?code=9344,200,9158,849ee04d41fc4fd0,text/html; charset=UTF-8
+2026-08-31T16:20:22.750167+09:00,9344,https://kabutan.jp/stock/finance?code=9344,https://kabutan.jp/stock/finance?code=9344,200,9158,849ee04d41fc4fd0,text/html; charset=UTF-8
