@@ -1886,10 +1886,10 @@ def build_knowledge_page(as_of: str) -> None:
     home = (
         '<div class="kb-home">'
         "<h2>この棚について</h2>"
-        "<p>セグメント分析で銘柄を降ろす前に、その業界の<strong>お金の流れ・商習慣・"
-        "ビジネスモデル</strong>を図で押さえるための記事集。判定の本体は "
-        "<code>segments/*.yaml</code>（出典・数値つき）が担い、ここは前提の理解を担当する。"
-        "記事中の ※ は二次情報または未照合の参考値（<a href='about.html'>読み方</a>の凡例と同じ）。</p>"
+        "<p>ある産業の<strong>お金の流れ・商習慣・儲けの仕組み</strong>を図で押さえるための"
+        "記事集。個別の銘柄を見る前に、その業界がどう回っているかを理解しておくために書いている。"
+        "数字には出所を付け、値の後ろの ※ は二次情報・未照合の参考値を表す"
+        "（<a href='about.html'>読み方</a>の凡例と同じ）。</p>"
         f"<p>左の分類から記事を選ぶ。現在 {n} 記事。</p>"
         f'<ul class="kb-index">{"".join(rows)}</ul></div>'
     )
@@ -1897,8 +1897,7 @@ def build_knowledge_page(as_of: str) -> None:
                        for a in sorted(arts, key=lambda x: x["slug"]))
     side = f'<nav class="kb-side" aria-label="前提知識の分類">{_kb_nav(tree)}</nav>'
     body = ("<h1>前提知識</h1>"
-            '<p class="lede">業界の構造を先に理解してから銘柄を見るための棚。'
-            "投資助言ではない。売買の判断は人間が行う。</p>"
+            '<p class="lede">業界の構造を先に理解してから銘柄を見るための棚。</p>'
             f'<div class="kb-wrap">{side}<div class="kb-main">{home}{articles}</div></div>')
     (DOCS / "knowledge.html").write_text(
         page("前提知識", body, as_of, 0, wide=True),

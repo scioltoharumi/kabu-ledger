@@ -491,108 +491,208 @@ border-radius:6px;padding:.7rem .9rem}
 .kb-cand .code{font-size:.72rem;color:var(--accent);font-weight:700}
 .kb-cand .nm{font-weight:700;margin:.1rem 0 .3rem}
 .kb-cand p{font-size:.78rem;color:var(--dim);margin:0;line-height:1.65}
-</style></head><body><header class="site"><div class="site-in"><a class="brand" href="index.html">銘柄調査台帳</a><nav><a href="index.html">台帳</a><a href="knowledge.html">前提知識</a><a href="data.html">データの出どころ</a><a href="about.html">読み方</a></nav></div></header><main class="wide"><h1>前提知識</h1><p class="lede">業界の構造を先に理解してから銘柄を見るための棚。投資助言ではない。売買の判断は人間が行う。</p><div class="kb-wrap"><nav class="kb-side" aria-label="前提知識の分類"><div class="kb-cat d0">方法論</div><div class="kb-cat d1">セグメント分析</div><a href="#kb-segment-method">層の選び方 — 判定の式と5つの手順</a><div class="kb-cat d0">産業の構造</div><div class="kb-cat d1">電力・データセンター</div><a href="#kb-dc-power-cooling">DC 電力・冷却機器の地図</a></nav><div class="kb-main"><div class="kb-home"><h2>この棚について</h2><p>セグメント分析で銘柄を降ろす前に、その業界の<strong>お金の流れ・商習慣・ビジネスモデル</strong>を図で押さえるための記事集。判定の本体は <code>segments/*.yaml</code>（出典・数値つき）が担い、ここは前提の理解を担当する。記事中の ※ は二次情報または未照合の参考値（<a href='about.html'>読み方</a>の凡例と同じ）。</p><p>左の分類から記事を選ぶ。現在 2 記事。</p><ul class="kb-index"><li><span class="kb-crumb">方法論 › セグメント分析</span><br><a href="#kb-segment-method">層の選び方 — 判定の式と5つの手順</a></li><li><span class="kb-crumb">産業の構造 › 電力・データセンター</span><br><a href="#kb-dc-power-cooling">DC 電力・冷却機器の地図</a></li></ul></div><section class="kb-article" id="kb-dc-power-cooling"><p class="kb-crumb">産業の構造 › 電力・データセンター<span class="kb-date">作成 2026-08-30</span></p><p class="lede">セグメントA「DC の電力・冷却インフラ（機器メーカー）」
-（<code>segments/ai-dc-power-cooling.yaml</code>）を判定する前に知っておく地図。
-お金の流れ・機器メーカーの稼ぎ方・供給が絞られる仕組みを図で押さえる。
-判定の型は「<a href="#kb-segment-method">層の選び方 — 判定の式と5つの手順</a>」を参照。
-凡例: ※＝二次情報または未照合の参考値。出典は末尾。投資助言ではない。</p>
+</style></head><body><header class="site"><div class="site-in"><a class="brand" href="index.html">銘柄調査台帳</a><nav><a href="index.html">台帳</a><a href="knowledge.html">前提知識</a><a href="data.html">データの出どころ</a><a href="about.html">読み方</a></nav></div></header><main class="wide"><h1>前提知識</h1><p class="lede">業界の構造を先に理解してから銘柄を見るための棚。</p><div class="kb-wrap"><nav class="kb-side" aria-label="前提知識の分類"><div class="kb-cat d0">方法論</div><div class="kb-cat d1">産業構造の読み方</div><a href="#kb-segment-method">どの層に利益が残るか</a><div class="kb-cat d0">産業の構造</div><div class="kb-cat d1">電力・データセンター</div><a href="#kb-dc-power-cooling">データセンターの電力と冷却</a></nav><div class="kb-main"><div class="kb-home"><h2>この棚について</h2><p>ある産業の<strong>お金の流れ・商習慣・儲けの仕組み</strong>を図で押さえるための記事集。個別の銘柄を見る前に、その業界がどう回っているかを理解しておくために書いている。数字には出所を付け、値の後ろの ※ は二次情報・未照合の参考値を表す（<a href='about.html'>読み方</a>の凡例と同じ）。</p><p>左の分類から記事を選ぶ。現在 2 記事。</p><ul class="kb-index"><li><span class="kb-crumb">方法論 › 産業構造の読み方</span><br><a href="#kb-segment-method">どの層に利益が残るか</a></li><li><span class="kb-crumb">産業の構造 › 電力・データセンター</span><br><a href="#kb-dc-power-cooling">データセンターの電力と冷却</a></li></ul></div><section class="kb-article" id="kb-dc-power-cooling"><p class="kb-crumb">産業の構造 › 電力・データセンター<span class="kb-date">作成 2026-08-30</span></p><p class="lede">AI 向けデータセンター（DC）を建てる金は、その多くが「電気を通す設備」と
+「熱を捨てる設備」に消える。この記事は、その金がどの経路を通り、誰が受け取り、
+なぜ品薄と値上げが起きるのかを図で押さえる。数字の後ろの ※ は二次情報・未照合の参考値。</p>
 
-<h2>図1　お金はこう流れる — 全体の地図</h2>
-<p>AI の需要は、データセンター事業者の設備投資になり、建設の発注になり、
-最後に機器の調達になる。1本目のセグメント（施工）と今回（機器）は、
-この川の<strong>隣どうしの層</strong>だ。</p>
+<h2>1　なぜ AI の話が「電力の話」になるのか</h2>
+<p>AI の学習・推論に使うサーバは、従来のウェブサーバに比べてラック1本あたりの消費電力の
+桁が違う。すると、DC を設計するときの<strong>制約が入れ替わる</strong>。</p>
+<ul>
+  <li><strong>敷地の広さではなく「引き込める電力」が上限になる。</strong>
+    何kW 受電できるかで置けるサーバの数が決まる。用地があっても電気が来なければ建たない</li>
+  <li><strong>空気で冷やしきれなくなる。</strong>発熱が大きいほど、冷却方式そのものが
+    建物の設計を支配する</li>
+  <li><strong>止められない。</strong>停電しても落ちない仕組み（電池と発電機）が
+    二重三重に要る</li>
+</ul>
+<p>つまり「DC を建てる」は、実態としては<strong>変電所と冷凍機を建てて、
+その周りに箱を作る</strong>仕事に近い。国の需要見通しでも、DC の新増設に伴う
+最大需要電力は 2025年度の 47万kW から 2034年度の 616万kW へ、約13倍が見込まれている
+（下の数字はいずれも出所を末尾に付けた）。</p>
+
+<div class="kb-kpis">
+  <div class="kb-kpi"><div class="v">47 → 616 万kW</div>
+    <div class="l">DC 新増設に伴う最大需要電力の見通し（2025→2034年度）。
+    受電容量が増えるほど、変圧器・電池・発電機・冷凍機のすべてが比例して要る</div>
+    <div class="kb-src">OCCTO／資源エネルギー庁（一次情報）</div></div>
+  <div class="kb-kpi"><div class="v">50歳以上が半数超</div>
+    <div class="l">電気工事士の年齢構成※。30歳未満は1割前後で、工事の担い手は
+    増やそうとしても年単位でしか増えない</div>
+    <div class="kb-src">国勢調査ベースの業界集計</div></div>
+  <div class="kb-kpi"><div class="v">売上 +6.5% / 利益 +48.0%</div>
+    <div class="l">電気工事最大手（きんでん）の直近通期※。
+    <strong>売上より利益がずっと速い</strong>のは、値上げが通っているときの典型的な形</div>
+    <div class="kb-src">FY2026-03・二次情報</div></div>
+</div>
+
+<h2>2　電気はどう流れ、熱はどう捨てるか</h2>
+<p>DC の設備は、大きく<strong>「電気を運び込む経路」と「熱を運び出す経路」の2本</strong>で
+できている。設備投資はこの2本に沿って発注されるので、まずここを押さえると
+業界地図が読めるようになる。</p>
 
 <figure class="kb-figure">
   <div class="kb-fig-scroll">
-  <svg viewBox="0 0 960 420" role="img" aria-label="AI需要からDC事業者、施工（ゼネコン・サブコン）、機器メーカーへとお金が流れるバリューチェーンの図。施工が1本目のセグメント、機器がこの記事の対象">
+  <svg viewBox="0 0 960 430" role="img" aria-label="データセンターの電気の経路と熱の経路。送電網から受変電設備、UPS、分電盤を経てサーバへ電気が届き、停電時は非常用発電機が代わる。サーバの熱は空調機または液冷を経て冷凍機、冷却塔から外気へ捨てられる">
     <defs>
-      <marker id="dc-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <marker id="dcx-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
         <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
       </marker>
-      <marker id="dc-arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <marker id="dcx-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+      </marker>
+    </defs>
+
+    <text x="20" y="30" font-size="12" font-weight="700" fill="currentColor" letter-spacing=".08em">① 電気を運び込む経路</text>
+    <g fill="none" stroke="currentColor" stroke-width="1.3">
+      <rect x="20"  y="46" width="120" height="62" rx="4"/>
+      <rect x="182" y="46" width="150" height="62" rx="4"/>
+      <rect x="374" y="46" width="130" height="62" rx="4"/>
+      <rect x="546" y="46" width="120" height="62" rx="4"/>
+      <rect x="374" y="150" width="130" height="56" rx="4" stroke-dasharray="5 4"/>
+    </g>
+    <rect x="712" y="40" width="180" height="240" rx="6" fill="none" stroke="var(--accent)" stroke-width="1.8"/>
+    <g stroke="currentColor" stroke-width="1.3" fill="none">
+      <line x1="140" y1="77" x2="176" y2="77" marker-end="url(#dcx-a)"/>
+      <line x1="332" y1="77" x2="368" y2="77" marker-end="url(#dcx-a)"/>
+      <line x1="504" y1="77" x2="540" y2="77" marker-end="url(#dcx-a)"/>
+      <line x1="666" y1="77" x2="706" y2="77" marker-end="url(#dcx-a)"/>
+      <path d="M 504 178 L 606 178 L 606 112" stroke-dasharray="5 4" marker-end="url(#dcx-a)"/>
+    </g>
+    <g font-size="12.5" fill="currentColor">
+      <text x="80"  y="72" text-anchor="middle" font-weight="700">送電網</text>
+      <text x="80"  y="90" text-anchor="middle" font-size="10.5" opacity=".75">特別高圧（数万ボルト）</text>
+      <text x="257" y="72" text-anchor="middle" font-weight="700">受変電設備</text>
+      <text x="257" y="90" text-anchor="middle" font-size="10.5" opacity=".75">変圧器・開閉装置で電圧を落とす</text>
+      <text x="439" y="72" text-anchor="middle" font-weight="700">UPS（無停電電源）</text>
+      <text x="439" y="90" text-anchor="middle" font-size="10.5" opacity=".75">電池。瞬断を埋める</text>
+      <text x="606" y="72" text-anchor="middle" font-weight="700">分電盤</text>
+      <text x="606" y="90" text-anchor="middle" font-size="10.5" opacity=".75">ラックへ配る</text>
+      <text x="439" y="174" text-anchor="middle" font-weight="700">非常用発電機</text>
+      <text x="439" y="192" text-anchor="middle" font-size="10.5" opacity=".75">停電が続くとき燃料で発電</text>
+      <text x="556" y="168" font-size="10.5" opacity=".7">停電時</text>
+    </g>
+    <g font-size="13" fill="var(--accent)">
+      <text x="802" y="150" text-anchor="middle" font-weight="700">サーバ（IT機器）</text>
+      <text x="802" y="172" text-anchor="middle" font-size="11">電気を使い、同じだけ熱になる</text>
+    </g>
+
+    <text x="20" y="318" font-size="12" font-weight="700" fill="currentColor" letter-spacing=".08em">② 熱を運び出す経路（右から左へ）</text>
+    <g fill="none" stroke="currentColor" stroke-width="1.3">
+      <rect x="546" y="334" width="150" height="62" rx="4"/>
+      <rect x="354" y="334" width="150" height="62" rx="4"/>
+      <rect x="182" y="334" width="130" height="62" rx="4"/>
+      <rect x="20"  y="334" width="120" height="62" rx="4"/>
+    </g>
+    <g stroke="currentColor" stroke-width="1.3" fill="none">
+      <path d="M 802 280 L 802 365 L 702 365" marker-end="url(#dcx-a)"/>
+      <line x1="546" y1="365" x2="510" y2="365" marker-end="url(#dcx-a)"/>
+      <line x1="354" y1="365" x2="318" y2="365" marker-end="url(#dcx-a)"/>
+      <line x1="182" y1="365" x2="146" y2="365" marker-end="url(#dcx-a)"/>
+    </g>
+    <g font-size="12.5" fill="currentColor">
+      <text x="621" y="360" text-anchor="middle" font-weight="700">空調機／液冷</text>
+      <text x="621" y="378" text-anchor="middle" font-size="10.5" opacity=".75">空気で冷やす or 冷却水を機器に直付け</text>
+      <text x="429" y="360" text-anchor="middle" font-weight="700">熱源（冷凍機）</text>
+      <text x="429" y="378" text-anchor="middle" font-size="10.5" opacity=".75">大型のターボ冷凍機・チラー</text>
+      <text x="247" y="360" text-anchor="middle" font-weight="700">冷却塔</text>
+      <text x="247" y="378" text-anchor="middle" font-size="10.5" opacity=".75">水を蒸発させて熱を放つ</text>
+      <text x="80"  y="360" text-anchor="middle" font-weight="700">外気</text>
+      <text x="80"  y="378" text-anchor="middle" font-size="10.5" opacity=".75">最終的な捨て先</text>
+    </g>
+    <text x="480" y="418" text-anchor="middle" font-size="11.5" fill="currentColor" opacity=".8">サーバが使った電力は、ほぼ全量が熱になる。だから「電気を入れる能力」と「熱を捨てる能力」は必ず釣り合わせて設計する</text>
+  </svg>
+  </div>
+  <figcaption><strong>勘所:</strong> この2本の経路に沿って、専門のメーカーと専門の工事会社がそれぞれ張り付いている。
+  DC 1棟の発注は「箱を建てる」1件ではなく、<strong>受変電・電源・空調・冷却の各系統に分かれた
+  設備工事の束</strong>として出る。だから DC が増えると、建設会社より先に電気設備・空調設備の会社の
+  受注が動く。<br>
+  なお業界では、施設全体の消費電力をサーバ自身の消費電力で割った値を <strong>PUE</strong> と呼び、
+  冷却などの「サーバ以外に食われる電力」の少なさを測る物差しにしている（1.0 に近いほど効率が良い）。</figcaption>
+</figure>
+
+<h2>3　1棟あたりの金は、どの順で誰に渡るか</h2>
+<p>発注は上流から下流へ、段階を踏んで流れる。日本の建設・設備業界に特有の
+<strong>重層構造</strong>がここに出る。</p>
+
+<figure class="kb-figure">
+  <div class="kb-fig-scroll">
+  <svg viewBox="0 0 960 400" role="img" aria-label="データセンター事業者からゼネコン、電気設備・空調設備のサブコン、機器メーカーへと発注が流れる図。大型機器は事業者が直接指定して調達することもある">
+    <defs>
+      <marker id="dcy-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+      </marker>
+      <marker id="dcy-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
         <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
       </marker>
     </defs>
     <g fill="none" stroke="currentColor" stroke-width="1.3">
-      <rect x="20" y="165" width="128" height="86" rx="4"/>
-      <rect x="216" y="165" width="150" height="86" rx="4"/>
-      <rect x="434" y="82" width="216" height="292" rx="6" stroke-dasharray="5 4" opacity=".65"/>
-      <rect x="454" y="120" width="176" height="60" rx="4"/>
-      <rect x="454" y="208" width="176" height="60" rx="4"/>
-      <rect x="454" y="292" width="176" height="60" rx="4"/>
+      <rect x="20"  y="160" width="140" height="80" rx="4"/>
+      <rect x="212" y="160" width="140" height="80" rx="4"/>
+      <rect x="404" y="96"  width="170" height="66" rx="4"/>
+      <rect x="404" y="238" width="170" height="66" rx="4"/>
     </g>
     <g fill="none" stroke="var(--accent)" stroke-width="1.6">
-      <rect x="716" y="82" width="224" height="292" rx="6"/>
-      <rect x="736" y="120" width="184" height="60" rx="4"/>
-      <rect x="736" y="208" width="184" height="60" rx="4"/>
-      <rect x="736" y="292" width="184" height="60" rx="4"/>
+      <rect x="640" y="60"  width="180" height="62" rx="4"/>
+      <rect x="640" y="140" width="180" height="62" rx="4"/>
+      <rect x="640" y="220" width="180" height="62" rx="4"/>
+      <rect x="640" y="300" width="180" height="62" rx="4"/>
     </g>
     <g stroke="currentColor" stroke-width="1.3" fill="none">
-      <line x1="148" y1="208" x2="208" y2="208" marker-end="url(#dc-ar)"/>
-      <line x1="366" y1="208" x2="446" y2="238" marker-end="url(#dc-ar)"/>
-      <line x1="630" y1="238" x2="728" y2="238" marker-end="url(#dc-ar)"/>
+      <line x1="160" y1="200" x2="206" y2="200" marker-end="url(#dcy-a)"/>
+      <path d="M 352 190 L 380 190 L 380 129 L 398 129" marker-end="url(#dcy-a)"/>
+      <path d="M 352 210 L 380 210 L 380 271 L 398 271" marker-end="url(#dcy-a)"/>
+      <path d="M 574 118 L 610 118 L 610 91  L 634 91"  marker-end="url(#dcy-a)"/>
+      <path d="M 574 140 L 610 140 L 610 171 L 634 171" marker-end="url(#dcy-a)"/>
+      <path d="M 574 260 L 610 260 L 610 251 L 634 251" marker-end="url(#dcy-a)"/>
+      <path d="M 574 282 L 610 282 L 610 331 L 634 331" marker-end="url(#dcy-a)"/>
     </g>
-    <path d="M 291 165 C 291 40, 800 30, 826 76" stroke="var(--accent)" stroke-width="1.2" fill="none" stroke-dasharray="4 4" marker-end="url(#dc-arA)"/>
-    <g font-size="13" fill="currentColor">
-      <text x="84" y="200" text-anchor="middle" font-weight="700">生成AI・クラウド</text>
-      <text x="84" y="220" text-anchor="middle" font-size="11.5" opacity=".75">計算需要が増える</text>
-      <text x="291" y="200" text-anchor="middle" font-weight="700">DC事業者</text>
-      <text x="291" y="220" text-anchor="middle" font-size="11.5" opacity=".75">設備投資を決める</text>
-      <text x="542" y="150" text-anchor="middle" font-weight="700">ゼネコン（建屋 D1）</text>
-      <text x="542" y="168" text-anchor="middle" font-size="11" opacity=".75">供給分散 → 通過</text>
-      <text x="542" y="238" text-anchor="middle" font-weight="700">電気サブコン（D2）</text>
-      <text x="542" y="256" text-anchor="middle" font-size="11" opacity=".75">7社寡占 → 取り分あり</text>
-      <text x="542" y="322" text-anchor="middle" font-weight="700">空調サブコン（D3）</text>
-      <text x="542" y="340" text-anchor="middle" font-size="11" opacity=".75">上場5社 → 取り分あり</text>
-      <text x="178" y="198" text-anchor="middle" font-size="11" opacity=".7">支払</text>
-      <text x="405" y="200" text-anchor="middle" font-size="11" opacity=".7">建設を発注</text>
-      <text x="679" y="228" text-anchor="middle" font-size="11" opacity=".7">機器を調達</text>
+    <path d="M 90 160 C 90 40, 520 32, 632 88" stroke="var(--accent)" stroke-width="1.2" fill="none" stroke-dasharray="4 4" marker-end="url(#dcy-b)"/>
+    <g font-size="12.5" fill="currentColor">
+      <text x="90"  y="192" text-anchor="middle" font-weight="700">DC 事業者</text>
+      <text x="90"  y="210" text-anchor="middle" font-size="10.5" opacity=".75">クラウド各社・</text>
+      <text x="90"  y="226" text-anchor="middle" font-size="10.5" opacity=".75">通信/不動産系の運営会社</text>
+      <text x="282" y="192" text-anchor="middle" font-weight="700">ゼネコン</text>
+      <text x="282" y="210" text-anchor="middle" font-size="10.5" opacity=".75">建屋・土木をまとめて請ける</text>
+      <text x="489" y="124" text-anchor="middle" font-weight="700">電気設備工事会社</text>
+      <text x="489" y="142" text-anchor="middle" font-size="10.5" opacity=".75">受変電・幹線の据付（サブコン）</text>
+      <text x="489" y="266" text-anchor="middle" font-weight="700">空調・冷却工事会社</text>
+      <text x="489" y="284" text-anchor="middle" font-size="10.5" opacity=".75">熱源・配管の据付（サブコン）</text>
+      <text x="183" y="188" text-anchor="middle" font-size="10.5" opacity=".7">建設を発注</text>
+      <text x="378" y="82"  text-anchor="middle" font-size="10.5" opacity=".7">工事を分けて外注</text>
     </g>
-    <g font-size="13" fill="var(--accent)">
-      <text x="828" y="150" text-anchor="middle" font-weight="700">受変電機器</text>
-      <text x="828" y="168" text-anchor="middle" font-size="11">変圧器・開閉装置・盤</text>
-      <text x="828" y="238" text-anchor="middle" font-weight="700">電源・発電</text>
-      <text x="828" y="256" text-anchor="middle" font-size="11">UPS・非常用発電機</text>
-      <text x="828" y="322" text-anchor="middle" font-weight="700">熱源・冷却</text>
-      <text x="828" y="340" text-anchor="middle" font-size="11">冷凍機・チラー・液冷</text>
-      <text x="560" y="46" text-anchor="middle" font-size="11">大型機器はスペック指定・直接調達もある</text>
+    <g font-size="12.5" fill="var(--accent)">
+      <text x="730" y="86"  text-anchor="middle" font-weight="700">変圧器・開閉装置</text>
+      <text x="730" y="104" text-anchor="middle" font-size="10.5">電圧を落とす／切る機器</text>
+      <text x="730" y="166" text-anchor="middle" font-weight="700">UPS・非常用発電機</text>
+      <text x="730" y="184" text-anchor="middle" font-size="10.5">電気を切らさない機器</text>
+      <text x="730" y="246" text-anchor="middle" font-weight="700">冷凍機・チラー</text>
+      <text x="730" y="264" text-anchor="middle" font-size="10.5">熱源をつくる機器</text>
+      <text x="730" y="326" text-anchor="middle" font-weight="700">空調機・液冷ユニット</text>
+      <text x="730" y="344" text-anchor="middle" font-size="10.5">サーバから熱を受け取る機器</text>
+      <text x="400" y="26"  text-anchor="middle" font-size="11">大型機器は事業者が銘柄を指定して直接買うこともある（施主支給）</text>
+      <text x="730" y="44"  text-anchor="middle" font-size="11" font-weight="700" opacity=".9">機器メーカー</text>
     </g>
-    <g font-size="11" letter-spacing=".1em">
-      <text x="542" y="104" text-anchor="middle" fill="currentColor" opacity=".7">1本目：施工セグメント</text>
-      <text x="828" y="104" text-anchor="middle" fill="var(--accent)" font-weight="700">2本目：この記事</text>
-    </g>
-    <g font-size="12" fill="currentColor" opacity=".75">
-      <text x="480" y="404" text-anchor="middle">金は左から右へ流れ、各層で「取り分」が抜かれる。取り分の大きさを決めるのが判定の式</text>
-    </g>
+    <text x="480" y="386" text-anchor="middle" font-size="11.5" fill="currentColor" opacity=".8">金は左から右へ流れ、各段階で取り分が抜かれる。誰の取り分が大きいかは「その段階に何社いるか」でほぼ決まる</text>
   </svg>
   </div>
-  <figcaption><strong>読み方:</strong> 需要（左端）は誰でも知っているので、そこには賭けない。
-  賭けるのは「どの層で金が絞られるか」。1本目はサブコン2層（D2・D3）を取り分ありと判定した。
-  今回はその右隣、機器の3グループが対象。電力会社向けの機器には系列の商習慣が残る
-  （東光高岳=東電系、日新電機=住友電工系 など）。</figcaption>
+  <figcaption><strong>用語:</strong> 建屋一式を請ける総合建設会社を<strong>ゼネコン</strong>、
+  そこから電気設備・空調設備を分担して請ける専門工事会社を<strong>サブコン</strong>と呼ぶ
+  （subcontractor の略。下請けだが、DC では工事金額の相当部分を占める主役級）。<br>
+  <strong>勘所:</strong> DC の需要が語られるとき、真っ先に思い浮かぶのは事業者とゼネコンだが、
+  金額と利益の面で効いてくるのは<strong>サブコンと機器メーカー</strong>のほうであることが多い。
+  理由は次の節。</figcaption>
 </figure>
 
-<div class="kb-kpis">
-  <div class="kb-kpi"><div class="v">47 → 616 万kW</div>
-    <div class="l">DC 新増設の最大需要電力（2025→2034年度）。受電容量が増える＝この地図の全層に比例して効く</div>
-    <div class="kb-src">OCCTO／エネ庁・一次情報</div></div>
-  <div class="kb-kpi"><div class="v">+6.5% / +48.0%</div>
-    <div class="l">きんでん（D2）の売上／営業利益の伸び※。売上より利益が速い＝「選別受注」の型。機器側でも同じ型を探す</div>
-    <div class="kb-src">FY2026-03・二次情報</div></div>
-  <div class="kb-kpi"><div class="v">+9.2% / +46.3%</div>
-    <div class="l">明電舎（E1）の中間期 売上／営業利益の伸び※。いずれも過去最高。機器側にも同じ型が出始めている</div>
-    <div class="kb-src">FY2026-03 H1・二次情報</div></div>
-</div>
-
-<h2>図2　機器メーカーはどう稼ぐか — 受注生産の時間軸</h2>
-<p>重電機器は<strong>受注生産</strong>だ。店に並んだ物を売るのではなく、契約してから作る。
-この商習慣が決算の数字の読み方を決める——<strong>なぜ「受注残」を見るのか</strong>はこの図で分かる。</p>
+<h2>4　この業界の稼ぎ方 — 受注生産という商習慣</h2>
+<p>電力機器も設備工事も、店に並んだ物を売るのではなく<strong>契約してから作る</strong>
+（受注生産）。この一点が、決算の読み方をふつうの製造業と変えてしまう。</p>
 
 <figure class="kb-figure">
   <div class="kb-fig-scroll">
-  <svg viewBox="0 0 960 330" role="img" aria-label="引き合いから受注、製造、据付・検収、保守までの時間軸。値段は受注時に決まり、受注高・受注残・売上高という3つの会計数字がそれぞれ別のタイミングで動く">
+  <svg viewBox="0 0 960 330" role="img" aria-label="引き合いから受注、製造、据付・検収、保守までの時間軸。値段は受注時に決まり、受注高・受注残・売上高という3つの数字がそれぞれ別のタイミングで動く">
     <defs>
-      <marker id="dc-ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <marker id="dcz-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
         <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
       </marker>
     </defs>
@@ -604,185 +704,195 @@ border-radius:6px;padding:.7rem .9rem}
     </g>
     <rect x="794" y="70" width="146" height="58" rx="4" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
     <g stroke="currentColor" stroke-width="1.3" fill="none">
-      <line x1="164" y1="99" x2="196" y2="99" marker-end="url(#dc-ar2)"/>
-      <line x1="344" y1="99" x2="376" y2="99" marker-end="url(#dc-ar2)"/>
-      <line x1="564" y1="99" x2="596" y2="99" marker-end="url(#dc-ar2)"/>
-      <line x1="754" y1="99" x2="786" y2="99" marker-end="url(#dc-ar2)"/>
+      <line x1="164" y1="99" x2="196" y2="99" marker-end="url(#dcz-a)"/>
+      <line x1="344" y1="99" x2="376" y2="99" marker-end="url(#dcz-a)"/>
+      <line x1="564" y1="99" x2="596" y2="99" marker-end="url(#dcz-a)"/>
+      <line x1="754" y1="99" x2="786" y2="99" marker-end="url(#dcz-a)"/>
     </g>
     <g font-size="13" fill="currentColor">
-      <text x="94"  y="94" text-anchor="middle" font-weight="700">引き合い・仕様</text>
-      <text x="94"  y="112" text-anchor="middle" font-size="11" opacity=".75">規格適合・実績で選ばれる</text>
+      <text x="94"  y="94" text-anchor="middle" font-weight="700">引き合い・仕様決め</text>
+      <text x="94"  y="112" text-anchor="middle" font-size="11" opacity=".75">規格に合うか・実績があるかで絞られる</text>
       <text x="274" y="94" text-anchor="middle" font-weight="700">受注（契約）</text>
       <text x="274" y="112" text-anchor="middle" font-size="11" opacity=".75">ここで値段が決まる</text>
-      <text x="474" y="94" text-anchor="middle" font-weight="700">製造</text>
-      <text x="474" y="112" text-anchor="middle" font-size="11" opacity=".75">大型は年単位※・工場が制約</text>
-      <text x="679" y="94" text-anchor="middle" font-weight="700">据付・検収</text>
+      <text x="474" y="94" text-anchor="middle" font-weight="700">製造・工事</text>
+      <text x="474" y="112" text-anchor="middle" font-size="11" opacity=".75">大型機器は年単位※・工場の能力が上限</text>
+      <text x="679" y="94" text-anchor="middle" font-weight="700">据付・引き渡し</text>
       <text x="679" y="112" text-anchor="middle" font-size="11" opacity=".75">ここで売上になる</text>
     </g>
     <g font-size="13" fill="var(--accent)">
       <text x="867" y="94" text-anchor="middle" font-weight="700">保守・更新</text>
-      <text x="867" y="112" text-anchor="middle" font-size="11">機器寿命 20〜30年のストック</text>
+      <text x="867" y="112" text-anchor="middle" font-size="11">寿命 20〜30年ぶんの継続収入</text>
     </g>
     <g stroke="var(--accent)" fill="var(--accent)">
       <line x1="274" y1="70" x2="274" y2="40" stroke-width="1.2"/>
       <circle cx="274" cy="37" r="3"/>
     </g>
-    <text x="274" y="28" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">値決め力はここに出る（強気の価格で契約できるか）</text>
+    <text x="274" y="28" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">強気の値段で契約できるかは、この瞬間に決まる</text>
     <g stroke="currentColor" stroke-width="1" fill="none" opacity=".8">
-      <path d="M 274 128 L 274 168" marker-end="url(#dc-ar2)"/>
-      <path d="M 474 128 L 474 168" marker-end="url(#dc-ar2)"/>
-      <path d="M 679 128 L 679 168" marker-end="url(#dc-ar2)"/>
+      <path d="M 274 128 L 274 168" marker-end="url(#dcz-a)"/>
+      <path d="M 474 128 L 474 168" marker-end="url(#dcz-a)"/>
+      <path d="M 679 128 L 679 168" marker-end="url(#dcz-a)"/>
     </g>
     <g font-size="12.5" fill="currentColor">
       <rect x="196" y="172" width="156" height="46" rx="4" fill="none" stroke="currentColor" stroke-width="1"/>
-      <text x="274" y="192" text-anchor="middle" font-weight="700">受注高 に計上</text>
-      <text x="274" y="209" text-anchor="middle" font-size="11" opacity=".75">その期に取った新しい契約</text>
+      <text x="274" y="192" text-anchor="middle" font-weight="700">受注高</text>
+      <text x="274" y="209" text-anchor="middle" font-size="11" opacity=".75">その期に取った契約の額</text>
       <rect x="396" y="172" width="156" height="46" rx="4" fill="none" stroke="var(--accent)" stroke-width="1.4"/>
-      <text x="474" y="192" text-anchor="middle" font-weight="700" fill="var(--accent)">受注残 に積まれる</text>
+      <text x="474" y="192" text-anchor="middle" font-weight="700" fill="var(--accent)">受注残（手持工事高）</text>
       <text x="474" y="209" text-anchor="middle" font-size="11" fill="var(--accent)">まだ売上になっていない仕事の在庫</text>
       <rect x="601" y="172" width="156" height="46" rx="4" fill="none" stroke="currentColor" stroke-width="1"/>
-      <text x="679" y="192" text-anchor="middle" font-weight="700">売上高 に計上</text>
-      <text x="679" y="209" text-anchor="middle" font-size="11" opacity=".75">工事進行・検収基準で実現</text>
+      <text x="679" y="192" text-anchor="middle" font-weight="700">売上高</text>
+      <text x="679" y="209" text-anchor="middle" font-size="11" opacity=".75">引き渡し・工事の進み具合で計上</text>
     </g>
     <rect x="120" y="248" width="720" height="52" rx="4" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="5 4"/>
-    <text x="480" y="272" text-anchor="middle" font-size="13.5" fill="currentColor">受注残(期末) ＝ 受注残(期首) ＋ 受注高 − 売上高</text>
-    <text x="480" y="291" text-anchor="middle" font-size="12" fill="currentColor" opacity=".8">受注残が増え続けている ＝ 作るより速く仕事が積み上がっている ＝ 供給が需要に追いついていない</text>
+    <text x="480" y="272" text-anchor="middle" font-size="13.5" fill="currentColor">受注残（期末） ＝ 受注残（期首） ＋ 受注高 − 売上高</text>
+    <text x="480" y="291" text-anchor="middle" font-size="12" fill="currentColor" opacity=".8">受注残が増え続けている＝ 作るより速く仕事が入ってきている ＝ 供給が需要に追いついていない</text>
   </svg>
   </div>
-  <figcaption><strong>ここが商習慣の核:</strong> 値段は受注の瞬間に決まり、売上はずっと後に出る。
-  だから「今の好決算」は1〜2年前の受注の答え合わせにすぎず、<strong>今の需給を映すのは受注残</strong>。
-  さらに納入後は保守・部品・更新が納入メーカーに紐づき（他社は容易に触れない）、
-  20〜30年のストック収益になる——これが「切替の効かなさ」の正体でもある。
-  1本目の施工（手持工事高）と会計の骨格は同じで、D2 サブコンの「手持工事高」と
-  E1 機器の「受注残」は同じ読み方ができる。</figcaption>
+  <figcaption><strong>ここが最大の勘所:</strong> 値段は受注の瞬間に決まり、売上はその1〜2年後に立つ。
+  だから<strong>今の好決算は、1〜2年前に取った契約の答え合わせ</strong>にすぎない。
+  いま需要と供給がどうなっているかを映すのは、売上ではなく<strong>受注残</strong>のほうだ
+  （工事会社では「手持工事高」と呼ぶ。呼び名が違うだけで中身は同じ）。<br>
+  もう一点。機器は納入したら終わりではなく、20〜30年にわたる保守・部品・更新が
+  納入したメーカーに紐づく。<strong>売った瞬間より、売った後のほうが長く儲かる</strong>——
+  これは同時に「他社に替えにくい」理由にもなっている。</figcaption>
 </figure>
 
-<h2>図3　施工と機器の決定的な違い — 制約の「崩れやすさ」</h2>
-<p>同じ AI DC 特需の隣どうしでも、供給を絞っている物が違う。ここがこのセグメント最大の論点。</p>
+<h2>5　なぜ品薄と値上げが起きるのか</h2>
+<p>需要が増えても、供給がすぐ増えるなら値段は上がらない。値上げが通るのは
+<strong>供給の側に増やせない事情があるとき</strong>だけだ。この業界には3種類ある。</p>
+
+<div class="scroll"><table class="prose-table"><thead>
+<tr><th>詰まっている場所</th><th>なぜ増やせないか</th><th>解けるまでの時間</th></tr>
+</thead><tbody>
+<tr><td><strong>人（工事の担い手）</strong></td>
+  <td>特別高圧の工事には資格と実績が要る。電気工事士は50歳以上が半数超・30歳未満が1割前後※で、
+  高齢化により<strong>放っておくと減る</strong>。育成は年単位</td>
+  <td><strong>長い。</strong>増やす主体も各社に分散していて、誰か1社の決断では動かない</td></tr>
+<tr><td><strong>工場（機器をつくる能力）</strong></td>
+  <td>大型変圧器は巻線・鉄心の熟練工と専用設備が要る。部材（電磁鋼板など）にも上限がある</td>
+  <td><strong>2〜3年。</strong>金を掛ければ増やせる。実際にダイヘンは大形変圧器の生産能力を
+  2029年度までに2倍にする100億円規模の投資を発表している</td></tr>
+<tr><td><strong>審査・認定</strong></td>
+  <td>電力会社や大口需要家の規格に通り、納入実績を積むまでに年数が要る</td>
+  <td><strong>長いが、顧客が方針を変えると一気に無効になる</strong></td></tr>
+</tbody></table></div>
+
+<p>だから同じ「AI DC 特需」でも、<strong>工事の会社と機器の会社では強さの質が違う</strong>。
+工事側の逼迫は人が増えないかぎり続くが、機器側の逼迫は工場が建てば緩む。
+今の値上げがどちらのタイプかを見分けることが、この業界を読む第一歩になる。</p>
 
 <div class="kb-vs">
   <div class="col">
-    <div class="tag">1本目 / 施工</div>
-    <h3>制約は「人」</h3>
+    <div class="tag">工事の会社（サブコン）</div>
+    <h3>詰まっているのは「人」</h3>
     <ul>
-      <li>特高受電の工事は<strong>有資格者と実績</strong>が要る</li>
-      <li>電気工事士は<strong>50歳以上が半数超・30歳未満1割前後</strong>（国勢調査）</li>
-      <li>育成は年単位、しかも増やす主体が分散していて誰も一気に増やせない</li>
+      <li>資格者が年単位でしか増えず、高齢化で減る方向</li>
+      <li>受注を選べる状態になっている（<strong>選別受注</strong>＝
+        適正な工期と価格が確保できる案件だけを受ける行動）</li>
+      <li>売上より利益の伸びが速い形が、業界の複数社に同時に出ている</li>
     </ul>
-    <div class="q">門番の問い → <strong>「人が増えない限り続く」</strong>＝崩れにくい賭け</div>
+    <div class="q">→ 逼迫は<strong>人が増えない限り続く</strong></div>
   </div>
   <div class="col hot">
-    <div class="tag">2本目 / 機器（この記事）</div>
-    <h3>制約は「生産能力」</h3>
+    <div class="tag">機器の会社（メーカー）</div>
+    <h3>詰まっているのは「工場」</h3>
     <ul>
-      <li>工場・熟練工・部材（けい素鋼板・ブッシング）が制約</li>
-      <li>ただし<strong>設備投資で2〜3年で増やせる</strong></li>
-      <li>実例: ダイヘンが大形変圧器の能力を<strong>2029年度までに2倍</strong>にする100億円規模の投資を発表済み（一次情報）</li>
+      <li>設備投資で 2〜3年あれば能力を増やせる</li>
+      <li>実際に増産投資が始まっている（ダイヘン: 2026年度1.2倍→2027年度1.5倍→2029年度2.0倍）</li>
+      <li>ただし不足は日本だけでなく<strong>世界的</strong>で、米国では大型変圧器が複数年待ちとも報じられる※</li>
     </ul>
-    <div class="q">門番の問い → <strong>「増産しても追いつかないか」</strong>＝証拠が要る賭け</div>
+    <div class="q">→ 逼迫は<strong>増産が追いつけば緩む</strong>。緩む時期を予想できる</div>
   </div>
 </div>
 
-<figure class="kb-figure">
-  <div class="kb-fig-scroll">
-  <svg viewBox="0 0 960 170" role="img" aria-label="供給を増やすのに掛かる時間の軸。機器（工場投資）は2〜3年で増やせるが、施工（有資格者）は年単位でしか増えず高齢化で純減方向。右にあるほど崩れにくい制約">
-    <defs>
-      <marker id="dc-ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-        <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
-      </marker>
-    </defs>
-    <line x1="60" y1="100" x2="920" y2="100" stroke="currentColor" stroke-width="1.3" marker-end="url(#dc-ar3)"/>
-    <g font-size="12" fill="currentColor">
-      <text x="60" y="128" opacity=".7">短い（供給がすぐ増える）</text>
-      <text x="912" y="128" text-anchor="end" opacity=".7">長い（供給が増えない）＝ 崩れにくい制約 ＝ 強い賭け</text>
-    </g>
-    <g>
-      <circle cx="330" cy="100" r="6" fill="var(--accent)"/>
-      <line x1="330" y1="94" x2="330" y2="58" stroke="var(--accent)" stroke-width="1.2"/>
-      <text x="330" y="46" text-anchor="middle" font-size="12.5" fill="var(--accent)" font-weight="700">機器：工場投資で 2〜3年</text>
-      <text x="330" y="150" text-anchor="middle" font-size="11" fill="var(--accent)">ダイヘン 1.2倍(26年度)→1.5倍(27年度)→2倍(29年度)</text>
-    </g>
-    <g>
-      <circle cx="760" cy="100" r="6" fill="var(--good)"/>
-      <line x1="760" y1="94" x2="760" y2="58" stroke="var(--good)" stroke-width="1.2"/>
-      <text x="760" y="46" text-anchor="middle" font-size="12.5" fill="var(--good)" font-weight="700">施工：有資格者の育成は年単位</text>
-      <text x="760" y="150" text-anchor="middle" font-size="11" fill="var(--good)">高齢化で純減方向・増やす主体も分散</text>
-    </g>
-  </svg>
-  </div>
-  <figcaption><strong>含意:</strong> 機器の層で賭けるなら、施工より一段厳しい証拠——
-  「増産計画を織り込んでもなお受注残が伸び続ける」——が要る。ただし大型変圧器の不足は
-  <strong>グローバル</strong>（米国は複数年待ちの報道※）で、輸出が効くなら国内増産が
-  価格を崩すとは限らない。これは未解決の問い Q2。</figcaption>
-</figure>
+<div class="kb-note"><strong>よくある誤読:</strong> 「電力機器は品薄」と一括りにしないこと。
+標準仕様の小型受電設備（キュービクル）の納期は 2026年3月時点で約3〜4か月まで
+<strong>正常に戻った</strong>と報じられている※。逼迫が残っているのは
+大型・特別高圧・特殊仕様のものだ。同じ「変圧器」でも、品目によって需給がまったく違う。</div>
 
-<div class="kb-note"><strong>罠に注意:</strong> 「電力機器は不足」という言説を層で切らずに信じない。
-汎用キュービクル（標準仕様）の納期は 2026年3月時点で約3〜4か月まで<strong>正常化した</strong>という報道がある※。
-逼迫が残るのは大型・特高・特殊仕様だけ。さらにトップランナー基準改定（2026年4月・値上げ）と
-PCB 処分期限（2027年3月）は<strong>規制起因の一過性の山</strong>で、
-構造的な DC 需要と混ぜて数えると、山の頂上で買うことになる。</div>
+<h2>6　日本のプレイヤーはこう並んでいる</h2>
+<p>この業界の顔ぶれには、日本特有の<strong>系列</strong>が色濃く残っている。
+電力会社が地域ごとに工事会社と機器メーカーを抱えてきた歴史があり、
+規格・実績・保守が紐づくため、価格だけでは相手を替えにくい。</p>
 
-<h2>層ごとの見立て — E1〜E6</h2>
-<p>図1の機器ゾーンを6層に割り、式（集中度×切替）＋「上場ピュアプレイがあるか」で選別した現状。
-<span class="kb-pill p-takes">取り分あり(仮)</span>
-<span class="kb-pill p-open">保留</span>
-<span class="kb-pill p-pass">通過</span>
-<span class="kb-pill p-out">対象外</span></p>
+<div class="scroll"><table class="prose-table"><thead>
+<tr><th>層</th><th>主な会社</th><th>顔ぶれの数</th><th>取り分の残りやすさ</th></tr>
+</thead><tbody>
+<tr><td><strong>建屋・土木</strong></td><td>大手ゼネコン＋中堅多数</td><td>多い</td>
+  <td><span class="kb-pill p-pass">素通り</span> 応札できる会社が多く、価格競争になりやすい</td></tr>
+<tr><td><strong>電気設備工事</strong></td>
+  <td>きんでん（関西電力系）・関電工（東京電力系）・トーエネック（中部）・
+  ユアテック（東北）・中電工（中国）・住友電設 ほか</td><td>7社前後</td>
+  <td><span class="kb-pill p-takes">残りやすい</span> 電力会社の営業地域ごとに寡占。人が制約</td></tr>
+<tr><td><strong>空調・冷却工事</strong></td>
+  <td>高砂熱学工業・ダイダン・三機工業・大気社・新日本空調</td><td>上場5社</td>
+  <td><span class="kb-pill p-takes">残りやすい</span> 設計込みの仕事で替えにくい。全社が過去最高益※</td></tr>
+<tr><td><strong>大型・特別高圧の変圧器／開閉装置</strong></td>
+  <td>東光高岳（東京電力系）・ダイヘン・明電舎・富士電機・日新電機（住友電工系）＋日立の一部門</td>
+  <td>6社前後</td>
+  <td><span class="kb-pill p-takes">残りやすい</span> 系列と実績で顔ぶれが固定。ただし増産が進行中</td></tr>
+<tr><td><strong>標準品の受電設備（キュービクル）・配電盤</strong></td>
+  <td>日東工業ほか多数</td><td>多い</td>
+  <td><span class="kb-pill p-pass">素通り</span> 相見積もりで決まり、納期も正常化※</td></tr>
+<tr><td><strong>UPS（無停電電源）</strong></td>
+  <td>三菱電機・富士電機・TMEIC／海外勢 Schneider・Eaton・Vertiv</td><td>少数だが世界競争</td>
+  <td><span class="kb-pill p-open">見極め中</span> 国内シェアは三菱電機が長年トップ※だが、
+  海外クラウド事業者は自社の調達標準を持ち込む</td></tr>
+<tr><td><strong>非常用発電機</strong></td>
+  <td>三菱重工・ヤンマー・デンヨー／海外勢 Cummins・Caterpillar・mtu</td><td>少数だが世界競争</td>
+  <td><span class="kb-pill p-open">見極め中</span> 法令で必置のため需要は堅いが、増産も進む</td></tr>
+<tr><td><strong>熱源（ターボ冷凍機）</strong></td>
+  <td>三菱重工サーマルシステムズ・荏原系・ダイキン</td><td>実質3社</td>
+  <td><span class="kb-pill p-takes">残りやすい</span> 国内シェア約70%を1社が持つと報じられる※</td></tr>
+<tr><td><strong>液冷（冷却水をサーバに直付けする方式）</strong></td>
+  <td>ニデック・ダイキン／海外勢 Vertiv・CoolIT ほか多数が参入中</td><td>増加中</td>
+  <td><span class="kb-pill p-out">形成途上</span> 市場は急拡大の予測※だが、
+  規格も勝者もまだ定まっていない</td></tr>
+</tbody></table></div>
 
-<div class="kb-layers">
-  <div class="kb-layer v-takes">
-    <div><strong>E1　大形・特高変圧器／開閉装置</strong> <span class="kb-pill p-takes">取り分あり（仮）</span></div>
-    <div class="who">東光高岳・ダイヘン・明電舎・富士電機・日新電機 ＋ 日立の一部門 ＝ 実質6社</div>
-    <div class="why">系列と納入実績で顔ぶれが固定、据付後は保守も紐づく。逼迫はグローバル。
-    <strong>ただし増産投資が進行中なので、「増産しても追いつかない」証拠（Q1）が出るまで仮判定。</strong>
-    唯一、候補銘柄を出した層。</div>
-  </div>
-  <div class="kb-layer v-pass">
-    <div><strong>E2　汎用キュービクル・配電盤</strong> <span class="kb-pill p-pass">通過</span></div>
-    <div class="who">日東工業ほか多数。盤メーカーは全国に分散</div>
-    <div class="why">納期は正常化の報道※。供給が増やしやすく分散。トップランナーの値上げは
-    全社一律のコスト転嫁で、特定社の値決め力ではない。</div>
-  </div>
-  <div class="kb-layer v-open">
-    <div><strong>E3　UPS・電源装置</strong> <span class="kb-pill p-open">保留</span></div>
-    <div class="who">三菱電機（一部門）・富士電機・TMEIC（非上場）／外資 Schneider・Eaton・Vertiv</div>
-    <div class="why">国内シェアは三菱電機トップ※だが、ハイパースケーラー向けは外資の調達標準が
-    強い可能性。国内集中＝値決め力かが未確認で、上場ピュアプレイも無い。</div>
-  </div>
-  <div class="kb-layer v-open">
-    <div><strong>E4　非常用発電機</strong> <span class="kb-pill p-open">保留</span></div>
-    <div class="who">三菱重工（一部門）・ヤンマー（非上場）・デンヨー／外資 Cummins・Caterpillar・mtu</div>
-    <div class="why">DC には必置でエンジンは長納期の報道もあるが、上場ピュアプレイ（デンヨー）の
-    DC 向け比率が未確認。ヤンマーも増産発表※＝供給が増える方向の証拠でもある。</div>
-  </div>
-  <div class="kb-layer v-open">
-    <div><strong>E5　熱源機器（ターボ冷凍機・チラー）</strong> <span class="kb-pill p-open">保留（乗り物が無い）</span></div>
-    <div class="who">三菱重工サーマル（非上場子会社・国内シェア約70%※）・荏原系・ダイキン</div>
-    <div class="why">集中は本物らしいが、最大手が親会社の一部門。層は良くても
-    <strong>単独で買える株が無い</strong>。複合企業をどう扱うかは方法論の未解決（Q3・マスター判断待ち）。</div>
-  </div>
-  <div class="kb-layer v-out">
-    <div><strong>E6　液冷（CDU・コールドプレート）</strong> <span class="kb-pill p-out">対象外（時期尚早）</span></div>
-    <div class="who">ニデック・ダイキン（米社買収）／外資 Vertiv・CoolIT・Boyd ほか多数が参入中</div>
-    <div class="why">市場は急成長の<strong>予測</strong>※だが、全員が参入中＝供給の集中がまだ成立していない。
-    当台帳は需要予測に賭けないので判定不能。撤退・淘汰が始まったら再訪（Q5）。</div>
-  </div>
-</div>
+<p class="kb-crumb" style="margin-top:.8rem">
+<strong>語の意味</strong> — <span class="kb-pill p-takes">残りやすい</span>供給者が少なく替えも効かないので値上げが通りやすい層。
+<span class="kb-pill p-pass">素通り</span>金額は通過するが競争で利益が削られる層。
+<span class="kb-pill p-open">見極め中</span>集中はしているが、海外勢や顧客の力関係で結論が出ない層。
+<span class="kb-pill p-out">形成途上</span>参入者が増えている最中で、まだ強弱が決まらない層。</p>
 
-<h2>図4　答え合わせの予定表 — この仮説はいつ・どう崩れるか</h2>
-<p>供給への賭けの利点は、崩れ方を先に書けること。カレンダーに落とすとこうなる。</p>
+<div class="kb-note"><strong>見落としやすい点:</strong> 良い層を見つけても、
+<strong>その商売だけを手がける会社が上場しているとは限らない</strong>。
+たとえば熱源機器で国内最大手とされる会社は大手重工メーカーの子会社で、単体では株式市場に出ていない。
+UPS も液冷も、日本勢は総合電機・総合空調の一部門であることが多い。
+その場合、層としてどれだけ儲かっていても、会社全体の数字に薄まって外からは見えにくくなる。
+<strong>「儲かる層」と「その儲けを丸ごと受け取る会社」は別物</strong>だと意識しておく。</div>
+
+<h2>7　業界の体温を測る4つの数字</h2>
+<p>決算資料を開いたとき、この業界ならどこを見るか。</p>
+<ol>
+  <li><strong>受注残（手持工事高）の前年比。</strong>いまの需給そのもの。
+    増え続けていれば作るより速く仕事が入っている。売上より先に動く先行指標</li>
+  <li><strong>売上の伸びと営業利益の伸びの差。</strong>売上 +6.5% に対して営業利益 +48.0%※
+    のような形は、量ではなく<strong>値段</strong>で伸びている印。値上げが通っている証拠になる。
+    逆に売上だけ伸びて利益が付いてこないなら、忙しいだけで儲かっていない</li>
+  <li><strong>納期。</strong>公表数字ではないが業界紙が報じる。伸びていれば逼迫、
+    戻っていれば緩和。品目別に見ること（大型と標準品はまったく違う）</li>
+  <li><strong>増産投資の発表。</strong>供給側が「この需要は続く」と判断した証拠であり、
+    同時に<strong>数年後に品薄が緩む予告</strong>でもある。両方の意味で効く</li>
+</ol>
+
+<h2>8　この逼迫はいつ、どう緩むか</h2>
+<p>需要ではなく供給を見ていると、変化の時期をあらかじめカレンダーに置ける。
+いま効いている要因は3つあり、うち2つには<strong>期限がある</strong>。</p>
 
 <figure class="kb-figure">
   <div class="kb-fig-scroll">
-  <svg viewBox="0 0 960 300" role="img" aria-label="2026年から2030年の時間軸。2026年4月トップランナー改定、2027年3月PCB期限、2027年度末ダイヘン1.5倍、2029年度末2倍。2027年以降が反証条件の観測ゾーン">
+  <svg viewBox="0 0 960 300" role="img" aria-label="2026年から2030年の時間軸。2026年4月の省エネ基準改定、2027年3月のPCB処分期限という制度要因と、2027年度末1.5倍・2029年度末2.0倍という生産能力増強の節目が並ぶ">
     <defs>
-      <marker id="dc-ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <marker id="dcw-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
         <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
       </marker>
     </defs>
     <rect x="420" y="60" width="500" height="140" rx="6" fill="var(--accent)" opacity="0.09"/>
-    <text x="670" y="82" text-anchor="middle" font-size="11" fill="var(--accent)" letter-spacing=".08em">F1・F3 の観測ゾーン</text>
-    <line x1="50" y1="160" x2="930" y2="160" stroke="currentColor" stroke-width="1.3" marker-end="url(#dc-ar4)"/>
+    <text x="670" y="82" text-anchor="middle" font-size="11" fill="var(--accent)" letter-spacing=".08em">緩みが出るとしたらこの辺り</text>
+    <line x1="50" y1="160" x2="930" y2="160" stroke="currentColor" stroke-width="1.3" marker-end="url(#dcw-a)"/>
     <g font-size="12" fill="currentColor">
       <text x="90"  y="184" text-anchor="middle">2026</text>
       <text x="300" y="184" text-anchor="middle">2027</text>
@@ -797,158 +907,195 @@ PCB 処分期限（2027年3月）は<strong>規制起因の一過性の山</stro
     <g font-size="12" fill="currentColor">
       <line x1="108" y1="155" x2="108" y2="116" stroke="currentColor" stroke-width="1"/>
       <circle cx="108" cy="113" r="3" fill="currentColor"/>
-      <text x="108" y="102" text-anchor="middle">4月 トップランナー改定（値上げ・駆け込み）</text>
+      <text x="108" y="102" text-anchor="middle">4月 省エネ基準の改定（新基準品は値上がり・駆け込み needs）</text>
       <line x1="248" y1="155" x2="248" y2="136" stroke="currentColor" stroke-width="1"/>
       <circle cx="248" cy="133" r="3" fill="currentColor"/>
-      <text x="255" y="126" text-anchor="middle">3月 PCB期限＝規制特需ここまで</text>
+      <text x="258" y="126" text-anchor="middle">3月 PCB含有機器の処分期限＝更新需要はここまで</text>
     </g>
     <g font-size="12" fill="var(--accent)">
       <line x1="195" y1="165" x2="195" y2="212" stroke="var(--accent)" stroke-width="1.2"/>
       <circle cx="195" cy="215" r="3.5" fill="var(--accent)"/>
-      <text x="195" y="234" text-anchor="middle">26年度 能力 1.2倍</text>
+      <text x="195" y="234" text-anchor="middle">26年度 生産能力 1.2倍</text>
       <line x1="405" y1="165" x2="405" y2="212" stroke="var(--accent)" stroke-width="1.2"/>
       <circle cx="405" cy="215" r="3.5" fill="var(--accent)"/>
       <text x="405" y="234" text-anchor="middle" font-weight="700">27年度末 1.5倍</text>
       <line x1="825" y1="165" x2="825" y2="212" stroke="var(--accent)" stroke-width="1.2"/>
       <circle cx="825" cy="215" r="3.5" fill="var(--accent)"/>
       <text x="825" y="234" text-anchor="middle" font-weight="700">29年度末 2.0倍</text>
-      <text x="500" y="262" text-anchor="middle" font-size="11.5">ダイヘンの大形変圧器 生産能力（一次情報）。業界全体の増産の代理指標として使う</text>
+      <text x="500" y="262" text-anchor="middle" font-size="11.5">大形変圧器の生産能力増強（ダイヘンの公表計画）。業界全体の増産の目安として使える</text>
     </g>
     <g font-size="12.5" fill="currentColor">
-      <text x="670" y="110" text-anchor="middle">能力の節目の前後で 受注残の減少・利益率の頭打ち が出たら</text>
-      <text x="670" y="130" text-anchor="middle" font-weight="700">「増産が追いついた」＝ セグメントごと取り下げ</text>
+      <text x="670" y="112" text-anchor="middle">能力が増えた後も受注残が減らないなら、需要は本物で構造的</text>
+      <text x="670" y="132" text-anchor="middle" font-weight="700">受注残が減り、利益率が頭打ちになったら逼迫は終わり</text>
     </g>
-    <text x="50" y="290" font-size="12" fill="currentColor" opacity=".75">観測する数字: E1 各社の四半期の受注残（前年比）と営業利益率。ほかに F2: OCCTO見通しの下方修正 ／ F4: 外資の国内大型案件の連続受注</text>
+    <text x="50" y="290" font-size="12" fill="currentColor" opacity=".75">※ 制度要因（上）は一過性の山をつくる。構造需要（DC・再エネ）と混ぜて数えないこと</text>
   </svg>
   </div>
-  <figcaption><strong>二面性を忘れない:</strong> ダイヘンの増産投資は「需要が続く」証拠
-  （門番を通す材料）であると同時に、「供給が増えて賭けが崩れる」カウントダウンでもある。
-  同じ事実が両側に効く——だから節目の年度を予定表に固定しておく。</figcaption>
+  <figcaption><strong>読み方:</strong> いま起きている品薄には、性格の違う3つの要因が重なっている——
+  ①DC と再エネによる<strong>構造的な</strong>増加、②省エネ基準の改定と PCB 処分期限による
+  <strong>期限つきの</strong>駆け込み、③それに追いつけていない生産能力。
+  ②は 2027年3月で一巡し、③は増産計画の節目で解消に向かう。
+  この3つを分けて数えないと、一時的な山を構造的な成長と取り違える。</figcaption>
 </figure>
 
-<h2>E1 の乗り物 4社 — まだ台帳には入れていない</h2>
-<p>Q1（増産しても追いつかない証拠）が埋まるまで <code>master.yaml</code> には登録しない。
-並んでいることは「買い」ではない。</p>
-
-<div class="kb-cands">
-  <div class="kb-cand"><div class="code">6617</div><div class="nm">東光高岳</div>
-    <p>東電系。大型変圧器・GIS に近い専業で、E1 で最もピュアプレイ。「DC特需で最高益」報道あり※（実額は未確認）</p></div>
-  <div class="kb-cand"><div class="code">6622</div><div class="nm">ダイヘン</div>
-    <p>能力2倍投資を自ら発表＝需要の持続に張っている側。半導体装置・EV充電など複合的</p></div>
-  <div class="kb-cand"><div class="code">6508</div><div class="nm">明電舎</div>
-    <p>中間期が売上・営業利益とも過去最高※。売上より利益が速い＝選別受注の型（実額は短信で要確認）</p></div>
-  <div class="kb-cand"><div class="code">6641</div><div class="nm">日新電機</div>
-    <p>住友電工系の受変電。E1 の顔ぶれとして数えた段階で、個社の証拠は未収集</p></div>
-</div>
-
-<h2>これから潰す問い</h2>
+<h2>まとめ — この業界を見るときの5つの勘所</h2>
 <ol>
-  <li><strong>増産しても追いつかない証拠。</strong>E1 各社の受注残（実額・前年比）を決算短信の
-    一次数字で並べ、能力の伸びと比べる。埋まるまで E1 は仮判定 ← 次の作業</li>
-  <li><strong>輸出が効くか。</strong>米国の変圧器不足の恩恵が国内勢に来ているか
-    （海外売上比率・海外受注）。効くなら国内増産の価格下押しを輸出が吸収する</li>
-  <li><strong>複合企業の中の良い事業をどう扱うか。</strong>E5 のように層は良いが乗り物が
-    非上場子会社の場合、親会社を比率つきで候補にするか、見送るか ← マスター判断</li>
-  <li><strong>規模と流動性。</strong>候補は中〜大型で、既存の判定ゲートが想定する規模と違う
-    （1本目と共通の論点）</li>
-  <li><strong>液冷の再訪トリガー。</strong>規格の標準化・参入企業の撤退が始まったら
-    競争構造が読める。それまで見ない</li>
+  <li><strong>DC の投資は「電気を通す」と「熱を捨てる」の2本の経路に沿って発注される。</strong>
+    建屋より設備、設備より機器のほうが利益が濃いことがある</li>
+  <li><strong>受注生産なので、今の売上は1〜2年前の契約の結果。</strong>
+    いまの需給は受注残（手持工事高）に出る</li>
+  <li><strong>納入後 20〜30年の保守が納入者に紐づく。</strong>
+    だから安さだけでは替えられず、それが値決め力の源になる</li>
+  <li><strong>詰まっている場所が「人」か「工場」かで、強さの持続時間が違う。</strong>
+    人は年単位で増えず、工場は 2〜3年で増える</li>
+  <li><strong>良い層と、その儲けを受け取る会社は別。</strong>
+    国内最大手が非上場の子会社や大企業の一部門であることは珍しくない</li>
 </ol>
 
 <h2>出典</h2>
 <ul class="kb-srcs">
-  <li>OCCTO／資源エネルギー庁 需要見通し（一次）:
-    <a href="https://www.meti.go.jp/shingikai/enecho/denryoku_gas/denryoku_gas/pdf/085_06_00.pdf" rel="noopener">meti.go.jp</a>（2026-08-28 取得）</li>
-  <li>ダイヘン 大形変圧器 生産能力2倍・100億円規模（一次・プレスリリース）:
-    <a href="https://prtimes.jp/main/html/rd/p/000000006.000174053.html" rel="noopener">prtimes.jp</a>（2026-08-30 取得）</li>
-  <li>明電舎 FY2026-03 中間期 過去最高（二次）:
-    <a href="https://dempa-digital.com/article/699727" rel="noopener">dempa-digital.com</a>（2026-08-30 取得）</li>
-  <li>キュービクル納期の正常化（二次）:
-    <a href="https://denzai-zeus.com/ogawa-news/saisinkyu-bikurunouki" rel="noopener">denzai-zeus.com</a>（2026-08-30 取得）</li>
-  <li>トランス・キュービクル不足の背景／トップランナー2026（二次）:
-    <a href="https://solarjournal.jp/product/62712/" rel="noopener">solarjournal.jp</a>（2026-08-30 取得）</li>
-  <li>米国 データセンターと電力インフラ（JETRO・二次）:
-    <a href="https://www.jetro.go.jp/biz/areareports/2026/0009cbcc525cfde9.html" rel="noopener">jetro.go.jp</a>（2026-08-30 取得）</li>
-  <li>ターボ冷凍機 国内シェア約70%（二次）:
-    <a href="https://news.mynavi.jp/techplus/article/20241203-3076405/" rel="noopener">news.mynavi.jp</a>（2026-08-30 取得）</li>
-  <li>CDU 世界市場予測（調査会社・二次）:
-    <a href="https://newscast.jp/news/3112768" rel="noopener">newscast.jp</a>（2026-08-30 取得）</li>
-  <li>ヤンマー DC向け非常用発電機の増産（二次）:
-    <a href="https://www.nikkei.com/article/DGXZQOUF0818T0Y5A001C2000000/" rel="noopener">nikkei.com</a>（2026-08-30 取得）</li>
-  <li>きんでん・電気工事士の年齢構成などは1本目 <code>segments/ai-datacenter-build.yaml</code> の出典を参照</li>
+  <li>DC 新増設に伴う最大需要電力（一次情報）:
+    <a href="https://www.meti.go.jp/shingikai/enecho/denryoku_gas/denryoku_gas/pdf/085_06_00.pdf" rel="noopener">資源エネルギー庁／OCCTO 資料</a>（2026-08-28 取得）</li>
+  <li>大形変圧器の生産能力増強（一次情報・会社発表）:
+    <a href="https://prtimes.jp/main/html/rd/p/000000006.000174053.html" rel="noopener">ダイヘン プレスリリース</a>（2026-08-30 取得）</li>
+  <li>電力機器メーカーの中間期業績※:
+    <a href="https://dempa-digital.com/article/699727" rel="noopener">電波新聞デジタル</a>（2026-08-30 取得）</li>
+  <li>受電設備（キュービクル）の納期正常化※:
+    <a href="https://denzai-zeus.com/ogawa-news/saisinkyu-bikurunouki" rel="noopener">電材ゼウス</a>（2026-08-30 取得）</li>
+  <li>変圧器不足の背景・省エネ基準改定※:
+    <a href="https://solarjournal.jp/product/62712/" rel="noopener">SOLAR JOURNAL</a>（2026-08-30 取得）</li>
+  <li>米国の電力インフラ事情※:
+    <a href="https://www.jetro.go.jp/biz/areareports/2026/0009cbcc525cfde9.html" rel="noopener">JETRO 地域・分析レポート</a>（2026-08-30 取得）</li>
+  <li>ターボ冷凍機の国内シェア※:
+    <a href="https://news.mynavi.jp/techplus/article/20241203-3076405/" rel="noopener">マイナビニュース</a>（2026-08-30 取得）</li>
+  <li>液冷（CDU）市場の予測※（調査会社）:
+    <a href="https://newscast.jp/news/3112768" rel="noopener">NEWSCAST</a>（2026-08-30 取得）</li>
+  <li>DC 向け非常用発電機の増産※:
+    <a href="https://www.nikkei.com/article/DGXZQOUF0818T0Y5A001C2000000/" rel="noopener">日本経済新聞</a>（2026-08-30 取得）</li>
+  <li>UPS の国内シェア（会社発表）:
+    <a href="https://www.mitsubishielectric.co.jp/service/melups/feature/melups/point01.html" rel="noopener">三菱電機</a>（2026-08-30 取得）</li>
+  <li>電気工事士の年齢構成・工事会社の業績※は、電気設備工事業の業界資料および各社決算による</li>
 </ul>
-</section><section class="kb-article" id="kb-segment-method"><p class="kb-crumb">方法論 › セグメント分析<span class="kb-date">作成 2026-08-30</span></p><p class="lede">セグメント分析（<code>segments/*.yaml</code>）が銘柄を降ろすときに使っている
-考え方の本体。個別のセグメント記事はすべてこの型の上に乗っている。</p>
+</section><section class="kb-article" id="kb-segment-method"><p class="kb-crumb">方法論 › 産業構造の読み方<span class="kb-date">作成 2026-08-30</span></p><p class="lede">ある産業が伸びているとき、そのお金は関わった全員に等しく配られるわけではない。
+金は川のように上流から下流へ流れ、<strong>ある段階では大きく抜かれ、ある段階では素通りする</strong>。
+どこで抜かれるのかを見分ける考え方をまとめる。産業を問わず使える。</p>
 
-<h2>判定の式</h2>
-<p>ある層（レイヤー）の利益プールは、この3つの掛け算で近似する。</p>
+<h2>利益が残る場所を決める3つの要素</h2>
+<p>ある段階（以下「層」と呼ぶ）にどれだけ利益が残るかは、
+おおよそ次の掛け算で決まる。</p>
 
 <div class="kb-eq">
   <div class="term">
     <div class="t-name">需要の伸び</div>
-    <div class="t-desc">誰でも知っている<br>＝エッジが無い<br>層をまたいで共通</div>
+    <div class="t-desc">その産業にどれだけ<br>金が流れ込むか</div>
   </div>
   <div class="op">×</div>
   <div class="term hot">
-    <div class="t-name">供給の集中度</div>
-    <div class="t-desc">その層に何社いるか。<br>予測ではなく<strong>今数えられる事実</strong></div>
+    <div class="t-name">供給者の少なさ</div>
+    <div class="t-desc">その層に何社いるか。<br>少ないほど値段を決められる</div>
   </div>
   <div class="op">×</div>
   <div class="term hot">
-    <div class="t-name">切替の効かなさ</div>
-    <div class="t-desc">規格・実績・保守の紐づき。<br>価格だけでは替えられないか</div>
+    <div class="t-name">替えにくさ</div>
+    <div class="t-desc">安い相手に乗り換えられるか。<br>資格・規格・実績・保守が縛る</div>
   </div>
 </div>
 
-<p>需要の方向には賭けない。AI が伸びる・電力が要る、は市場の全員が知っていて、
-外し方が3つもある（時期・単価・層の境界）。差がつくのは右の2つ——
-どちらも<strong>今の事実として観測できる</strong>から、調査であって予測ではない。</p>
+<p>3つのうち、<strong>需要の伸びはどの層にも共通で効く</strong>。
+「AI が伸びる」「電力が足りない」は誰でも知っていて、その情報からは差がつかない。
+差がつくのは右の2つ——しかもこの2つは、将来の予想ではなく
+<strong>今この瞬間に数えられる事実</strong>だ。何社いるかは数えられるし、
+替えにくさは資格制度や契約の形を見れば分かる。</p>
+
+<p>だから産業を読むときは、需要の大きさを当てにいくのではなく、
+<strong>その金がどの層で止まるかを数えにいく</strong>ほうが確度が高い。</p>
 
 <h2>5つの手順</h2>
 <ol>
-  <li><strong>需要ゲート（門番）</strong> — 需要が誰かの受注残・設備投資計画に
-    <strong>数字として</strong>出ているか。言説だけなら書かずに捨てる</li>
-  <li><strong>層に切る（地図）</strong> — お金の通り道を層に分ける。
-    「工事」と「機器」、「建屋」と「設備」のように境界を先に決める</li>
-  <li><strong>実名で数える（ふるい）</strong> — 各層に何社いるかを実名で数える。
-    供給が分散した層はここで捨てる。悪い層を捨てるだけで、まだ買いは選ばない</li>
-  <li><strong>優位性を深掘る（本番）</strong> — 残った層の会社について、
-    優位性の機構・証拠・反証条件をセットで書く</li>
-  <li><strong>答え合わせ</strong> — 同じ層の競合との利益率差が続いているかを
-    照合済みの実額で測る</li>
+  <li><strong>需要が数字として出ているか確かめる（門番）。</strong>
+    「伸びるらしい」ではなく、誰かの受注残・設備投資計画・官庁の見通しに
+    <strong>金額や数量として</strong>出ているか。出ていなければ、その先は調べない</li>
+  <li><strong>金の通り道を層に切る（地図）。</strong>
+    発注が誰から誰へ、どの順で渡るかを描く。境界の引き方（「工事」と「機器」を分ける等）が
+    このあとの分析の精度を決める</li>
+  <li><strong>各層に何社いるか実名で数える（ふるい）。</strong>
+    ここでやるのは<strong>見込みのない層を捨てること</strong>だけ。
+    供給者が多く分散した層は、需要が来ても価格競争で利益が消える</li>
+  <li><strong>残った層で、替えにくさの正体を突き止める（本番）。</strong>
+    なぜ他社に乗り換えられないのか。資格か、規格か、実績か、保守の紐づきか。
+    <strong>その仕組みが壊れる条件</strong>とセットで書く</li>
+  <li><strong>数字で答え合わせをする。</strong>
+    同じ層の競合と比べて利益率の差が続いているか。一時的な好況なら、
+    差は数期で消える</li>
 </ol>
 
-<h2>供給制約の「型」— どこで供給が絞られるか</h2>
-<p>供給が構造的に絞られる仕組みは数種類しかない。型によって
-<strong>崩れやすさ</strong>（＝賭けの強さ）が違う。</p>
+<h2>供給が詰まる場所は、数種類しかない</h2>
+<p>「なぜ増やせないのか」の理由は産業ごとにバラバラに見えて、
+実は数パターンに収まる。そして<strong>パターンごとに、詰まりが解けるまでの時間が違う</strong>。
+これが強さの持続時間を決める。</p>
 
 <div class="scroll"><table class="prose-table"><thead>
-<tr><th>型</th><th>何が参入を止めるか</th><th>崩れ方と速さ</th><th>実例</th></tr>
+<tr><th>詰まる場所</th><th>なぜ増やせないか</th><th>解けるまで</th><th>例</th></tr>
 </thead><tbody>
-<tr><td><strong>人・資格</strong></td><td>有資格者が年単位でしか増えない</td>
-  <td>崩れにくい。育成は年単位で、増やす主体も分散</td><td>電気工事士（施工セグメント）</td></tr>
-<tr><td><strong>物理・納期</strong></td><td>生産能力の増設に数年かかる</td>
-  <td><strong>投資で2〜3年で崩れうる</strong>。増産計画の発表を監視する</td><td>大形変圧器（機器セグメント）</td></tr>
-<tr><td><strong>認証・実績</strong></td><td>顧客の品質認定を通るのに数年、通ったら替えない</td>
-  <td>崩れにくいが、顧客の設計変更で一気に無効になる</td><td>半導体の部材・薬液（未着手）</td></tr>
-<tr><td><strong>許認可・規制</strong></td><td>法規制対応の蓄積が要る</td>
-  <td>規制緩和・制度変更で崩れる。政治を観測する</td><td>医療・金融の業務システム（未着手）</td></tr>
-<tr><td><strong>系列・商習慣</strong></td><td>発注慣行が地域・系列で固定されている</td>
-  <td>ゆっくり崩れる。外資や新興の参入事例を数える</td><td>電力系サブコン・電力機器の系列</td></tr>
-<tr><td><strong>データ・切替コスト</strong></td><td>業務がシステムに縛られ、データが移せない</td>
-  <td>崩れにくいが、プラットフォーム転換（AI等）で跳ぶ</td><td>業種特化SaaS・業界DB（未着手）</td></tr>
+<tr><td><strong>人・資格</strong></td>
+  <td>資格者の育成に年数が要り、高齢化していると放っておけば減る</td>
+  <td><strong>長い</strong>。増やす主体も分散し、誰か1社の決断では動かない</td>
+  <td>電気工事、建設、医療、士業</td></tr>
+<tr><td><strong>工場・生産能力</strong></td>
+  <td>設備と熟練工、部材の確保に時間が掛かる</td>
+  <td><strong>2〜3年</strong>。金を掛ければ増える。増産の発表が予告になる</td>
+  <td>大型変圧器、半導体装置、素材</td></tr>
+<tr><td><strong>審査・認定</strong></td>
+  <td>顧客の品質認定を通るのに年数が要り、通れば替えられない</td>
+  <td><strong>長い</strong>。ただし顧客が設計を変えると一気に無効になる</td>
+  <td>半導体の部材・薬液、自動車部品、医薬の原料</td></tr>
+<tr><td><strong>許認可・規制</strong></td>
+  <td>法令対応の蓄積そのものが参入の壁になる</td>
+  <td><strong>制度が変わるまで</strong>。規制緩和が最大のリスク</td>
+  <td>金融・医療・建設の業務システム</td></tr>
+<tr><td><strong>系列・商習慣</strong></td>
+  <td>取引の相手が地域や資本関係で長年固定されている</td>
+  <td><strong>ゆっくり緩む</strong>。外資や新興の参入実績を数えて確かめる</td>
+  <td>電力・通信・自動車の系列取引</td></tr>
+<tr><td><strong>データ・切替コスト</strong></td>
+  <td>業務がその仕組みに組み込まれ、乗り換えの手間が大きすぎる</td>
+  <td><strong>長い</strong>。ただし技術の世代交代で飛び越えられることがある</td>
+  <td>業務システム、業界データベース</td></tr>
 </tbody></table></div>
 
-<h2>反証条件を先に書く</h2>
-<p>供給への賭けの利点は、<strong>崩れ方が「供給が増える」の一種類しかない</strong>こと。
-だから「これが観測されたらセグメントごと取り下げる」という条件を、
-買う前に・具体的な観測手段つきで書ける。需要への賭けは「まだ来ていないだけ」と
-言い続けられてしまうので、この規律が効かない。</p>
-<p>各セグメント記事の末尾には必ず反証条件（F1, F2, …）と、
-それをいつ・どの数字で確認するかの予定表が付く。</p>
+<h2>「壊れる条件」を先に書く</h2>
+<p>供給の詰まりに賭ける考え方には、実務上の大きな利点がある——
+<strong>崩れ方が「供給が増える」の一種類しかない</strong>ので、
+反証の条件を前もって具体的に書けることだ。</p>
+<p>たとえば「工場が足りない」なら、増産投資が完成する年度を調べれば
+いつ緩むかの目安が立つ。「資格者が足りない」なら、資格者数の推移を追えばいい。
+需要への期待に賭けると、思ったように伸びなくても
+「まだ来ていないだけ」と言い続けられてしまい、いつ間違いを認めるべきかが決まらない。</p>
+<p>だから層ごとに、<strong>これが観測されたら見立てを取り下げる</strong>という条件を、
+観測する手段（決算のどの数字か、どの統計か）とセットで書いておく。</p>
 
-<h2>このページ群の位置づけ</h2>
-<p>判定の本体はリポジトリの <code>segments/*.yaml</code>（出典・数値つき）。
-ここにある記事はその<strong>前提知識</strong>——業界の金の流れ・商習慣・ビジネスモデル——を
-図で押さえるためのもので、投資助言ではない。売買の判断は人間が行う。</p>
+<h2>良い層と、その儲けを受け取る会社は別</h2>
+<p>層の分析まで正しくできても、最後にもう一段ある。
+<strong>その層の商売だけを手がける会社が、投資できる形で存在するとは限らない</strong>。</p>
+<ul>
+  <li>国内最大手が<strong>大企業の一部門や非上場の子会社</strong>であることは珍しくない。
+    その場合、層としてどれだけ儲かっていても、会社全体の数字に薄まって外からは見えない</li>
+  <li>逆に、その事業を主力にしている会社（専業に近い会社）なら、
+    層の good/bad がそのまま業績に出る</li>
+  <li>複数の事業を持つ会社を見るときは、<strong>その層が全体の何割か</strong>を
+    必ず確かめる。1割の事業がどれだけ好調でも、残り9割が沈めば意味がない</li>
+</ul>
+
+<h2>この考え方が向いていない場面</h2>
+<p>万能ではない。次の場合はこの枠組みでは答えが出ない。</p>
+<ul>
+  <li><strong>まだ勝者が決まっていない新技術。</strong>参入者が増えている最中は、
+    供給者を数えても意味がない（数が増えている最中なので）。
+    撤退や淘汰が始まってから見るほうがいい</li>
+  <li><strong>需要そのものが不確実な領域。</strong>門番の段階で数字が出てこないなら、
+    その先の精緻な分析は砂上の楼閣になる</li>
+  <li><strong>一社の経営の巧拙で決まる商売。</strong>この枠組みは
+    「層の構造」を見るもので、個社の経営能力は測れない。
+    同じ層の全社に同じ現象が出ているかを確認すると、構造か個社かを切り分けられる</li>
+</ul>
 </section></div></div><footer>集計基準日 2026-08-27／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
