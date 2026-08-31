@@ -291,15 +291,25 @@ def test_indicators_survive_an_unconfirmed_day():
 
     `sma` は窓に欠測が1つでもあると None を返すので、末尾を落とさなければ
     **全指標がまとめて消える**。これが「1日進むと台帳が空になる」の正体だった。
+
+    **もともと採用終値に穴がある薄い銘柄は対象外**（穴は未確定の1日とは無関係で、
+    末尾を落としても消えない）。ここで見たいのは「末尾の1日が全指標を巻き添えに
+    しない」ことなので、それ以外の理由で未計算の銘柄は分けて扱う。
+    理由は realdata.close_gap_days に書いてある。
     """
     base = repo_copy()
     advance(base, 2, confirmed=False)
+    need = rd.min_bars_needed()
     for code in rd.codes():
         bars = ind.bars_from_rows(price_rows(base, code), code=code)
         eq(bars[-1].date, last_confirmed(base, code),
            f"{code}: 指標の基準日は確定した最後の日")
+        gapped = bool(rd.close_gap_days(code, need))
         for name, value in _all_indicators(bars).items():
-            assert value is not None, f"{code}: {name} が算出できていない"
+            if value is None and gapped:
+                continue
+            assert value is not None, \
+                f"{code}: {name} が算出できていない（採用終値に穴は無い）"
 
 
 def test_indicators_are_unchanged_by_an_unconfirmed_day():
@@ -360,7 +370,12 @@ def test_score_survives_an_unconfirmed_day():
 
     as_of = last_confirmed(base, rd.codes()[0])
     price_metrics = [m.name for m in S.CATALOG if m.source == S.SRC_PRICE]
+    need = rd.min_bars_needed()
     for code in rd.codes():
+        # 採用終値に穴がある薄い銘柄は指標が未計算になる（設計）。
+        # 未確定の1日とは無関係なので、この検査の対象から外す。
+        if rd.close_gap_days(code, need):
+            continue
         for name in price_metrics:
             mv = S.resolve_metric(code, name, as_of, repo)
             assert mv.value is not None, f"{code} {name} が未計算: {mv.detail}"

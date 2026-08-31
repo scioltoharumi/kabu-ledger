@@ -1423,6 +1423,62 @@ def test_fundamentals_normal_growth_is_not_flagged():
     expect_none(rep, checks.FAIL, "fundamentals")
 
 
+def _jump_with_confirmation(source_url: str):
+    """10倍の前期比 ＋ 確認記録。`source_url` の有無で扱いが変わるのを見る。"""
+    def m(d):
+        write_fund(d,
+                   fund_line("2025-06", "revenue", 1844, "JPY_million"),
+                   fund_line("2026-06", "revenue", 18440, "JPY_million"))
+        (d / "fundamentals_confirmations.yaml").write_text(
+            "confirmations:\n"
+            "  - code: \"4073\"\n"
+            "    metric: revenue\n"
+            "    from_period: \"2025-06\"\n"
+            "    to_period: \"2026-06\"\n"
+            "    reason: \"創業期の実成長\"\n"
+            f"    source_url: \"{source_url}\"\n",
+            encoding="utf-8")
+    return m
+
+
+def test_fundamentals_scale_jump_confirmed_becomes_warn():
+    """一次情報ではなく取得元そのもので確認した前期比は WARN に落ちる。
+
+    創業期の会社は売上が本当に10倍動く（実測: 5137 スマートドライブ 8→97百万円）。
+    **消えるのではなく WARN として残る**ので、なぜ通したかが検査結果に出続ける。
+    """
+    rep = run(make_data(_jump_with_confirmation("https://example.com/evidence")))
+    expect_none(rep, checks.FAIL, "fundamentals")
+    expect(rep, checks.WARN, "fundamentals", "確認済み: 創業期の実成長")
+
+
+def test_fundamentals_scale_jump_confirmed_without_source_stays_fail():
+    """出典なしの「確認済み」は確認していないのと同じ（分割の確認記録と同じ扱い）。"""
+    rep = run(make_data(_jump_with_confirmation("")))
+    expect(rep, checks.FAIL, "fundamentals", "前期比で桁が飛んでいる")
+    expect(rep, checks.FAIL, "fundamentals", "確認記録はあるが source_url が空")
+
+
+def test_fundamentals_scale_jump_confirmation_does_not_leak_to_other_periods():
+    """確認記録は (code, metric, 期, 期) の1組だけに効く。別の期には効かない。"""
+    def m(d):
+        write_fund(d,
+                   fund_line("2025-06", "revenue", 1844, "JPY_million"),
+                   fund_line("2026-06", "revenue", 18440, "JPY_million"),
+                   fund_line("2027-06", "revenue", 400, "JPY_million"))
+        (d / "fundamentals_confirmations.yaml").write_text(
+            "confirmations:\n"
+            "  - code: \"4073\"\n"
+            "    metric: revenue\n"
+            "    from_period: \"2025-06\"\n"
+            "    to_period: \"2026-06\"\n"
+            "    reason: \"創業期の実成長\"\n"
+            "    source_url: \"https://example.com/evidence\"\n",
+            encoding="utf-8")
+    rep = run(make_data(m))
+    expect(rep, checks.FAIL, "fundamentals", "前期比で桁が飛んでいる")
+
+
 def test_fundamentals_profit_swing_is_not_flagged_as_digit_error():
     """小型株の利益は 5 → 386 のように実際に動く。桁検査の対象にしない。"""
     def m(d):
@@ -1461,6 +1517,46 @@ def test_fundamentals_margin_sign_match_is_accepted():
                    fund_line("2025-06", "operating_margin_pct", -4.3, "pct"))
     rep = run(make_data(m))
     expect_none(rep, checks.FAIL, "fundamentals")
+
+
+def test_fundamentals_standalone_quarter_is_not_mixed_with_full_year():
+    """決算期末月に終わる4Q単独を、通期と同じ組に入れない。
+
+    実データで踏んだ（4707 キタック・10月決算）。`FY2025-10` と
+    `Q2025-08_2025-10` はどちらも year=2025 / month=10 / quarter=None /
+    cumulative=False で、`standalone` を鍵から落とすと同じ組になる。
+    通期の営業利益（黒字）と4Q単独の営業利益率（赤字）が突き合わされて、
+    符号の検査が誤って FAIL していた。**別の期なので比べてはいけない。**
+    """
+    def m(d):
+        write_fund(d,
+                   fund_line("FY2025-10", "operating_income", 146,
+                             "JPY_million"),
+                   fund_line("FY2025-10", "operating_margin_pct", 4.21, "pct"),
+                   fund_line("Q2025-08_2025-10", "operating_income", -20,
+                             "JPY_million"),
+                   fund_line("Q2025-08_2025-10", "operating_margin_pct", -2.2,
+                             "pct"))
+    rep = run(make_data(m))
+    expect_none(rep, checks.FAIL, "fundamentals")
+
+
+def test_fundamentals_standalone_quarter_sign_is_still_checked():
+    """組を分けても、単独四半期の中の符号違いは今までどおり FAIL にする。
+
+    上の修正が「4Q単独を検査から外す」ことにならないのを押さえる。
+    """
+    def m(d):
+        write_fund(d,
+                   fund_line("FY2025-10", "operating_income", 146,
+                             "JPY_million"),
+                   fund_line("FY2025-10", "operating_margin_pct", 4.21, "pct"),
+                   fund_line("Q2025-08_2025-10", "operating_income", -20,
+                             "JPY_million"),
+                   fund_line("Q2025-08_2025-10", "operating_margin_pct", 2.2,
+                             "pct"))
+    rep = run(make_data(m))
+    expect(rep, checks.FAIL, "fundamentals", "符号が一致しない")
 
 
 # --- 四半期累計と通期計画 -------------------------------------------------------

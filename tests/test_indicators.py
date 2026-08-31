@@ -469,17 +469,12 @@ def _load_real_rows():
 
 
 def _min_bars_needed() -> int:
-    """全指標を算出するのに必要な最小の営業日数（**定数から導く**）。
+    """全指標を算出するのに必要な最小の営業日数（定数から導く）。
 
-    ここに実データの行数（1076 等）を書くと、次の週次取得で意味を失ううえ、
-    「何本あれば足りるのか」がテストから読み取れなくなる。要求は指標側の
-    定数で決まっているので、そこから引く。
+    実体は `realdata.min_bars_needed`。同じ本数を test_data_advance と
+    test_score も要るので、導出は1箇所に置いてある。
     """
-    return max(
-        ind.ICHIMOKU_SPAN_B_PERIODS + ind.ICHIMOKU_DISPLACEMENT + 1,
-        ind.VOLUME_RATIO_LOOKBACK_DAYS + ind.VOLUME_RATIO_WINDOW_DAYS,
-        ind.WEEKLY_MA_LONG_PERIODS * 5,      # 26週ぶんの営業日
-    )
+    return rd.min_bars_needed()
 
 
 def test_real_data_all_indicators():
@@ -562,17 +557,36 @@ def test_real_data_all_indicators():
         sig = ind.cross_signal(ind.sma_series(closes, ind.DAILY_MA_SHORT_PERIODS),
                                ind.sma_series(closes, ind.DAILY_MA_MID_PERIODS))
 
-        for name, val in [("sma25", ma25), ("ma_deviation_pct", dev), ("rsi14", r),
-                          ("cloud_top", ich.cloud_top), ("cloud_bottom", ich.cloud_bottom),
-                          ("ichimoku_position", ich.position),
-                          ("prev_position", ich.prev_position),
-                          ("tenkan", ich.tenkan), ("kijun", ich.kijun),
-                          ("span_a", ich.span_a), ("span_b", ich.span_b),
-                          ("volume_ratio", vr), ("avg_turnover_20d", turn),
-                          ("weekly_ma13_slope_pct", wslope),
-                          ("weekly_ma13_direction", wdir),
-                          ("cross_kind", sig.kind)]:
-            assert val is not None, f"{code}: {name} が算出できていない"
+        values = [("sma25", ma25), ("ma_deviation_pct", dev), ("rsi14", r),
+                  ("cloud_top", ich.cloud_top), ("cloud_bottom", ich.cloud_bottom),
+                  ("ichimoku_position", ich.position),
+                  ("prev_position", ich.prev_position),
+                  ("tenkan", ich.tenkan), ("kijun", ich.kijun),
+                  ("span_a", ich.span_a), ("span_b", ich.span_b),
+                  ("volume_ratio", vr), ("avg_turnover_20d", turn),
+                  ("weekly_ma13_slope_pct", wslope),
+                  ("weekly_ma13_direction", wdir),
+                  ("cross_kind", sig.kind)]
+
+        # ★採用終値に穴があると指標は None になる（`sma` も `rsi` も
+        #   「窓に欠測が混ざったら計算しない」設計）。指標ごとに見る本数が違う
+        #   （SMA25 は25本・RSI14 は warmup 込みで141本・週足MAは26週）ので、
+        #   「どの指標がどの穴に当たったか」を数え直さない。**穴がある銘柄では
+        #   未計算を許し、穴が無いのに未計算なら落とす**。薄い銘柄では普通に
+        #   起きることで、判定側は未計算のゲートを通過扱いにせず「調査」で
+        #   止める。詳しい理由は realdata.close_gap_days に書いてある。
+        gap_days = rd.close_gap_days(code, need)
+        missing = [n for n, v in values if v is None]
+        if missing and gap_days:
+            _REAL_SUMMARY.append(
+                f"{code:>5} {len(bars):>5} {len(weekly):>4} {closes[-1]:>8.1f} "
+                f"  （直近{need}本に採用終値の穴が{len(gap_days)}日。"
+                f"未計算: {'/'.join(missing)}・判定は「調査」で止まる）")
+            continue
+
+        for name, val in values:
+            assert val is not None, \
+                f"{code}: {name} が算出できていない（直近{need}本の採用終値に穴は無い）"
 
         assert 0.0 <= r <= 100.0, f"{code}: RSI 定義域外 {r}"
         assert ich.cloud_top >= ich.cloud_bottom, f"{code}: 雲の上下が逆転"
