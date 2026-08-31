@@ -606,3 +606,33 @@ fetched_at,code,url,final_url,http_status,chars,sha256,note
 2026-08-31T16:19:48.945533+09:00,9344,https://kabutan.jp/stock/finance?code=9344,https://kabutan.jp/stock/finance?code=9344,200,9158,9218ba60c4661f4f,text/html; charset=UTF-8
 2026-08-31T16:20:18.482483+09:00,9344,https://kabutan.jp/stock/finance?code=9344,https://kabutan.jp/stock/finance?code=9344,200,9158,849ee04d41fc4fd0,text/html; charset=UTF-8
 2026-08-31T16:20:22.750167+09:00,9344,https://kabutan.jp/stock/finance?code=9344,https://kabutan.jp/stock/finance?code=9344,200,9158,849ee04d41fc4fd0,text/html; charset=UTF-8
+2026-08-31T23:02:05.059904+09:00,6904,https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf,https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:02:31.241795+09:00,9344,https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf,https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:02:39.215725+09:00,9344,https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf,https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:02:49.550938+09:00,9344,https://prtimes.jp/main/html/rd/p/000000131.000026996.html,https://prtimes.jp/main/html/rd/p/000000131.000026996.html,200,2510,6e7854a5d59894be,text/html; charset=utf-8
+2026-08-31T23:03:11.756115+09:00,6904,https://ssl4.eir-parts.net/doc/6904/tdnet/2843210/00.pdf,https://ssl4.eir-parts.net/doc/6904/tdnet/2843210/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:03:56.603153+09:00,7093,https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf,https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:03:56.619334+09:00,6904,https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf,https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:04:02.108795+09:00,7093,https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf,https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:04:30.690282+09:00,7093,https://kabutan.jp/stock/news?code=7093&b=n202608280944,https://kabutan.jp/stock/news?code=7093&b=n202608280944,200,4126,1eaa935322976bdb,text/html; charset=UTF-8
+2026-08-31T23:04:31.635970+09:00,6904,https://s.kabutan.jp/news/k202608130043/,https://s.kabutan.jp/news/k202608130043/,200,5416,0f0f7645c1bdcff0,text/html; charset=utf-8
+2026-08-31T23:04:36.107278+09:00,7093,https://kabutan.jp/stock/news?code=7093&b=n202608280944,https://kabutan.jp/stock/news?code=7093&b=n202608280944,200,4126,41b6898ad1610d95,text/html; charset=UTF-8
+2026-08-31T23:04:49.840708+09:00,7093,https://kabutan.jp/stock/news?code=7093,https://kabutan.jp/stock/news?code=7093,200,4647,86b2fb9cc9303c49,text/html; charset=UTF-8
+2026-08-31T23:05:09.623253+09:00,7093,https://kabutan.jp/stock/?code=7093,https://kabutan.jp/stock/?code=7093,200,4333,273ca8a8217b9823,text/html; charset=UTF-8
+2026-08-31T23:05:18.900576+09:00,9344,https://axc-g.co.jp/ir/,https://axc-g.co.jp/ir/,200,993,b0e325cf98caf59c,text/html; charset=UTF-8
+2026-08-31T23:05:34.823751+09:00,9344,https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf,https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:05:36.568911+09:00,7093,https://www.adish.co.jp/about/companyinfo/,https://www.adish.co.jp/about/companyinfo/,200,2900,07a253ef07b75222,text/html; charset=UTF-8
+2026-08-31T23:05:42.457547+09:00,9344,https://ssl4.eir-parts.net/doc/9344/tdnet/2615414/00.pdf,https://ssl4.eir-parts.net/doc/9344/tdnet/2615414/00.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:05:46.754205+09:00,9344,https://www2.jpx.co.jp/disc/93440/140120260513531621.pdf,https://www2.jpx.co.jp/disc/93440/140120260513531621.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:05:55.465890+09:00,7093,https://www.adish.co.jp/ir/,https://www.adish.co.jp/ir/,200,1337,f25b3d8a7d193855,text/html; charset=UTF-8
+2026-08-31T23:06:09.272033+09:00,7093,https://www.adish.co.jp/ir/,https://www.adish.co.jp/ir/?doing_wp_cron=1788185167.1252410411834716796875,200,1337,f25b3d8a7d193855,text/html; charset=UTF-8
+2026-08-31T23:06:13.712884+09:00,7093,https://irbank.net/E35514,https://irbank.net/E35514,200,4872,77dbffa8fe64768d,text/html; charset=UTF-8
+2026-08-31T23:06:26.392377+09:00,7093,https://tdnet-pdf.kabutan.jp/20260814/140120260814520392.pdf,https://tdnet-pdf.kabutan.jp/20260814/140120260814520392.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:06:30.568586+09:00,7093,https://tdnet-pdf.kabutan.jp/20260213/140120260213559254.pdf,https://tdnet-pdf.kabutan.jp/20260213/140120260213559254.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:06:34.826147+09:00,7093,https://tdnet-pdf.kabutan.jp/20260224/140120260224567377.pdf,https://tdnet-pdf.kabutan.jp/20260224/140120260224567377.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:06:39.400698+09:00,7093,https://tdnet-pdf.kabutan.jp/20260213/140120260213559386.pdf,https://tdnet-pdf.kabutan.jp/20260213/140120260213559386.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:06:47.888003+09:00,7093,https://tdnet-pdf.kabutan.jp/20260715/140120260715593741.pdf,https://tdnet-pdf.kabutan.jp/20260715/140120260715593741.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:06:52.228043+09:00,7093,https://tdnet-pdf.kabutan.jp/20260701/140120260701585440.pdf,https://tdnet-pdf.kabutan.jp/20260701/140120260701585440.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:06:56.335085+09:00,7093,https://tdnet-pdf.kabutan.jp/20260626/140120260626581303.pdf,https://tdnet-pdf.kabutan.jp/20260626/140120260626581303.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:07:00.574807+09:00,7093,https://tdnet-pdf.kabutan.jp/20251027/140120251027579227.pdf,https://tdnet-pdf.kabutan.jp/20251027/140120251027579227.pdf,200,82,aa9a388305468395,application/pdf
+2026-08-31T23:07:04.861713+09:00,7093,https://tdnet-pdf.kabutan.jp/20251029/140120251029581686.pdf,https://tdnet-pdf.kabutan.jp/20251029/140120251029581686.pdf,200,82,aa9a388305468395,application/pdf

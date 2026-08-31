@@ -1,0 +1,768 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>アクシスコンサルティング（9344）</title><style>
+:root{--paper:#f5f4f0;--card:#ffffff;--ink:#1c1c1a;--dim:#5f5e58;--rule:#dedcd4;
+--soft:#f0eee8;--accent:#23548c;--accent-soft:#eef3f9;--warn:#8a5a00;
+--danger:#9a3324;--good:#1f6f43;--flag:#7a4f9a;
+--pos:#1d5fae;--neg:#b32e2e;
+--shadow:0 1px 2px rgba(28,28,26,.05);--shadow-2:0 2px 8px rgba(28,28,26,.07)}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);margin:0;
+font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+line-height:1.85;font-size:15.5px;-webkit-text-size-adjust:100%}
+main{max-width:52rem;margin:0 auto;padding:1.6rem 1.25rem 4rem}
+/* 全ページ共通の固定ヘッダー。どのページからでも1タップで台帳へ戻れる */
+.site{position:sticky;top:0;z-index:30;background:var(--paper);
+border-bottom:1px solid var(--rule)}
+@supports (backdrop-filter:blur(8px)){
+.site{background:color-mix(in srgb,var(--paper) 86%,transparent);
+backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}}
+/* ヘッダーは全幅（ブランド左端・ナビ右端）。本文列の幅がページごとに
+   違っても（52rem / wide 74rem）、ヘッダーだけはどのページでも同じ見え方 */
+.site-in{margin:0 auto;display:flex;align-items:center;
+gap:.4rem .9rem;padding:.5rem 1.5rem;flex-wrap:wrap}
+.brand{font-weight:700;color:var(--ink);text-decoration:none;font-size:.95rem;
+letter-spacing:.02em;white-space:nowrap}
+.brand:hover{color:var(--accent)}
+.site nav{margin:0 0 0 auto;display:flex;gap:.4rem;flex-wrap:wrap}
+h1{font-size:1.7rem;font-weight:700;letter-spacing:.02em;margin:0 0 .4rem;line-height:1.35}
+h2{font-size:1.15rem;font-weight:700;margin:3rem 0 1rem;padding:.15rem 0 .15rem .7rem;
+border-left:4px solid var(--accent);border-bottom:0;line-height:1.5}
+h3{font-size:1rem;font-weight:700;margin:2rem 0 .4rem;color:var(--ink)}
+h4{font-size:.92rem;font-weight:700;margin:1.4rem 0 .3rem;color:var(--dim)}
+p{margin:.7rem 0}
+.lede{color:var(--dim);margin:0 0 1.5rem;font-size:.92rem}
+nav{font-size:.82rem;color:var(--dim)}
+nav a{display:inline-block;padding:.16rem .7rem;
+background:var(--card);border:1px solid var(--rule);border-radius:999px;
+text-decoration:none;color:var(--dim)}
+nav a:hover{color:var(--ink);border-color:var(--ink)}
+nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:1rem 0;
+background:var(--card);border:1px solid var(--rule);border-radius:6px;
+box-shadow:var(--shadow)}
+.scroll table{margin:0}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.88rem}
+th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--rule);
+vertical-align:top}
+thead th{font-weight:700;color:var(--dim);font-size:.76rem;letter-spacing:.04em;
+white-space:nowrap;background:var(--soft);border-bottom:1px solid var(--rule)}
+tbody tr:last-child td{border-bottom:0}
+/* ゼブラ。行を目で追いやすくする（一覧表はホバー色があるので除外） */
+table:not(.list-table) tbody tr:nth-child(even) td{background:#faf9f6}
+/* 1列目を折り返さないのは、日付・コードのような短い見出し列だけを想定している。
+   本文が入る列にかかると表が画面外まで伸び、他の列が押し出されて行が縦に潰れる。
+   本文を持つ表（一覧・Markdown 由来）は .prose-table を付けて折り返させる。 */
+td:first-child{white-space:nowrap}
+.prose-table td{white-space:normal;overflow-wrap:anywhere}
+blockquote{margin:1.2rem 0;padding:.9rem 1.1rem;background:var(--accent-soft);
+border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.92rem}
+blockquote p{margin:.3rem 0}
+ul,ol{margin:.7rem 0;padding-left:1.4rem}
+li{margin:.35rem 0}
+code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.85em;
+background:var(--soft);padding:.08rem .32rem;border-radius:2px;overflow-wrap:anywhere}
+pre{background:var(--soft);padding:.9rem;overflow-x:auto;font-size:.82rem;
+line-height:1.6;border-radius:6px}
+pre code{background:none;padding:0}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;
+text-decoration-color:var(--rule);overflow-wrap:anywhere}
+a:hover{text-decoration-color:var(--accent)}
+hr{border:0;border-top:1px solid var(--rule);margin:2.5rem 0}
+footer{margin-top:4rem;padding-top:1rem;border-top:1px solid var(--rule);
+color:var(--dim);font-size:.78rem}
+
+/* KPI タイル。重要数値を大きく・囲って出す（値はすべて data/ 由来。
+   採用値でないものはラベルに（参考）等を必ず併記する） */
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));
+gap:.7rem;margin:1.3rem 0 1.8rem}
+.kpi-tile{background:var(--card);border:1px solid var(--rule);border-radius:8px;
+padding:.75rem .9rem .7rem;box-shadow:var(--shadow)}
+.kpi-tile .k-label{display:block;font-size:.72rem;font-weight:700;
+color:var(--dim);letter-spacing:.05em;margin-bottom:.15rem}
+.kpi-tile .k-value{display:block;font-size:1.45rem;font-weight:700;
+line-height:1.3;font-variant-numeric:tabular-nums;letter-spacing:.01em;
+white-space:nowrap}
+.kpi-tile .k-sub{display:block;font-size:.72rem;color:var(--dim);margin-top:.1rem;
+overflow-wrap:anywhere}
+.kpi-tile .k-value-sm{font-size:1.02rem;padding:.2rem 0 .15rem}
+.k-unit{font-size:.8rem;font-weight:700;color:var(--dim);margin-left:.1rem}
+/* 騰落の色。図（.viz）と同じ意味づけ＝青が改善・赤が悪化（符号も必ず併記する。
+   色だけに意味を持たせない） */
+.chg-pos{color:var(--pos)}
+.chg-neg{color:var(--neg)}
+
+/* 銘柄カード（一覧） */
+.card{border:1px solid var(--rule);border-radius:8px;padding:1.1rem 1.2rem;
+margin:1.1rem 0;background:var(--card);box-shadow:var(--shadow)}
+.card h3{margin:0 0 .1rem;font-size:1.1rem}
+.card .meta{color:var(--dim);font-size:.78rem;margin:0 0 .7rem}
+.card .oneline{font-size:.95rem;margin:.5rem 0 .8rem}
+.card .week{background:var(--soft);padding:.6rem .8rem;border-radius:6px;
+font-size:.86rem;margin:.6rem 0 0}
+.card .week .wk{font-weight:700;font-size:.78rem;color:var(--dim);
+display:block;margin-bottom:.2rem}
+.flag{display:inline-block;padding:.08rem .55rem;border-radius:999px;font-size:.72rem;
+font-weight:700;color:#fff;background:var(--flag);margin-left:.4rem;
+vertical-align:middle}
+.pill{display:inline-block;padding:.08rem .55rem;border-radius:999px;font-size:.72rem;
+font-weight:700;background:var(--soft);color:var(--dim);margin-right:.4rem}
+.pill-warn{background:#f8ecd4;color:var(--warn)}
+.pill-danger{background:#f7e5e1;color:var(--danger)}
+.pill-good{background:#e2efe6;color:var(--good)}
+.none{color:var(--dim);font-size:.9rem;padding:1rem;background:var(--soft);
+border-radius:6px}
+.num{font-variant-numeric:tabular-nums;
+font-family:ui-monospace,"SF Mono",Menlo,monospace}
+/* 数値セルは桁の途中で折り返さない（.prose-table の overflow-wrap:anywhere が
+   数字にも効いて「1桁ずつ縦に落ちる」のを防ぐ。幅が足りない表は .scroll が
+   横スクロールで受ける） */
+td.num,th.num{white-space:nowrap;overflow-wrap:normal}
+/* 週次アップデートの1エントリ＝1カード。長い時系列を面で区切る */
+.upd{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--accent);
+border-radius:6px;padding:1rem 1.2rem;margin:1.1rem 0;box-shadow:var(--shadow)}
+.upd h3{display:inline-block;margin:0 0 .5rem;font-size:.8rem;font-weight:700;
+color:var(--accent);background:var(--accent-soft);padding:.12rem .7rem;
+border-radius:999px}
+.upd h4{margin-top:1rem}
+
+/* 図。色は dataviz のバリデータで検証済み（light 面 #fdfdfc 上で全項目 PASS）。
+   黒字=青 / 赤字=赤。「黒字=緑」は赤緑色覚で赤との ΔE が 4.1 しかなく採らない。 */
+.viz{margin:1.6rem 0;background:var(--card);border:1px solid var(--rule);
+border-radius:8px;padding:1rem 1rem .8rem;box-shadow:var(--shadow);
+--viz-pos:#2a78d6;--viz-neg:#d03b3b;--viz-grid:#e1e0d9;--viz-axis:#c3c2b7;
+--viz-ink:#0b0b0b;--viz-muted:#898781;--viz-surface:#ffffff}
+.viz svg{width:100%;height:auto;display:block;overflow:visible}
+.viz figcaption{color:var(--dim);font-size:.82rem;margin-top:.5rem;line-height:1.7}
+/* 図の出所。検証済みか手書きかを図と一緒に必ず見せる（同じ見た目で並べない） */
+.viz-src{color:var(--dim);font-size:.74rem;line-height:1.6;margin:.45rem 0 0;
+padding:.35rem .55rem;background:var(--soft);border-left:2px solid var(--good);
+border-radius:2px;overflow-wrap:anywhere}
+.viz-src-hand{border-left-color:var(--warn);background:#f8ecd4;color:var(--warn)}
+/* 一覧のフィルター（checkbox + label + 兄弟セレクタ。JS なし）。
+   既定は対象外を隠し、ボタンで出す。隠した行は Ctrl+F でも当たらないので、
+   ボタンのラベルに件数を必ず出す（build.py 側で組み立てている）。
+   ★行を隠す規則そのものは**スタイルシート末尾**にある（カスケードの教訓） */
+.list-wrap{position:relative}
+.filter-toggle{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.list-toolbar{display:flex;align-items:center;gap:.5rem .8rem;flex-wrap:wrap;
+margin:1rem 0 .2rem}
+.filter-btn{display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;
+user-select:none;padding:.34rem .9rem;border:1px solid var(--rule);
+border-radius:999px;background:var(--card);color:var(--dim);
+font-size:.8rem;font-weight:700;line-height:1.6;box-shadow:var(--shadow);
+transition:background .12s ease,color .12s ease,border-color .12s ease}
+.filter-btn::before{content:"";width:.55rem;height:.55rem;border-radius:50%;
+background:var(--rule);transition:background .12s ease}
+.filter-btn:hover{background:var(--soft);color:var(--ink)}
+/* トグルの input は自分の label の**直前**に置く（build.py の _toggle が正）。
+   見た目は隣接セレクタ + で自分の label だけに効かせる。
+   行の表示・非表示は末尾の :has() 規則が担う */
+.filter-toggle:focus-visible+.filter-btn{
+outline:2px solid var(--accent);outline-offset:2px}
+.filter-toggle:checked+.filter-btn{background:var(--accent-soft);
+border-color:var(--accent);color:var(--accent)}
+.filter-toggle:checked+.filter-btn::before{background:var(--accent)}
+.filter-btn .f-off{display:none}
+.filter-toggle:checked+.filter-btn .f-on{display:none}
+.filter-toggle:checked+.filter-btn .f-off{display:inline}
+/* 絞り込みチップ。既定=表示（checked）なので、checked を強調色にせず
+   「外した（隠している）」側を消し込みの見た目にする */
+.filter-btn.chip{padding:.16rem .6rem;font-size:.74rem;box-shadow:none;
+margin:0}
+.filter-toggle:checked+.filter-btn.chip{background:var(--card);
+border-color:var(--rule);color:var(--dim)}
+.filter-toggle:checked+.filter-btn.chip::before{background:var(--good)}
+.filter-toggle:not(:checked)+.filter-btn.chip{opacity:.5;border-style:dashed;
+text-decoration:line-through}
+.list-filters{margin:.1rem 0 .2rem;gap:.35rem .45rem}
+.fl-cap{font-size:.72rem;font-weight:700;color:var(--dim);margin-left:.3rem}
+.fl-cap:first-child{margin-left:0}
+.filter-note{font-size:.74rem;color:var(--dim);line-height:1.7;flex:1 1 16rem}
+/* 表示中の対象外行は「凍った記録」だと分かる見た目にする（PC・スマホ共通） */
+tr.row-excluded td{background:#f6f3ea}
+.list-table tr.row-excluded:hover td{background:#f6f3ea}
+tr.row-excluded .nm a{color:var(--dim)}
+/* 一覧の判定スタンプと前週末比・スパークライン */
+.stamp{display:inline-block;padding:.1rem .6rem;border-radius:6px;
+font-size:.76rem;font-weight:700;background:var(--soft);color:var(--dim);
+border:1px solid var(--rule);margin-top:.4rem}
+.stamp-buy{background:#e2efe6;color:var(--good);border-color:#bcd9c6}
+.stamp-sell{background:#f7e5e1;color:var(--danger);border-color:#e5c0b8}
+.stamp-hot{background:#f8ecd4;color:var(--warn);border-color:#e6d3a8}
+.wchg{display:block;font-size:.78rem;font-weight:700;margin-top:.25rem}
+.spark{display:block;width:7.5rem;max-width:100%;height:auto;
+color:var(--accent);margin:.4rem 0 0;opacity:.9}
+/* 推定と会社計画・市場予想の乖離（一覧）。コンパクト表示でも隠さない */
+.est-line{display:block;font-size:.74rem;font-weight:700;color:var(--ink);
+margin-top:.35rem;line-height:1.7;white-space:normal;cursor:help}
+.est-line .k-unit{font-size:.68rem}
+.est-line .pill{margin:0 0 0 .3rem}
+.est-line .nb{white-space:nowrap}
+
+/* 監視対象から外した銘柄の注記。図の「手書き（未検証）」と同じ扱いで、
+   同じ見た目のまま黙って並べない（消す方法は用意しない） */
+.note-warn{border-left:3px solid var(--warn);background:#f8ecd4;color:var(--warn);
+padding:.6rem .8rem;border-radius:3px;font-size:.86rem;line-height:1.8;margin:.9rem 0}
+.viz-tick{fill:#898781;font-size:12px;font-family:inherit}
+.viz-value{fill:#0b0b0b;font-size:13px;font-weight:700;font-family:inherit}
+.viz-bar rect,.viz-dot circle{transition:opacity .12s ease}
+.viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
+.viz-bar,.viz-dot{cursor:default}
+
+/* 検証状態の記号バッジ（✓=2ソース照合済み ※=未照合参考 †=一次情報から直接）。
+   意味は title 属性（ブラウザ標準 tooltip）と about.html の凡例が持つ。
+   上付き風に小さく出す。色: 照合済み=青（.chg-pos と同系）・参考=橙（警告系）・
+   一次情報=グレー。色だけに意味を持たせない（記号そのものが常に見える） */
+.vm{font-size:.7em;font-weight:700;vertical-align:super;line-height:1;
+padding:0 .06em;cursor:help}
+.vm-ok{color:var(--pos)}
+.vm-ref{color:var(--warn)}
+.vm-pri{color:var(--dim)}
+
+/* 週次アップデートの古い週の折りたたみ。カード（.upd）より一段控えめにして
+   「畳んであるだけで消えてはいない」ことを見せる */
+details.upd-old{background:var(--soft);border-style:dashed;
+box-shadow:none;padding:.5rem .8rem}
+details.upd-old>summary{font-weight:400}
+
+/* 折りたたみ（裏取りで「裏付けが取れた記述」を畳む。JSは使わない） */
+details{margin:1rem 0;border:1px solid var(--rule);border-radius:6px;
+padding:.5rem .8rem;background:var(--card)}
+details summary{cursor:pointer;font-size:.88rem;font-weight:700;color:var(--dim)}
+details[open] summary{margin-bottom:.4rem}
+
+/* 銘柄ページの2大セクション（週次アップデート／会社概要）。既定は閉。
+   #verify 等へのアンカーは、現行ブラウザが details を自動展開して届く */
+details.sec{margin:1.6rem 0;padding:0;border:1px solid var(--rule);
+border-radius:8px;background:var(--card);box-shadow:var(--shadow)}
+details.sec>summary{list-style:none;cursor:pointer;margin:0;
+padding:1.05rem 1.2rem;display:flex;align-items:baseline;gap:.6rem;
+flex-wrap:wrap;color:var(--ink)}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::before{content:"▸";color:var(--accent);
+font-size:1.05rem;line-height:1}
+details.sec[open]>summary::before{content:"▾"}
+details.sec[open]>summary{margin:0;border-bottom:1px solid var(--rule)}
+details.sec .sec-title{font-size:1.12rem;font-weight:700}
+details.sec .sec-hint{font-size:.76rem;color:var(--dim);font-weight:400}
+details.sec>.sec-body{padding:.2rem 1.2rem 1.3rem}
+details.sec>.sec-body>h2:first-child{margin-top:1.4rem}
+details.sec>summary:hover .sec-title{color:var(--accent)}
+/* 推定フォールド内の表は、狭い画面で潰して桁を折るより横スクロールさせる */
+.est .scroll table{min-width:34rem}
+/* 変数カード（推定）。表に長文メモを並べると他列が潰れて変数名が縦に折れる。
+   メモ・出典はカードの中に畳み、クリックで開く */
+.var-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));
+gap:.6rem;margin:1rem 0}
+details.var{margin:0;padding:0;border:1px solid var(--rule);border-radius:8px;
+background:var(--card)}
+details.var>summary{list-style:none;cursor:pointer;padding:.6rem .75rem .55rem;
+display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;margin:0}
+details.var>summary::-webkit-details-marker{display:none}
+details.var>summary::after{content:"▾";color:var(--dim);font-size:.72rem;
+margin-left:auto}
+details.var[open]>summary::after{content:"▴"}
+details.var[open]>summary{margin:0}
+details.var code{white-space:nowrap;overflow-wrap:normal;background:none;
+padding:0;font-size:.78rem;color:var(--dim)}
+details.var .v-seg{font-size:.68rem;color:var(--dim);width:100%;line-height:1.4}
+details.var .v-val{font-weight:700;font-variant-numeric:tabular-nums;
+font-size:1.08rem;white-space:nowrap}
+details.var>div{margin:0 .75rem .6rem;padding-top:.5rem;font-size:.8rem;
+color:var(--dim);line-height:1.75;border-top:1px dashed var(--rule);
+overflow-wrap:anywhere}
+/* PC では推定フォールドだけ本文列（52rem）より広く使う */
+@media(min-width:1140px){
+details.sec.sec-wide{width:min(76rem,calc(100vw - 5rem));position:relative;
+left:50%;transform:translateX(-50%)}
+details.sec.sec-wide .est .kpi{grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))}
+}
+
+/* 読み取りの手がかり（図の下に置く短い注記） */
+.readout{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;
+font-size:.82rem;color:var(--dim)}
+.readout b{color:var(--ink);font-weight:700}
+
+/* 一覧表（銘柄が増えても詰まらないように） */
+.list-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+.list-table th{font-size:.75rem;color:var(--dim);text-align:left;
+padding:.5rem .6rem;border-bottom:1px solid var(--rule);white-space:nowrap;
+background:var(--soft)}
+.list-table td{padding:.85rem .6rem;border-bottom:1px solid var(--rule);
+vertical-align:top}
+.list-table tr:hover td{background:#f8f7f3}
+/* 行全体がタップ領域（data-href。委譲スクリプトが拾う）。指す先が
+   分かるよう、ホバーで銘柄名をリンク色にする */
+.list-table tr[data-href]{cursor:pointer}
+.list-table tr[data-href]:hover .nm a{color:var(--accent)}
+.list-table .nm{font-weight:700;font-size:1.02rem}
+.list-table .nm a{color:var(--ink);text-decoration-color:var(--rule)}
+.list-table .sub{color:var(--dim);font-size:.76rem;display:block;margin-top:.15rem}
+.list-table .one{color:var(--dim);font-size:.84rem;line-height:1.7;
+display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;
+overflow:hidden;margin-top:.4rem}
+.list-table .price{font-size:1.15rem;font-weight:700}
+/* nowrap にすると、中の長いURLが分割不能トークンになってスマホ幅で
+   ページ自体を横スクロールさせる（tools\shot.ps1 の採寸で 623px > 500px）。 */
+.ext{font-size:.72rem;color:var(--dim);text-decoration:none;
+border:1px solid var(--rule);border-radius:999px;padding:.02rem .45rem;
+margin-left:.35rem;white-space:normal;overflow-wrap:anywhere;
+max-width:100%;display:inline-block}
+.ext:hover{border-color:var(--ink);color:var(--ink)}
+/* 列幅を固定し、余りを1列目（銘柄と概要）に渡す。auto レイアウトだと概要文の
+   長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */
+@media(min-width:641px){
+.list-table{table-layout:fixed}
+.list-table th:nth-child(2),.list-table td:nth-child(2){width:9.5rem}
+.list-table th:nth-child(3),.list-table td:nth-child(3){width:12rem}
+.list-table td:nth-child(2) .sub{white-space:nowrap}
+}
+/* PC の広い画面では**トップページ全体**（main.wide）を広く使う。
+   一覧だけを translateX で広げると、見出し・KPI と左端が揃わず崩れて見える */
+@media(min-width:1140px){
+main.wide{max-width:74rem}
+}
+
+@media(max-width:640px){
+body{font-size:15px}
+h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:2.2rem}
+table{font-size:.8rem}th,td{padding:.45rem .5rem}
+.card{padding:.9rem 1rem}
+.kpi{grid-template-columns:repeat(2,1fr);gap:.55rem}
+.kpi-tile .k-value{font-size:1.25rem}
+.upd{padding:.85rem 1rem}
+details.sec>summary{padding:.85rem .9rem}
+details.sec>.sec-body{padding:.2rem .9rem 1rem}
+/* 一覧表はスマホでカード状に積む（横スクロールさせない） */
+.list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
+.list-table thead{display:none}
+.list-table tr{border:1px solid var(--rule);border-radius:8px;
+padding:.7rem .8rem;margin:.7rem 0;background:var(--card);box-shadow:var(--shadow)}
+.list-table td{border:0;padding:.15rem 0}
+.list-table td[data-l]::before{content:attr(data-l) "　";color:var(--dim);
+font-size:.72rem;font-weight:700}
+.list-table tr:hover td{background:transparent}
+.viz{padding:.7rem .7rem .6rem}
+.viz figcaption{font-size:.78rem}
+.viz-tick{font-size:15px}.viz-value{font-size:16px}
+.site-in{padding:.45rem .85rem}
+main{padding:1.1rem .85rem 3rem}
+}
+
+/* ★表示切り替えの規則は必ずスタイルシートの末尾に置く（!important 併用）。
+   スマホのカード積み替え（.list-table tr{display:block}）と同じ詳細度の
+   display 規則は後勝ちで負けるため、位置と !important の両方で守る。
+   トグルが増えたため、状態は :has() で引く（input が label の直前にあり、
+   .scroll の兄弟ではないので兄弟セレクタでは届かない）。input が
+   描画されないキーは :has が成立せず**表示側に倒れる**（隠れて消えない）。 */
+/* 対象外: チェックが外れている間だけ隠す（既定＝隠す） */
+.list-wrap:has(#f-excluded:not(:checked)) tr.row-excluded{display:none!important}
+/* 判定・裏取りの絞り込み。チップを外すとその状態の行を隠す。
+   キーは build.py の STAMP_KEYS / VF_LABELS と一対（固定語彙・全キーぶん置く） */
+.list-wrap:has(#f-st-buy:not(:checked)) tr.st-buy{display:none!important}
+.list-wrap:has(#f-st-watch:not(:checked)) tr.st-watch{display:none!important}
+.list-wrap:has(#f-st-probe:not(:checked)) tr.st-probe{display:none!important}
+.list-wrap:has(#f-st-hot:not(:checked)) tr.st-hot{display:none!important}
+.list-wrap:has(#f-st-sell:not(:checked)) tr.st-sell{display:none!important}
+.list-wrap:has(#f-st-liq:not(:checked)) tr.st-liq{display:none!important}
+.list-wrap:has(#f-st-trend:not(:checked)) tr.st-trend{display:none!important}
+.list-wrap:has(#f-st-other:not(:checked)) tr.st-other{display:none!important}
+.list-wrap:has(#f-vf-ok:not(:checked)) tr.vf-ok{display:none!important}
+.list-wrap:has(#f-vf-part:not(:checked)) tr.vf-part{display:none!important}
+.list-wrap:has(#f-vf-none:not(:checked)) tr.vf-none{display:none!important}
+/* コンパクト表示（既定=ON。build.py が checked で出す）: 概要文・外部リンク・
+   スパークラインを畳み、1行1銘柄で 20〜30 銘柄を見渡せるようにする */
+.list-wrap:has(#v-compact:checked) .one,
+.list-wrap:has(#v-compact:checked) .ext,
+.list-wrap:has(#v-compact:checked) .spark{display:none!important}
+/* セルの中身を流し込んで行高を最小にする（.sub/.wchg は通常 block）。
+   終値セルは nowrap のままだと固定列幅を突き抜けて隣に重なるので折り返す。
+   繰り返しの日付・週ラベル（全行同じ）はこの表示では出さない */
+.list-wrap:has(#v-compact:checked) .list-table .sub{display:inline!important;
+margin:0 0 0 .5rem}
+.list-wrap:has(#v-compact:checked) td[data-l="終値・判定"]{white-space:normal;
+overflow-wrap:normal}
+.list-wrap:has(#v-compact:checked) td[data-l="終値・判定"] .sub{display:none!important}
+.list-wrap:has(#v-compact:checked) td[data-l="今週"] .sub{display:none!important}
+.list-wrap:has(#v-compact:checked) .wk-txt{display:-webkit-box;
+-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.list-wrap:has(#v-compact:checked) .wchg{display:inline-block!important;margin:0}
+.list-wrap:has(#v-compact:checked) .stamp{display:inline-block!important;
+margin:0;padding:.02rem .5rem}
+.list-wrap:has(#v-compact:checked) .stamp .st-p{display:none}
+.list-wrap:has(#v-compact:checked) .list-table .nm{font-size:.95rem}
+.list-wrap:has(#v-compact:checked) .list-table .price{font-size:1rem;
+margin-right:.5rem}
+@media(min-width:641px){
+.list-wrap:has(#v-compact:checked) .list-table td{padding:.4rem .6rem}
+.list-wrap:has(#v-compact:checked) .list-table th:nth-child(2),
+.list-wrap:has(#v-compact:checked) .list-table td:nth-child(2){width:12.5rem}
+}
+@media(max-width:640px){
+/* スマホのコンパクトはカードの見出しラベルと余白も詰める */
+.list-wrap:has(#v-compact:checked) .list-table td[data-l]::before{content:none}
+.list-wrap:has(#v-compact:checked) .list-table tr{padding:.5rem .75rem;
+margin:.45rem 0}
+}
+
+/* --- 前提知識（knowledge.html） -------------------------------------------
+   左カラム＝分類ツリー、右＝記事。表示切替は :target のみ（JSなし）。
+   どの記事も選ばれていないときは一覧（.kb-home）が出る。 */
+.kb-wrap{display:grid;grid-template-columns:14.5rem minmax(0,1fr);
+gap:1.4rem;align-items:start}
+@media(max-width:760px){.kb-wrap{grid-template-columns:1fr}}
+.kb-side{position:sticky;top:3.4rem;background:var(--card);
+border:1px solid var(--rule);border-radius:8px;padding:.9rem 1rem;
+font-size:.85rem;max-height:calc(100vh - 4.4rem);overflow-y:auto}
+@media(max-width:760px){.kb-side{position:static;max-height:none}}
+.kb-side .kb-cat{font-weight:700;margin:.8rem 0 .15rem;color:var(--ink)}
+.kb-side .kb-cat:first-child{margin-top:0}
+.kb-side .kb-cat.d1{margin-left:.6rem;font-size:.8rem;color:var(--dim)}
+.kb-side .kb-cat.d2{margin-left:1.2rem;font-size:.8rem;color:var(--dim)}
+.kb-side a{display:block;background:none;border:0;border-radius:0;
+border-left:2px solid var(--rule);margin:.12rem 0 .12rem .35rem;
+padding:.2rem .55rem;color:var(--accent);text-decoration:none;
+font-size:.85rem;line-height:1.5}
+.kb-side a:hover{border-left-color:var(--accent);color:var(--ink)}
+.kb-article{display:none;scroll-margin-top:3.6rem}
+.kb-article:target{display:block}
+.kb-main:has(.kb-article:target) .kb-home{display:none}
+.kb-crumb{font-size:.78rem;color:var(--dim);margin:0 0 .6rem}
+.kb-crumb .kb-date{margin-left:.8rem}
+.kb-index{padding-left:1.2rem}
+.kb-index li{margin:.6rem 0}
+.kb-index .kb-crumb{margin:0}
+/* 図（手描きSVG）。狭い画面では横スクロールで原寸を保つ */
+.kb-figure{margin:1.2rem 0 0;background:var(--card);
+border:1px solid var(--rule);border-radius:6px;padding:1rem .9rem .5rem}
+.kb-fig-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.kb-fig-scroll svg{display:block;min-width:760px;width:100%;height:auto}
+.kb-figure figcaption{font-size:.8rem;color:var(--dim);
+border-top:1px dashed var(--rule);margin-top:.7rem;
+padding:.6rem .2rem .4rem;line-height:1.7}
+.kb-kpis{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.2rem 0 0}
+.kb-kpi{flex:1 1 11rem;background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.7rem .9rem}
+.kb-kpi .v{font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.kb-kpi .l{font-size:.76rem;color:var(--dim);line-height:1.6;margin-top:.15rem}
+.kb-src,.kb-srcs{font-size:.72rem;color:var(--dim)}
+.kb-srcs{padding-left:1.2rem}
+.kb-srcs li{margin:.3rem 0;overflow-wrap:anywhere}
+.kb-note{background:var(--soft);border-left:3px solid var(--warn);
+padding:.7rem 1rem;border-radius:0 6px 6px 0;font-size:.86rem;margin:1.2rem 0 0}
+.kb-eq{display:flex;flex-wrap:wrap;gap:.5rem;align-items:stretch;
+justify-content:center;background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:1rem;margin:1.2rem 0 0}
+.kb-eq .term{flex:1 1 9rem;max-width:14rem;text-align:center;
+padding:.7rem .5rem;border:1px dashed var(--rule);border-radius:6px}
+.kb-eq .term.hot{border:1.5px solid var(--accent);background:var(--accent-soft)}
+.kb-eq .op{align-self:center;font-size:1.4rem;color:var(--dim)}
+.kb-eq .t-name{font-weight:700}
+.kb-eq .t-desc{font-size:.76rem;color:var(--dim);margin-top:.2rem;line-height:1.6}
+.kb-vs{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1.2rem 0 0}
+@media(max-width:640px){.kb-vs{grid-template-columns:1fr}}
+.kb-vs .col{background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.9rem 1rem}
+.kb-vs .col.hot{border-color:var(--accent)}
+.kb-vs .tag{font-size:.72rem;letter-spacing:.1em;color:var(--dim)}
+.kb-vs .col.hot .tag{color:var(--accent)}
+.kb-vs h3{margin:.3rem 0 .4rem}
+.kb-vs ul{margin:0;padding-left:1.2em;font-size:.84rem;color:var(--dim)}
+.kb-vs li{margin:.3em 0}
+.kb-vs .q{margin-top:.7rem;padding-top:.5rem;
+border-top:1px dashed var(--rule);font-size:.85rem}
+.kb-layers{display:flex;flex-direction:column;gap:.6rem;margin:1.2rem 0 0}
+.kb-layer{background:var(--card);border:1px solid var(--rule);
+border-left-width:4px;border-radius:6px;padding:.8rem 1rem}
+.kb-layer.v-takes{border-left-color:var(--good)}
+.kb-layer.v-open{border-left-color:var(--warn)}
+.kb-layer.v-pass,.kb-layer.v-out{border-left-color:var(--dim)}
+.kb-layer .who{font-size:.78rem;color:var(--dim);margin-top:.1rem}
+.kb-layer .why{font-size:.85rem;margin-top:.35rem}
+.kb-pill{display:inline-block;font-size:.68rem;font-weight:700;
+padding:.1rem .6rem;border-radius:999px;white-space:nowrap;
+vertical-align:.1em;background:var(--soft)}
+.kb-pill.p-takes{color:var(--good)}
+.kb-pill.p-open{color:var(--warn)}
+.kb-pill.p-pass,.kb-pill.p-out{color:var(--dim)}
+.kb-cands{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));
+gap:.6rem;margin:1.2rem 0 0}
+.kb-cand{background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.7rem .9rem}
+.kb-cand .code{font-size:.72rem;color:var(--accent);font-weight:700}
+.kb-cand .nm{font-weight:700;margin:.1rem 0 .3rem}
+.kb-cand p{font-size:.78rem;color:var(--dim);margin:0;line-height:1.65}
+</style></head><body><header class="site"><div class="site-in"><a class="brand" href="../index.html">銘柄調査台帳</a><nav><a href="../index.html">台帳</a><a href="../knowledge.html">前提知識</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav></div></header><main><h1>アクシスコンサルティング（9344）</h1><p class="lede">東証グロース／レポート更新 2026-08-31<br><span class="pill pill-warn">未検証</span>本文の記述はまだ出典に当て直していない<br><a class="ext" href="https://axc-g.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=9344" target="_blank" rel="noopener">株探 ↗</a></p><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">1,321<span class="k-unit">円</span></span><span class="k-sub">2026-08-27・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+1.8%</span></span><span class="k-sub">2026-08-26 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">808 〜 1,369</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">流動性低</span></span><span class="k-sub">src/judge.py の機械判定</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">未検証</span></span><span class="k-sub">記録なし</span></div></div><blockquote>
+<p><strong>一行でいうと</strong>：コンサルタントなどのハイエンド人材に特化して、人材紹介（AXIS Agent）とフリーコンサルの月次稼働（AXIS Solutions）を同じ人材データベースの上で回す会社。2026年6月期は売上高82.9億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>・営業利益4.92億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>で会社計画を上回り、2027年6月期は営業利益8.0億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>の計画を出した。ただし時価総額は約66億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>・20日平均売買代金は2,902万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で、台帳の機械判定は流動性ゲートの手前（「流動性低」）で止まっている。</p>
+</blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W36・全 1 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W36（2026-08-31 週）</h3><p><strong>（台帳に載せた最初の週。2026年6月期の決算が8/14に出た直後で、株価は決算前より3割高い場所にいる。）</strong></p>
+<ul>
+<li>入口はスクリーニング。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうち1件として <code>data/master.yaml</code> に登録された（<code>watch_since: 2026-08-30</code>）。</li>
+<li>2026-08-14 に2026年6月期の決算短信（連結）と通期決算説明資料が開示された。売上高8,289百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>・営業利益492百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>で、会社は「期初計画および第3四半期決算発表時に公表した修正計画を上回って着地」と説明している（決算説明資料 p.5／<a class="ext" href="https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf" target="_blank" rel="noopener">ssl4.eir-parts.net ↗</a>・取得日 2026-08-31）。</li>
+<li>同時に出た2027年6月期の会社計画は売上高9,600百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>・営業利益800百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（決算短信 p.2／<a class="ext" href="https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf" target="_blank" rel="noopener">ssl4.eir-parts.net ↗</a>・取得日 2026-08-31）。会社は中期経営計画で置いていた27/6期の目標（売上高9,060百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>・営業利益750百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）を上回る計画に設定したと説明している（決算説明資料 p.7・p.28）。</li>
+<li>株価は開示の翌営業日に動いた。2026-08-14 の採用終値は989円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、週明け2026-08-17 は始値・高値・安値・終値がすべて1,139円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（終値1,139円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>／前日比+150円）、翌2026-08-18 は出来高210,100株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（8/14の5,900株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>の約36倍）を伴って終値1,369円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>と直近52週の高値をつけた。<strong>8/17 は値幅制限の上限に張り付いた（ストップ高）と読める</strong>が、板情報は確認していないので断定しない。</li>
+<li>直近の採用終値は2026-08-27 の1,321円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>で、決算前の8/14終値から+33.6%（<code>data/prices/daily.csv</code>）。</li>
+<li>台帳の機械判定は「流動性低」。20日平均売買代金2,902万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>がゲートの3,000万円に届いていない（<code>src/judge.py</code>・<code>data/prices/daily.csv</code>）。同じ期間の中央値は584万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で、平均は決算直後の数日が持ち上げている。<strong>いま見えている流動性はイベントの副産物で、恒常的なものではない可能性が高い</strong>と読める。</li>
+<li>信用買い残は2026-08-14 の102.5千株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>から2026-08-21 の155.5千株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>へ増えた。売り残は0株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>のままで信用倍率は定義できない（<code>data/margin/9344.csv</code>）。</li>
+</ul>
+<p><strong>次週に見ること</strong>：①決算後の出来高が萎むかどうか（萎めば20日平均売買代金はゲートを大きく割り込む） ②8/18の決算説明会の質疑応答が開示されるか（会社は後日開示する方針と書いている） ③9/28提出予定の有価証券報告書と9/29の定時株主総会</p></div></div></details><details class="sec"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">まだ作成していない</span></summary><div class="sec-body"><p class="none">推定モデルは未作成。「この銘柄の推定モデルを組んで」と Claude に言えば起案できる（手順は <code>.claude/skills/kabu-ledger-estimate/</code>）。</p></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p>コンサルタントなどのハイエンド人材に特化した人材サービス会社。2002年4月設立、東証グロース上場。会計上のセグメントは「ヒューマンキャピタル事業」の1つだけで、実態は次の二本立てで動いている〔S1〕。</p>
+<figure class="viz"><svg viewBox="0 0 720 235" role="img" preserveAspectRatio="xMidYMid meet"><rect x="14.0" y="26" width="150.5" height="183" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="89.2" y="69.0" text-anchor="middle" class="viz-value">ハイエンド人材の</text><text x="89.2" y="88.0" text-anchor="middle" class="viz-value">スキルデータベー</text><text x="89.2" y="107.0" text-anchor="middle" class="viz-value">ス</text><text x="89.2" y="127.0" text-anchor="middle" class="viz-tick">現役コンサルタン</text><text x="89.2" y="143.0" text-anchor="middle" class="viz-tick">トなどの登録。両</text><text x="89.2" y="159.0" text-anchor="middle" class="viz-tick">サービスの共通の</text><text x="89.2" y="175.0" text-anchor="middle" class="viz-tick">土台</text><line x1="169.5" y1="117.5" x2="183.5" y2="117.5" stroke="var(--viz-muted)" stroke-width="2"/><path d="M189.5,117.5 l-8,-5 l0,10 z" fill="var(--viz-muted)"/><rect x="194.5" y="26" width="150.5" height="183" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="269.8" y="62.5" text-anchor="middle" class="viz-value">AXIS Age</text><text x="269.8" y="81.5" text-anchor="middle" class="viz-value">nt（人材紹介）</text><text x="269.8" y="101.5" text-anchor="middle" class="viz-tick">正社員としての入</text><text x="269.8" y="117.5" text-anchor="middle" class="viz-tick">社を決める。平均</text><text x="269.8" y="133.5" text-anchor="middle" class="viz-tick">年収×平均手数料</text><text x="269.8" y="149.5" text-anchor="middle" class="viz-tick">率×入社決定人数</text><text x="269.8" y="165.5" text-anchor="middle" class="viz-tick">。決まったときに</text><text x="269.8" y="181.5" text-anchor="middle" class="viz-tick">一括で入る</text><line x1="350.0" y1="117.5" x2="364.0" y2="117.5" stroke="var(--viz-muted)" stroke-width="2"/><path d="M370.0,117.5 l-8,-5 l0,10 z" fill="var(--viz-muted)"/><rect x="375.0" y="26" width="150.5" height="183" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="450.2" y="53.0" text-anchor="middle" class="viz-value">AXIS Sol</text><text x="450.2" y="72.0" text-anchor="middle" class="viz-value">utions（ス</text><text x="450.2" y="91.0" text-anchor="middle" class="viz-value">キルシェア）</text><text x="450.2" y="111.0" text-anchor="middle" class="viz-tick">フリーコンサルタ</text><text x="450.2" y="127.0" text-anchor="middle" class="viz-tick">ントが月単位で稼</text><text x="450.2" y="143.0" text-anchor="middle" class="viz-tick">働する。平均受注</text><text x="450.2" y="159.0" text-anchor="middle" class="viz-tick">単価（月額）×稼</text><text x="450.2" y="175.0" text-anchor="middle" class="viz-tick">働人数。毎月積み</text><text x="450.2" y="191.0" text-anchor="middle" class="viz-tick">上がる</text><line x1="530.5" y1="117.5" x2="544.5" y2="117.5" stroke="var(--viz-muted)" stroke-width="2"/><path d="M550.5,117.5 l-8,-5 l0,10 z" fill="var(--viz-muted)"/><rect x="555.5" y="26" width="150.5" height="183" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="630.8" y="70.5" text-anchor="middle" class="viz-value">SSP（連結子会</text><text x="630.8" y="89.5" text-anchor="middle" class="viz-value">社）</text><text x="630.8" y="109.5" text-anchor="middle" class="viz-tick">システムの設計・</text><text x="630.8" y="125.5" text-anchor="middle" class="viz-tick">開発・運用保守。</text><text x="630.8" y="141.5" text-anchor="middle" class="viz-tick">人を紹介するだけ</text><text x="630.8" y="157.5" text-anchor="middle" class="viz-tick">でなく実装まで担</text><text x="630.8" y="173.5" text-anchor="middle" class="viz-tick">うための部分</text></svg><figcaption>共通の人材データベースの上に、売り方の違う二つのサービスが乗る</figcaption><p class="viz-src">定性図（数値を含まない）</p></figure>
+<ul>
+<li><strong>AXIS Agent（人材紹介）</strong> — 正社員としての入社を決めて手数料を受け取る。会社自身が売上を「平均年収 × 平均手数料率 × 入社決定人数」と説明している〔S1〕。決まったときに一括で入るフロー型。祖業は大手コンサルティングファーム向けで、近年は事業会社向けを第二の柱として広げている。</li>
+<li><strong>AXIS Solutions（スキルシェア）</strong> — フリーコンサルタントを月単位で稼働させる。売上は「1人当たり平均受注単価（月額）× 稼働人数」〔S1〕。毎月積み上がるストック寄りの形。</li>
+<li>両者の土台が共通のスキルデータベースで、会社は規模を約11万人<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>としている〔S5〕。紹介で接点を持った人材が独立すればスキルシェア側に回り、その逆もある、という相互送客が会社の説明する強み〔S1〕。</li>
+</ul>
+<p>2026年2月3日に<strong>株式会社サン・システムプランニング（SSP）</strong>の全株式を456百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で取得して連結子会社にした〔S1〕。SSPはサーバインフラを中心としたシステムの設計・開発・運用保守を長年続けてきた会社で、のれん247百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>を8年で均等償却する〔S1〕。会社はこれを「上場後初のロールアップ型M&amp;A」と呼び、人を紹介するだけでなく実装まで自前で担う体制づくりの一歩と位置づけている〔S2〕。<strong>これが初の連結決算のきっかけであり、後述する数字の断絶の理由でもある。</strong></p>
+<p>従業員は197名<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（2026年6月末）〔S5〕。</p><h2>財務の推移と健全性</h2><figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">96.0億円</text><g class="viz-bar"><title>2022/6: 35.1億円</title><rect x="85.5" y="163.8" width="46.0" height="84.2" fill="var(--viz-pos)" rx="3"/></g><text x="108.5" y="268.0" text-anchor="middle" class="viz-tick">2022/6</text><g class="viz-bar"><title>2023/6: 43.4億円</title><rect x="194.5" y="144.0" width="46.0" height="104.0" fill="var(--viz-pos)" rx="3"/></g><text x="217.5" y="268.0" text-anchor="middle" class="viz-tick">2023/6</text><g class="viz-bar"><title>2024/6: 46.6億円</title><rect x="303.5" y="136.2" width="46.0" height="111.8" fill="var(--viz-pos)" rx="3"/></g><text x="326.5" y="268.0" text-anchor="middle" class="viz-tick">2024/6</text><g class="viz-bar"><title>2025/6: 52.7億円</title><rect x="412.5" y="121.7" width="46.0" height="126.3" fill="var(--viz-pos)" rx="3"/></g><text x="435.5" y="268.0" text-anchor="middle" class="viz-tick">2025/6</text><g class="viz-bar"><title>2026/6: 82.9億円 — 初の連結決算。子会社SSPを2026年1月から取り込んでいる</title><rect x="521.5" y="49.4" width="46.0" height="198.6" fill="var(--viz-pos)" rx="3"/></g><text x="544.5" y="43.4" text-anchor="middle" class="viz-value">82.9億円</text><text x="544.5" y="268.0" text-anchor="middle" class="viz-tick">2026/6</text><g class="viz-bar"><title>27/6計: 96.0億円 — 会社計画</title><rect x="630.5" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="653.5" y="12.0" text-anchor="middle" class="viz-value">96.0億円</text><text x="653.5" y="268.0" text-anchor="middle" class="viz-tick">27/6計</text></svg><figcaption>売上高の推移（27/6期は会社計画）</figcaption><p class="viz-src">出所: data/fundamentals/9344.csv の採用値（別サイト2つ以上が一致した値だけ）。6/6点を採用。</p></figure>
+<div class="scroll"><table class="prose-table">
+<thead>
+<tr>
+<th>決算期</th>
+<th>売上高（百万円）</th>
+<th>営業利益（百万円）</th>
+<th>経常利益（百万円）</th>
+<th>当期純利益（百万円）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2023/6期</td>
+<td>4,342</td>
+<td>673</td>
+<td>644</td>
+<td>418</td>
+</tr>
+<tr>
+<td>2024/6期</td>
+<td>4,665</td>
+<td>833</td>
+<td>831</td>
+<td>502</td>
+</tr>
+<tr>
+<td>2025/6期</td>
+<td>5,271</td>
+<td>210</td>
+<td>219</td>
+<td>321</td>
+</tr>
+<tr>
+<td>2026/6期</td>
+<td>8,289</td>
+<td>492</td>
+<td>497</td>
+<td>288</td>
+</tr>
+<tr>
+<td>2027/6期（会社計画）</td>
+<td>9,600</td>
+<td>800</td>
+<td>780</td>
+<td>500</td>
+</tr>
+</tbody>
+</table></div>
+<p>（すべて <code>data/fundamentals/9344.csv</code> の採用値＝別サイト2つ以上が一致した値。2025/6期以前は単体、2026/6期以降は連結）</p>
+<p><strong>この表には断絶が1本入っている。</strong> 2026/6期から連結決算に変わったので、2025/6期以前と縦に比べられない。会社が「売上高57.3%増」と示している参考値〔S1〕も、連結の8,289百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>と単体の5,271百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>を並べたものである。単体どうしで比べると2026/6期の単体売上高は8,021百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>・前期比52.2%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>増、単体営業利益は521百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>・同147.5%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>増で〔S1〕、<strong>連結子会社を抜いても本体が5割伸びている</strong>というのがこの期の中身になる。SSPの寄与は6か月ぶんで267百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>〔S2〕にとどまる。</p>
+<p>利益は一度大きく落ちて戻った。営業利益は2024/6期833百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>から2025/6期210百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>へ約4分の1になり、2026/6期に492百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>へ戻している。会社の説明は、中期経営計画に基づく戦略投資（広告宣伝・人的資本・DX/IT、3年で約30億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）を先に打ったことによる一時的な下押しで、2026/6期はその効果が出た、というもの〔S2〕。<strong>この説明が正しいかどうかは、投資が続く2027/6期以降の利益率で確かめられる。</strong></p>
+<p>期の中の動きはさらに極端だった。</p>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="151.7" x2="708" y2="151.7" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="155.7" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">354百万円</text><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">-255百万円</text><g class="viz-bar"><title>25/7-9: -255百万円 — 単体</title><rect x="112.8" y="151.7" width="46.0" height="96.3" fill="var(--viz-neg)" rx="3"/></g><text x="135.8" y="268.0" text-anchor="middle" class="viz-tick">25/7-9</text><g class="viz-bar"><title>25/10-12: 64.0百万円</title><rect x="276.2" y="127.5" width="46.0" height="24.2" fill="var(--viz-pos)" rx="3"/></g><text x="299.2" y="268.0" text-anchor="middle" class="viz-tick">25/10-12</text><g class="viz-bar"><title>26/1-3: 329百万円 — この四半期から連結</title><rect x="439.8" y="27.4" width="46.0" height="124.3" fill="var(--viz-pos)" rx="3"/></g><text x="462.8" y="268.0" text-anchor="middle" class="viz-tick">26/1-3</text><g class="viz-bar"><title>26/4-6: 354百万円</title><rect x="603.2" y="18.0" width="46.0" height="133.7" fill="var(--viz-pos)" rx="3"/></g><text x="626.2" y="268.0" text-anchor="middle" class="viz-tick">26/4-6</text></svg><figcaption>26/6期の四半期営業利益。期の途中で赤字から抜けた</figcaption><p class="viz-src">出所: data/fundamentals/9344.csv の採用値（別サイト2つ以上が一致した値だけ）。4/4点を採用。</p></figure>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">2,830百万円</text><g class="viz-bar"><title>25/7-9: 1,456百万円</title><rect x="112.8" y="129.7" width="46.0" height="118.3" fill="var(--viz-pos)" rx="3"/></g><text x="135.8" y="268.0" text-anchor="middle" class="viz-tick">25/7-9</text><g class="viz-bar"><title>25/10-12: 1,698百万円</title><rect x="276.2" y="110.0" width="46.0" height="138.0" fill="var(--viz-pos)" rx="3"/></g><text x="299.2" y="268.0" text-anchor="middle" class="viz-tick">25/10-12</text><g class="viz-bar"><title>26/1-3: 2,305百万円</title><rect x="439.8" y="60.7" width="46.0" height="187.3" fill="var(--viz-pos)" rx="3"/></g><text x="462.8" y="268.0" text-anchor="middle" class="viz-tick">26/1-3</text><g class="viz-bar"><title>26/4-6: 2,830百万円</title><rect x="603.2" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="626.2" y="268.0" text-anchor="middle" class="viz-tick">26/4-6</text></svg><figcaption>26/6期の四半期売上高</figcaption><p class="viz-src">出所: data/fundamentals/9344.csv の採用値（別サイト2つ以上が一致した値だけ）。4/4点を採用。</p></figure>
+<p>1Q（2025年7〜9月）は営業損失255百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、2Qで64百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>の黒字に戻り、3Q 329百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>・4Q 354百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>と積み上げて通期492百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>に着地している。売上も1,456百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>→1,698百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>→2,305百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>→2,830百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>と四半期ごとに増えた。<strong>通期の数字だけを見ると「そこそこの増益」に見えるが、実態は期の後半に寄った回復である。</strong></p>
+<div class="scroll"><table class="prose-table">
+<thead>
+<tr>
+<th>決算期</th>
+<th>営業利益率（%）</th>
+<th>自己資本比率（%）</th>
+<th>総資産（百万円）</th>
+<th>営業キャッシュフロー（百万円）</th>
+<th>フリーキャッシュフロー（百万円）</th>
+<th>現金同等物（百万円）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2024/6期</td>
+<td>–</td>
+<td>77.0</td>
+<td>4,112</td>
+<td>446</td>
+<td>201</td>
+<td>3,023</td>
+</tr>
+<tr>
+<td>2025/6期</td>
+<td>3.98</td>
+<td>73.5</td>
+<td>4,515</td>
+<td>-183</td>
+<td>-322</td>
+<td>2,999</td>
+</tr>
+<tr>
+<td>2026/6期</td>
+<td>5.94</td>
+<td>59.5</td>
+<td>5,664</td>
+<td>1,049</td>
+<td>737</td>
+<td>3,319</td>
+</tr>
+<tr>
+<td>2027/6期（会社計画）</td>
+<td>8.33</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+</tbody>
+</table></div>
+<p>（「–」は照合が成立していないか、会社計画に該当項目が無いもの。埋めていない）</p>
+<ul>
+<li><strong>自己資本比率は77.0%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>→73.5%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>→59.5%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>と下がった。</strong> 下がった主因は子会社取得でのれんと負債が連結に乗ったことである。有利子負債は317百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（単一ソースのため参考値）、うち長期借入金は100百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>〔S1〕で、現金同等物3,319百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>に対して十分に小さい。<strong>借入で自己資本比率を落としたのではない</strong>と読める。</li>
+<li><strong>キャッシュの出方は劇的に変わった。</strong> 2025/6期は営業CFが-183百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>・フリーCFが-322百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>と流出だったのが、2026/6期は営業CF 1,049百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>・フリーCF 737百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>に転じている。現金同等物は3,319百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>で、時価総額の半分に相当する。</li>
+<li>配当は2026/6期35円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（配当性向60.4%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）、2027/6期予想41円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>〔S1〕。方針は「DOE5%を下限とし、配当性向40%とのいずれか高い方」〔S1〕。<strong>利益が伸びなくても純資産に対する下限が効く形の還元設計</strong>になっている。</li>
+<li>数値の注意点として、決算短信の1株当たり当期純利益は57.92円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>だが、台帳の採用値は57.83円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>である。差は純利益を百万円単位に丸めてから期中平均株式数4,980,525株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で割ったかどうかの違いで、どちらかが誤りというわけではない。台帳は採用値のほうを正として扱う。</li>
+</ul><h2>今後の展望とリスク</h2><p><strong>会社が置いた2027年6月期の計画</strong>は、売上高9,600百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（+15.8%）・営業利益800百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（+62.4%）・経常利益780百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>・当期純利益500百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。サービス別の内訳は人材紹介4,760百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>・スキルシェア4,300百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>・SSP 540百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>〔S2〕。増益の組み立ては、増収による売上総利益の増加（+1,009百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）が人件費・採用費の増加（-681百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）とその他販管費（-214百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）を吸収し、TVCM費用の反動減で広告宣伝費が減るぶん（+194百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）が上乗せされる、というもの〔S2〕。中期経営計画の最終年度である2028年6月期の目標は売上高11,290百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>・営業利益1,400百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>〔S2〕。</p>
+<p>リスクは次の順で重いと読んでいる。</p>
+<ol>
+<li><strong>流動性が足りない。</strong> 20日平均売買代金2,902万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>はゲートの3,000万円をわずかに下回り、同期間の中央値は584万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>しかない。決算前の20営業日（2026-07-16〜08-14）で計算し直すと平均は約218万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で、ゲートの1割にも届かない（<code>data/prices/daily.csv</code> の採用終値×出来高で計算）。<strong>判定が正しくても建てられず降りられない</strong>という、この台帳がゲートを最上位に置いている理由がそのまま当てはまる。</li>
+<li><strong>需要の出どころが1本に寄っている。</strong> 主要顧客は大手コンサルティングファームの採用需要で、その需要が止まったときの振れ幅は既に実演済みである。2025/6期は人材紹介の四半期売上高が4四半期とも前年割れした〔S2〕。回復局面の数字だけを外挿すると、この振れ幅を見落とす。</li>
+<li><strong>26/6期4Qの伸びが極端で、そのまま続くとは限らない。</strong> 人材紹介の4Q売上高は1,527百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>・前年同期比+99%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で、会社は「マネージャークラス以上の高単価案件が集中した」と説明している〔S2〕。集中したものは翌期に同じ形では現れにくい。会社自身が2027/6期の人材紹介を+12%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>に置いているのは、そう見ているからだと読める。</li>
+<li><strong>SSPの成長はほぼ織り込まれていない。</strong> 2027/6期のSSP計画540百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>は、2026/6期に取り込んだ6か月ぶん267百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>の年換算（534百万円）とほぼ同じである。<strong>つまり会社計画はSSPの実質的な伸びをゼロ近くで置いている。</strong> 保守的とも読めるし、買収した事業の成長シナリオをまだ描けていないとも読める。のれん247百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>の8年償却は毎期およそ31百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>の固定費として効き続ける。</li>
+<li><strong>成長投資と還元を同時に約束している。</strong> M&amp;Aを成長戦略の柱に掲げる一方で、DOE5%下限・配当性向40%の還元も置いた〔S1〕。2026/6期の配当性向は60.4%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で、利益が伸び悩んだ期には還元がキャッシュを削る側に回る。</li>
+<li><strong>台帳側の未確定。</strong> <code>data/master.yaml</code> の <code>valuation_model</code> / <code>fiscal_year_end</code> / <code>ir_url</code> / <code>peers</code> が <code>TO_VERIFY</code> のままである。評価手法が決まっていないので、<strong>このレポートでは割高・割安の判断は出さない。</strong></li>
+</ol><h2>値動きと市場の評価</h2><figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="59.2" x2="704" y2="59.2" stroke="var(--viz-grid)" stroke-width="1"/><text x="46" y="63.2" text-anchor="end" class="viz-tick">1,369円</text><line x1="54" y1="226.8" x2="704" y2="226.8" stroke="var(--viz-grid)" stroke-width="1"/><text x="46" y="230.8" text-anchor="end" class="viz-tick">808円</text><path d="M54.0,219.4 L55.8,218.5 L57.6,226.8 L59.4,220.6 L66.6,223.0 L68.4,218.8 L70.2,216.7 L72.1,217.6 L73.9,214.9 L81.1,215.8 L82.9,218.5 L84.7,211.9 L86.5,209.8 L91.9,209.5 L95.5,202.3 L97.3,199.9 L99.1,204.4 L104.6,199.3 L106.4,197.9 L108.2,203.8 L110.0,205.3 L111.8,206.8 L117.2,203.5 L119.0,199.3 L120.8,201.1 L122.6,199.3 L124.4,199.9 L131.6,211.0 L133.4,209.8 L135.2,209.8 L137.1,214.3 L142.5,204.1 L144.3,202.3 L146.1,203.8 L147.9,202.9 L149.7,202.9 L155.1,202.3 L156.9,205.0 L158.7,205.0 L160.5,202.9 L162.3,202.6 L169.6,205.9 L171.4,208.3 L173.2,208.3 L175.0,208.3 L180.4,209.5 L182.2,204.1 L184.0,204.1 L185.8,204.1 L187.6,211.0 L193.0,212.2 L194.8,214.0 L196.6,219.4 L198.4,215.8 L200.2,202.0 L207.5,190.1 L209.3,190.4 L211.1,191.3 L212.9,191.9 L218.3,188.3 L220.1,189.5 L221.9,189.8 L223.7,189.5 L225.5,190.4 L230.9,190.4 L232.8,189.8 L234.6,189.5 L236.4,189.5 L238.2,189.8 L243.6,190.7 L245.4,182.6 L247.2,179.6 L249.0,182.9 L250.8,182.6 L256.2,182.9 L258.0,182.6 L259.8,188.0 L261.6,188.0 L263.4,186.8 L268.9,194.0 L270.7,194.0 L281.5,196.1 L283.3,196.4 L285.1,196.4 L286.9,196.1 L288.7,196.1 L295.9,194.9 L297.8,194.6 L299.6,194.6 L301.4,193.1 L306.8,190.7 L308.6,191.0 L310.4,191.9 L312.2,190.7 L314.0,189.8 L319.4,190.4 L321.2,189.8 L323.0,191.6 L324.8,192.5 L326.6,193.1 L332.1,192.8 L333.9,194.0 L335.7,194.6 L337.5,194.3 L339.3,194.9 L344.7,195.2 L346.5,195.2 L350.1,195.2 L351.9,196.4 L357.3,196.4 L359.1,197.3 L360.9,197.6 L362.8,198.2 L364.6,197.9 L371.8,198.2 L373.6,198.2 L375.4,197.9 L377.2,196.4 L382.6,194.3 L384.4,194.9 L386.2,197.0 L388.0,196.4 L389.8,197.6 L395.2,197.9 L397.1,197.3 L398.9,198.4 L400.7,198.2 L402.5,198.2 L407.9,196.4 L409.7,197.3 L411.5,197.9 L413.3,198.2 L420.5,198.7 L422.3,196.4 L424.1,195.5 L425.9,197.3 L427.8,199.0 L433.2,197.6 L435.0,199.0 L436.8,198.2 L438.6,198.7 L440.4,198.7 L445.8,198.7 L447.6,197.3 L449.4,197.9 L451.2,194.9 L453.0,197.0 L458.4,196.1 L460.2,197.9 L462.1,191.9 L463.9,192.5 L465.7,192.8 L471.1,189.8 L472.9,192.5 L474.7,192.2 L476.5,192.2 L478.3,193.1 L483.7,194.3 L485.5,195.2 L489.1,197.0 L490.9,197.6 L501.8,196.7 L503.6,194.9 L509.0,191.6 L510.8,190.4 L512.6,192.2 L514.4,192.2 L516.2,191.3 L521.6,184.7 L523.4,188.3 L525.2,187.7 L527.1,188.0 L528.9,188.0 L534.3,190.1 L536.1,184.7 L537.9,186.2 L539.7,185.0 L541.5,182.3 L546.9,182.3 L548.7,182.6 L550.5,182.0 L552.3,184.4 L554.1,183.8 L559.6,184.4 L561.4,187.1 L563.2,188.6 L565.0,184.4 L566.8,184.4 L572.2,184.4 L574.0,184.4 L575.8,186.2 L577.6,184.4 L579.4,186.8 L584.8,184.7 L586.6,186.2 L588.4,184.4 L590.2,184.4 L592.1,184.4 L597.5,193.4 L599.3,190.7 L601.1,191.9 L602.9,190.4 L604.7,190.4 L610.1,190.4 L611.9,190.1 L613.7,188.9 L617.3,188.3 L622.8,192.5 L624.6,191.3 L626.4,189.2 L628.2,189.2 L630.0,190.1 L637.2,191.3 L639.0,190.1 L640.8,190.4 L642.6,190.1 L648.0,191.0 L649.8,191.9 L651.6,192.2 L653.4,193.4 L655.2,193.4 L660.7,191.3 L662.5,191.3 L664.3,191.3 L666.1,191.3 L667.9,186.2 L673.3,186.8 L676.9,186.5 L678.7,183.2 L680.5,172.7 L685.9,127.9 L687.8,59.2 L689.6,97.4 L691.4,80.1 L693.2,85.8 L698.6,80.7 L700.4,94.1 L702.2,80.4 L704.0,73.5" fill="none" stroke="var(--viz-pos)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><text x="54" y="272" text-anchor="start" class="viz-tick">25/9/1</text><text x="704" y="272" text-anchor="end" class="viz-tick">26/8/27</text><g class="viz-dot"><title>26/8/14 26/6期 決算と27/6期計画を開示: 989円</title><circle cx="680.5" cy="172.7" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="680.5" y1="164.7" x2="552.0" y2="142.7" stroke="var(--viz-muted)" stroke-width="1"/><text x="552.0" y="138.7" text-anchor="middle" class="viz-value">26/6期 決算と27/6期計画を開示</text><text x="552.0" y="152.7" text-anchor="middle" class="viz-tick">26/8/14</text><g class="viz-dot"><title>26/8/18 機関投資家・アナリスト向け決算説明会: 1,369円</title><circle cx="687.8" cy="59.2" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="687.8" y1="67.2" x2="560.0" y2="73.2" stroke="var(--viz-muted)" stroke-width="1"/><text x="560.0" y="85.2" text-anchor="middle" class="viz-value">機関投資家・アナリスト向け決算説明会</text><text x="560.0" y="99.2" text-anchor="middle" class="viz-tick">26/8/18</text></svg><figcaption>採用終値（52週）と、その間の出来事</figcaption><p class="viz-src">出所: data/prices/daily.csv の採用終値（2つの取得元が一致した終値だけ）。ザラ場の高値・安値は照合を通っていないので使っていない。241/241点を採用、52週の採用終値 239営業日、出来事 2/2件を配置。</p></figure>
+<p>直近52週（2025-08-29〜2026-08-27）の採用終値は、安値808円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（2025-09-03）から高値1,369円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（2026-08-18）のあいだ。決算直前の2026-07-24〜08-14 の15営業日は920〜989円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>の帯でほとんど動いておらず、値がついたのは開示の翌営業日からである（<code>data/prices/daily.csv</code>）。</p>
+<p>直近の採用終値1,321円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（2026-08-27）を基準にした参考値（いずれも自分で計算したもので、照合済みの採用値ではない）:</p>
+<div class="scroll"><table class="prose-table">
+<thead>
+<tr>
+<th>指標</th>
+<th>値</th>
+<th>計算の元</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>時価総額</td>
+<td>約65.7億円</td>
+<td>1,321円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span> × 4,974,848株（期末発行済株式数から自己株式を除いた数。決算短信 p.13〔S1〕）</td>
+</tr>
+<tr>
+<td>予想PER</td>
+<td>約13.1倍</td>
+<td>会社計画EPS 100.51円〔S1〕</td>
+</tr>
+<tr>
+<td>PBR</td>
+<td>約1.95倍</td>
+<td>1株当たり純資産677.22円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span></td>
+</tr>
+<tr>
+<td>予想配当利回り</td>
+<td>約3.1%</td>
+<td>会社予想の1株配当41円〔S1〕</td>
+</tr>
+</tbody>
+</table></div>
+<p>テクニカル指標（<code>src/judge.py</code> が採用終値から計算。2026-08-27 時点。いずれも参考値）:</p>
+<ul>
+<li>25日移動平均1,058.16円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>に対する乖離は+24.8%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span></li>
+<li>週足の中期MAの傾きは+1.10%/週<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、長期MAは+0.63%/週<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で、どちらも上向き</li>
+<li>一目均衡表では雲の上（雲の上限936.5円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）</li>
+<li>3か月に対する出来高比は4.63倍<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span></li>
+<li>信用倍率は定義できない（2026-08-21 時点で売り残0株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>・買い残155.5千株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）。買い一辺倒なので過熱側として扱われる</li>
+</ul>
+<p><strong>機械判定は「流動性低」で①流動性ゲートに引っかかり、②トレンド以降は評価されていない。</strong> トレンド・雲・乖離だけを見れば上向きだが、ゲートを通っていない以上その先の議論には進まない、というのがこの台帳の順序である。</p>
+<p>アナリストによるカバレッジの有無は確認していない（未確認）。</p><h2>出典</h2><p>凡例: <span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>=2ソース照合済みの採用値 ／ <span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>=未照合・参考値 ／ <span class="vm vm-pri" title="決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし">†</span>=決算短信（一次情報）から直接</p>
+<h3>一次情報（会社・取引所の開示）</h3>
+<div class="scroll"><table class="prose-table">
+<thead>
+<tr>
+<th>記号</th>
+<th>資料</th>
+<th>開示日</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td><a href="https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf">2026年6月期 決算短信〔日本基準〕（連結）</a></td>
+<td>2026-08-14</td>
+</tr>
+<tr>
+<td>S2</td>
+<td><a href="https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf">2026年6月期 通期決算説明資料</a></td>
+<td>2026-08-14</td>
+</tr>
+<tr>
+<td>S3</td>
+<td><a href="https://ssl4.eir-parts.net/doc/9344/tdnet/2615414/00.pdf">2025年6月期 第3四半期 決算説明資料（中期経営計画の目標値の出どころ）</a></td>
+<td>2025-05-14</td>
+</tr>
+<tr>
+<td>S4</td>
+<td><a href="https://www2.jpx.co.jp/disc/93440/140120260513531621.pdf">2026年6月期 第3四半期 決算説明資料</a></td>
+<td>2026-05-14</td>
+</tr>
+<tr>
+<td>S5</td>
+<td><a href="https://prtimes.jp/main/html/rd/p/000000131.000026996.html">プレスリリース「2026年6月期通期業績は期初計画を大幅に上回って着地」（会社発信）</a></td>
+<td>2026-08-14</td>
+</tr>
+<tr>
+<td>S6</td>
+<td><a href="https://axc-g.co.jp/ir/">IR情報（会社IRページ）</a></td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p>（S1〜S6 の取得日はいずれも 2026-08-31）</p>
+<h3>二次情報（まとめサイト）</h3>
+<div class="scroll"><table class="prose-table">
+<thead>
+<tr>
+<th>記号</th>
+<th>資料</th>
+<th>使いどころ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S7</td>
+<td><a href="https://kabutan.jp/stock/finance?code=9344">株探 財務</a></td>
+<td><code>data/fundamentals/9344.csv</code> の主ソース</td>
+</tr>
+<tr>
+<td>S8</td>
+<td><a href="https://irbank.net/E38452/results">IR BANK 業績</a></td>
+<td>同・副ソース</td>
+</tr>
+<tr>
+<td>S9</td>
+<td><a href="https://kabutan.jp/stock/?code=9344">株探 基本情報</a></td>
+<td>株価・信用残の取得元</td>
+</tr>
+</tbody>
+</table></div>
+<h3>台帳の中のデータ</h3>
+<ul>
+<li><code>data/prices/daily.csv</code>（株価の採用終値・出来高）</li>
+<li><code>data/fundamentals/9344.csv</code>（財務の採用値）</li>
+<li><code>data/margin/9344.csv</code>（信用残）</li>
+<li><code>data/master.yaml</code>（銘柄マスタ・流動性ゲートの閾値）</li>
+<li><code>src/judge.py</code>（テクニカル指標と機械判定）</li>
+</ul>
+<h3>まだ確かめていないこと</h3>
+<ul>
+<li>2026-08-18 の機関投資家・アナリスト向け決算説明会の質疑応答。会社は後日開示する方針と書いているが〔S2〕、2026-08-31 時点で確認していない</li>
+<li>2026-08-14 の開示が取引時間中だったか終了後だったかを確認していない。株価の動き方から終了後と読めるが、開示時刻そのものは見ていない</li>
+<li>2026-08-17 がストップ高だったかどうか。四本値が同値であることからの推測で、板情報は確認していない</li>
+<li>アナリストのカバレッジの有無・目標株価</li>
+<li>有価証券報告書（2026-09-28 提出予定〔S1〕）による株主構成・大株主・従業員の内訳</li>
+<li>SSPの買収前の単体業績の推移（売上・利益の水準と伸び）</li>
+<li><code>data/master.yaml</code> の <code>valuation_model</code> / <code>fiscal_year_end</code> / <code>ir_url</code> / <code>peers</code> が <code>TO_VERIFY</code> のまま。この銘柄にどの評価手法を当てるかが決まっていない</li>
+<li>人材紹介の平均年収・平均手数料率・平均売上単価の実額。会社は「過去最高水準」と書いているが〔S1〕、数値は開示されていない</li>
+</ul><h2 id="verify">記述の裏取り</h2><p class="lede">本文の記述を、書いたのとは別の文脈が出典URLを取り直して1件ずつ判定した結果（<a href="../about.html">読み方</a>）。</p><p class="none"><span class="pill pill-warn">未検証</span>この銘柄はまだ裏取りしていない。本文の記述は、出典に当て直した確認を経ていない。</p><h2>数値の検証状況</h2><p class="lede">2つの取得元で一致した値だけを採用し、欠測は0で埋めない。この銘柄でどこまで確かめられているかの開示（<a href="../about.html">読み方</a>）。</p><p class="readout"><span>2ソース照合済み <b>95</b></span><span>2ソースが食い違う <b>8</b></span><span>1ソースのみ <b>178</b></span><span>決算短信から直接 <b>0</b></span><span>株価の採用終値 <b>239</b>/270日</span></p><div class="scroll"><table><thead><tr><th>図</th><th>数値の出どころ</th><th>状態</th></tr></thead><tbody><tr><td><code>biz_model</code></td><td><span class="pill">定性図</span>定性図（数値を含まない）</td><td>—</td></tr><tr><td><code>op_by_quarter</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>4/4点すべて採用値</td></tr><tr><td><code>price_events_52w</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>241/241点すべて採用値</td></tr><tr><td><code>revenue_by_quarter</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>4/4点すべて採用値</td></tr><tr><td><code>revenue_trend</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>6/6点すべて採用値</td></tr></tbody></table></div><h3>2つの取得元が食い違った項目</h3><p>どちらが正しいか決められないため、<strong>どちらの値も採用していない</strong>。この項目を本文で断定形で書いてはいけない。</p><p>2023/6 1株益、2024/6 1株益、2024/6 1株純資産、2025/6 1株純資産、2025/6 ROA、2025/6 ROE、2026/6 ROA、2026/6 ROE</p><h3>この欄の材料</h3><ul><li>財務数値: <code>data/fundamentals/9344.csv</code>（281行）— 2サイトの表を機械的に抜いて突き合わせた結果</li><li>決算短信: <code>data/tanshin/9344.csv</code>（0行・開示日 —）— PDF本文からの抽出 </li><li>株価: <code>data/prices/daily.csv</code> の <code>close</code>。始値・高値・安値・出来高は主ソースのみで照合を通っていないため、図には使っていない</li></ul></div></details><footer>集計基準日 2026-08-27／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>

@@ -442,6 +442,86 @@ runs:
     evidence: 一次情報の欄に置かれた harada.com の3ページを再取得（いずれも200）。library/earning.html（1,378文字）は見出し「決算短信」とナビゲーションだけで短信の一覧が無く、ir/news/（1,331文字）も開示を1件も返さない。ir/（1,152文字）は「最新イベント
       2026年8月13日 2027年3月期 第1四半期短信発表」の1行のみ。一次情報として引用に使える本文を持つのは IRカレンダーだけだった。
     action: 目次だけのページを一次情報の欄から外すか、参照先（PDF・カレンダー）に置き換える
+- run: '2026-08-31T23:20:00+09:00'
+  report_updated: '2026-08-31'
+  report_sha256: 0c0ab524a639b3b83b458278072cc423abdf1ba53587d3ebed078c38dd980a8f
+  verifier: kabu-ledger-verify（別コンテキスト・F3。V03/V04/V05/V30 の再検証）
+  urls_refetched:
+  - url: https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    http_status: 200
+  - url: https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf
+    http_status: 200
+  - url: https://s.kabutan.jp/news/k202608130043/
+    http_status: 200
+  urls_delegated:
+  - url: https://kabutan.jp/stock/finance?code=6904
+    to: data/fundamentals/6904.csv
+  - url: https://irbank.net/E01857
+    to: data/fundamentals/6904.csv
+  claims:
+  - id: V03
+    section: updates
+    quote: 営業利益16.3億円✓（同+79.7%）
+    verdict: supported
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: 1Q短信 PDF を再取得（fetch_log 2026-08-31T23:02:05・HTTP 200）。fetch_source.py は PDF を本文化しないため、同じURLの
+      PDF を pypdf で本文化して読んだ。表紙「1.2027年3月期第1四半期の連結業績」(1)連結経営成績（累計・％表示は対前年同四半期増減率）の行は「2027年3月期第1四半期 11,387
+      12.5 1,634 79.7 1,611 74.2 1,252 86.5」で、営業利益の％欄は 79.7。定性的情報にも「営業利益は16億34百万円（前年同期比79.7％増）」とある。表紙には「（百万円未満切捨て）」の注記があり、添付の四半期連結損益計算書（単位：千円）は営業利益
+      前1Q 909,838／当1Q 1,634,750。切り捨て前の実額で 1,634,750/909,838-1=+79.675% → 79.7 で、短信の率はこの基数で計算されている。切り捨て後の採用値どうしの
+      1,634/909-1=+79.758% → 79.8 は二次情報（株探記事・再取得200 の前年同期比欄「+79.8 %」）の再計算値であって短信の値ではない。金額は採用値 operating_income
+      Q2026-04_2026-06=1,634百万円（status OK|ROUNDING）＝16.34億円と一致。前 run（2026-08-31T16:20）の contradicted は、この丸めの基数の違いを取り違えたもの。
+    action: 無し（本文の +79.7% は一次情報どおり。前 run の指摘 +79.8% は採らない）
+  - id: V04
+    section: updates
+    quote: 経常利益16.1億円✓（同+74.2%）
+    verdict: supported
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: 1Q短信 PDF を再取得（fetch_log 2026-08-31T23:02:05・HTTP 200）。fetch_source.py は PDF を本文化しないため、同じURLの
+      PDF を pypdf で本文化して読んだ。表紙の同じ行で経常利益の％欄は 74.2。定性的情報にも「経常利益は16億11百万円（前年同期比74.2％増）」。四半期連結損益計算書（千円）は経常利益
+      前1Q 924,807／当1Q 1,611,288 で、1,611,288/924,807-1=+74.230% → 74.2。切り捨て後の 1,611/924-1=+74.351% → 74.4
+      は株探の再計算値（記事の前年同期比欄「+74.4 %」・見出し「経常は74％増益」）。金額は採用値 ordinary_income Q2026-04_2026-06=1,611百万円（status
+      OK|ROUNDING）＝16.11億円と一致。
+    action: 無し（本文の +74.2% は一次情報どおり。前 run の指摘 +74.4% は採らない）
+  - id: V05
+    section: updates
+    quote: 親会社株主に帰属する四半期純利益12.5億円†（同+86.5%）
+    verdict: supported
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: 1Q短信 PDF を再取得（fetch_log 2026-08-31T23:02:05・HTTP 200）。fetch_source.py は PDF を本文化しないため、同じURLの
+      PDF を pypdf で本文化して読んだ。表紙の同じ行で親会社株主に帰属する四半期純利益の欄は「1,252 86.5」。定性的情報にも「親会社株主に帰属する四半期純利益は、12億52百万円（前年同期比86.5％増）」。四半期連結損益計算書（千円）は
+      前1Q 671,538／当1Q 1,252,515 で、1,252,515/671,538-1=+86.514% → 86.5。切り捨て後の 1,252/671-1=+86.587% → 86.6
+      が株探の最終益欄「+86.6 %」。前 run は「+86.5% は1株益の伸び」としたが、短信では 86.5 は純利益の％欄そのもの（1株当たり四半期純利益は別表で 59.22円／31.75円と金額だけが載り、％欄を持たない。59.22/31.75-1=+86.52%
+      も同じ丸めになるだけで、86.5 の出所ではない）。金額 12.5億円も 1,252,515千円＝12.52億円と一致（採用値は SINGLE_SOURCE のため † 付き）。
+    action: 無し（本文の +86.5% は一次情報どおり。前 run の指摘 +86.6% は採らない）
+  - id: V30
+    section: outlook
+    quote: 純利益6.0億円✓（同+38.3%）
+    verdict: supported
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    - https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: '1Q短信 PDF を再取得（fetch_log 2026-08-31T23:02:05・HTTP 200）。fetch_source.py は PDF を本文化しないため、同じURLの
+      PDF を pypdf で本文化して読んだ。表紙「3.2027年3月期の連結業績予想（％表示は、対前期増減率）」の列は売上高（百万円・％）／営業利益（百万円・％）／経常利益（百万円・％）／親会社株主に帰属する当期純利益（百万円・％）／1株当たり当期純利益（円
+      銭）の9枠で、通期の行は「39,000 △ 7.6 2,000 △ 16.6 1,700 △ 26.4 600 38.3 28.37」。枠と値が1対1に対応し、38.3 は純利益の％欄、1株当たり当期純利益は
+      28.37円で％欄を持たない。したがって前 run の「+38.3% は1株益の伸び」は短信では成り立たない。基数も一次情報で裏が取れる: 有価証券報告書 PDF（再取得 fetch_log
+      2026-08-31T23:03:56・HTTP 200・pypdf で本文化）の連結損益計算書（当連結会計年度 自2025年4月1日 至2026年3月31日・単位：千円）は親会社株主に帰属する当期純利益
+      433,729千円で、600,000/433,729-1=+38.335% → 38.3。切り捨て後の 600/433-1=+38.568% → 38.6 が株探の「前期比 最終益 +38.6
+      %」で、株探の修正1株益欄 +38.3 % はたまたま同じ丸めになる別の量。金額は採用値 net_income_plan FY2027-03=600百万円（status OK）＝6.0億円と一致。'
+    action: 無し（本文の +38.3% は一次情報どおり。前 run の指摘 +38.6% は採らない）
 
 # --- 出典と食い違った記述の始末（D44: contradicted は機械確認でのみ解除）---
 #
