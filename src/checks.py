@@ -61,6 +61,8 @@ OHLC の内部整合性は `value_primary` を使っても崩れない。
 
 `check_split` は整数比の下落を FAIL にする（F2-4）。一次情報で確認したものは
 `data/corporate_actions.yaml` に記録すると WARN に落ちる。**過去行は書き換えない**。
+財務の「前期比で桁が飛んでいる」も同じ形で、`data/fundamentals_confirmations.yaml`
+に記録すると WARN に落ちる（`source_url` の無い記録は確認していないのと同じ）。
 
     actions:
       - code: "4073"          # 指数なら "topix" 等
@@ -2319,7 +2321,21 @@ def _fact_from_row(code: str, row: dict, col: dict[str, str]) -> Fact | None:
 
 
 def _fund_group_key(p: Period) -> tuple:
-    return (p.year, p.month, p.quarter, p.cumulative, p.plan)
+    """同じ期の metric をまとめる鍵。**`standalone` を落とさない。**
+
+    落とすと、決算期末月に終わる**単独四半期**（`Q2025-08_2025-10`）が
+    **通期**（`FY2025-10`）と同じ組に入る。どちらも quarter=None・cumulative=False
+    で、月も年も同じだからである。実データで踏んだ（4707 キタック 10月決算）:
+    通期の営業利益 146百万円 と 4Q単独の営業利益率 -2.2% が同じ組に入り、
+    「営業利益と営業利益率の符号が一致しない」が誤って FAIL した。
+    同じ組に別の量が混ざるので、恒等式（売上−原価−販管費≒営業利益）と
+    自己資本比率の検算も、通期と4Q単独をまたいで計算していた。
+
+    `_check_fund_scale_jump` は同じ取り違えを既に直してある（系列キーに
+    `standalone` と `plan` を入れた）。`Period.bucket` も `standalone` を含む。
+    ここだけが取り残されていた。
+    """
+    return (p.year, p.month, p.quarter, p.cumulative, p.plan, p.standalone)
 
 
 def _fix_cumulative_periods(facts: list[Fact]) -> tuple[list[Fact], list[str]]:
@@ -2462,7 +2478,36 @@ def _check_fund_sign(rep: Report, target: str, groups: dict) -> int:
     return evaluated
 
 
-def _check_fund_scale_jump(rep: Report, target: str, facts: list[Fact]) -> None:
+def load_fundamentals_confirmations(data_dir: Path) -> dict[tuple, dict]:
+    """「桁が飛んだように見えるが実在する」前期比の確認記録（任意ファイル）。無ければ空。
+
+    `corporate_actions.yaml`（分割の確認記録）と同じ形。**`source_url` の無い記録は
+    「確認していない」と同じ**に扱い FAIL のまま残す（F8-6 と同じ）。
+    分割と違って書き換える対象が無い（生値はそのまま）ので、この記録が変えるのは
+    検査の出力だけ。**FAIL を消すのではなく WARN に落とす**ので、
+    「なぜ通したか」が毎回の検査結果に出続ける。
+
+    ★求める出典の性質が分割とは違う。分割は「取引所と会社しか証言できない事実」
+      なので TDnet の一次情報を要求する。こちらの疑いは
+      **「うちのパースが桁か単位を読み違えたのではないか」**なので、
+      証拠は取得元そのもの——運営の異なる2つが**別々の単位表記**で一致していれば、
+      単位の読み違いなら両者が食い違うはずで、疑いは晴れる。
+      `reason` には**何を確認したか／何は確認できていないか**を書く
+      （推測を書くこと自体は禁じられていない。隠すことが禁じられている）。
+    """
+    path = data_dir / "fundamentals_confirmations.yaml"
+    if not path.exists():
+        return {}
+    doc = Y.safe_load(path.read_text(encoding="utf-8")) or {}
+    out: dict[tuple, dict] = {}
+    for c in doc.get("confirmations") or []:
+        out[(str(c.get("code")), str(c.get("metric")),
+             str(c.get("from_period")), str(c.get("to_period")))] = c
+    return out
+
+
+def _check_fund_scale_jump(rep: Report, target: str, facts: list[Fact],
+                           confirmations: dict[tuple, dict] | None = None) -> None:
     """前期比で桁が飛んだ項目（桁の取り違え）。
 
     **利益・EPS・比率には適用しない。** 小型株の利益は 59 → 386 のように実際に
@@ -2475,6 +2520,12 @@ def _check_fund_scale_jump(rep: Report, target: str, facts: list[Fact]) -> None:
       比較そのものが無意味なうえ、実データの最大隣接比が既に 6.26倍
       （閾値10倍）まで来ており、季節性で弱い四半期が1本出れば FAIL していた。
       分けたことで実質は前年同期比になるので、閾値は据え置きでよい。
+
+    ★実在の成長を FAIL のまま残さないための逃げ道が `confirmations`
+      （`data/fundamentals_confirmations.yaml`）。創業期の会社は売上が本当に
+      10倍動く（実測: 5137 スマートドライブ 8→97百万円）。一次情報で確認したものを
+      記録すると **WARN に落ちる（消えない）**。`source_url` の無い記録は
+      確認していないのと同じで FAIL のまま（分割の確認記録と同じ規律）。
     """
     series: dict[tuple, list[Fact]] = {}
     for f in facts:
@@ -2495,9 +2546,19 @@ def _check_fund_scale_jump(rep: Report, target: str, facts: list[Fact]) -> None:
             if lo <= 0 or hi / lo < FUND_SCALE_JUMP_RATIO:
                 continue
             ratio = hi / lo
-            bad.append(f"{cur.metric} {prev.period.label()}→{cur.period.label()}"
-                       f"（{prev.value}{prev.unit_text} → {cur.value}{cur.unit_text}"
-                       f"・{ratio:,.1f}倍）")
+            where = (f"{cur.metric} {prev.period.label()}→{cur.period.label()}"
+                     f"（{prev.value}{prev.unit_text} → {cur.value}{cur.unit_text}"
+                     f"・{ratio:,.1f}倍）")
+            conf = (confirmations or {}).get(
+                (cur.code, cur.metric, prev.period.text, cur.period.text))
+            if conf is not None and not _blank(conf.get("source_url")):
+                rep.warn("fundamentals", target,
+                         f"{where} 確認済み: {conf.get('reason')} "
+                         f"{conf.get('source_url')}")
+                continue
+            if conf is not None:
+                where += "【確認記録はあるが source_url が空】"
+            bad.append(where)
     rep.group(FAIL, "fundamentals", target,
               "前期比で桁が飛んでいる（桁・単位の取り違えを疑う）", bad)
 
@@ -2549,6 +2610,7 @@ def check_fundamentals(rep: Report, data_dir: Path, master: dict,
     """
     fdir = data_dir / "fundamentals"
     files = sorted(fdir.glob("*.csv")) if fdir.exists() else []
+    confirmations = load_fundamentals_confirmations(data_dir)
     if not files:
         rep.warn("fundamentals", "data/fundamentals/",
                  "財務数値の検証済みデータが1件も無い。"
@@ -2792,7 +2854,7 @@ def check_fundamentals(rep: Report, data_dir: Path, master: dict,
                 _check_fund_equity_ratio(rep, target, groups),
             "営業利益と営業利益率の符号": _check_fund_sign(rep, target, groups),
         }
-        _check_fund_scale_jump(rep, target, adopted_facts)
+        _check_fund_scale_jump(rep, target, adopted_facts, confirmations)
         _check_fund_progress(rep, target, adopted_facts)
 
         # **「検算できなかった」を「検算に通った」にしない**（設計原則1）。

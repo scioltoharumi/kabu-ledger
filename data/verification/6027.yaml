@@ -1,0 +1,470 @@
+code: '6027'
+runs:
+- run: '2026-08-31T16:05:00+09:00'
+  report_updated: '2026-08-31'
+  report_sha256: 93ddeb0649d49917f3ed17bb410c194651e4344532a57b5c6f0a3b630619d06d
+  verifier: kabu-ledger-verify（別コンテキスト・F3）
+  urls_refetched:
+  - url: https://kabutan.jp/stock/?code=6027
+    http_status: 200
+  - url: https://kabutan.jp/stock/finance?code=6027
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260812/140120260810517022.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260812/140120260812518086.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260821/140120260821524358.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260803/140120260803506948.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260611/140120260611568426.pdf
+    http_status: 200
+  - url: https://kabutan.jp/stock/news?code=6027&b=n202608130484
+    http_status: 200
+  - url: https://kabutan.jp/stock/news?code=6027&b=n202608190410
+    http_status: 200
+  - url: https://kabutan.jp/stock/news?code=6027&b=n202608250941
+    http_status: 200
+  - url: https://kabutan.jp/stock/news?code=6027
+    http_status: 200
+  - url: https://www.bengo4.com/corporate/ir/
+    http_status: 200
+  - url: https://www.bengo4.com/corporate/
+    http_status: 200
+  - url: https://irbank.net/6027
+    http_status: 200
+  urls_delegated:
+  - url: https://kabutan.jp/stock/finance?code=6027
+    to: data/fundamentals/6027.csv
+  - url: https://irbank.net/6027
+    to: data/fundamentals/6027.csv
+  claims:
+  - id: V01
+    section: updates
+    quote: 採用終値は8/7の2,388円✓から8/27の5,140円✓へ+115.2%✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv（code=6027・status に OK を含む行）: 2026-08-07 close=2388.0 / 2026-08-27 close=5140.0。5140/2388-1=1.152429 → +115.2%。'
+  - id: V02
+    section: updates
+    quote: 8/12の大引け後（15:30）に2027年3月期第1四半期（4〜6月）決算を開示
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://irbank.net/6027
+    - https://kabutan.jp/stock/finance?code=6027
+    evidence: 再取得（200）https://irbank.net/6027 の資料表に「2026/08/12 | 15:30 | 1Q | 2027年3月期第1四半期決算短信〔日本基準〕(連結)」。株探 finance の第1四半期累計決算に 「26.04-06 … 発表日 26/08/12」。開示時刻 15:30 は東証の大引け（15:30）後にあたる。
+  - id: V03
+    section: updates
+    quote: 売上高4,838百万円✓、営業利益698百万円✓、経常利益697百万円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    evidence: 'data/fundamentals/6027.csv Q2026-04_2026-06: revenue=4838(status OK|ROUNDING) / operating_income=698(OK) / ordinary_income=697(OK)。いずれも採用値。'
+  - id: V04
+    section: updates
+    quote: 会社は前年同期比で売上+27.3%※・営業利益+36.8%※とし、通期計画（売上高20,500百万円✓・営業利益3,000百万円✓）は据え置いた
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=6027&b=n202608130484
+    - https://kabutan.jp/stock/finance?code=6027
+    - data/fundamentals/6027.csv
+    evidence: 再取得（200）株探ニュース 2026年08月13日09時55分:「売上高が４８億３８００万円（前年同期比２７．３％増）、営業利益が６億９８００万円（同３６．８％増）」。通期計画は data/fundamentals/6027.csv FY2027-03 revenue_plan=20500(OK)・operating_income_plan=3000(OK)。株探 finance の修正履歴は 2027.03 が「26/05/13 初 … 20,500 / 3,000 / － / 2,000」1行のみで期中修正の行が無い＝据え置き。
+  - id: V05
+    section: updates
+    quote: 8/13は+18.9%✓の3,150円✓（終値＝当日高値）、8/14も+19.0%✓の3,750円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv: 2026-08-12 close=2650.0 / 2026-08-13 high=3150.0 close=3150.0 / 2026-08-14 close=3750.0（いずれも status=OK）。3150/2650-1=0.188679 → +18.9%、3750/3150-1=0.190476 → +19.0%。8/13 は high と close が一致。'
+  - id: V06
+    section: updates
+    quote: 株探は「クラウドサイン事業が牽引し４～６月営業益３７％増」と報じた
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=6027&b=n202608130484
+    evidence: 再取得（200）。記事見出し「弁護士ＣＯＭは大幅高で４連騰、クラウドサイン事業が牽引し４～６月営業益３７％増」が本文中の引用と一致。
+  - id: V07
+    section: updates
+    quote: 8/19は+18.2%✓の4,420円✓、出来高1,343,700株※
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv: 2026-08-18 close=3740.0 / 2026-08-19 close=4420.0・volume=1343700（status=OK）。4420/3740-1=0.181818 → +18.2%。'
+  - id: V08
+    section: updates
+    quote: ネット証券アナリストの「同社の法務AIは独自データベースが土台なので相対的優位性がクローズアップされうる」という見方を伝えている
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=6027&b=n202608190410
+    evidence: 再取得（200）2026年08月19日10時45分の記事:「市場では「弁護士ＣＯＭが強みとする『Ｌｅｇａｌ　Ｂｒａｉｎ（リーガルブレイン） 』などの法務ＡＩは信頼性の高い独自のデータベースを土台としているため、米国のＡＩ捏造問題を契機に相対的優位性がクローズアップされるケースも想定できる」（ネット証券アナリスト）」。本文は要約だが主張の内容と帰属先が一致する。
+  - id: V09
+    section: updates
+    quote: 8/21の大引け後に、2026年4月にグループ化したミカタ少額短期保険と代理店委託契約を結び、弁護士保険の取り扱いを8月から開始すると開示
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.bengo4.com/corporate/
+    - https://irbank.net/6027
+    - https://kabutan.jp/stock/news?code=6027
+    evidence: 再取得（200）会社サイト News:「2026.08.21 弁護士ドットコム、ミカタ少額短期保険株式会社と代理店委託契約を締結（Information）」。https://irbank.net/6027 の IR情報:「2026/08/21 弁護士ドットコム、ミカタ少額短期保険株式会社と代理店委託契約を締結（15:30）」＝大引け後。株探ニュース一覧に「26/08/24 10:02 弁護士ＣＯＭは続伸し年初来高値を連日更新、弁護士保険の取り扱い開始」。取得原価・議決権比率など買収の中身は別 claim（V19）。
+  - id: V10
+    section: updates
+    quote: 8/25に大和証券が投資判断「2」・目標株価5,700円※で新規にカバレッジを開始
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=6027&b=n202608250941
+    evidence: 再取得（200）「レーティング日報【新規格付け】　(8月25日)」2026年08月25日17時00分:「弁護士ＣＯＭ <6027> 　　大和　　　　新規に２　　5700　　　　　　8/25」。
+  - id: V11
+    section: updates
+    quote: '**8/28は照合が成立せず、採用終値は空のまま**（取得できたのは1ソースのみ）。参考値は5,110円※、出来高553,000株※'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv 2026-08-28: status=SINGLE_SOURCE・close 空・source_primary=yahoo_jp・value_primary=5110.0・source_secondary 空・volume=553000。D53 に従い status で数えた。https://irbank.net/6027 も「最新 | 5,110 2026/8/28 | 553,000」と表示。'
+  - id: V12
+    section: updates
+    quote: 信用買い残は 8/14 486.3千株※ → 8/21 503.4千株※へ増え、売り残は406.5千株※ → 362.3千株※へ減った。信用倍率1.39倍※
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=6027
+    - data/margin/6027.csv
+    evidence: 再取得（200）株探の信用取引 (単位:千株):「08/21 | 362.3 | 503.4 | 1.39」「08/14 | 406.5 | 486.3 | 1.20」（列は 売り残 | 買い残 | 倍率）。data/margin/6027.csv も 2026-08-14 long=486.3 short=406.5 ratio=1.2 / 2026-08-21 long=503.4 short=362.3 ratio=1.39（status=OK）。
+  - id: V13
+    section: updates
+    quote: 前期の2Q発表は2025-11-12※
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://irbank.net/6027
+    - https://kabutan.jp/stock/finance?code=6027
+    evidence: 再取得（200）https://irbank.net/6027 の資料表:「2025/11/12 | 15:30 | 2Q | 2026年3月期第2四半期(中間期)決算短信〔日本基準〕(連結)」。株探 finance の上期業績「連 25.04-09 … 発表日 25/11/12」。ただしこれは前期実績であって、今期2Qの発表予定日ではない。
+  - id: V14
+    section: updates
+    quote: 9月上旬に出る8月分の自己株式取得状況の開示（7月の取得は0株※。株価が2倍になった後も買うのか）
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: 根拠となる「自己株式の取得状況に関するお知らせ」(2026-08-03) は PDF。fetch_source.py は到達（HTTP 200）できるがテキスト化しない旨を返すだけで、data/tanshin/6027.csv も存在しないため 7月の取得株数を確認できない。https://irbank.net/6027 の IR情報欄にも自己株式取得の行は出ていない。
+    action: src/fetch_tanshin.py 等で PDF の機械抽出を data/ に残すか、取得状況を数値で確認できる HTML 出典を足す
+  - id: V15
+    section: company
+    quote: 会社は“「プロフェッショナル・テック」で、次の常識をつくる。”をミッションに掲げ
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://www.bengo4.com/corporate/
+    - https://www.bengo4.com/corporate/ir/
+    evidence: 再取得（200）https://www.bengo4.com/corporate/ を全文取得（5,485字）。「常識」は「最新のテクノロジー×リーガルデータで、次の常識をつくります。」（LegalBrain の紹介文）でのみヒットし、「プロフェッショナル・テック」という語は無い（近い文字列は「一般社団法人日本プロフェッショナルテック協会」「Professional Tech 総合研究所」）。https://www.bengo4.com/corporate/ir/ は目次のみ。
+    action: ミッション文の出典URL（会社サイトの該当ページ）を足すか、この引用を落とす
+  - id: V16
+    section: company
+    quote: 報告セグメントを**プロフェッショナル支援事業**と**クラウドサイン事業**の2つに置いている
+    verdict: unsupported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=6027&b=n202608130484
+    - https://www.bengo4.com/corporate/
+    evidence: 決算短信 PDF はテキスト化できず、data/tanshin/6027.csv も無い。再取得できた二次情報（株探ニュース 2026-08-13）はこのセグメントを「プロフェッショナルサービス支援事業」と表記している（本文は「プロフェッショナル支援事業」）。会社サイトにセグメント名の記載は無い。どちらが報告セグメントの正式名称かをこの文脈では確定できない。
+    action: 決算短信の機械抽出（data/tanshin/6027.csv）でセグメント名を確定する
+  - id: V17
+    section: company
+    quote: '**連結の営業利益698百万円✓に対しセグメント利益の合計は1,471百万円※**で、差額は各セグメントに配分していない全社費用772百万円※である'
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260812/140120260810517022.pdf
+    - data/fundamentals/6027.csv
+    evidence: 決算短信 PDF は到達（200）できるがテキスト化されず、data/tanshin/6027.csv も無いためセグメント利益を出典で確かめられない。加えて本文が挙げるセグメント利益（521百万円※・949百万円※）の和は 521+949=1,470 で、本文の1,471と一致しない。採用値 698（data/fundamentals/6027.csv Q2026-04_2026-06 operating_income, status=OK）を使うと 1,471-772=699≠698 で、本文内の3つの数字が閉じない。
+    action: 決算短信の実額でセグメント利益合計（1,470 か 1,471 か）と全社費用を確定する
+  - id: V18
+    section: company
+    quote: 同期末の会員登録弁護士数は30,501人※（前年同月比+3.6%※）、うち有料会員登録弁護士は14,860人※（同+1.4%※）
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://www.bengo4.com/corporate/
+    evidence: 再取得（200）会社サイトは「無料法律相談まで登録弁護士32,000人以上。」「Updated On - 2026.08」と表示しており、30,501人／14,860人という数字は無い（定義も期日も本文と異なる可能性がある）。出所とされる決算説明資料は PDF でテキスト化できない。
+    action: 会員登録弁護士数の定義（会社サイトの「登録弁護士」との違い）と時点を出典で明示する
+  - id: V19
+    section: company
+    quote: '**ミカタ少額短期保険**（2026年4月27日に議決権53%※を取得、取得原価2,788百万円※）'
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: 取得原価・議決権比率の出所は決算短信（PDF）。fetch_source.py は HTTP 200 を返すがPDF をテキスト化せず、data/tanshin/6027.csv も無いため確認できない。再取得できた会社サイト・株探・IR BANK にこれらの数値は載っていない。
+    action: 決算短信の機械抽出を data/tanshin/6027.csv に残す
+  - id: V20
+    section: company
+    quote: なお、`data/master.yaml` ではこの銘柄の `valuation_model` / `fiscal_year_end` / `ir_url` / `peers` が `TO_VERIFY` のまま置かれている
+    verdict: unverifiable
+    tier: none
+    sources: []
+    evidence: SKILL.md §隔離 により data/master.yaml は検証コンテキストに渡されない（D18）。この記述の真偽はこのコンテキストでは確かめられない。確かめないまま supported にしない。
+    action: master.yaml の点検は checks.py（TO_VERIFY 検査）と人間の側で行う
+  - id: V21
+    section: financials
+    quote: '| 2026年3月期 | 16,288 | 2,204 | 2,197 | 1,510 | 53.2 |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    evidence: 'data/fundamentals/6027.csv FY2026-03: revenue=16288 / operating_income=2204 / ordinary_income=2197 / net_income=1510 / equity_ratio=53.2。いずれも status に OK を含む採用値。同様に FY2023-03(8710/1090/1103/717・自己資本比率は採用値なしで空欄)・FY2024-03(11323/1236/1315/837/40.3)・FY2025-03(14072/1389/1405/1049/47.6)・FY2027-03計画(20500/3000/経常は空/2000) も表と一致。'
+  - id: V22
+    section: financials
+    quote: 売上は2022年3月期の68.8億円✓から2026年3月期の162.9億円✓へ、4年で2.4倍になった
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    evidence: FY2022-03 revenue=6877（status OK|ROUNDING|NONCONSOLIDATED）→68.77億、FY2026-03 revenue=16288（OK|ROUNDING）→162.88億。16288/6877=2.368 → 2.4倍。
+  - id: V23
+    section: financials
+    quote: 同四半期の営業利益率は14.43%✓で、いずれも四半期として過去最高である
+    verdict: contradicted
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    evidence: data/fundamentals/6027.csv の採用値（status に OK を含む operating_margin）は Q2024-07_2024-09 7.76 / Q2024-10_2024-12 5.96 / Q2025-01_2025-03 16.62 / Q2025-04_2025-06 13.43 / Q2025-07_2025-09 14.48 / Q2025-10_2025-12 14.09 / Q2026-01_2026-03 12.27 / Q2026-04_2026-06 14.43。**16.62%（2025年1〜3月期）が 14.43% を上回る**ので、営業利益率は四半期として過去最高ではない。営業利益の実額 698百万円のほうは採用値の最大（次点 630百万円）で正しい。
+    action: 「いずれも」を営業利益（実額）だけに限るか、利益率について「過去最高」を落とす
+  - id: V24
+    section: financials
+    quote: 会社は通期営業利益計画3,000百万円✓に対する進捗率を23.3%※、売上の進捗率を23.6%※としている
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    evidence: '採用値どうしの式: 698/3000=0.23267 → 23.3%、4838/20500=0.23600 → 23.6%（Q2026-04_2026-06 operating_income=698・revenue=4838、FY2027-03 operating_income_plan=3000・revenue_plan=20500、いずれも status OK）。数値は一致する。「会社が示した」という帰属自体は PDF が読めないため未確認。'
+  - id: V25
+    section: financials
+    quote: ミカタ由来と見られる351百万円※は増収額1,036百万円✓の約3分の1にあたる
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    evidence: '採用値どうしの式: 4838-3802=1036（Q2026-04_2026-06 revenue=4838・Q2025-04_2025-06 revenue=3802、ともに status OK）。351/1036=0.339 → 約3分の1。351百万円という内訳自体は決算説明資料の読み取りで未照合（本文も※・未確認節に明記）。'
+  - id: V26
+    section: financials
+    quote: 決算説明資料のサービス別売上（会社開示の図から読み取り・未照合）では、2026年4〜6月期の「弁護士ドットコム」の売上1,565百万円※
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: 出所は決算説明資料（PDF・2026-08-12）。fetch_source.py は HTTP 200 を返すが「PDF。この道具はテキスト化しない」と返すのみで、data/tanshin/6027.csv も無い。本文が挙げる内訳（351+947+131+136=1,565）は内部では閉じているが、外部の出典では確かめられない。
+    action: 図の読み取りに依存する記述は、数値を機械抽出で残すか「読み取り値」と明示したまま据え置く
+  - id: V27
+    section: financials
+    quote: 2026年6月末の総資産は16,573百万円※（2026年3月末は13,381百万円✓）、自己資本比率は44.2%※（同53.2%✓）
+    verdict: unsupported
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    evidence: '✓の2つは採用値: FY2026-03 total_assets=13381（OK|ROUNDING）・equity_ratio=53.2（OK）。※の2つは data/fundamentals/6027.csv Q2026-04_2026-06 に total_assets=16573・equity_ratio=44.2 があるが status=SINGLE_SOURCE（source_primary=kabutan_bs のみ）で採用値ではなく、D7 により裏付けには使えない。決算短信 PDF はテキスト化できないため一次でも確かめられない。※の付け方自体は正しい。'
+    action: 6月末残高は照合が成立するまで※のまま置く（記述の修正は不要。裏付けが無いことの明示）
+  - id: V28
+    section: financials
+    quote: キャッシュフローは2026年3月期で営業CF 16.2億円✓、投資CF -10.4億円✓、フリーCF 5.8億円✓、財務CF 4.5億円✓。期末の現金同等物は52.0億円✓だった
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    evidence: 'data/fundamentals/6027.csv FY2026-03: operating_cf=1620(OK) / investing_cf=-1044(OK|ROUNDING) / free_cf=576(OK) / financing_cf=452(OK|ROUNDING) / cash_equivalents=5199(OK|ROUNDING)。億円表示（16.2 / -10.4 / 5.8 / 4.5 / 52.0）と一致。'
+  - id: V29
+    section: financials
+    quote: 2026年6月11日の取締役会で350,000株※（自己株式を除く発行済株式総数の1.5%※）・5.0億円※を上限とする取得を決議し、期間は2026年6月12日〜11月30日※
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: 出所は TDnet PDF（2026-06-11）。到達は HTTP 200 だがテキスト化されず、data/tanshin/6027.csv も無い。https://irbank.net/6027 の IR情報欄・資料表にも自己株式取得の行は出ていないため、株数・金額・期間を確かめられない。
+    action: 自己株式取得の決議内容を HTML 出典か機械抽出で裏付ける
+  - id: V30
+    section: outlook
+    quote: 当期純利益2,000百万円✓（同+32.4%※）
+    verdict: contradicted
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/finance?code=6027
+    - data/fundamentals/6027.csv
+    evidence: '再取得（200）株探 finance の通期業績推移「前期比 | +25.9 | +36.1 | － | **+32.5** | +31.6 |」（列は 売上高／営業益／経常益／最終益／1株益）。採用値どうしの式でも 2000/1510-1=0.324503 → +32.5%（本文は他の率をすべて四捨五入している: 例 2204/1389-1=58.675→+58.7%、5140/2388-1=115.243→+115.2%、5140/2009-1=155.799→+155.8%）。本文の+32.4%は出典表示とも採用値の計算とも合わない。'
+    action: +32.5% に直す
+  - id: V31
+    section: outlook
+    quote: 会社は2026年7月のARRが同年3月比3.8倍※、6月のアップグレード後価格を適用すると同3月比11倍※になると説明し、「クラウドサインの30倍超の成長スピード」だとしている
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: 出所は決算説明資料（PDF・2026-08-12）。到達は HTTP 200 だがテキスト化されず、data/tanshin/6027.csv も無い。再取得できた会社サイト・株探・IR BANK に ARR 倍率の記載は無い。同節の司法試験予備試験375点※も同じ出典で同じく未確認。
+    action: ARR の倍率と予備試験の点数は、会社の HTML 発表（プレスリリース）を出典に足す
+  - id: V32
+    section: outlook
+    quote: 2026年8月29日から書類管理プロダクトを提供開始し、既存ユーザーへのアップセルを狙う
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://www.bengo4.com/corporate/
+    evidence: 再取得（200）会社サイトの News 欄は「2026.08.31 クラウドサインシリーズ、「クラウドサイン 書類管理」を提供開始（Press Release）」と表示しており、8月29日（土曜）という日付は出てこない。提供開始日を示す出典URLは本文に無い。
+    action: 会社の公表日（2026.08.31）に合わせるか、8月29日開始を示すプレスリリースURLを出典に足す
+  - id: V33
+    section: outlook
+    quote: 会社は自社プラットフォームに国内弁護士の67%以上※が登録していることを販路の強みとして挙げている
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.bengo4.com/corporate/
+    evidence: 再取得（200）会社サイト:「無料法律相談まで登録弁護士32,000人以上。」「国内弁護士の67％」「が登録する、」「日本最大級の弁護士・法律ポータルサイトです。」「※ 国内弁護士におけるシェアは2026年7月1日時点の国内弁護士数から算出」「登録弁護士 国内シェア … 67 % … Updated On - 2026.08」。出典の表記は「67％」で、本文の「以上」は出典に無い。
+    action: 「67%以上」→「67%（2026年7月1日時点の国内弁護士数から算出）」にすると出典と一致する
+  - id: V34
+    section: outlook
+    quote: 2026年7月21日に閣議決定された日本成長戦略・官民投資ロードマップで「バーティカルAI（領域特化型AI）」の官民投資促進が明記され
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: 出所は決算説明資料（PDF）。到達は HTTP 200 だがテキスト化されず、data/tanshin/6027.csv も無い。閣議決定文書そのもののURLは本文に無いため（SKILL.md 絶対原則3 により本文に無いURLは叩けない）確かめられない。同節の規制改革推進会議 中間答申（2026年2月26日※）も同様。
+    action: 制度面の記述は一次文書（閣議決定・答申）のURLを出典に足す
+  - id: V35
+    section: price
+    quote: 採用終値で見た直近52週のレンジは、安値が2026年6月25日の2,009円✓、高値が2026年8月27日の5,140円✓。**高値は最新の採用終値そのもの**であり
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: data/prices/daily.csv（code=6027・status に OK を含む行、最終行 2026-08-28 から52週=2025-08-29 以降の241行）の close の最小は 2026-06-25 の 2009.0、最大は 2026-08-27 の 5140.0。採用終値のある最終日は 2026-08-27（2026-08-28 は SINGLE_SOURCE で close 空）なので「高値＝最新の採用終値」も成り立つ。
+  - id: V36
+    section: price
+    quote: 安値からの上昇率は+155.8%✓。ただし、この52週は前半と後半でまったく別の相場だった。2025年9月8日の3,750円✓から2026年6月25日の2,009円✓まで9か月かけて-46.4%✓下げた
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 5140/2009-1=1.557989 → +155.8%。2025-09-08 close=3750.0・2026-06-25 close=2009.0（ともに status=OK）。2009/3750-1=-0.464267 → -46.4%。
+  - id: V37
+    section: price
+    quote: '**2026年6月11日**：自社株買いを決議（16:30）。翌12日の終値は2,106円✓で前日比-0.1%✓'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv: 2026-06-11 close=2109.0 / 2026-06-12 close=2106.0（status=OK）。2106/2109-1=-0.001422 → -0.1%。開示時刻16:30 は PDF が読めず未確認（V29 と同じ）。'
+  - id: V38
+    section: price
+    quote: '**2026年8月19日**：+18.2%✓の4,420円✓。出来高1,343,700株※は、8月7日までの直近60営業日の平均（約90,100株※）の約15倍'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 2026-08-07 を末尾とする直近60営業日（2026-05-15〜2026-08-07）の volume 平均=90,058.3株 → 約90,100株。1,343,700/90,058.3=14.92 → 約15倍。
+  - id: V39
+    section: price
+    quote: 株探の2026年8月31日ザラ場時点（15分ディレイ）の表示でPER 62.2倍※、PBR 16.99倍※、時価総額1,249億円※、発行済株式数22,867,600株※
+    verdict: superseded
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=6027
+    evidence: 2026-08-31 15:46 に再取得（200）した時点の株探の表示は「PER | PBR | 利回り | 信用倍率 / 61.1 倍 | 16.68 倍 | － ％ | 1.39 倍」「時価総額 | 1,226 億円」「現在値 | 5,360 |（15:30）」。発行済株式数は「22,867,600 株」で本文と一致。PER・PBR・時価総額は同日中に株価が動いた分だけ本文と違う（本文の62.2倍は 87.78円×62.2=5,459円相当、再取得時は 61.1倍＝5,360円）。
+    action: 時点依存の数値なので「2026年8月31日◯時時点」と時刻まで添える
+  - id: V40
+    section: price
+    quote: 8月27日の採用終値5,140円✓との差は約11%※しかない
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    - https://kabutan.jp/stock/news?code=6027&b=n202608250941
+    evidence: 5700/5140-1=0.108949 → 約11%。目標株価5,700円は再取得（200）した株探「レーティング日報【新規格付け】(8月25日)」の「大和　新規に２　5700」、5,140円は data/prices/daily.csv 2026-08-27 close（status=OK）。
+  - id: V41
+    section: price
+    quote: 買い残は発行済株式数の約2.2%※にあたる
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=6027
+    - data/margin/6027.csv
+    evidence: 503,400株（data/margin/6027.csv 2026-08-21 long_balance=503.4千株）÷ 22,867,600株（再取得した株探の「発行済株式数 | 22,867,600 株」）=0.02201 → 約2.2%。
+  - id: V42
+    section: price
+    quote: 8月20日には「みんかぶ・個人投資家の予想から」で売り予想数上昇の1位に挙げられた（二次情報）
+    verdict: unverifiable
+    tier: none
+    sources: []
+    evidence: この記述に対応する出典URLがレポートに無い（--list が返す14件にみんかぶのURLは無く、SKILL.md 絶対原則3 により本文に無いURLは叩けない）。再取得した株探のニュース一覧（8/22〜8/31分）にも該当記事は出ていない。
+    action: 出典URLを足すか、この記述を落とす
+  - id: V43
+    section: price
+    quote: 会社計画の1株利益87.78円✓と8月27日の採用終値5,140円✓で計算しても58.6倍※
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    - data/prices/daily.csv
+    evidence: '採用値どうしの式: 5140/87.78=58.556 → 58.6倍（FY2027-03 eps_plan=87.78 status=OK|ROUNDING、2026-08-27 close=5140.0 status=OK）。'
+  - id: V44
+    section: sources
+    quote: '| IRサイト | — | <https://www.bengo4.com/corporate/ir/> |'
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://www.bengo4.com/corporate/ir/
+    evidence: 一次情報の表に置かれているが、再取得（200・1,880字）するとグローバルナビゲーションとフッター（IR TOP / IRニュース / IRライブラリー / 株式情報 / 電子公告 / ディスクロージャーポリシー）だけで、本文にあたる開示内容が無い＝目次のみ。本レポートのどの記述もこのURLでは裏付けられない。
+    action: 実際に引いたページ（IRライブラリーの該当資料）のURLに差し替える
+  - id: V45
+    section: sources
+    quote: 株価・出来高：`data/prices/daily.csv`（採用終値は2ソース照合済み。2025-07-22〜2026-08-28 のうち採用終値は241/270日）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: data/prices/daily.csv の code=6027 は270行、最初 2025-07-22・最後 2026-08-28。status に OK を含む行は241行。D53 に従い status で数えた結果と一致。
+  - id: V46
+    section: sources
+    quote: '**ROE・ROA は取得元間で値が割れている（MISMATCH）** ため、この台帳では採用していない'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    evidence: 'data/fundamentals/6027.csv: FY2026-03 roe status=MISMATCH（kabutan_fy_profit=24.17 / irbank_pl_comprehensive=21.23）・roa status=MISMATCH（12.24 / 11.29）、FY2025-03 も同様（roe 22.14/19.5・roa 9.78/9.29）。いずれも value 列は空＝採用していない。'
+  - id: V47
+    section: sources
+    quote: '**2026年6月末の残高（総資産・自己資本比率・のれん・借入金）は取得元1件のみで照合が成立していない。**'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    evidence: data/fundamentals/6027.csv Q2026-04_2026-06 の total_assets=16573・equity_ratio=44.2・equity=7321・retained_earnings=6306 はいずれも status=SINGLE_SOURCE（source_primary=kabutan_bs、source_secondary 空）で value 列は空。のれん・借入金はそもそも行が無い。自己申告どおり。
+  - id: V48
+    section: sources
+    quote: '| IR BANK | 財務数値の照合先（`data/fundamentals/6027.csv` の副ソース） | <https://irbank.net/6027> |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6027.csv
+    - https://irbank.net/6027
+    evidence: data/fundamentals/6027.csv の source_secondary には irbank_pl_comprehensive / irbank_bs / irbank_cf / irbank_q が並び、IR BANK が副ソースであることは確認できる。ただし CSV が記録している URL は https://irbank.net/E31009/results と https://irbank.net/E31009/quarter で、表に書かれた https://irbank.net/6027 とは別ページ（こちらも再取得200・銘柄トップ）。
+    action: 表のURLを機械が記録した https://irbank.net/E31009/results に合わせる
+
+# --- 出典と食い違った記述の始末（D44: contradicted は機械確認でのみ解除）---
+resolutions:
+  - id: V23
+    resolved_at: "2026-08-31T16:35:00+09:00"
+    how: rewritten
+    quote: "営業利益の実額はこれが四半期として過去最高で、次点は630百万円✓。ただし同四半期の営業利益率 14.43%✓ は過去最高ではなく、2025年1〜3月期の16.62%✓に及ばない。"
+    note: >-
+      「いずれも過去最高」が誤り。data/fundamentals/6027.csv の採用値では
+      Q2025-01_2025-03 の営業利益率 16.62% が 14.43% を上回る。実額の方は
+      698百万円が採用値の最大なので、実額と利益率を分けて書き直した
+  - id: V30
+    resolved_at: "2026-08-31T16:35:00+09:00"
+    how: rewritten
+    quote: "当期純利益2,000百万円✓（同+32.5%※）"
+    note: >-
+      2000/1510-1 = 32.45% で +32.5%。本文は他の率をすべて四捨五入しているので
+      +32.4% は切り捨ての取り違え。株探 finance の通期業績推移の表示（+32.5）とも一致する

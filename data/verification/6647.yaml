@@ -1,0 +1,415 @@
+code: "6647"
+runs:
+  - run: "2026-08-31T16:07:34+09:00"
+    report_updated: "2026-08-31"
+    report_sha256: "a180829cdd42245d29219cb5d1ee0d90d0703a7b490a18f5266d8557f1769372"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    urls_refetched:
+      - {url: "http://www.morio.co.jp/company/outline.html", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=6647", http_status: 200}
+      - {url: "https://kabutan.jp/stock/finance?code=6647", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=6647", http_status: 200}
+      - {url: "https://www.xj-storage.jp/public-list/GetList.aspx?company=AS08360&len=10000&output=json", http_status: 200}
+      - {url: "http://www.morio.co.jp/ir/index.html", http_status: 200}
+      - {url: "https://irbank.net/E01912", http_status: 200}
+      - {url: "https://irbank.net/E01912/results", http_status: 200}
+      - {url: "https://contents.xj-storage.jp/xcontents/AS08360/87a751bf/d6dc/4bab/a38f/7cfd071ebd79/140120260806512218.pdf", http_status: 200}
+      - {url: "https://contents.xj-storage.jp/xcontents/AS08360/10b689a4/6f7c/4865/af2c/be72e896d924/140120260514535527.pdf", http_status: 200}
+      - {url: "https://contents.xj-storage.jp/xcontents/AS08360/39dcb488/010f/4eab/a8cb/60b44c2e9781/140120260612569445.pdf", http_status: 200}
+      - {url: "https://contents.xj-storage.jp/xcontents/AS08360/d67b6367/9901/4520/93e0/f524db3f7090/140120251010571923.pdf", http_status: 200}
+    urls_delegated:
+      - {url: "https://kabutan.jp/stock/finance?code=6647", to: "data/fundamentals/6647.csv"}
+      - {url: "https://irbank.net/E01912/results", to: "data/fundamentals/6647.csv"}
+      - {url: "https://kabutan.jp/stock/?code=6647", to: "data/margin/6647.csv"}
+    claims:
+      - id: V01
+        section: updates
+        quote: "2026-08-30 の楽天証券スクリーニング「成長株0830（per）」通過10件の1件として登録した"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: "登録の経緯を示す出典がレポートに無い。data/master.yaml は隔離（SKILL.md §隔離）で検証者に渡らないため、スクリーニング名も通過件数もこの文脈では確かめられない。"
+        action: "スクショ由来の情報は intake の記録側に残す。レポート本文だけを見る検証者には裏が取れない"
+
+      - id: V02
+        section: updates
+        quote: "先週（8/24〜8/28）の採用終値は 8/24 3,740円✓ → 8/27 3,365円✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv の 6647: 2026-08-24 close=3740.0 status=OK（kabutan/yahoo_jp 一致）、2026-08-27 close=3365.0 status=OK。8/28 は close 空・status=SINGLE_SOURCE なので「8/27 まで」という書き方と整合する。"
+
+      - id: V03
+        section: updates
+        quote: "8/24 の +14.4% は `checks.py` が 6.1σ の外れ値として記録している"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "src/checks.py"]
+        evidence: "src/checks.py の check_outlier を 6647 の系列だけに当てて実行した出力: 「WARN outlier data/prices/daily.csv 6647 2026-08-24: 変化率 +14.4%（6.1σ）」。3270.0→3740.0 で +14.37%。"
+
+      - id: V04
+        section: updates
+        quote: "同日の出来高 22,900株※ は採用日の中央値 1,000株※ の約23倍"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv の 6647 2026-08-24 volume=22900。status に OK を含む 225 行のvolume の中央値は 1000（statistics.median で算出）。22900/1000=22.9。"
+
+      - id: V05
+        section: updates
+        quote: "同日の TOPIX 終値は +0.15%✓ にとどまり"
+        verdict: supported
+        tier: dataset
+        sources: ["data/indices/topix.csv"]
+        evidence: "data/indices/topix.csv: 2026-08-21 close=4067.29（OK）、2026-08-24 close=4073.29（OK）。4073.29/4067.29-1=+0.1475%。"
+
+      - id: V06
+        section: updates
+        quote: "会社の開示は 2026-08-07 の1Q決算短信が最後で"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.xj-storage.jp/public-list/GetList.aspx?company=AS08360&len=10000&output=json"]
+        evidence: "再取得（200）。JSON の items（437件、publishDate 降順）の先頭は {\"title\":\"2027年３月期 第１四半期決算短信〔日本基準〕（連結）\",\"publishDate\":\"2026/08/07 14:00:00\"}。publishDate が 2026/08/08 以降の item は 0 件。"
+
+      - id: V07
+        section: updates
+        quote: "株探のニュース一覧でも8/7以降の材料記事は出ていない"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=6647"]
+        evidence: "再取得（200）。一覧の最上段は「26/08/07 14:00 | 決算 | 森尾電、4-6月期(1Q)経常は2.2倍増益で着地」で、それより新しい行は無い。8/24 の日付を持つ行も無い。"
+
+      - id: V08
+        section: updates
+        quote: "営業利益2億80百万円†（前年同期比2.2倍）で、通期会社計画4億50百万円†に対し1Qで62%まで進んだ計算になる"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6647.csv", "https://kabutan.jp/stock/finance?code=6647"]
+        evidence: "data/fundamentals/6647.csv の採用値: Q2026-04_2026-06 operating_income=280（OK）、Q2025-04_2025-06 operating_income=127（OK|ROUNDING）、FY2027-03 operating_income_plan=450（OK）。280/127=2.20、280/450=62.2%。株探決算（再取得200）の第1四半期累計表も「26.04-06 | 2,371 | 280 | 292 | 199 | 151.0」「前年同期比 | +18.0 | 2.2 倍」。"
+
+      - id: V09
+        section: updates
+        quote: "会社は同日「業績予想に変更はありません」と書いている†"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: "出典の1Q決算短信 PDF は再取得できた（200・application/pdf）が、PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。"
+        action: "src/fetch_tanshin.py で data/tanshin/6647.csv を作り、短信由来の†数値を機械抽出の記録に載せる（それまで†は裏取り不能）"
+
+      - id: V10
+        section: updates
+        quote: "8/28 は取得元が1つしか取れず採用終値が空のまま（`SINGLE_SOURCE`）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv の 6647 2026-08-28 行: close 空・status=SINGLE_SOURCE・source_primary=yahoo_jp・value_primary=3380.0・source_secondary 空。"
+
+      - id: V11
+        section: company
+        quote: "**1911年（明治44年）創業、東京都葛飾区立石の電気機器メーカー**。従業員218名（2026年3月31日現在）、資本金10.485億円、決算期3月。"
+        verdict: supported
+        tier: primary
+        sources: ["http://www.morio.co.jp/company/outline.html"]
+        evidence: "再取得（200）。会社概要の表に「創業 | | 1911年5月(明治44年5月)」「本社所在地 | | 〒124-0012 東京都葛飾区立石４丁目３４番１号」「資 本 金 | | 10億4850万円」「決 算 期 | | 3月31日」「従業員数 | | 218名(2026年3月31日現在)」「株式 | | 東京証券取引所   スタンダード市場」。"
+
+      - id: V12
+        section: company
+        quote: "会社が挙げる主要取引先はJR各社・私鉄各社・鉄道車両製造会社・NEXCO各社・国土交通省・防衛省・造船所各社"
+        verdict: supported
+        tier: primary
+        sources: ["http://www.morio.co.jp/company/outline.html"]
+        evidence: "再取得（200）。「主要取引先 | | JR各社 私鉄各社 鉄道車両製造会社 NEXCO各社 道路関連会社 国土交通省 防衛省 造船所各社」。本文は「道路関連会社」だけ落としているが、挙げた7者はいずれも出典にある。"
+
+      - id: V13
+        section: company
+        quote: "2026年3月期の売上構成は鉄道69.93億円†、自動車11.81億円†、船舶等3.11億円†、不動産1.53億円†"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: "出典の2026年3月期決算短信 PDF は再取得できた（200・application/pdf）が、PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。 4者の合計 86.38億円は data/fundamentals/6647.csv の採用値 FY2026-03 revenue=8638（OK|ROUNDING）と一致するが、内訳そのものは確かめられない。"
+        action: "src/fetch_tanshin.py で data/tanshin/6647.csv を作り、短信由来の†数値を機械抽出の記録に載せる（それまで†は裏取り不能）"
+
+      - id: V14
+        section: company
+        quote: "セグメント利益（＝営業利益ベース）は電気機器9.02億円†に対し不動産0.81億円†"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: "出典の2026年3月期決算短信 PDF は再取得できた（200・application/pdf）が、PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。 9.02+0.81-1.27=8.56 は採用値 FY2026-03 operating_income=856（OK）と一致するが、内訳そのものは確かめられない。"
+        action: "src/fetch_tanshin.py で data/tanshin/6647.csv を作り、短信由来の†数値を機械抽出の記録に載せる（それまで†は裏取り不能）"
+
+      - id: V15
+        section: company
+        quote: "2026年3月期に売上10%以上を占めた顧客は三菱電機12.25億円†とKawasaki Rail Car Lincoln, Inc.11.52億円†の2社で、合わせて売上の約28%"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: "出典の2026年3月期決算短信 PDF は再取得できた（200・application/pdf）が、PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。 (12.25+11.52)/86.38=27.5% で「約28%」という割り算自体は採用値と整合するが、顧客名と金額は確かめられない。"
+        action: "src/fetch_tanshin.py で data/tanshin/6647.csv を作り、短信由来の†数値を機械抽出の記録に載せる（それまで†は裏取り不能）"
+
+      - id: V16
+        section: company
+        quote: "2026年6月末の棚卸資産は仕掛品19.50億円†・原材料等11.32億円†・商品及び製品2.84億円†で合計33.65億円†"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: "出典の1Q決算短信 PDF は再取得できた（200・application/pdf）が、PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。"
+        action: "src/fetch_tanshin.py で data/tanshin/6647.csv を作り、短信由来の†数値を機械抽出の記録に載せる（それまで†は裏取り不能）"
+
+      - id: V17
+        section: company
+        quote: "総資産94.11億円†の36%を占める"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/finance?code=6647", "data/fundamentals/6647.csv"]
+        evidence: "再取得した株探決算（200）の財務【実績】表は「連 26.04-06 | － | 65.6 | 9,410 | 6,171 | 3,354 | 0.21」で、2026年6月末の総資産は 9,410百万円（＝94.10億円）。data/fundamentals/6647.csv の Q2026-04_2026-06 total_assets も SINGLE_SOURCE で value_primary=9410（採用値なし）。94.11億円という値は再取得できたどの出典にも無い（差は1百万円）。なお 33.65/94.10=35.8% で「36%」は割り算としては変わらない。"
+        action: "94.11 の出所（短信の実額）を確かめるか、株探と同じ 94.10億円に直す。採用値が無い（SINGLE_SOURCE）ことも数値のそばに明示する"
+
+      - id: V18
+        section: financials
+        quote: "| 2026/3期 | 8,638 | 856 | 871 | 648 | 487.05 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6647.csv"]
+        evidence: "data/fundamentals/6647.csv の FY2026-03 採用値: revenue=8638（OK|ROUNDING）、operating_income=856（OK）、ordinary_income=871（OK|ROUNDING）、net_income=648（OK|ROUNDING）、eps=487.05（OK|ROUNDING）。表の見出しどおり単位は百万円と円。"
+
+      - id: V19
+        section: financials
+        quote: "営業利益は2.74億円✓（2023/3期）から8.56億円✓（2026/3期）へ"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6647.csv"]
+        evidence: "data/fundamentals/6647.csv: FY2023-03 operating_income=274（OK|ROUNDING）、FY2026-03 operating_income=856（OK）。"
+
+      - id: V20
+        section: financials
+        quote: "株探の集計では営業利益・経常利益・当期純利益・1株益のいずれも2026年3月期が過去最高で、売上高の最高は2020年3月期の98.66億円✓"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/finance?code=6647", "data/fundamentals/6647.csv"]
+        evidence: "再取得（200）。株探決算の「過去最高 【実績】」表: 「過去最高 | 9,866 | 856 | 871 | 648 | 487.1」／「決算期 | 2020.03 | 2026.03 | 2026.03 | 2026.03 | 2026.03」。data/fundamentals/6647.csv の FY2020-03 revenue=9866（OK|ROUNDING）も同値。"
+
+      - id: V21
+        section: financials
+        quote: "自己資本比率は57.6%✓→63.5%✓へ改善し（2026年6月末はさらに65.6%†）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/finance?code=6647", "data/fundamentals/6647.csv"]
+        evidence: "data/fundamentals/6647.csv: FY2024-03 equity_ratio=57.6（OK）、FY2026-03=63.5（OK）。2026年6月末の 65.6 は採用値ではなく SINGLE_SOURCE だが、再取得した株探決算（200）の財務【実績】表「連 26.04-06 | － | 65.6 | 9,410 | 6,171 | 3,354 | 0.21」で確認できた。"
+        action: "65.6% は1ソースのみ（data/fundamentals は SINGLE_SOURCE）。† ではなく ※ 相当である旨を添えるとよい"
+
+      - id: V22
+        section: financials
+        quote: "営業キャッシュフローは2025/3期が△91百万円✓、2026/3期が45百万円✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6647.csv"]
+        evidence: "data/fundamentals/6647.csv: FY2025-03 operating_cf=-91（OK|ROUNDING）、FY2026-03 operating_cf=45（OK|ROUNDING）。同じ表の free_cf は -187（OK|ROUNDING）と -184（OK）で、本文の△1.87億円／△1.84億円とも一致する。"
+
+      - id: V23
+        section: financials
+        quote: "2026/3期の内訳は、税金等調整前当期純利益8.71億円†と売上債権の減少5.17億円†を、棚卸資産の増加6.74億円†と仕入債務の減少5.68億円†が食う形†"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: "出典の2026年3月期決算短信 PDF は再取得できた（200・application/pdf）が、PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。 CF計算書の内訳は data/fundamentals にも項目が無い。"
+        action: "src/fetch_tanshin.py で data/tanshin/6647.csv を作り、短信由来の†数値を機械抽出の記録に載せる（それまで†は裏取り不能）"
+
+      - id: V24
+        section: financials
+        quote: "2026年6月末の借入金は短期10.54億円†・長期2.70億円†の計13.24億円†に対し、現金及び預金は10.58億円†"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: "出典の1Q決算短信 PDF は再取得できた（200・application/pdf）が、PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。 参考として株探決算（再取得200）の 26.04-06 は有利子負債倍率 0.21・自己資本 6,171百万円で、13.24億円/61.71億円=0.2146（表示は0.21）と桁は矛盾しないが、実額は確かめられない。"
+        action: "src/fetch_tanshin.py で data/tanshin/6647.csv を作り、短信由来の†数値を機械抽出の記録に載せる（それまで†は裏取り不能）"
+
+      - id: V25
+        section: financials
+        quote: "2025年7-9月期は営業損失41百万円✓で、四半期単位の赤字は珍しくない"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6647.csv"]
+        evidence: "data/fundamentals/6647.csv: Q2025-07_2025-09 operating_income=-41（OK）。図 op_quarterly が引く5四半期（Q2025-04_2025-06=127／Q2025-07_2025-09=-41／Q2025-10_2025-12=328／Q2026-01_2026-03=442／Q2026-04_2026-06=280）はいずれも status に OK を含み、*_CROSS_FAILED の行は無い（D41）。"
+
+      - id: V26
+        section: outlook
+        quote: "2027年3月期の会社計画は売上100億円✓（+15.8%）に対し営業利益4.50億円✓（△47.4%†）・経常4.50億円✓・当期純利益3.00億円✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6647.csv", "https://kabutan.jp/stock/finance?code=6647"]
+        evidence: "data/fundamentals/6647.csv の FY2027-03 採用値: revenue_plan=10000（OK）、operating_income_plan=450（OK）、ordinary_income_plan=450（OK）、net_income_plan=300（OK）。450/856-1=-47.43%。再取得した株探決算（200）の通期表も「連 予 2027.03 | 10,000 | 450 | 450 | 300 | 226.7 | 60」「前期比 | +15.8 | -47.4 | -48.3 | -53.7 | -53.5」。"
+
+      - id: V27
+        section: outlook
+        quote: "採用値と会社計画を割ると1Qで売上23.7%・営業利益62.2%・経常利益64.9%の進捗になる（いずれも当方の計算）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6647.csv"]
+        evidence: "採用値どうしの式: 2371/10000=23.71%、280/450=62.22%、292/450=64.89%。分子は Q2026-04_2026-06 の revenue=2371（OK|ROUNDING）・operating_income=280（OK）・ordinary_income=292（OK）、分母は FY2027-03 の各 *_plan（いずれも OK）。"
+
+      - id: V28
+        section: outlook
+        quote: "2026年3月期の受注高は121.14億円†（+15.7%）で売上86.38億円✓を34.8億円上回った"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: "受注高は data/fundamentals/6647.csv の metric に無く（revenue 系のみ）、出典の2026年3月期決算短信 PDF は再取得できた（200・application/pdf）が、PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。 売上86.38億円は採用値と一致する。121.14-86.38=34.76 で差額の計算自体は合う。"
+        action: "src/fetch_tanshin.py で data/tanshin/6647.csv を作り、短信由来の†数値を機械抽出の記録に載せる（それまで†は裏取り不能）"
+
+      - id: V29
+        section: outlook
+        quote: "ROE8%以上の継続によりPBR1倍以上の達成を目指すと掲げた†"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: "出典「資本コストや株価を意識した経営の実現に向けた対応について（アップデート）」PDF は再取得できた（200・application/pdf）が、PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。 開示の存在と件名・日付（2026/06/12 14:00）は XJ Storage の一覧で確認できたが、本文は読めない。"
+        action: "PDF 本文に依る記述なので、テキストで引ける出典（会社IRのHTML等）を足すか「未確認」を明示する"
+
+      - id: V30
+        section: outlook
+        quote: "実際、2026年3月期のROEは11.6%†"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/finance?code=6647", "data/fundamentals/6647.csv"]
+        evidence: "再取得した株探決算（200）の収益性表は「連 2026.03 | 8,638 | 856 | 9.91 | 11.55 | 7.02 | 0.94 | 487.1」で ROE 11.55%。一方、再取得した IR BANK（200）の同期は ROE 10.7%。data/fundamentals/6647.csv の FY2026-03 roe は MISMATCH（11.55 と 10.7）で採用値が無い。出典として挙げられている決算短信 PDF は PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。"
+        action: "運営の異なる2ソースが食い違う値なので、断定形で書くなら ※ と出典（株探）を添える。本文末尾の「未確認・未解決」には MISMATCH と書いてあるが、数値のそばには印が無い"
+
+      - id: V31
+        section: outlook
+        quote: "株主還元では2025年8月にToSTNeT-3による自己株式取得を実施しており†"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.xj-storage.jp/public-list/GetList.aspx?company=AS08360&len=10000&output=json"]
+        evidence: "再取得（200）。XJ Storage の開示一覧に 「2025/08/07 16:45:00 自己株式の取得及び自己株式立会外買付取引（ToSTNet-3）による買付けに関するお知らせ」と「2025/08/08 09:45:00 自己株式立会外買付取引（ToSTNeT－3）による自己株式の取得結果及び自己株式取得終了に関するお知らせ」の2件がある。"
+
+      - id: V32
+        section: outlook
+        quote: "4期連続増配"
+        verdict: contradicted
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/finance?code=6647", "https://irbank.net/E01912/results"]
+        evidence: "再取得した IR BANK（200）の配当推移表: 「2022/03 | 50 | 25.4 …」「2023/03 | 30 | 27.7 …」「2024/03 | 50 | 32.5 …」「2025/03 | 60 | 14.4 …」「2026/03 | 65 | 13.3 …」。再取得した株探決算（200）も通期表で 2023.03 の修正1株配 30、2024.03 50、2025.03 60、2026.03 65 とし、修正履歴では 2022.03 の実績配当を 50 としている。運営の異なる2社とも 2023年3月期は 50円→30円の減配としており、増配が続いたのは2024年3月期からの3期。4期連続にはならない。"
+        action: "「3期連続増配」に直す（2024/3期50円→2025/3期60円→2026/3期65円）。直すまで checks.py が FAIL を出し続ける"
+
+      - id: V33
+        section: outlook
+        quote: "配当性向は13.3%†→26.6%†に上がる計画である"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://irbank.net/E01912/results", "data/fundamentals/6647.csv"]
+        evidence: "13.3% は再取得した IR BANK（200）の配当推移表「2026/03 | 65 | 13.3 | 81百万 | 1.5 | 42百万 | 122百万 | 19.7」で確認できた。26.6% は再取得したどの出典にも無い（IR BANK は「27/03 予 | * 60 | - | …」で配当性向を空欄にしている）。採用値どうしで割ると 60/226.69=26.47%（FY2027-03 eps_plan=226.69・OK|ROUNDING）で 26.5%。"
+        action: "26.6% の出所（短信の予想EPS 225.31円ベースとみられる）を明示するか、採用値ベースの26.5%に直す"
+
+      - id: V34
+        section: price
+        quote: "期間の最安は1,902円✓（2025-09-08）、最高は3,740円✓（2026-08-24）。直近の採用終値は3,365円✓（2026-08-27）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv の 6647 で status に OK を含む225行の close: 最小 1902.0（2025-09-08）、最大 3740.0（2026-08-24）、日付順の最後 3365.0（2026-08-27）。"
+
+      - id: V35
+        section: price
+        quote: "**2026-05-15**：本決算と今期計画の公表日。終値2,530円✓（前日2,907円✓から△13.0%）、出来高10,400株※"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://kabutan.jp/stock/news?code=6647"]
+        evidence: "data/prices/daily.csv: 2026-05-14 close=2907.0（OK）、2026-05-15 close=2530.0（OK）・volume=10400。2530/2907-1=-12.97%。株探ニュース（再取得200）に「26/05/15 14:00 | 決算 | 森尾電、今期経常は48％減益、5円減配へ」「26/05/15 14:00 | 開示 | 2026年３月期 決算短信〔日本基準〕（連結）」。"
+
+      - id: V36
+        section: price
+        quote: "株探が2026-08-31に表示していた指標はPER15.1倍※・PBR0.73倍※・配当利回り1.76%※・時価総額48.7億円※"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=6647"]
+        evidence: "再取得（2026-08-31 16時台・200）では「PER | PBR | 利回り | 信用倍率」「15.2 倍 | 0.74 倍 | 1.74 ％ | － 倍」「時価総額 | 49.1 億円」で、同じ2026-08-31でも4項目とも本文の値と違う（当日大引けは 3,445円・前日比+1.92%）。ライブページなので取得時刻まで書かないと再現できない。"
+        action: "日中に動く指標は「2026-08-31 ◯時時点」まで書く。あるいは採用終値ベースの自前計算に置き換える"
+
+      - id: V37
+        section: price
+        quote: "信用取引は貸借銘柄ではなく買建のみで、2026-08-21時点の買残12.5千株※・売残0株※、信用倍率は算出されない"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=6647", "data/margin/6647.csv"]
+        evidence: "再取得（200）。株探の銘柄ページに「証券取引所が指定する制度信用銘柄のうち、買建(信用買い)のみができる銘柄」、信用取引表に「08/21 | 0.0 | 12.5 | －」。data/margin/6647.csv の最終行は 「2026-08-21,6647,12.5,0.0,,千株,RATIO_NA,https://kabutan.jp/stock/?code=6647」で、long_balance=12.5・short_balance=0.0・ratio 空（RATIO_NA）。"
+
+      - id: V38
+        section: price
+        quote: "台帳が持つ270営業日のうち出来高0の日が18日、採用終値が付いたのは225日"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv の code=6647 は 270 行（2025-07-22〜2026-08-28）。volume=0 の行は 18、status に OK を含む行は 225（close が入っている行数も 225）。"
+
+      - id: V39
+        section: sources
+        quote: "{label: \"IR関連ニュース（会社IR）\", url: \"http://www.morio.co.jp/ir/index.html\", primary: true}"
+        verdict: unsupported
+        tier: primary
+        sources: ["http://www.morio.co.jp/ir/index.html"]
+        evidence: "再取得（200・本文631字）。中身はグローバルナビゲーションと「HOME > IR関連ニュース」「IR資料 / IRニュース一覧 / 電子公告」のリンク見出しだけで、IRニュースの項目も日付も1件も載っていない。primary の代表出典として本文の裏付けにならない。"
+        action: "primary の代表リンクは実体のあるページ（IRニュース一覧など）に差し替える"
+
+      - id: V40
+        section: sources
+        quote: "| 2027年3月期 第1四半期決算短信 | 1Q実績・受注高・セグメント別売上・BS・PL・通期計画の据え置き |"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://contents.xj-storage.jp/xcontents/AS08360/87a751bf/d6dc/4bab/a38f/7cfd071ebd79/140120260806512218.pdf"]
+        evidence: "再取得（200・content_type=application/pdf）。到達はできるが fetch_source.py は PDF をテキスト化しない（仕様）ため、この表が主張する内容が本当に入っているかは確かめられない。data/tanshin/6647.csv も無く、機械抽出の記録も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。"
+        action: "src/fetch_tanshin.py で data/tanshin/6647.csv を作り、短信由来の†数値を機械抽出の記録に載せる（それまで†は裏取り不能）"
+
+      - id: V41
+        section: sources
+        quote: "**受注残高そのものは開示されていない**ため、上積みが積み上がっているという読みは受注高と売上高の差からの推測である（`assumed: true`／根拠＝2期ぶんの受注高と売上高の差）"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: "「開示されていない」という不在の主張。出典の短信 PDF は PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。 推測であることと根拠を本文が明示している点は D9/不変条件（推測を隠さない）を満たしている。"
+        action: "src/fetch_tanshin.py で data/tanshin/6647.csv を作り、短信由来の†数値を機械抽出の記録に載せる（それまで†は裏取り不能）"
+
+      - id: V42
+        section: sources
+        quote: "`data/master.yaml` の `valuation_model` / `fiscal_year_end` / `ir_url` / `peers` が `TO_VERIFY`"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: "data/master.yaml は隔離（SKILL.md §隔離・D18）で検証ジョブに渡らないため、この文脈では確かめられない。なお決算期3月31日は会社概要で確認できている（V11）。"
+        action: "master.yaml の状態を指す記述はレポートの外（intake の記録）に置くほうが検証しやすい"
+
+      - id: V43
+        section: sources
+        quote: "株探が挙げる比較銘柄は東洋電機製造・日本信号・大同信号※"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=6647"]
+        evidence: "再取得（200）。株探の銘柄ページに「比較される銘柄」「東洋電 , 日本信号 , 大同信」。略称3社は本文の3社と対応する。"
+
+      - id: V44
+        section: sources
+        quote: "`data/fundamentals/6647.csv` では2025/3期・2026/3期とも `MISMATCH`"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6647.csv"]
+        evidence: "data/fundamentals/6647.csv: FY2025-03 roe（11.49 と 11.02）・roa（6.63 と 6.39）、FY2026-03 roe（11.55 と 10.7）・roa（7.02 と 6.79）がいずれも status=MISMATCH で value は空。"
+
+      - id: V45
+        section: sources
+        quote: "2026年3月期の1株益は台帳の採用値487.05円✓に対し決算短信は487.06円†"
+        verdict: unverifiable
+        tier: primary
+        sources: []
+        evidence: "採用値の側は data/fundamentals/6647.csv の FY2026-03 eps=487.05（OK|ROUNDING）で確認できるが、短信の487.06円は PDF のため fetch_source.py はテキスト化しない（仕様）。data/tanshin/6647.csv も存在せず、機械抽出の記録も無い。この経路では本文の†記述を確かめられない。"
+        action: "src/fetch_tanshin.py で data/tanshin/6647.csv を作り、短信由来の†数値を機械抽出の記録に載せる（それまで†は裏取り不能）"
+
+# --- 出典と食い違った記述の始末（D44: contradicted は機械確認でのみ解除）---
+resolutions:
+  - id: V32
+    resolved_at: "2026-08-31T17:05:00+09:00"
+    how: rewritten
+    quote: "3期連続増配（2023年3月期に50円→30円の減配があり、増配は2024年3月期50円からの3期）"
+    note: >-
+      「4期連続増配」が誤り。運営の異なる2社（株探＝ミンカブ / IR BANK）とも
+      2023年3月期を 50円→30円の減配としており、増配が続いたのは2024年3月期
+      （50円）からの3期。減配があった事実そのものを本文に残す形で書き直した

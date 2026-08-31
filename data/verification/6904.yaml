@@ -1,0 +1,548 @@
+code: '6904'
+runs:
+- run: '2026-08-31T16:20:00+09:00'
+  report_updated: '2026-08-31'
+  report_sha256: 051e78c29a05fabb609ab75c9e5c1ed04f9f9abd90deac3327361067a0565940
+  verifier: kabu-ledger-verify（別コンテキスト・F3）
+  urls_refetched:
+  - url: https://www.harada.com/jp/ir/
+    http_status: 200
+  - url: https://www.harada.com/jp/ir/library/earning.html
+    http_status: 200
+  - url: https://www.harada.com/jp/ir/event/calendar.html
+    http_status: 200
+  - url: https://www.harada.com/jp/ir/news/
+    http_status: 200
+  - url: https://s.kabutan.jp/news/k202608130043/
+    http_status: 200
+  - url: https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    http_status: 200
+  - url: https://ssl4.eir-parts.net/doc/6904/tdnet/2878075/00.pdf
+    http_status: 200
+  - url: https://ssl4.eir-parts.net/doc/6904/ir_material_for_fiscal_ym/206844/00.pdf
+    http_status: 200
+  - url: https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf
+    http_status: 200
+  - url: https://ssl4.eir-parts.net/doc/6904/tdnet/2843210/00.pdf
+    http_status: 200
+  urls_delegated:
+  - url: https://kabutan.jp/stock/finance?code=6904
+    to: data/fundamentals/6904.csv
+  - url: https://irbank.net/E01857
+    to: data/fundamentals/6904.csv
+  - url: https://kabutan.jp/stock/?code=6904
+    to: data/prices/daily.csv
+  claims:
+  - id: V01
+    section: updates
+    quote: 2026-08-13 15:30、2027年3月期の1Q（2026年4〜6月）決算が開示された
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://s.kabutan.jp/news/k202608130043/
+    - https://www.harada.com/jp/ir/event/calendar.html
+    evidence: 株探記事（再取得200）に「8月13日大引け後(15:30)に決算を発表」、記事日付「2026年8月13日 15時30分」。IRカレンダー（再取得200）に「2026年8月13日／2027年3月期
+      第1四半期決算発表」。
+  - id: V02
+    section: updates
+    quote: 売上高113.9億円✓（前年同期比+12.5%）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: 採用値 Q2026-04_2026-06 revenue=11,387百万円（OK|ROUNDING）＝113.87億円。前年同期 Q2025-04_2025-06 revenue=10,124百万円。11,387/10,124-1=+12.47%。株探記事の前年同期比も
+      +12.5 %。
+  - id: V03
+    section: updates
+    quote: 営業利益16.3億円✓（同+79.7%）
+    verdict: contradicted
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: '金額は一致（採用値 operating_income Q2026-04_2026-06=1,634百万円＝16.34億円）。増減率が合わない: 1,634/909-1=+79.76%。株探記事の前年同期比欄も「+79.8
+      %」。本文の +79.7% はどちらとも一致しない。'
+    action: 増減率を +79.8% に直す（採用値どうしの割り算 1,634/909 の四捨五入）
+  - id: V04
+    section: updates
+    quote: 経常利益16.1億円✓（同+74.2%）
+    verdict: contradicted
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: '金額は一致（採用値 ordinary_income Q2026-04_2026-06=1,611百万円＝16.11億円）。増減率が合わない: 1,611/924-1=+74.35%。株探記事の前年同期比欄も「+74.4
+      %」で、見出しも「経常は74％増益」。本文の +74.2% はどちらとも一致しない。'
+    action: 増減率を +74.4% に直す（採用値どうしの割り算 1,611/924 の四捨五入）
+  - id: V05
+    section: updates
+    quote: 親会社株主に帰属する四半期純利益12.5億円†（同+86.5%）
+    verdict: contradicted
+    tier: secondary
+    sources:
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: '金額は裏付く（株探記事の第1四半期累計決算【実績】26.04-06 最終益=1,252百万円＝12.52億円）。増減率が合わない: 同記事の前年同期比は最終益「+86.6 %」／修正1株益「+86.5
+      %」で、+86.5% は1株益の伸び。1,252/671-1=+86.59% も +86.6% を指す。'
+    action: 純利益の増減率は +86.6%。+86.5% を使うなら「1株益」と書き分ける
+  - id: V06
+    section: updates
+    quote: 同時に通期の会社計画は2026-05-14 公表値から変更なしと明記された
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    evidence: 1Q短信 PDF は再取得200だが本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82 の定型文のみ）。data/tanshin/6904.csv
+      も存在しないため、短信本文の記載は機械で確かめられない。）。「変更はございません」という記載の有無は確認できていない。株探記事の今期【予想】表で 2027.03 予想の発表日が 2026-05-14
+      であることまでは確認した。
+    action: data/tanshin/6904.csv を作る（src/fetch_tanshin.py）か、短信の該当文を引用できる HTML 出典を出典表に足す
+  - id: V07
+    section: updates
+    quote: 1Q時点の進捗は営業利益が通期計画の81.7%、経常利益が94.8%、純利益にいたっては通期計画の2.1倍に達している
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: '採用値どうしの式: 営業 1,634/2,000=81.70%、経常 1,611/1,700=94.76%。株探記事も「通期計画の17億円に対する進捗率は94.8％」。純利益は採用値が無いため株探記事の
+      1,252 と採用値 net_income_plan=600 で 1,252/600=2.087倍。'
+  - id: V08
+    section: updates
+    quote: 株価は決算翌営業日の 2026-08-14 に460円✓から540円✓へ+17.4%動き、8/21には52週高値572円✓を付けた
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv（6904）: 2026-08-13 close=460 status=OK、2026-08-14 close=540 status=OK。540/460-1=+17.39%。2026-08-21
+      close=572 status=OK は 2025-08-28 以降の OK 行の最大値。'
+  - id: V09
+    section: updates
+    quote: 直近の採用終値は 2026-08-27 の553円✓。2026-08-28 は2つの取得元が一致せず採用終値なし
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    - src/judge.py
+    evidence: 'data/prices/daily.csv（6904）: 2026-08-27 close=553 status=OK が status に OK を含む最終行。2026-08-28
+      は status=SINGLE_SOURCE・close 空（value_primary=560・secondary 空）。python src/judge.py --indicators-only
+      の 6904 も as_of=2026-08-27・close=553.0。'
+  - id: V10
+    section: updates
+    quote: 同日に他の適時開示は無い。IRニュース一覧・2026-08-31 取得
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://www.harada.com/jp/ir/news/
+    evidence: IRニュース一覧を再取得（200・本文1,331文字）。取れるのはグローバルナビとフッタのリンク文字列だけで、開示のタイトルも日付も1件も含まれない（JS描画のため）。「他の開示が無い」ことをこの出典から確かめる材料が無い。
+    action: TDnet の開示一覧など、日付つきで一覧を返す出典を足すか、この記述を落とす
+  - id: V11
+    section: updates
+    quote: 出来高は 2026-08-13 の直前20営業日が1日平均およそ3,600株※だったのに対し、2026-08-17 は360,400株※
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: data/prices/daily.csv（6904）の 2026-07-14〜2026-08-12 の20行の volume 平均＝3,640株。2026-08-17 の volume=360,400。
+  - id: V12
+    section: updates
+    quote: 信用買残は 2026-08-14 の152.9千株※から 2026-08-21 に325.6千株※へ倍増した（売残ゼロ※のため信用倍率は算出できない）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/margin/6904.csv
+    evidence: 'data/margin/6904.csv: 2026-08-14 long=152.9・short=0.0、2026-08-21 long=325.6・short=0.0、いずれも
+      unit=千株・status=RATIO_NA・ratio 空。325.6/152.9=2.13倍。'
+  - id: V13
+    section: updates
+    quote: 2026-08-26 に「非上場の親会社等の決算に関するお知らせ」が出ている。当社の議決権39.7%を持つ資産管理会社の決算開示で、事業上の材料ではない
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2878075/00.pdf
+    - https://www.harada.com/jp/ir/news/
+    evidence: 当該 PDF は再取得200だが本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82 の定型文のみ）。data/tanshin/6904.csv
+      も存在しないため、短信本文の記載は機械で確かめられない。）。IRニュース一覧（200）にも開示のタイトル・日付が1件も含まれない。開示日・表題・39.7%のいずれも確かめられていない。
+    action: data/tanshin もしくは HTML の適時開示一覧を出典に足す
+  - id: V14
+    section: updates
+    quote: 株価は270営業日ぶんを取得し、うち2つの取得元が一致した採用終値は241日ぶん。財務は606行を取得し、採用値になったのは120件
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    - data/fundamentals/6904.csv
+    evidence: data/prices/daily.csv の code=6904 は270行、status に OK を含む行は241行。data/fundamentals/6904.csv
+      はヘッダを除き606行、status が OK で始まる行は120行。
+  - id: V15
+    section: price
+    quote: 株価は決算翌営業日に450円台から540円へ跳ねた
+    verdict: contradicted
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 決算翌営業日 2026-08-14 の起点は前日 2026-08-13 の採用終値460円で、450円台ではない（449〜452円は2026-07-31〜08-12の水準）。本文§値動きも「460円✓から540円✓へ」と書いている。
+    action: 「460円から540円へ」に直すか、決算前の水準を指すことが分かる書き方にする
+  - id: V16
+    section: company
+    quote: 1958年3月設立、本社は東京都品川区南大井、資本金は20.2億円
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf
+    evidence: 出典表で会社概要を支えうるのは有価証券報告書 PDF のみ。再取得200だが本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82
+      の定型文のみ）。data/tanshin/6904.csv も存在しないため、短信本文の記載は機械で確かめられない。）。設立年月・所在地・資本金のいずれも確かめられていない。
+    action: 会社概要ページ（harada.com の会社案内）を出典表に足す。レポート記載URL以外は fetch_source.py が拒否するため、出典を足さない限り検証できない
+  - id: V17
+    section: company
+    quote: 会社自身は目指す姿を「車載アンテナのトップ企業であり続けます」と決算短信に明記している
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    evidence: 1Q短信 PDF は再取得200だが本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82 の定型文のみ）。data/tanshin/6904.csv
+      も存在しないため、短信本文の記載は機械で確かめられない。）。引用文の存在を確かめられていない。
+    action: 短信本文を引用できる出典（data/tanshin/6904.csv か HTML）を用意する
+  - id: V18
+    section: company
+    quote: 連結の従業員4,000人のうち日本にいるのは246人だけで、アジアが2,472人、北中米が1,256人、欧州が26人（2026-03-31 時点）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf
+    evidence: 有価証券報告書 PDF は再取得200だが本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82 の定型文のみ）。data/tanshin/6904.csv
+      も存在しないため、短信本文の記載は機械で確かめられない。）。従業員数のセグメント別内訳を確かめられていない。
+    action: 従業員数を HTML で出す出典を足すか、記述を落とす
+  - id: V19
+    section: company
+    quote: '**海外の連結子会社の会計期間は1〜12月で、親会社の4〜3月と3か月ずれている**'
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/ir_material_for_fiscal_ym/206844/00.pdf
+    evidence: 決算説明資料 PDF は再取得200だが本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82 の定型文のみ）。data/tanshin/6904.csv
+      も存在しないため、短信本文の記載は機械で確かめられない。）。本文が根拠に挙げる「会社の決算説明資料が明記している」を確かめられていない。この記述は後段の読み筋（為替・需要の3か月遅れ）の前提になっている。
+    action: 決算期のずれを HTML で確認できる出典を足す
+  - id: V20
+    section: company
+    quote: 有価証券報告書が名指しする最大の相手先はトヨタ自動車で、2026年3月期の販売実績に占める割合は8.2%※
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf
+    evidence: 有価証券報告書 PDF は再取得200だが本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82 の定型文のみ）。data/tanshin/6904.csv
+      も存在しないため、短信本文の記載は機械で確かめられない。）。相手先名も8.2%も確かめられていない。
+    action: 主要相手先を HTML で出す出典を足すか、記述を落とす
+  - id: V21
+    section: company
+    quote: 代表取締役会長の原田章二氏が合算54.97%※の議決権を持つ支配株主で、資産管理会社である株式会社エスジェーエスが39.74%※を保有する
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2843210/00.pdf
+    - https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf
+    evidence: 「支配株主等に関する事項について」PDF・有価証券報告書 PDF とも再取得200だが本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82
+      の定型文のみ）。data/tanshin/6904.csv も存在しないため、短信本文の記載は機械で確かめられない。）。氏名・社名・比率のいずれも確かめられていない。この数値は「議決権の過半を創業家側が握る」という結論と流動性リスクの根拠になっている。
+    action: 株主構成ページ（harada.com の株式情報／株主構成）を出典表に足す
+  - id: V22
+    section: financials
+    quote: '| 2023/3期 | 42,105 | △721 | △899 | △1,531 | △70.4 | ✓ |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    evidence: '採用値 FY2023-03: revenue=42,105 / operating_income=-721 / ordinary_income=-899 / net_income=-1,531
+      / eps=-70.4（いずれも status が OK で始まる）。全項目一致。'
+  - id: V23
+    section: financials
+    quote: '| 2027/3期（会社計画） | 39,000 | 2,000 | 1,700 | 600 | 28.37 | ✓ |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: '採用値 FY2027-03: revenue_plan=39,000 / operating_income_plan=2,000 / ordinary_income_plan=1,700
+      / net_income_plan=600 / eps_plan=28.37。株探記事の今期【予想】2027.03 も 39,000 / 2,000 / 1,700 / 600 / 28.4（発表日
+      2026-05-14）。'
+  - id: V24
+    section: financials
+    quote: 営業利益率は3.86%✓（2025年3月期）から5.68%✓（2026年3月期）へ上がった
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    evidence: '採用値 operating_margin: FY2025-03=3.86（OK）、FY2026-03=5.68（OK）。'
+  - id: V25
+    section: financials
+    quote: 売上原価率は79.4%※（2025年3月期）→77.4%※（2026年3月期）→69.5%※（2026年4〜6月期）と下がってきた
+    verdict: unsupported
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    evidence: data/fundamentals/6904.csv の cost_ratio は3期とも status=SINGLE_SOURCE（取得元は irbank 系のみ）で value
+      列は空。採用値ではないため裏付けに使えない（D7）。根拠になりうる決算説明資料 PDF は本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82
+      の定型文のみ）。data/tanshin/6904.csv も存在しないため、短信本文の記載は機械で確かめられない。）。本文は※を付けており未照合であること自体は明示されている。
+    action: 運営の異なる2つ目の取得元で照合するか、原価率の記述を落とす
+  - id: V26
+    section: financials
+    quote: 自己資本比率は31.7%✓（2024年3月期）→34.4%✓（2025年3月期）→38.2%✓（2026年3月期）と上がり
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    evidence: '採用値 equity_ratio: FY2024-03=31.7（OK）、FY2025-03=34.4（OK）、FY2026-03=38.2（OK|ROUNDING）。'
+  - id: V27
+    section: financials
+    quote: 1Q末には41.9%†になった
+    verdict: unsupported
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    evidence: data/fundamentals/6904.csv の Q2026-04_2026-06 equity_ratio は status=SINGLE_SOURCE（kabutan_bs
+      のみ・value 列は空）で採用値ではない（D7）。†が指す1Q短信 PDF は本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82
+      の定型文のみ）。data/tanshin/6904.csv も存在しないため、短信本文の記載は機械で確かめられない。）。値そのものは確かめられていない。
+    action: data/tanshin/6904.csv を作って†の出所を機械の記録にする
+  - id: V28
+    section: financials
+    quote: 営業キャッシュフローは41.7億円✓、フリーキャッシュフローは36.0億円✓（いずれも2026年3月期）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    evidence: '採用値 FY2026-03: operating_cf=4,168百万円＝41.68億円、free_cf=3,599百万円＝35.99億円。'
+  - id: V29
+    section: financials
+    quote: 1〜3月期の営業利益は2期連続でマイナス（△358百万円✓と△222百万円✓）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    evidence: '採用値 operating_income: Q2025-01_2025-03=-358（OK）、Q2026-01_2026-03=-222（OK）。'
+  - id: V30
+    section: outlook
+    quote: 純利益6.0億円✓（同+38.3%）
+    verdict: contradicted
+    tier: dataset
+    sources:
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: '金額は一致（net_income_plan FY2027-03=600百万円）。増減率が合わない: 600/433-1=+38.57%。株探記事の前期比も最終益「+38.6
+      %」／修正1株益「+38.3 %」で、+38.3% は1株益の伸び。同じ文の売上△7.6%・営業△16.6%・経常△26.4%は採用値と一致する。'
+    action: 純利益の前期比は +38.6%。+38.3% を使うなら「1株益」と書き分ける
+  - id: V31
+    section: outlook
+    quote: 決算説明会も開催していない（短信の「決算説明会開催の有無：無」）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    evidence: 1Q短信 PDF は再取得200だが本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82 の定型文のみ）。data/tanshin/6904.csv
+      も存在しないため、短信本文の記載は機械で確かめられない。）。表紙の該当欄を確かめられていない。
+    action: data/tanshin/6904.csv を作るか、この記述を落とす
+  - id: V32
+    section: outlook
+    quote: 前期は2025-11-12 に通期業績予想の修正を出しており
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://www.harada.com/jp/ir/event/calendar.html
+    - https://www.harada.com/jp/ir/news/
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: IRカレンダー（200）の2025年11月12日の記載は「2026年3月期 半期報告書提出」と「2026年3月期 第2四半期（中間期）決算短信発表」の2件で、業績予想の修正は挙がっていない。IRニュース一覧（200）は開示を1件も返さない。株探記事の今期【予想】表に載る
+      2026.03 の発表日は 2026-05-14 で、2025-11-12 の修正を示す行は無い。『2Q発表時に計画を触る前例はある』という読み筋の唯一の根拠がこの1文である。
+    action: 「業績予想の修正に関するお知らせ」の適時開示URLを出典に足すか、この前例の記述を落とす
+  - id: V33
+    section: outlook
+    quote: 北中米は2026年3月期の外部売上123億円※で全社の29.3%※を占め
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/ir_material_for_fiscal_ym/206844/00.pdf
+    - https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf
+    evidence: セグメント別の外部売上を持つのは決算説明資料・有価証券報告書の PDF で、いずれも本文化されない（PDF は fetch_source.py が本文化しない（HTTP 200・chars=82
+      の定型文のみ）。data/tanshin/6904.csv も存在しないため、短信本文の記載は機械で確かめられない。）。参考までに採用値 FY2026-03 revenue=42,192百万円
+      に対し 12,300/42,192=29.15% で、本文の29.3%とは一致しない（123億円が丸め値のため断定はできない）。
+    action: セグメント別売上高推移ページ（harada.com）を出典表に足して、金額と比率を取り直す
+  - id: V34
+    section: outlook
+    quote: 次の開示は2Q決算で、過去2年は11月中旬（2025-11-12、2024-11-08）
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.harada.com/jp/ir/event/calendar.html
+    evidence: IRカレンダー（再取得200）に「2025年11月12日／2026年3月期 第2四半期（中間期）決算短信発表」、「2024年11月8日／2025年3月期 第2四半期（中間期）決算短信発表」。2026年の欄の最新は「2026年8月13日
+      2027年3月期 第1四半期決算発表」で、それ以降の予定は掲載されていない。
+  - id: V35
+    section: price
+    quote: この52週の採用終値は441円✓（2026-06-04）から572円✓（2026-08-21）のあいだで動いた
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: data/prices/daily.csv（6904）の 2025-08-28 以降で status に OK を含む241行のうち、close の最小は 2026-06-04
+      の441.0、最大は 2026-08-21 の572.0。
+  - id: V36
+    section: price
+    quote: それ以前は7月末から8月中旬まで449〜452円✓の狭いレンジに張り付き
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 2026-07-31〜2026-08-12 の採用終値（status=OK）は 450/450/449/450/450/449/451/452 でレンジは449〜452円。ただし直前の
+      2026-07-27・07-28 はいずれも448円で、「7月末」を7/27まで含めて読むと範囲外の日が出る。
+    action: 「7月末から」を日付（2026-07-31 以降）で書くと範囲が一意になる
+  - id: V37
+    section: price
+    quote: 会社計画の1株益28.37円✓に対してPERは19.5倍※、2026年3月期末の1株純資産648.15円✓に対してPBRは0.85倍※
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    - data/fundamentals/6904.csv
+    evidence: 採用終値 2026-08-27=553円、採用値 eps_plan FY2027-03=28.37、bps FY2026-03=648.15。553/28.37=19.49倍、553/648.15=0.853倍。いずれも採用値どうしの式で一致する。
+  - id: V38
+    section: price
+    quote: 時価総額はおよそ117億円※
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    - data/fundamentals/6904.csv
+    evidence: '採用値どうしの式で確認: net_income_plan 600百万円 ÷ eps_plan 28.37円 = 21.15百万株、×採用終値553円 = 11,696百万円＝約117億円。なお括弧内が挙げる算出根拠（短信の期末発行済株式数）そのものは
+      PDF が本文化されないため確かめていない。'
+  - id: V39
+    section: price
+    quote: 会社予想の年間配当10.00円†に対する利回りは1.8%※
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://s.kabutan.jp/news/k202608130043/
+    - data/prices/daily.csv
+    evidence: 株探記事の今期【予想】表で 2027.03（予・発表日2026-05-14）の修正1株配は「10」。採用終値553円に対し 10/553=1.808%。小数第2位（10.00）の精度までは同記事では確かめられない。
+  - id: V40
+    section: price
+    quote: 1Q単独の1株純利益59.22円†はすでに通期計画のEPSの2倍を超えている
+    verdict: unsupported
+    tier: secondary
+    sources:
+    - https://s.kabutan.jp/news/k202608130043/
+    - data/fundamentals/6904.csv
+    evidence: 株探記事の26.04-06 修正1株益は「59.2」（小数1位）。data/fundamentals/6904.csv の Q2026-04_2026-06 eps も 59.2
+      で status=SINGLE_SOURCE（採用値ではない）。59.22 という小数第2位までの値を裏付ける出典を確認できていない。『通期計画のEPS 28.37円の2倍超』という関係自体は
+      59.2/28.37=2.087倍で成り立つ。
+    action: 59.2円に丸めるか、短信を出所にできる記録（data/tanshin/6904.csv）を作る
+  - id: V41
+    section: sources
+    quote: '| IRライブラリ（決算短信一覧） | ― | <https://www.harada.com/jp/ir/library/earning.html> | 2026-08-31 |'
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://www.harada.com/jp/ir/library/earning.html
+    - https://www.harada.com/jp/ir/news/
+    - https://www.harada.com/jp/ir/
+    evidence: 一次情報の欄に置かれた harada.com の3ページを再取得（いずれも200）。library/earning.html（1,378文字）は見出し「決算短信」とナビゲーションだけで短信の一覧が無く、ir/news/（1,331文字）も開示を1件も返さない。ir/（1,152文字）は「最新イベント
+      2026年8月13日 2027年3月期 第1四半期短信発表」の1行のみ。一次情報として引用に使える本文を持つのは IRカレンダーだけだった。
+    action: 目次だけのページを一次情報の欄から外すか、参照先（PDF・カレンダー）に置き換える
+- run: '2026-08-31T23:20:00+09:00'
+  report_updated: '2026-08-31'
+  report_sha256: 0c0ab524a639b3b83b458278072cc423abdf1ba53587d3ebed078c38dd980a8f
+  verifier: kabu-ledger-verify（別コンテキスト・F3。V03/V04/V05/V30 の再検証）
+  urls_refetched:
+  - url: https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    http_status: 200
+  - url: https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf
+    http_status: 200
+  - url: https://s.kabutan.jp/news/k202608130043/
+    http_status: 200
+  urls_delegated:
+  - url: https://kabutan.jp/stock/finance?code=6904
+    to: data/fundamentals/6904.csv
+  - url: https://irbank.net/E01857
+    to: data/fundamentals/6904.csv
+  claims:
+  - id: V03
+    section: updates
+    quote: 営業利益16.3億円✓（同+79.7%）
+    verdict: supported
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: 1Q短信 PDF を再取得（fetch_log 2026-08-31T23:02:05・HTTP 200）。fetch_source.py は PDF を本文化しないため、同じURLの
+      PDF を pypdf で本文化して読んだ。表紙「1.2027年3月期第1四半期の連結業績」(1)連結経営成績（累計・％表示は対前年同四半期増減率）の行は「2027年3月期第1四半期 11,387
+      12.5 1,634 79.7 1,611 74.2 1,252 86.5」で、営業利益の％欄は 79.7。定性的情報にも「営業利益は16億34百万円（前年同期比79.7％増）」とある。表紙には「（百万円未満切捨て）」の注記があり、添付の四半期連結損益計算書（単位：千円）は営業利益
+      前1Q 909,838／当1Q 1,634,750。切り捨て前の実額で 1,634,750/909,838-1=+79.675% → 79.7 で、短信の率はこの基数で計算されている。切り捨て後の採用値どうしの
+      1,634/909-1=+79.758% → 79.8 は二次情報（株探記事・再取得200 の前年同期比欄「+79.8 %」）の再計算値であって短信の値ではない。金額は採用値 operating_income
+      Q2026-04_2026-06=1,634百万円（status OK|ROUNDING）＝16.34億円と一致。前 run（2026-08-31T16:20）の contradicted は、この丸めの基数の違いを取り違えたもの。
+    action: 無し（本文の +79.7% は一次情報どおり。前 run の指摘 +79.8% は採らない）
+  - id: V04
+    section: updates
+    quote: 経常利益16.1億円✓（同+74.2%）
+    verdict: supported
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: 1Q短信 PDF を再取得（fetch_log 2026-08-31T23:02:05・HTTP 200）。fetch_source.py は PDF を本文化しないため、同じURLの
+      PDF を pypdf で本文化して読んだ。表紙の同じ行で経常利益の％欄は 74.2。定性的情報にも「経常利益は16億11百万円（前年同期比74.2％増）」。四半期連結損益計算書（千円）は経常利益
+      前1Q 924,807／当1Q 1,611,288 で、1,611,288/924,807-1=+74.230% → 74.2。切り捨て後の 1,611/924-1=+74.351% → 74.4
+      は株探の再計算値（記事の前年同期比欄「+74.4 %」・見出し「経常は74％増益」）。金額は採用値 ordinary_income Q2026-04_2026-06=1,611百万円（status
+      OK|ROUNDING）＝16.11億円と一致。
+    action: 無し（本文の +74.2% は一次情報どおり。前 run の指摘 +74.4% は採らない）
+  - id: V05
+    section: updates
+    quote: 親会社株主に帰属する四半期純利益12.5億円†（同+86.5%）
+    verdict: supported
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: 1Q短信 PDF を再取得（fetch_log 2026-08-31T23:02:05・HTTP 200）。fetch_source.py は PDF を本文化しないため、同じURLの
+      PDF を pypdf で本文化して読んだ。表紙の同じ行で親会社株主に帰属する四半期純利益の欄は「1,252 86.5」。定性的情報にも「親会社株主に帰属する四半期純利益は、12億52百万円（前年同期比86.5％増）」。四半期連結損益計算書（千円）は
+      前1Q 671,538／当1Q 1,252,515 で、1,252,515/671,538-1=+86.514% → 86.5。切り捨て後の 1,252/671-1=+86.587% → 86.6
+      が株探の最終益欄「+86.6 %」。前 run は「+86.5% は1株益の伸び」としたが、短信では 86.5 は純利益の％欄そのもの（1株当たり四半期純利益は別表で 59.22円／31.75円と金額だけが載り、％欄を持たない。59.22/31.75-1=+86.52%
+      も同じ丸めになるだけで、86.5 の出所ではない）。金額 12.5億円も 1,252,515千円＝12.52億円と一致（採用値は SINGLE_SOURCE のため † 付き）。
+    action: 無し（本文の +86.5% は一次情報どおり。前 run の指摘 +86.6% は採らない）
+  - id: V30
+    section: outlook
+    quote: 純利益6.0億円✓（同+38.3%）
+    verdict: supported
+    tier: primary
+    sources:
+    - https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf
+    - https://ssl4.eir-parts.net/doc/6904/yuho_pdf/S100YJHN/00.pdf
+    - data/fundamentals/6904.csv
+    - https://s.kabutan.jp/news/k202608130043/
+    evidence: '1Q短信 PDF を再取得（fetch_log 2026-08-31T23:02:05・HTTP 200）。fetch_source.py は PDF を本文化しないため、同じURLの
+      PDF を pypdf で本文化して読んだ。表紙「3.2027年3月期の連結業績予想（％表示は、対前期増減率）」の列は売上高（百万円・％）／営業利益（百万円・％）／経常利益（百万円・％）／親会社株主に帰属する当期純利益（百万円・％）／1株当たり当期純利益（円
+      銭）の9枠で、通期の行は「39,000 △ 7.6 2,000 △ 16.6 1,700 △ 26.4 600 38.3 28.37」。枠と値が1対1に対応し、38.3 は純利益の％欄、1株当たり当期純利益は
+      28.37円で％欄を持たない。したがって前 run の「+38.3% は1株益の伸び」は短信では成り立たない。基数も一次情報で裏が取れる: 有価証券報告書 PDF（再取得 fetch_log
+      2026-08-31T23:03:56・HTTP 200・pypdf で本文化）の連結損益計算書（当連結会計年度 自2025年4月1日 至2026年3月31日・単位：千円）は親会社株主に帰属する当期純利益
+      433,729千円で、600,000/433,729-1=+38.335% → 38.3。切り捨て後の 600/433-1=+38.568% → 38.6 が株探の「前期比 最終益 +38.6
+      %」で、株探の修正1株益欄 +38.3 % はたまたま同じ丸めになる別の量。金額は採用値 net_income_plan FY2027-03=600百万円（status OK）＝6.0億円と一致。'
+    action: 無し（本文の +38.3% は一次情報どおり。前 run の指摘 +38.6% は採らない）
+
+# --- 出典と食い違った記述の始末（D44: contradicted は機械確認でのみ解除）---
+#
+# ★V03 / V04 / V05 / V30 はここに入れていない。**検証者の指摘の方が誤り**だったため。
+#   検証者は採用値（百万円に切り捨て済み）どうしの割り算と株探の再計算値を
+#   根拠にしたが、決算短信は「百万円未満切捨て」の注記どおり**切り捨て前の実額から
+#   率を出している**。短信 PDF（一次情報・
+#   https://ssl4.eir-parts.net/doc/6904/tdnet/2872016/00.pdf）の表紙は
+#     1Q  11,387 12.5 ／ 1,634 79.7 ／ 1,611 74.2 ／ 1,252 86.5
+#     通期予想  39,000 △7.6 ／ 2,000 △16.6 ／ 1,700 △26.4 ／ 600 38.3
+#   で、本文の +12.5% / +79.7% / +74.2% / +86.5% / +38.3% はすべて短信どおり。
+#   V30 で検証者が「+38.3% は1株益の伸び」としたのも誤りで、短信では純利益の欄が 38.3。
+#   4707 で踏んだのと同じ取り違え（丸めの基数の違い）。解除は機械確認が要る（D44）ので
+#   この銘柄の裏取りを引き直す。
+resolutions:
+  - id: V15
+    resolved_at: "2026-08-31T17:05:00+09:00"
+    how: rewritten
+    quote: "株価は決算翌営業日に460円✓から540円✓へ跳ねた。"
+    note: >-
+      「450円台」が誤り。決算翌営業日 2026-08-14 の起点は前日 2026-08-13 の
+      採用終値 460円（449〜452円は2026-07-31〜08-12 の水準）。本文の
+      「値動きと市場の評価」節は最初から「460円✓から540円✓へ」と書いており、
+      リード文だけが食い違っていた

@@ -1,0 +1,533 @@
+code: "4707"
+runs:
+  - run: "2026-08-31T15:25:00+09:00"
+    report_updated: "2026-08-31"
+    report_sha256: "4a887b91d4e6802576e8d1ee9977b787541d85dcf423d3dea97374a313ef71b5"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    urls_refetched:
+      - {url: "https://kitac.co.jp/ir/report/", http_status: 200}
+      - {url: "https://kitac.co.jp/company/overview/", http_status: 200}
+      - {url: "https://kitac.co.jp/company/office/", http_status: 200}
+      - {url: "https://kitac.co.jp/company/qualification/", http_status: 200}
+      - {url: "https://kitac.co.jp/ir/calendar/", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=4707", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=4707", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=4707&b=k202608280005", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=4707&b=n202608280365", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=4707&b=n202608310263", http_status: 200}
+      - {url: "https://kitac.co.jp/wp/wp-content/uploads/2026/08/%E5%90%8D%E5%8F%A4%E5%B1%8B%E8%A8%BC%E5%88%B8%E5%8F%96%E5%BC%95%E6%89%80%E3%83%A1%E3%82%A4%E3%83%B3%E5%B8%82%E5%A0%B4%E3%81%B8%E3%81%AE%E4%B8%8A%E5%A0%B4%E6%89%BF%E8%AA%8D%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E3%81%8A%E3%81%97%E3%82%89%E3%81%9B-1.pdf", http_status: 200}
+      - {url: "https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260827.pdf", http_status: 200}
+      - {url: "https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf", http_status: 200}
+      - {url: "https://kitac.co.jp/wp/wp-content/uploads/2025/12/20251204-3.pdf", http_status: 200}
+      - {url: "https://kitac.co.jp/wp/wp-content/uploads/2026/02/20260301.pdf", http_status: 200}
+    urls_delegated: []
+    claims:
+      - id: V01
+        section: updates
+        quote: "売上のおよそ9割†は官公庁向けの地質調査・土木設計で"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707&b=k202608280005", "https://kabutan.jp/stock/?code=4707"]
+        evidence: "再取得した出典のどれにも「官公庁向けが売上の9割」に当たる記述・数値は無い。株探の決算速報（200）は売上高 2,424百万円 とセグメント別の内訳を持たず、株探の銘柄ページ（200）は業種を「サービス業」と書くだけ。本文の第3四半期累計セグメント表（建設コンサルタント 2,123／WEB 159／不動産賃貸等 141）は 2,123/2,423=87.6% を与えるが、これは**事業セグメントの比率であって発注者が官公庁である比率ではない**。かつその表自体が短信PDF由来で再取得できていない（V23）。"
+        action: "「官公庁向け」の比率を会社開示で確かめるか、「建設コンサルタント事業が売上の約88%」のように事業セグメントの話に直す"
+      - id: V02
+        section: updates
+        quote: "時価総額は21億円程度※"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4707"]
+        evidence: "株探の銘柄ページを再取得（200・2026-08-31 14:59時点）。「時価総額 | 19.9 億円」「発行済株式数 | 5,969,024 株」「334円」。採用終値 346円（2026-08-27）で計算し直すと 5,969,024×346=2,065,282,304 → 20.7億円で、四捨五入すれば21億円。**2026-08-31 時点では 19.9億円**であり、値が動いている。"
+        action: "「2026年8月27日の採用終値時点」と時点を添える"
+      - id: V03
+        section: updates
+        quote: "1株純資産に対して0.5倍台※と小さく安いが"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv", "data/prices/daily.csv"]
+        evidence: "data/fundamentals/4707.csv: FY2025-10 bps=630.76（status=OK）。data/prices/daily.csv: 2026-08-27 close=346.0（status=OK）。346/630.76=0.549 → 0.5倍台。株探の銘柄ページ（200）も PBR 0.51倍（334円時点）で同じ帯にある。"
+      - id: V04
+        section: updates
+        quote: "2026年10月期は第3四半期までの受注高が前年同期比14.6%減†"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf"]
+        evidence: "受注高の出典は第3四半期決算短信PDF。PDF のため fetch_source.py は本文をテキスト化しない（content_type: application/pdf・chars 82）。data/tanshin/4707.csv も存在しないため、短信本文を根拠にできない。 再取得できた二次情報（株探の決算速報200・材料記事200）はいずれも受注高に触れておらず、「14.6%減」に当たる文字列はヒット0件。data/fundamentals/4707.csv にも受注高の metric は無い。"
+        action: "src/fetch_tanshin.py で data/tanshin/4707.csv を作り、受注高を機械抽出の記録に載せる"
+      - id: V05
+        section: updates
+        quote: "通期計画の営業利益は残り1四半期に4割弱を残している"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv", "https://kabutan.jp/stock/news?code=4707&b=k202608280005"]
+        evidence: "data/fundamentals/4707.csv: FY2026-10 operating_income_plan=254（status=OK）。第3四半期累計の営業益は株探の決算速報を再取得（200）した表「25.11-07 | 2,424 | 158 | 174 | 141」で 158百万円。254-158=96、96/254=37.8% → 4割弱。"
+      - id: V06
+        section: updates
+        quote: "**8月20日、名古屋証券取引所メイン市場に重複上場した**（承認は8月13日）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707&b=n202608280365", "https://kitac.co.jp/ir/report/", "https://kitac.co.jp/company/overview/"]
+        evidence: "株探の材料記事（200・2026年08月28日10時10分）に「８月２０日に名証メイン市場に重複上場したことを記念して」。会社の決算短信・開示情報ページ（200）に「名古屋証券取引所メイン市場への上場承認に関するお知らせ 2026年8月13日」。会社概要（200）の「上場」欄も「東京証券取引所　スタンダード　4707／名古屋証券取引所　メイン」と2市場を並べている。"
+      - id: V07
+        section: updates
+        quote: "会社は目的として「西日本地域での認知度を高め、将来の営業エリアとしていく」ことと「投資家層の拡大、株式の流動性の向上」を挙げている"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://kitac.co.jp/wp/wp-content/uploads/2026/08/%E5%90%8D%E5%8F%A4%E5%B1%8B%E8%A8%BC%E5%88%B8%E5%8F%96%E5%BC%95%E6%89%80%E3%83%A1%E3%82%A4%E3%83%B3%E5%B8%82%E5%A0%B4%E3%81%B8%E3%81%AE%E4%B8%8A%E5%A0%B4%E6%89%BF%E8%AA%8D%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E3%81%8A%E3%81%97%E3%82%89%E3%81%9B-1.pdf"]
+        evidence: "上場承認のお知らせは PDF。PDF のため fetch_source.py は本文をテキスト化しない（content_type: application/pdf・chars 82）。会社の開示一覧（200）にこの開示が2026年8月13日付で存在することは確認できたが、**引用文そのものは再取得できていない**。"
+        action: "引用を残すなら、PDF本文を機械でテキスト化する経路を用意する（現状の道具では確かめられない）"
+      - id: V08
+        section: updates
+        quote: "2026年10月20日現在で100株以上を持つ株主にクオカード1,000円分†"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707&b=n202608280365"]
+        evidence: "株探の材料記事を再取得（200）。「２６年１０月２０日時点で１００株以上を保有する株主を対象に、一律でＱＵＯカード１０００円分を提供する」。"
+      - id: V09
+        section: updates
+        quote: "贈呈は2027年1月予定†、**今回限り**と明記されている†"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260827.pdf"]
+        evidence: "贈呈時期と「今回限り」の出典は優待の開示PDF。PDF のため fetch_source.py は本文をテキスト化しない（content_type: application/pdf・chars 82）。再取得できた株探の材料記事（200）は対象株主と金額しか書いておらず、「2027年1月」「今回限り」に当たる記述は無い。"
+        action: "「今回限り」はリスク4の根拠でもある。PDF本文を確かめるか、確認できるまで表現を弱める"
+      - id: V10
+        section: updates
+        quote: "この日の採用終値は 346円✓（前日 337円✓）で、出来高 72,000株※は直前25営業日平均のおよそ7倍"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv（4707）: 2026-08-27 close=346.0 volume=72000 status=OK／2026-08-26 close=337.0 status=OK。直前25営業日（2026-07-22〜2026-08-26）の出来高平均は 10,112株で 72,000/10,112=7.12倍。"
+      - id: V11
+        section: updates
+        quote: "**8月28日15時30分、第3四半期決算。** 受注高 22.7億円†（前年同期比 14.6%減†）、売上高 24.2億円†（4.9%減†）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707&b=k202608280005", "https://kabutan.jp/stock/news?code=4707&b=n202608310263"]
+        evidence: "発表日時: 株探の決算速報（200）が「2026年08月28日15時30分」「8月28日大引け後(15:30)に決算を発表」。売上高: 同記事の表「25.11-07 | 2,424 |」と「前年同期比 | -4.9 |」、株探の材料記事（200）も「売上高は２４億２４００万円（前年同期比４．９％減）」。**この claim で裏が取れたのは発表日時と売上高だけで、受注高 22.7億円・14.6%減 は V04 のとおり未確認のまま残る。**"
+      - id: V12
+        section: updates
+        quote: "営業利益 1.58億円†（4.9%減†）"
+        verdict: contradicted
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707&b=k202608280005"]
+        evidence: "株探の決算速報を再取得（200）。第３四半期累計決算【実績】の表は「25.11-07 | 2,424 | 158 | 174 | 141 | 25.3 | 67.2 | 26/08/28」、その下の「前年同期比 | -4.9 | -4.8 | -7.4 | -33.8 | -33.7 |  | (%)」。列は 売上高・営業益・経常益・最終益・修正1株益の順なので、**営業益の前年同期比は -4.8%** であって -4.9% ではない（-4.9% は売上高の欄）。実額 158百万円（1.58億円）は一致する。同記事は数値を会社作成のXBRLから取ると明記している。"
+        action: "「4.8%減」に直すか、短信の実額（data/tanshin/4707.csv）を取り込んで確かめてから断定する"
+      - id: V13
+        section: updates
+        quote: "経常利益 1.75億円†（7.3%減†）"
+        verdict: contradicted
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707&b=k202608280005"]
+        evidence: "株探の決算速報を再取得（200）。本文に「連結経常利益は前年同期比7.4％減の1億7400万円に減り」。表も「25.11-07 |…| 174 |」「前年同期比 |…| -7.4 |」。**出典は 1億7400万円・7.4%減**で、本文の 1.75億円・7.3%減 と食い違う。"
+        action: "「1.74億円（7.4%減）」に直すか、短信の実額で確かめる（百万円未満の丸めで 1.75億円 になる余地はあるが、率の 7.3% は説明できない）"
+      - id: V14
+        section: updates
+        quote: "親会社株主に帰属する四半期純利益 1.42億円†（33.7%減†）"
+        verdict: contradicted
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707&b=n202608310263", "https://kabutan.jp/stock/news?code=4707&b=k202608280005"]
+        evidence: "株探の材料記事を再取得（200）: 「純利益は１億４１００万円（同３３．７％減）だった」。株探の決算速報（200）の表も「25.11-07 |…| 141 |」。**実額は 1億4100万円**であり 1.42億円ではない（1.42億円は同じ段落の国庫補助金の額と一致しており、取り違えの疑いがある）。減少率は材料記事の 33.7% と一致する（決算速報の最終益欄は -33.8%、修正1株益欄が -33.7%）。"
+        action: "「1.41億円」に直す。率も -33.8%（最終益）と -33.7%（1株益）のどちらを指すか明示する"
+      - id: V15
+        section: updates
+        quote: "通期計画は据え置き†"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707&b=k202608280005"]
+        evidence: "株探の決算速報を再取得（200）。「会社側が発表した第3四半期累計の実績と据え置いた通期計画に基づいて」。今期【予想】の表も「予 2026.10 | 3,587 | 254 | 259 | 170 | 30.4 | 7 | 25/12/04」で、発表日が2025年12月4日のまま更新されていない。"
+      - id: V16
+        section: updates
+        quote: "前年同期に特別利益として計上した国庫補助金 1.42億円†が今期は 22百万円†にとどまったため"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf"]
+        evidence: "国庫補助金の金額は短信PDF本文にしかない。PDF のため fetch_source.py は本文をテキスト化しない（content_type: application/pdf・chars 82）。data/tanshin/4707.csv も存在しないため、短信本文を根拠にできない。 再取得できた株探の材料記事（200）は「前年同期に特別利益を計上した反動もあった」と書くだけで金額を持たない。"
+        action: "data/tanshin/4707.csv を作るか、金額を落として「前年同期の特別利益の反動」までにする"
+      - id: V17
+        section: updates
+        quote: "8月28日の終値は 365円※（yahoo 単独・照合不成立）、出来高 257,700株※は直前25営業日平均の25倍"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://kabutan.jp/stock/?code=4707"]
+        evidence: "data/prices/daily.csv（4707）: 2026-08-28 は close 空・status=SINGLE_SOURCE・source_primary=yahoo_jp・value_primary=365.0・volume=257700。株探の銘柄ページ（200）も「前日終値 365 ( 08/28 )」。直前25営業日（2026-07-22〜2026-08-26）の平均出来高 10,112株に対し 257,700/10,112=25.5倍。※（照合不成立）の表示は status と一致する。"
+      - id: V18
+        section: updates
+        quote: "週明け8月31日は 336円※（株探・15分ディレイ・2026-08-31 13時37分時点）まで下げた"
+        verdict: superseded
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4707", "https://kabutan.jp/stock/news?code=4707&b=n202608310263"]
+        evidence: "同じ株探ページを再取得（200・2026-08-31 14:59時点）すると「334円 前日比 -31 -8.49%」「高値 337 ( 12:57 )／安値 330 ( 09:12 )／現在値 334 ( 14:59 )」。本文の 336円 は取得時点の値で、**その後さらに下げている**。値が動いただけで、記述は時点付きで書かれている。"
+      - id: V19
+        section: updates
+        quote: "株探は「第３四半期累計の純利益３４％減」を理由に挙げている"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707&b=n202608310263"]
+        evidence: "再取得（200）した記事の見出しがそのまま「キタックは大幅反落、第３四半期累計の純利益３４％減」。本文も「主力の建設コンサルタント事業が冴えなかった。前年同期に特別利益を計上した反動もあった。これが嫌気されているようだ。」"
+      - id: V20
+        section: updates
+        quote: "スクリーニング起点で登録した銘柄（楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件）"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: "登録経緯は data/master.yaml と intake の記録にしかない。裏取りは隔離（SKILL.md §隔離・D18）により master.yaml を開かないので、この検証者は確かめられない。スクショ自体もリポジトリに無い。"
+        action: "登録経緯は intake 側（人間）の担当。検証対象から外す整理でよい"
+      - id: V21
+        section: company
+        quote: "1973年設立†、従業員202名†の会社である"
+        verdict: supported
+        tier: primary
+        sources: ["https://kitac.co.jp/company/overview/"]
+        evidence: "会社概要を再取得（200）。「設立 1973（昭和48）年2月1日」「従業員数 202名」。"
+      - id: V22
+        section: company
+        quote: "拠点は8か所†——新潟本社・長岡・上越（北信越事業所）・佐渡・仙台・福島・山形・東京。**新潟県と東北、それに東京だけで、西日本には拠点が無い。**"
+        verdict: supported
+        tier: primary
+        sources: ["https://kitac.co.jp/company/office/"]
+        evidence: "事業所一覧を再取得（200）。「株式会社キタックは新潟県を中心に、全国8ヶ所に拠点があります。」以下に 新潟本社（新潟市）・東京支店（台東区）・北信越事業所（上越市）・長岡事務所（長岡市）・佐渡事業所（佐渡市）・仙台事務所（仙台市）・福島事務所（郡山市）・山形事務所（山形市）の8か所が並ぶ。所在地は新潟県・宮城県・福島県・山形県・東京都のみで、西日本の拠点は無い。"
+      - id: V23
+        section: company
+        quote: "| 建設コンサルタント事業 | 2,123 | 735 |"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf"]
+        evidence: "セグメント別の売上高・売上総利益は短信PDFのセグメント情報にしかない。PDF のため fetch_source.py は本文をテキスト化しない（content_type: application/pdf・chars 82）。data/tanshin/4707.csv も存在しないため、短信本文を根拠にできない。 株探の決算速報（200）はセグメント内訳を持たない。なお3事業の売上合計 2,123+159+141=2,423 は株探の売上高 2,424 と1百万円ずれる（内部消去・丸めの可能性があるが、当検証では確かめられない）。"
+        action: "data/tanshin/4707.csv にセグメントを取り込むか、表に「短信より・当台帳未取込」と明示する"
+      - id: V24
+        section: company
+        quote: "RCCM 35名†、地質調査技士 33名†、技術士補 51名†、1級土木施工管理技士 13名†（いずれも2026年8月5日現在†）"
+        verdict: supported
+        tier: primary
+        sources: ["https://kitac.co.jp/company/qualification/"]
+        evidence: "有資格者数ページを再取得（200）。「RCCM | 35名」「地質調査技士 | 33名」「技術士補 | 51名」「1級土木施工管理技士 | 13名」、末尾に「2026年8月5日現在」。技術士も同ページに部門別で載り、総合技術監理(1+2+1+2+1=7)＋建設(7+6+1+9+4+1+1=29)＋上下水道1＋応用理学9＋環境(1+1=2)=48件で、本文の「全部門を足すと48件になる」と一致する。"
+      - id: V25
+        section: financials
+        quote: "この会社の決算期は10月20日締めで、四半期の実際の期間も各月の21日から始まる（第3四半期は4月21日〜7月20日†）"
+        verdict: supported
+        tier: primary
+        sources: ["https://kitac.co.jp/ir/calendar/", "https://kabutan.jp/stock/news?code=4707&b=n202608310263"]
+        evidence: "IRカレンダーを再取得（200）。「第1四半期 （10/21〜1/20）」「第2四半期 （1/21〜4/20）」「第3四半期 （4/21〜7/20）」「第4四半期 （7/21〜10/20）」。第4四半期が10/20で終わる＝決算期は10月20日締め。株探の材料記事（200）も「第３四半期累計（２５年１０月２１日～２６年７月２０日）」と書く。"
+      - id: V26
+        section: financials
+        quote: "| 2025/10期 | 3,467 | 146 | 163 | 207 | 37.14 | 55.6 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv"]
+        evidence: "data/fundamentals/4707.csv の採用値（value が入り status に OK を含む行）: FY2025-10 revenue=3467／operating_income=146／ordinary_income=163／net_income=207／eps=37.14／equity_ratio=55.6。表の他の行も一致する（FY2022-10 revenue=2701, oi=77, ordinary=137, ni=90, eps=16.17、自己資本比率は status=SINGLE_SOURCE で「—」／FY2023-10 revenue は status=MISMATCH で「—」、oi=166, ordinary=185, ni=173, eps=30.95, 自己資本比率=50.6／FY2024-10 3342/362/393/279/49.91/54.3／FY2026-10 は plan 系 3587/254/259/170/30.35）。"
+      - id: V27
+        section: financials
+        quote: "営業利益は 0.77億円✓→1.66億円✓→3.62億円✓→1.46億円✓で、いちばん大きい期といちばん小さい期の差は4.7倍"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv"]
+        evidence: "data/fundamentals/4707.csv の採用値 operating_income: FY2022-10=77／FY2023-10=166／FY2024-10=362／FY2025-10=146（いずれも status に OK）。362/77=4.70倍。"
+      - id: V28
+        section: financials
+        quote: "自己資本比率は 50.6%✓（2023/10期）→ 54.3%✓ → 55.6%✓ と上がり続け"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv"]
+        evidence: "data/fundamentals/4707.csv equity_ratio: FY2023-10=50.6／FY2024-10=54.3／FY2025-10=55.6（いずれも status=OK）。"
+      - id: V29
+        section: financials
+        quote: "第3四半期時点では 60.8%†。総資産 60.7億円†に対し純資産 36.9億円†で、第3四半期までに負債が 4.38億円†減っている（短期借入金 3.0億円減†・業務未払金 88百万円減†）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf"]
+        evidence: "第3四半期の貸借対照表の数値は短信PDF本文にしかない。PDF のため fetch_source.py は本文をテキスト化しない（content_type: application/pdf・chars 82）。data/tanshin/4707.csv も存在しないため、短信本文を根拠にできない。 data/fundamentals/4707.csv には C2025-11_2026-07 の equity_ratio=60.8／total_assets=6074／equity=3691 が入っているが、いずれも status=SINGLE_SOURCE（kabutan_bs 単独）で**採用値ではない**ため D7 により裏付けに使えない。負債の減少額・短期借入金・業務未払金は data のどこにも無い。"
+        action: "data/tanshin/4707.csv を作る、または2つ目の取得元で照合されるまで †（短信直読み・当台帳未照合）と明示し続ける"
+      - id: V30
+        section: financials
+        quote: "現金及び現金同等物の期末残高は 137百万円✓（2023/10期）→ 213百万円✓ → 155百万円✓で、総資産 6,354百万円✓に対して2%台にとどまる"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv"]
+        evidence: "data/fundamentals/4707.csv cash_equivalents: FY2023-10=137／FY2024-10=213／FY2025-10=155（status に OK）。FY2025-10 total_assets=6354（OK）。155/6354=2.44% → 2%台。"
+      - id: V31
+        section: financials
+        quote: "有利子負債比率は 0.536倍✓（2025/10期）で、有利子負債そのものは 18.9億円※（照合不成立）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv"]
+        evidence: "data/fundamentals/4707.csv: FY2025-10 interest_bearing_debt_ratio=0.536（status=OK|ROUNDING|UNIT_CONVERTED＝採用値）。同期 interest_bearing_debt は value 空・status=SINGLE_SOURCE・value_primary=1890（raw「18.9億」・irbank_bs 単独）で、本文の「18.9億円※（照合不成立）」は status と一致する。"
+      - id: V32
+        section: financials
+        quote: "| 2024/10期 | 338 | -16 | 322 | 213 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv"]
+        evidence: "data/fundamentals/4707.csv の採用値: FY2024-10 operating_cf=338／investing_cf=-16／free_cf=322／cash_equivalents=213。他の行も FY2023-10 56/-68/-12/137、FY2025-10 106/-141/-35/155 で表と一致する（いずれも status に OK）。フリーCFが負なのは2023/10期と2025/10期の2期で、「3期のうち2期はフリーキャッシュフローがマイナス」も成り立つ。"
+      - id: V33
+        section: financials
+        quote: "資本金は 4.80億円†から 1.00億円†になった。減少額 3.80億円†は全額をその他資本剰余金へ振り替えたもので†"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kitac.co.jp/company/overview/", "https://kitac.co.jp/ir/report/"]
+        evidence: "会社概要を再取得（200）すると「資本金 1億円」で、減資**後**の金額は裏が取れる。しかし減資前の 4.80億円・減少額 3.80億円・その他資本剰余金への振替は、再取得できたどのHTMLにも無い（開示一覧200には「資本金の額の減少のお知らせ 2026年3月1日」「資本金の額の減少公告 2026年1月19日」「資本金の額の減少に関するお知らせ 2025年12月4日」の3件が並ぶが、いずれもPDFで本文を取れない）。"
+        action: "減資前の金額と振替先は3件のPDFのいずれかにある。PDFを読める経路を用意するか、確認できた「資本金1億円」までに記述を絞る"
+      - id: V34
+        section: financials
+        quote: "**会社は減資の目的を開示していない**（当台帳が確認した範囲では）"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kitac.co.jp/ir/report/"]
+        evidence: "決算短信・開示情報ページを再取得（200）すると、減資に関する開示は3件ある（2025年12月4日「資本金の額の減少に関するお知らせ」／2026年1月19日「資本金の額の減少公告」／2026年3月1日「資本金の額の減少のお知らせ」）。本文が引いているのは3件目だけで、**残る2件を確かめずに「目的を開示していない」と言えない**。いずれもPDFのため当検証でも本文を読めていない。"
+        action: "「当台帳が確認した範囲では」の範囲を明示する（どの開示を見たのか）。または3件のPDFを確かめる"
+      - id: V35
+        section: outlook
+        quote: "売上高 3,587百万円✓・営業利益 254百万円✓・経常利益 259百万円✓・純利益 170百万円✓（1株益 30.35円✓）で、営業利益率 7.08%✓・ROE 4.61%✓・ROA 2.8%✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv"]
+        evidence: "data/fundamentals/4707.csv FY2026-10 の採用値: revenue_plan=3587／operating_income_plan=254／ordinary_income_plan=259／net_income_plan=170／eps_plan=30.35／operating_margin_plan=7.08／roe_plan=4.61／roa_plan=2.8（すべて status に OK）。株探の決算速報（200）の今期【予想】行「予 2026.10 | 3,587 | 254 | 259 | 170 | 30.4 | 7」とも一致する。"
+      - id: V36
+        section: outlook
+        quote: "ところがこの8〜10月期にあたる四半期の営業利益率は、採用値で見ると 11.25%✓（2024年）と -2.2%✓（2025年）で符号が逆になっている"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv"]
+        evidence: "data/fundamentals/4707.csv operating_margin: Q2024-08_2024-10=11.25（OK|ROUNDING）／Q2025-08_2025-10=-2.2（OK）。残り1四半期の 96百万円 も 254（FY2026-10 operating_income_plan・OK）-158（株探決算速報の3Q累計営業益）=96 で式が立つ。"
+      - id: V37
+        section: outlook
+        quote: "前期（2025/10期）通期は 34.1億円†の 4.4%増†だったので、期の途中で流れが変わっている"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://kitac.co.jp/wp/wp-content/uploads/2025/12/20251204-3.pdf"]
+        evidence: "前期通期の受注高は令和7年10月期決算短信PDFにしかない。PDF のため fetch_source.py は本文をテキスト化しない（content_type: application/pdf・chars 82）。data/tanshin/4707.csv も存在しないため、短信本文を根拠にできない。 株探の決算速報（200）も受注高を扱わず、「34.1」「4.4」に当たる数値は無い。data/fundamentals/4707.csv にも受注高の metric は存在しない（metric 一覧に受注・order 系は無い）。"
+        action: "受注高を data 側の metric にするか、確かめられるまで †（短信直読み）のままにする"
+      - id: V38
+        section: outlook
+        quote: "ただし**当台帳は受注高を metric として持っていない**（四半期ごとの受注高を機械で追えていない）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv"]
+        evidence: "data/fundamentals/4707.csv の metric 列を一意化すると bps/capex/cash_equivalents/cost_ratio/eps/eps_plan/equity/equity_ratio/financing_cf/free_cf/interest_bearing_debt/interest_bearing_debt_ratio/investing_cf/net_assets/net_income/net_income_plan/operating_cf/operating_income/operating_income_plan/operating_margin/operating_margin_plan/ordinary_income/ordinary_income_plan/retained_earnings/revenue/revenue_plan/roa/roa_plan/roe/roe_plan/sga_ratio/shareholders_equity/total_assets のみで、受注高に当たる metric は無い。自己申告のとおり。"
+      - id: V39
+        section: outlook
+        quote: "直近25営業日の出来高の中央値は 4,300株※で、株価340円前後なら1日の売買代金は150万円程度にしかならない（当台帳の計算）"
+        verdict: contradicted
+        tier: dataset
+        sources: ["data/prices/daily.csv", "src/judge.py"]
+        evidence: "data/prices/daily.csv（4707）で数え直すと、出来高の中央値は窓の取り方で変わる: 直近25行（2026-07-24〜2026-08-28）=8,000株／採用値のある直近25営業日（2026-07-23〜2026-08-27）=7,300株／2026-08-26 までの25営業日=4,300株。**4,300株になるのは最新の採用終値日 2026-08-27 を外した窓だけ**で、「直近25営業日」では再現しない。さらに当台帳自身の指標 python src/judge.py --indicators-only は 4707 について as_of 2026-08-27・median_turnover_20d=2,902,350円・avg_turnover_20d=4,931,385円 を返す。売買代金は本文の「150万円程度」の約2〜3倍である。"
+        action: "窓を明示したうえで judge.py の median_turnover_20d（290万円）に合わせる。流動性ゲートで止まるという結論自体は数字を直しても変わらない"
+      - id: V40
+        section: outlook
+        quote: "会社は「第1次国土強靭化実施中期計画」で令和8年度からの5年間で概ね20兆円強程度の事業規模を目指すとされている、と短信に書いている†"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf"]
+        evidence: "短信PDF本文にしかない引用。PDF のため fetch_source.py は本文をテキスト化しない（content_type: application/pdf・chars 82）。data/tanshin/4707.csv も存在しないため、短信本文を根拠にできない。 本文自身が「当台帳が政府の一次資料で確かめた数字ではない」と書いており、その自己申告は正しい（当検証でも政府資料は叩いていない＝出典を増やさない）。"
+        action: "短信本文の引用としてすら未確認である旨を残す（政府一次資料の確認は別途）"
+      - id: V41
+        section: price
+        quote: "採用終値は 378円✓（2025-09-01）から 346円✓（2026-08-27）へ、一年で -8.5%（採用終値から計算）。同じ期間の TOPIX（採用終値）は +34.4% なので、**市場に40ポイント以上負けている。**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "data/indices/topix.csv"]
+        evidence: "data/prices/daily.csv（4707・status に OK の行）: 最初 2025-09-01 close=378.0、最後 2026-08-27 close=346.0。346/378-1=-8.47%。data/indices/topix.csv（OK 行）: 2025-09-01 close=3063.19、2026-08-27 close=4117.22。4117.22/3063.19-1=+34.41%。差は 42.9ポイントで「40ポイント以上」。"
+      - id: V42
+        section: price
+        quote: "この一年の高値は 385円✓（2026-01-16）、安値は 310円✓（2026-03-23）で、直近は高値から -10.1% の位置にある"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv の 2025-09-01 以降の採用終値241本で最大は 2026-01-16 の 385.0、最小は 2026-03-23 の 310.0。346/385-1=-10.13%。"
+      - id: V43
+        section: price
+        quote: "一年でいちばん大きな一日の動きは1月16日で、342円✓から 385円✓（+12.6%）へ上げ、出来高は 592,400株※と平時の数十倍になった"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv: 2026-01-15 close=342.0（OK）→ 2026-01-16 close=385.0（OK）で +12.57%。採用終値の前日比を全部並べると2位は -6.6%（2026-03-02）で、絶対値でも最大。2026-01-16 volume=592400 は同期間の中央値 4,000株台の百倍超。"
+      - id: V44
+        section: price
+        quote: "ただし株探の個別材料ニュースはテクニカル指標の記事だけで、**この日に上げた理由は特定できていない**"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707"]
+        evidence: "株探の個別銘柄ニュース一覧を再取得（200）したが、表示されるのは直近15件（26/08/31〜26/06/19）だけで、**2026年1月16日前後の行はこのURLからは見えない**。会社の開示一覧（200）には2026年1月16日付で「役員人事のお知らせ」「コーポレートガバナンス報告書」がある。したがって「テクニカル指標の記事だけ」は当検証では確かめられない。"
+        action: "2026年1月のニュースアーカイブURL（月別）を出典に足すか、「当台帳が見た範囲では」と範囲を明示する"
+      - id: V45
+        section: price
+        quote: "前期決算（2025-12-04・営業利益 59.7%減†）の日はむしろ 374円✓と上げ（前日 364円✓）、その後3営業日で 336円✓まで -10.2% 下げた"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv", "data/prices/daily.csv", "https://kitac.co.jp/ir/report/"]
+        evidence: "開示日: 会社の開示一覧（200）に「令和7年10月期の決算短信を発表 2025年12月4日」。営業利益の減益率は採用値どうしの式で出る: FY2025-10 operating_income=146 ÷ FY2024-10 operating_income=362 -1 = -59.67%（どちらも status に OK）。株価: data/prices/daily.csv 2025-12-03 close=364.0／12-04 close=374.0／12-05 355.0／12-08 342.0／12-09 336.0（すべて OK）。336/374-1=-10.16%。"
+      - id: V46
+        section: price
+        quote: "直近は 325円✓（8月14日）から 346円✓（8月27日）へ +6.5%"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "data/prices/daily.csv: 2026-08-14 close=325.0（OK）／2026-08-27 close=346.0（OK）。346/325-1=+6.46%。"
+      - id: V47
+        section: price
+        quote: "会社計画の1株益 30.35円✓に対して 11.4倍程度"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv", "data/prices/daily.csv", "https://kabutan.jp/stock/?code=4707"]
+        evidence: "data/fundamentals/4707.csv FY2026-10 eps_plan=30.35（OK|ROUNDING）、data/prices/daily.csv 2026-08-27 close=346.0（OK）。346/30.35=11.40倍。株探の銘柄ページ（200）の PER 11.0倍 も 334/30.35=11.0 と同じ分母で整合する。"
+      - id: V48
+        section: price
+        quote: "第3四半期時点の自己資本 36.9億円†と自己株式を除く株式数 5,600,449株†から計算した1株純資産（およそ659円）に対しては 0.53倍程度"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf"]
+        evidence: "自己資本 36.9億円 と自己株式控除後の株式数 5,600,449株 はどちらも短信PDF由来。PDF のため fetch_source.py は本文をテキスト化しない（content_type: application/pdf・chars 82）。data/tanshin/4707.csv も存在しないため、短信本文を根拠にできない。 株探の銘柄ページ（200）が持つのは「発行済株式数 | 5,969,024 株」で、自己株式控除後の数ではない（この分母では1株純資産は約618円になる）。株探の PBR 0.51倍（334円時点）は BPS 約655円を含意し、本文の659円に近いが、**近いことは裏付けではない**。"
+        action: "自己株式数を data 側に取り込むか、分母の出所を注記する"
+      - id: V49
+        section: price
+        quote: "配当は年7円†（2026年10月期予想・据え置き†）で 2.0%程度。前期の配当性向は 18.8%†、今期予想は 23.1%†"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707&b=k202608280005", "https://kabutan.jp/stock/?code=4707", "data/fundamentals/4707.csv", "data/prices/daily.csv"]
+        evidence: "株探の決算速報（200）今期【予想】の「修正 1株配」欄は 2025.10 が 7、予 2026.10 も 7 で、発表日は 25/12/04 のまま（据え置き）。利回り: 7/346=2.02%（採用終値 346円）。株探の銘柄ページ（200）も「利回り 2.10 ％」（334円時点の 7/334=2.10%）。配当性向: 7/37.14（FY2025-10 eps・採用値）=18.85%、7/30.35（FY2026-10 eps_plan・採用値）=23.06%。"
+      - id: V50
+        section: price
+        quote: "信用は買残 123.0千株※（8月21日）・売残 0株※で、**売残が無いため信用倍率は算出できない**"
+        verdict: supported
+        tier: dataset
+        sources: ["data/margin/4707.csv", "https://kabutan.jp/stock/?code=4707"]
+        evidence: "data/margin/4707.csv: 2026-08-21 long_balance=123.0／short_balance=0.0／ratio 空／status=RATIO_NA。株探の銘柄ページを再取得（200）した信用取引の表も「08/21 | 0.0 | 123.0 | －」。「買残は7月31日の 114.1千株※から3週続けて増えており」も同表の 07/31 114.1 → 08/07 116.1 → 08/14 120.3 → 08/21 123.0 と一致する。"
+      - id: V51
+        section: price
+        quote: "自己株式を除く株式数 5,600,449株†のおよそ2.2%（当台帳の計算）"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4707"]
+        evidence: "分母の 5,600,449株 は再取得できたどの出典にも無い（V48 と同じ）。株探の銘柄ページ（200）が持つ「発行済株式数 | 5,969,024 株」で計算すると 123.0千株/5,969,024=2.06% で「およそ2.2%」にはならない。5,600,449 を使えば 2.196% になるが、その数字自体が未確認。"
+        action: "分母を発行済株式数に統一するか、自己株式数の出典を data 側に取り込む"
+      - id: V52
+        section: sources
+        quote: "| 資本金の額の減少のお知らせ | 2026-02-27 |"
+        verdict: contradicted
+        tier: primary
+        sources: ["https://kitac.co.jp/ir/report/"]
+        evidence: "会社の決算短信・開示情報ページを再取得（200）すると、この開示は「資本金の額の減少のお知らせ 2026年3月1日」として並んでいる（2026年 その他開示情報）。2026年2月27日は同ページでは「令和8年10月期第1四半期の決算短信を発表 2026年2月27日」の日付であり、減資の開示日ではない。本文も別の箇所で「2026年3月1日付で減資の効力が発生し」と書いていて、出典表の日付とねじれている。"
+        action: "出典表の開示日を 2026-03-01 に直す"
+      - id: V53
+        section: sources
+        quote: "株探が比較対象に挙げるのは いであ・川崎地質・エコシステム だが"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4707"]
+        evidence: "株探の銘柄ページを再取得（200）。「比較される銘柄 いであ , 川崎地質 , エコシステム」。"
+      - id: V54
+        section: sources
+        quote: "**2026年1月9日付の「保有状況報告書」。** 株探の開示一覧に載っているが本文を取得できておらず"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4707"]
+        evidence: "株探の個別銘柄ニュース一覧を再取得（200）したが、載っているのは直近15件（26/08/31〜26/06/19）で、2026年1月9日の行はこのURLからは見えない。「保有状況報告書」の文字列もヒット0件。**この一覧にその開示があること自体が確かめられていない。**"
+        action: "月別アーカイブのURL（2026年1月）を出典に足すか、記述を落とす"
+      - id: V55
+        section: sources
+        quote: "`valuation_model` `fiscal_year_end` `ir_url` `peers` がいずれも `TO_VERIFY` のまま"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: "裏取りは隔離（SKILL.md §隔離・D18）により data/master.yaml を開かない。したがってこの検証者は master.yaml の中身を確かめられない。**開かなかったことをもって「問題なし」とはしない。**"
+        action: "master.yaml の未設定は登録側（人間）が確認する。verify の対象外である旨を本文に添えてもよい"
+      - id: V56
+        section: price
+        quote: "      - {date: \"2026-01-16\", label: \"定時株主総会・減資を決議（この一年の高値）\"}"
+        verdict: supported
+        tier: primary
+        sources: ["https://kitac.co.jp/ir/report/", "data/prices/daily.csv"]
+        evidence: "会社の開示一覧を再取得（200）: 「役員人事のお知らせ 2026年1月16日／当社は、令和8年1月16日開催の第53回定時株主総会ならびに取締役会において、取締役が選任され就任しました。」＝この日が第53回定時株主総会。減資については「資本金に関するお知らせ 2025年12月4日／令和8年1月16日開催予定の第53回定時株主総会に、資本金の額の減少について付議することを決議」とあり、1月16日の総会に付議されている。株価は data/prices/daily.csv で 2026-01-16 close=385.0 が52週の最高値（V42）。他の点も同ページで確認できる: 2025年12月4日 通期決算短信／2026年5月29日 第2四半期（中間期）決算短信／2026年8月27日 記念株主優待／2026年8月20日の重複上場は V06。"
+      - id: V57
+        section: financials
+        quote: "採用値のあるこの8四半期のうち、いちばん高い2つはどちらも2〜4月期にあたり、5〜7月期の2つはどちらも赤字である。"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv"]
+        evidence: "data/fundamentals/4707.csv の operating_margin 採用値（status に OK）: Q2024-08_2024-10=11.25／Q2024-11_2025-01=8.95／Q2025-02_2025-04=12.77／Q2025-05_2025-07=-3.51／Q2025-08_2025-10=-2.2／Q2025-11_2026-01=5.12／Q2026-02_2026-04=19.57／Q2026-05_2026-07=-11.52 の8本。上位2つは 19.57（2026-02_04）と 12.77（2025-02_04）でどちらも2〜4月期。5〜7月期の2本（-3.51／-11.52）はどちらも負。全点で成立する（D40）。"
+      - id: V58
+        section: financials
+        quote: "実績の4期は年ごとに振れ、いちばん大きい期といちばん小さい期で4.7倍の開きがある。右端は会社計画で、実績ではない。"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4707.csv"]
+        evidence: "図が引く4期の採用値 operating_income は 77／166／362／146 で 362/77=4.70倍（V27 と同じ式）。右端 FY2026-10 は metric が operating_income_plan（value=254・status=OK）で、実績の metric とは別キー。図の source 定義でも period ごとに metric: operating_income_plan が指定されている。"
+
+  - run: "2026-08-31T16:15:00+09:00"
+    report_updated: "2026-08-31"
+    report_sha256: "23a44945fe3ab146234b88444989c45d450c9dfea9538a67afe2bd45544ed529"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3。V12 だけの再検証）"
+    urls_refetched:
+      - {url: "https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=4707&b=k202608280005", http_status: 200}
+    claims:
+      - id: V12
+        section: updates
+        quote: "営業利益 1.58億円†（4.9%減†）"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf"
+          - "https://kabutan.jp/stock/news?code=4707&b=k202608280005"
+        evidence: >-
+          一次情報（決算短信PDF）を再取得（200・application/pdf・353,973バイト）。
+          fetch_source.py は PDF をテキスト化しないので、同じURLを同じ User-Agent で
+          取り直して pypdf で読んだ（data/tanshin/4707.csv は存在しない）。
+          表紙に「(百万円未満切捨て)」、連結経営成績(累計)の表は
+          「８年10月期第３四半期 2,424 △4.9 ／ 158 △4.9 ／ 174 △7.3 ／ 141 △33.7」
+          「７年10月期第３四半期 2,549 9.5 ／ 166 △33.1 ／ 188 △33.4 ／ 213 11.2」。
+          本文（p.4）も「営業利益１億５千８百万円（同4.9％減）」。
+          添付の四半期連結損益計算書（p.8・単位：千円）は
+          「営業利益 166,276（前年同期）→ 158,053（当第3四半期）」で、
+          千円実額での増減率は 158,053/166,276-1 = -4.945%（小数第1位で △4.9）。
+          金額も 158,053千円 = 1.58億円で一致する。
+          二次情報の株探（再取得200）の表は「25.11-07 |…| 158 |…」「前年同期比 |…| -4.8 |…」だが、
+          これは表側の単位（百万円・切捨て）どうしの 158/166-1 = -4.819% を丸めた値であり、
+          経常利益も同じ構図（千円実額 -7.346% → 短信 △7.3、切捨て 174/188-1 = -7.447% → 株探 -7.4）。
+          率の食い違いは**丸めの基数の違い**であって、どちらかが誤植なのではない。
+          当台帳は一次情報を採るので、本文の「4.9%減」は短信どおりで正しい。
+        action: >-
+          前 run（2026-08-31T15:25:00+09:00）の V12 contradicted は誤り。二次情報（株探）の
+          再計算値を一次情報より上に置いていた。本文の修正は不要。
+          なお短信の実額（営業利益 158,053千円）はまだ data/tanshin/4707.csv に入っていない。
+          この PDF を fetch_tanshin.py に --dry-run で読ませると
+          「status=SUMMARY_UNPARSED / 抽出 0件 / note: 表紙（決算期・連結区分・会計基準）を
+          確定できない」で止まる（和暦表記の表紙）。取り込みとパーサの手当ては別件。
+
+# --- 出典と食い違った記述の始末（D44: contradicted は機械確認でのみ解除）---
+#
+# ★V12 はここに入れていない。**検証者の指摘の方が誤り**だったため。
+#   検証者は株探の決算速報（二次情報）を出典に使ったが、株探は XBRL から
+#   前年同期比を計算し直しているため率が短信と1桁ずれる（-4.8 / -7.4 / -33.8）。
+#   決算短信 PDF（一次情報・https://kitac.co.jp/wp/wp-content/uploads/2026/08/20260828.pdf）
+#   の第3四半期連結業績は「2,424 △4.9 ／ 158 △4.9 ／ 174 △7.3 ／ 141 △33.7」
+#   （百万円未満切捨て）で、**率は本文の 4.9% / 7.3% / 33.7% が正しい**。
+#   誤っていたのは金額2件だけなので、そちらだけ直した（V13 / V14）。
+#   V12 の解除は機械確認が要る（D44）ので、この銘柄の裏取りを引き直す。
+resolutions:
+  - id: V13
+    resolved_at: "2026-08-31T16:20:00+09:00"
+    how: rewritten
+    quote: "経常利益 1.74億円†（7.3%減†）"
+    note: >-
+      金額が誤り。短信の実額は 174百万円。率の 7.3% は短信どおりなので変えていない
+      （検証者は株探の再計算値 7.4% に合わせるよう提案していたが、一次情報を採る）
+  - id: V14
+    resolved_at: "2026-08-31T16:20:00+09:00"
+    how: rewritten
+    quote: "親会社株主に帰属する四半期純利益 1.41億円†（33.7%減†）"
+    note: >-
+      金額が誤り。短信の実額は 141百万円。1.42億円は同じ段落の国庫補助金の額との
+      取り違え。率の 33.7% は短信どおりなので変えていない
+  - id: V39
+    resolved_at: "2026-08-31T16:20:00+09:00"
+    how: rewritten
+    quote: "直近20営業日の売買代金は中央値 290万円※・平均 493万円※"
+    note: >-
+      窓が25営業日で judge と食い違っていたうえ、出来高の中央値も誤っていた。
+      judge の median_turnover_20d / avg_turnover_20d と同じ窓・同じ量に揃えた
+      （実測 2,902,350円 / 4,931,385円）。流動性ゲートに届かないという結論は変わらない
+  - id: V52
+    resolved_at: "2026-08-31T16:20:00+09:00"
+    how: rewritten
+    quote: "| 資本金の額の減少のお知らせ | 2026-03-01 |"
+    note: "出典表の開示日が誤り。PDF の発信日は 2026-03-01"

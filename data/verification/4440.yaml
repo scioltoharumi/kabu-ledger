@@ -1,0 +1,555 @@
+code: "4440"
+runs:
+  - run: "2026-08-31T15:45:00+09:00"
+    report_updated: "2026-08-31"
+    report_sha256: "56c6490b1f000121d173f2a5851b07e15da29e8e1e4a5a808dd8d3292adec7d2"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    note: "本文の出典URL 13件すべてを src/fetch_source.py で再取得した（全件 HTTP 200）。**この銘柄の最大の制約: † 印が依っている一次情報5件はすべて IR BANK 上の PDF で、fetch_source.py はテキスト化しない。機械抽出の受け皿である data/tanshin/4440.csv も存在しない。** そのためセグメント別業績・貸借対照表・のれん・中期経営計画の数値目標・前回計画・株式数・引用文はこの文脈では確かめられず unverifiable にした（本文が † と自己申告している範囲とほぼ一致する）。一方、第3四半期累計の売上・営業利益・経常利益とその前年同期比は data/fundamentals の四半期採用値の和で再現でき、株価・信用残・指数は data/prices/daily.csv・data/margin/4440.csv・data/indices/topix.csv と突き合わせて supported にした。contradicted は1件（V50・高値から8/27までの開示を『2月17日と4月13日だけ』と書いているが、IR BANK の一覧はこの期間に 2026/07/14 の2件と 2026/03/26 を載せている）。再取得した13ページに指示めいた文字列（fetch_source.py の INJECTION_MARKS）は検出されなかった。"
+    urls_refetched:
+      - {url: "https://www.witz-inc.co.jp/company/overview", http_status: 200}
+      - {url: "https://www.witz-inc.co.jp/ir", http_status: 200}
+      - {url: "https://www.witz-inc.co.jp/ir/news/result/", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=4440", http_status: 200}
+      - {url: "https://car.watch.impress.co.jp/docs/news/2136234.html", http_status: 200}
+      - {url: "https://s.kabutan.jp/news/n202608280819/", http_status: 200}
+      - {url: "https://irbank.net/4440/ir", http_status: 200}
+      - {url: "https://kabutan.jp/news/marketnews/?b=n202608261057", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20260714/140120260709590234.pdf", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20260714/140120260710591515.pdf", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20251014/140120251009570632.pdf", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20251014/140120251006569161.pdf", http_status: 200}
+      - {url: "https://f.irbank.net/pdf/20260217/140120260217563258.pdf", http_status: 200}
+    claims:
+      - id: V01
+        section: updates
+        quote: "2025年8月期は売上高 4,856百万円✓・営業利益 566百万円✓と過去最高で"
+        verdict: unsupported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "fundamentals の採用値（status に OK を含む行）で通期売上を全期比較すると FY2014 1202 / 2015 1499 / 2016 1790 / 2017 2166 / 2018 2375 / 2019 2300 / 2020 2222 / 2021 2198 / 2022 2345 / 2023 2501 / 2024 3477 / 2025 4856 で、4,856 は当台帳が持つ全期の最大。一方 operating_income の採用値は FY2022 236 / FY2023 187 / FY2024 281 / FY2025 566 の4期しか無く（FY2021 以前は SINGLE_SOURCE で採用値が空、D7 により裏付けに使えない）、566 が「過去最高」かどうかは当台帳では確かめられない。"
+        action: "「過去最高」の範囲を当台帳が持つ期間に限るか、営業利益側の根拠を足す"
+      - id: V02
+        section: updates
+        quote: "スクリーニング起点で登録した銘柄。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件"
+        verdict: unverifiable
+        tier: none
+        evidence: "根拠として挙がっているのは data/master.yaml だが、SKILL.md §隔離 が 検証コンテキストに master.yaml を渡さないと定めている（D18・保有情報）。この run では開いていないので、通過件数も取得時刻も確かめていない。"
+        action: "スクリーニング由来の記述は master.yaml を読める文脈（intake / weekly）で確認する"
+      - id: V03
+        section: updates
+        quote: "8月27日にトヨタ自動車が2028年からレベル2＋＋の自動運転を市販車に載せると各社が報じ"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://car.watch.impress.co.jp/docs/news/2136234.html"
+          - "https://kabutan.jp/stock/?code=4440"
+        evidence: "Car Watch（200・記事日時「2026年8月27日 17:29」）本文: 「トヨタ自動車は8月27日、自動運転に対する取り組みを改めて説明するとともに、2028年よりレベル2＋＋の自動運転機能を導入することを明らかにした。」。「各社が報じ」の裏付けとして、株探の基本情報ページ（200）のニュース欄にも「「自動運転車」が１位にランク、トヨタが２８年メドに「レベル２＋＋」市場投入へ＜注目テーマ＞」の見出しがあり、2社が同内容を報じている。なお Car Watch 本文に「市販車」の語は無い（「導入」）。"
+      - id: V04
+        section: updates
+        quote: "株探の東証スタンダード大引け記事は、当社をこの日のストップ高銘柄の1つとして挙げている"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://s.kabutan.jp/news/n202608280819/"
+        evidence: "s.kabutan の記事（200・「2026年8月28日 15時32分」）本文: 「個別ではシリコンスタジオ<3907>、イーソル<4420>、ヴィッツ<4440>、トライアイズ<4840>、シード<7743>がストップ高。」"
+      - id: V05
+        section: updates
+        quote: "**8月28日は2つの取得元の照合が成立せず、採用終値が無い**（`status=SINGLE_SOURCE`）。主ソース単独の値は 1,485円※で、8月27日の採用終値 1,203円✓からは +23.4%※にあたる"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/prices/daily.csv"
+        evidence: "daily.csv の 2026-08-28,4440 行: close 空・status=SINGLE_SOURCE・source_primary=yahoo_jp・value_primary=1485.0・source_secondary 空。2026-08-27,4440 は close=1203.0・status=OK。1485/1203-1 = +23.44% → +23.4%。"
+      - id: V06
+        section: updates
+        quote: "出来高 562,600株※は直近25営業日平均 13,064株のおよそ43倍"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/prices/daily.csv"
+        evidence: "daily.csv の 2026-08-28,4440 の volume=562600。2026-08-27 を最終営業日とする25行（2026-07-23〜2026-08-27）の volume 平均は 13,064.0（端数なし）。562600/13064 = 43.06 → およそ43倍。"
+      - id: V07
+        section: updates
+        quote: "株探の基本情報ページは11時29分時点（15分ディレイ）で 1,785円※・ストップ高と表示している"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://kabutan.jp/stock/?code=4440"
+        evidence: "kabutan 基本情報（200・2026-08-31 再取得）の株価欄: 「株価15分ディレイ」「4440 ヴィッツ 東証Ｓ 11:29 1,785円 S高 +300 +20.20%」。前日終値は「1,485 ( 08/28 )」と表示。"
+      - id: V08
+        section: updates
+        quote: "**当台帳の株価データは8月28日までで、8月31日の値は入っていない**"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/prices/daily.csv"
+        evidence: "daily.csv の 4440 は 270行、最初 2025-07-22・最後 2026-08-28。2026-08-31 の行は無い。"
+      - id: V09
+        section: updates
+        quote: "会社からの適時開示はこの2週間に無い。直近の開示は2026年7月14日の第3四半期決算短信と、同じ日の通期業績予想の上方修正である"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://irbank.net/4440/ir"
+        evidence: "IR BANK の開示一覧（200・2026-08-31 再取得）の先頭は「2026/07/14 2026年8月期の連結業績予想の修正に関するお知らせ（12:00） / 2026年8月期第3四半期決算短信〔日本基準〕(連結)（12:00）」で、それ以降の日付の行は無い（次は 2026/04/13）。2026-08-17 以降の2週間に開示は載っていない。「上方」かどうかは表題からは分からないが、株探の業績推移の予想行（発表日 26/07/14・売上 56.5億）と data/fundamentals の revenue_plan 5650（OK）が整合する。"
+      - id: V10
+        section: updates
+        quote: "当社は会社概要ページで主要取引先の筆頭にトヨタ自動車を挙げており"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.witz-inc.co.jp/company/overview"
+        evidence: "会社概要（200）の表: 「主要取引先 | トヨタ自動車株式会社 オークマ株式会社 アイシングループ パナソニックグループ レーザーテック株式会社」。先頭がトヨタ自動車。"
+      - id: V11
+        section: updates
+        quote: "採用終値は 1,170円✓（8/21）→ 1,203円✓（8/27）で +2.8%。同じ期間の TOPIX（採用終値）は +1.2%"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/prices/daily.csv"
+          - "data/indices/topix.csv"
+        evidence: "daily.csv: 2026-08-21 close=1170.0(OK)、2026-08-27 close=1203.0(OK) → 1203/1170-1 = +2.82%。topix.csv: 2026-08-21 close=4067.29(OK)、2026-08-27 close=4117.22(OK) → 4117.22/4067.29-1 = +1.23%。"
+      - id: V12
+        section: updates
+        quote: "信用買残は 144.8千株※（8/21・前週 147.3千株※）、信用倍率 45.25倍※"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/margin/4440.csv"
+          - "https://kabutan.jp/stock/?code=4440"
+        evidence: "margin/4440.csv 末尾: 2026-08-21 long_balance=144.8 short_balance=3.2 ratio=45.25 unit=千株、2026-08-14 long_balance=147.3。kabutan 基本情報の「信用取引 (単位:千株)」表も 08/21 | 3.2 | 144.8 | 45.25、08/14 | 3.5 | 147.3 | 42.09 と同じ値を出している。"
+      - id: V13
+        section: company
+        quote: "1997年6月設立†、本社は名古屋市中区、資本金 612,524千円†"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.witz-inc.co.jp/company/overview"
+        evidence: "会社概要（200）: 「本社所在地 | 〒460-0004 名古屋市中区新栄町1-1 明治安田生命名古屋ビル 12F」「創立 | 1997年6月」「資本金 | 612,524千円」。ページの語は「設立」ではなく「創立」。"
+        action: "「設立」と「創立」は必ずしも同じ日付ではない。会社の語（創立）に合わせるか、有報・沿革で設立日を確かめる"
+      - id: V14
+        section: company
+        quote: "8月決算で、東証スタンダードに上場している"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://kabutan.jp/stock/?code=4440"
+        evidence: "kabutan 基本情報（200）: 銘柄名の脇に「東証Ｓ」、業績推移の決算期は 「2024.08 / 2025.08 / 予 2026.08」で8月期。"
+      - id: V15
+        section: company
+        quote: "会社は自らの技術を、機能安全（セーフティ）、車載サイバーセキュリティ、モデルベース開発、仮想空間シミュレーション、ＡＩ安全保証、協働ロボット向けシミュレーションと説明している"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.witz-inc.co.jp/company/overview"
+        evidence: "会社概要（200）のグローバルナビの事業紹介に「自動車サイバーセキュリティ」「機能安全」「MBD」「3D仮想化技術」「Plant Simulation」「AI安全保証」「協働ロボット向け シミュレーションソフト」が並ぶ。表の「事業内容」は「制御ソフトウェアエンジニアリングサービス 自動運転/先進安全向け シミュレーション技術による開発支援 組込セキュリティサービス」。本文の「モデルベース開発」は MBD、「仮想空間シミュレーション」は 3D仮想化技術/Plant Simulation に対応する。"
+      - id: V16
+        section: company
+        quote: "会社概要ページの主要取引先にはトヨタ自動車・オークマ・アイシングループ・パナソニックグループ・レーザーテックが並ぶ"
+        verdict: supported
+        tier: primary
+        sources:
+          - "https://www.witz-inc.co.jp/company/overview"
+        evidence: "会社概要（200）: 「主要取引先 | トヨタ自動車株式会社 オークマ株式会社 アイシングループ パナソニックグループ レーザーテック株式会社」。5社・順序とも本文と一致。"
+      - id: V17
+        section: company
+        quote: "2026年8月期の第3四半期累計では売上高 35.9億円†（前年同期比 +25.8%†）・セグメント利益 5.44億円†（同 +47.8%†）"
+        verdict: unverifiable
+        tier: none
+        evidence: "セグメント別の数値は第3四半期決算短信（https://f.irbank.net/pdf/20260714/140120260709590234.pdf）にしか無い。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。 data/fundamentals/4440.csv にセグメント別の指標は無い。"
+        action: "src/fetch_tanshin.py で data/tanshin/4440.csv を作るまでセグメント数値は裏が取れない"
+      - id: V18
+        section: company
+        quote: "第3四半期累計は売上高 6.15億円†（同 −25.4%†）・セグメント利益 32百万円†（同 −59.7%†）で、大型案件の納期調整により前年同期を下回った†"
+        verdict: unverifiable
+        tier: none
+        evidence: "同上（センシング事業）。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。"
+        action: "同 V17"
+      - id: V19
+        section: company
+        quote: "農業向けにレーザー・ＧＰＳを使ったマシンコントロール装置を作るアグコントロールシステム（2026年3月2日に全株式を取得†）"
+        verdict: unverifiable
+        tier: none
+        evidence: "IR BANK の開示一覧（200）に「2026/02/17 子会社等の異動を伴う株式取得に関するお知らせ（18:00）」はあるが、表題に社名・事業内容・取得日は無い。中身は PDF（https://f.irbank.net/pdf/20260217/140120260217563258.pdf）。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。 会社概要（200）の「関係会社」には「株式会社アグコントロールシステム」が載っており、現在グループ内であることまでは確認できたが、取得日 2026年3月2日と事業内容は確かめていない。"
+      - id: V20
+        section: company
+        quote: "クリスタライトの設立、イーガー・テスコ・リザーブマート・アグコントロールシステムの取得と、直近3年で連結子会社が続けて増えている†"
+        verdict: unsupported
+        tier: secondary
+        sources:
+          - "https://www.witz-inc.co.jp/company/overview"
+          - "https://irbank.net/4440/ir"
+        evidence: "会社概要（200）の「関係会社」に 株式会社アトリエ・株式会社ヴィッツ沖縄・株式会社スクデット・ソフトウェア・株式会社クリスタライト・株式会社イーガー・テスコ株式会社・株式会社リザーブマート・株式会社アグコントロールシステム が並ぶ（名前は実在）。IR BANK の開示一覧（200）には「子会社等の異動を伴う株式取得に関するお知らせ」が 2024/03/25・2025/04/16・2026/02/17 の3回、ほかに 2024/08/21「簡易株式交換による株式会社アトリエの完全子会社化」、2025/05/20「連結子会社の解散及び清算」がある。ただしどの表題にも取得先の社名が無く、どの社がいつ増えたかの対応は取れない。「クリスタライトの設立」を述べた出典は再取得したどのページにも無い。"
+        action: "沿革ページか有価証券報告書を出典に足すか、社名と時期の対応を落とす"
+      - id: V21
+        section: financials
+        quote: "| 2025/8期 | 4,856 | 566 | 588 | 11.66 | 69.4 |"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "fundamentals の FY2025-08 採用値: revenue=4856(OK|ROUNDING)、operating_income=566(OK|ROUNDING)、ordinary_income=588(OK|ROUNDING)、operating_margin=11.66(OK|ROUNDING)、equity_ratio=69.4(OK)。他の3行も一致: FY2022 2345/236/265・FY2023 2501/187/224・equity_ratio 78.1・FY2024 3477/281/347・equity_ratio 68.8。"
+      - id: V22
+        section: financials
+        quote: "（「—」は照合が成立した採用値がまだ無い期。空欄ではなく欠測として残している）"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "表で「—」になっている4セルは、いずれも採用値が空: operating_margin は FY2022-08 SINGLE_SOURCE（irbank 10.09）・FY2023-08 SINGLE_SOURCE（irbank 7.48）・FY2024-08 MISMATCH（kabutan 8.08 / irbank 8.11）、equity_ratio は FY2022-08 SINGLE_SOURCE（irbank 79.5）。D7 のとおり採用値は空のまま。"
+      - id: V23
+        section: financials
+        quote: "3期で売上は 2,501百万円✓→4,856百万円✓の +94%、営業利益は 187百万円✓→566百万円✓と3倍になった"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "採用値どうしの式: 4856/2501-1 = +94.16% → +94%。566/187 = 3.027 → 3倍。"
+      - id: V24
+        section: financials
+        quote: "2025年8月期のセンシング事業の +500.8%†は、前期の計上が2024年4月から8月までの5か月ぶんしか無かったことによる†"
+        verdict: unverifiable
+        tier: none
+        evidence: "セグメント別の増減率と計上期間は2025年8月期決算短信（https://f.irbank.net/pdf/20251014/140120251009570632.pdf）由来。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。"
+      - id: V25
+        section: financials
+        quote: "四半期の営業利益率は 6.92%✓から 16.31%✓まで振れる"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "図 op_margin_q が引く8期の operating_margin 採用値: Q2024-06_08 6.92 / Q2024-09_11 10.79 / Q2024-12_2025-02 14.98 / Q2025-03_05 11.93 / Q2025-06_08 8.53 / Q2025-09_11 16.31 / Q2025-12_2026-02 9.06 / Q2026-03_05 14.66（いずれも status に OK）。最小 6.92・最大 16.31。"
+      - id: V26
+        section: financials
+        quote: "直近の2026年3-5月期は売上 1,679百万円✓・営業利益 246百万円✓・営業利益率 14.66%✓で、当台帳が持つ四半期の採用値のなかでは売上・利益とも最大である"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "Q2026-03_2026-05 の採用値 revenue=1679・operating_income=246・operating_margin=14.66（いずれも OK）。四半期の採用値がある全期（Q2021-09_11 以降）で revenue の最大は 1679、operating_income の最大は 246。次点は revenue 1416（Q2025-09_11）・operating_income 231（同）。"
+      - id: V27
+        section: financials
+        quote: "売上高 4,297百万円†（前年同期比 +16.7%†）・営業利益 586百万円†（同 +25.8%†）・経常利益 606百万円†（同 +25.0%†）"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "短信 PDF は読めないが、当台帳の四半期採用値の和で同じ数字が出る。売上 1416+1202+1679 = 4297（前年 1052+1286+1342 = 3680 → +16.77%）、営業利益 231+109+246 = 586（前年 113+193+160 = 466 → +25.75%）、経常利益 236+121+249 = 606（前年 124+199+162 = 485 → +24.95%）。四半期採用値は百万円丸めのため増減率は ±0.1pt 程度ぶれる（売上は 16.68〜16.86% の幅に入り、本文の +16.7% はこの幅の内側）。"
+      - id: V28
+        section: financials
+        quote: "**この累計は当台帳の四半期採用値の和と一致する**（売上 1,416✓＋1,202✓＋1,679✓＝4,297、営業利益 231✓＋109✓＋246✓＝586）"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "1416+1202+1679 = 4297、231+109+246 = 586。いずれも status に OK を含む採用値。"
+      - id: V29
+        section: financials
+        quote: "増益の中身は売上総利益率の改善で、36.5%から39.8%へ上がっている（短信の売上総利益と売上高から当台帳が計算）"
+        verdict: unverifiable
+        tier: none
+        evidence: "売上総利益は data/fundamentals の指標一覧（sources.yaml fundamentals.metrics）に無く、当台帳の採用値からは計算できない。元は第3四半期決算短信（https://f.irbank.net/pdf/20260714/140120260709590234.pdf）。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。"
+      - id: V30
+        section: financials
+        quote: "第3四半期末の総資産 4,741百万円†に対して純資産 3,203百万円†、自己資本比率 67.3%†"
+        verdict: unverifiable
+        tier: none
+        evidence: "短信 PDF（https://f.irbank.net/pdf/20260714/140120260709590234.pdf）由来。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。 なお fundamentals の C2025-09_2026-05 には total_assets 4741・equity 3188・equity_ratio 67.3 が入っているが、いずれも status=SINGLE_SOURCE（kabutan_bs 単独）で採用値ではないため、D7 により裏付けには使えない。純資産 3,203 に相当する行は無い（3,188 は自己資本で別勘定）。"
+      - id: V31
+        section: financials
+        quote: "四半期連結貸借対照表に借入金の科目は無く†"
+        verdict: unverifiable
+        tier: none
+        evidence: "貸借対照表の科目の有無は短信 PDF（https://f.irbank.net/pdf/20260714/140120260709590234.pdf）でしか確かめられない。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。 本文自身も「まだ確かめられていないこと」に有利子負債を挙げている。"
+      - id: V32
+        section: financials
+        quote: "2025年8月期のキャッシュフローは 営業CF 571百万円✓・投資CF ＋85百万円✓・財務CF −79百万円✓、フリーCF 656百万円✓"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "FY2025-08 の採用値: operating_cf=571(OK)・investing_cf=85(OK)・financing_cf=-79(OK|ROUNDING)・free_cf=656(OK|ROUNDING)。571+85 = 656 で整合。"
+      - id: V33
+        section: financials
+        quote: "投資CF がプラスなのは定期預金の純減 300百万円†が効いたためで"
+        verdict: unverifiable
+        tier: none
+        evidence: "CF 計算書の内訳は2025年8月期決算短信（https://f.irbank.net/pdf/20251014/140120251009570632.pdf）由来。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。"
+      - id: V34
+        section: financials
+        quote: "第3四半期末ののれんは 259百万円†、第3四半期累計ののれん償却額は 25百万円†"
+        verdict: unverifiable
+        tier: none
+        evidence: "短信 PDF（https://f.irbank.net/pdf/20260714/140120260709590234.pdf）由来。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。"
+      - id: V35
+        section: outlook
+        quote: "会社計画（2026年8月期・連結）は 売上高 5,650百万円✓・営業利益 633百万円✓・経常利益 656百万円✓・親会社株主に帰属する当期純利益 450百万円✓"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "FY2026-08 の採用値: revenue_plan=5650(OK)・operating_income_plan=633(OK)・ordinary_income_plan=656(OK)・net_income_plan=450(OK)。sources_all はいずれも kabutan と irbank_pl_consolidated の2運営が一致。"
+      - id: V36
+        section: outlook
+        quote: "**2026年7月14日に上方修正されている**"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://irbank.net/4440/ir"
+          - "https://kabutan.jp/stock/?code=4440"
+        evidence: "IR BANK の開示一覧（200）に「2026/07/14 2026年8月期の連結業績予想の修正に関するお知らせ（12:00）」。株探の業績推移（200）の予想行は「予 2026.08 | 56.5 | 6.6 | 4.5 | 112.5 | 18.0 | 26/07/14」で発表日が 26/07/14。修正後の値は data/fundamentals の revenue_plan 5650(OK) と一致する。「上方」であることは、直後の括弧内の前回計画（V37）に依存する。"
+      - id: V37
+        section: outlook
+        quote: "（前回計画は 5,600 / 580 / 596 / 435 百万円†）"
+        verdict: unverifiable
+        tier: none
+        evidence: "前回計画の4数値は業績予想の修正のお知らせ（https://f.irbank.net/pdf/20260714/140120260710591515.pdf）にしか無い。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。 data/fundamentals は最新の計画しか持たない（過去の計画値の行は無い）。"
+        action: "修正前後を並べる記述は、PDF を機械抽出できるまで「未確認」のまま置く"
+      - id: V38
+        section: outlook
+        quote: "「米国の政策動向及び電気自動車の需要減退を背景とした、取引先におけるＥＶ関連プロジェクトの中止等の影響により、第４四半期連結会計期間以降不透明な状況が続くものと予想されます」と書いている†"
+        verdict: unverifiable
+        tier: none
+        evidence: "短信本文の引用。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。 引用文の一字一句は確かめていない。"
+        action: "引用は PDF を機械抽出できるまで裏が取れない。レポートの主要な弱気材料なので優先度は高い"
+      - id: V39
+        section: outlook
+        quote: "通期計画 5,650百万円✓から第3四半期累計 4,297百万円†を引くと、第4四半期単独（2026年6-8月）は売上 13.5億円・営業利益 47百万円になる"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "5650-4297 = 1353（13.53億円）。営業利益は 633-586 = 47。4297 と 586 は四半期採用値の和と一致する（V28）。"
+      - id: V40
+        section: outlook
+        quote: "前年同期の第4四半期は売上 1,176百万円✓・営業利益 100百万円✓なので、**会社計画は第4四半期を増収・大幅減益で置いている**"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "Q2025-06_2025-08 の採用値 revenue=1176(OK|ROUNDING)・operating_income=100(OK)。1353 > 1176（増収）、47 < 100（減益）。"
+      - id: V41
+        section: outlook
+        quote: "中期経営計画（2025年8月期〜2027年8月期）は2025年10月14日に数値目標が上方修正され"
+        verdict: unsupported
+        tier: secondary
+        sources:
+          - "https://irbank.net/4440/ir"
+        evidence: "IR BANK の開示一覧（200）に「2025/10/14 中期経営計画(2025年8月期～2027年8月期)の数値目標変更に関するお知らせ（12:25）」があり、日付と開示の存在は確認できた。ただし表題は「変更」であって「上方修正」ではなく、方向は中身（PDF・https://f.irbank.net/pdf/20251014/140120251006569161.pdf）に依る。同じ表題の開示は 2025/05/20 にもあり、2024/11/19 には「策定」がある（数値目標の変更は今回が初めてではない）。"
+        action: "「数値目標を変更」と書くか、変更前後の数値の裏が取れてから「上方修正」と書く"
+      - id: V42
+        section: outlook
+        quote: "最終年度の2027年8月期を 売上高 6,000百万円†・営業利益 660百万円†・営業利益率 11.0%†・ROE 14.0%†・1株当たり配当 20.00円†に置いている（変更前は 5,540 / 609 / 11.0% / 13.0% / 18.00円†）"
+        verdict: unverifiable
+        tier: none
+        evidence: "中期経営計画の数値目標変更のお知らせ（https://f.irbank.net/pdf/20251014/140120251006569161.pdf）由来。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。"
+      - id: V43
+        section: outlook
+        quote: "**この中計の2026年8月期の目標 5,600百万円†は、7月の業績予想の修正で 5,650百万円✓に追い越されている。**"
+        verdict: unverifiable
+        tier: none
+        evidence: "5,650 は fundamentals の revenue_plan 採用値（OK）で確認できるが、比較相手の中計 2026年8月期目標 5,600 は PDF（https://f.irbank.net/pdf/20251014/140120251006569161.pdf）由来。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。 片方が確かめられないので比較そのものが未確認。"
+      - id: V44
+        section: outlook
+        quote: "「開発技術者は不足しており、需要に見合ったリソースを確保することが困難な状況にあります。今後もこの状況は続き出生率低下の傾向と相俟って、人財の確保に関する課題は長期にわたるリスクになる」と書いている†"
+        verdict: unverifiable
+        tier: none
+        evidence: "引用元が本文の出典表に無い（短信・有報のどれかと思われるが特定されていない）。会社サイトには「事業等のリスク」ページがあるが、レポートに URL が書かれていないため fetch_source.py では叩けない（本文記載URL以外は終了コード2で拒否される）。"
+        action: "「事業等のリスク」ページ（https://www.witz-inc.co.jp/ir/ 配下）か有報を出典表に足す"
+      - id: V45
+        section: outlook
+        quote: "アグコントロールシステムは取得価額 530百万円†＋関連費用 25百万円†で取得したが、開示された直近3期の売上高は 499百万円→341百万円→268百万円†と減り続けている会社である"
+        verdict: unverifiable
+        tier: none
+        evidence: "株式取得のお知らせ（https://f.irbank.net/pdf/20260217/140120260217563258.pdf）由来。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。"
+      - id: V46
+        section: outlook
+        quote: "時価総額はおよそ48億円（採用終値 1,203円✓と、自己株式を除く発行済株式数 3,999,341株†から当台帳が計算）"
+        verdict: unverifiable
+        tier: none
+        evidence: "算術は合う（1203 × 3,999,341 = 4,811,207,... ≒ 48.1億円）が、分母の「自己株式を除く発行済株式数 3,999,341株」は短信 PDF 由来で再取得できない。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。 再取得できる出典が持つのは自己株式を含む株数で、株探（200）は「発行済株式数 4,176,000 株」「時価総額 74.5 億円」（1,785円時点）、IR BANK（200）は「2026/08/28 時価 62億円」（1,485円時点）と表示する（1785×4,176,000 = 74.5億、1485×4,176,000 = 62.0億で整合）。本文の48億円はこれらと前提（株数・株価）が違うだけで矛盾ではないが、株数は未確認。"
+        action: "自己株式数の出典（有報・短信の株式数注記）を足すか、株探の株数での値も併記する"
+      - id: V47
+        section: price
+        quote: "採用終値は 1,348円✓（2025-09-01）から 1,203円✓（2026-08-27）へ、この一年で **−10.8%**。同じ期間の TOPIX（採用終値）は +34.4% なので、市場に45ポイント負けている"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/prices/daily.csv"
+          - "data/indices/topix.csv"
+        evidence: "daily.csv 2025-09-01 close=1348.0(OK)、2026-08-27 close=1203.0(OK) → -10.76%。topix.csv 2025-09-01 close=3063.19(OK)、2026-08-27 close=4117.22(OK) → +34.41%。34.41-(-10.76) = 45.2 ポイント。"
+      - id: V48
+        section: price
+        quote: "安値は 1,000円✓（2025-11-19）。そこから1月9日の第1四半期決算（経常利益 236百万円✓・前年同期の 124百万円✓から +90.3%。伸び率は当台帳の計算）を受けて買われ、高値 1,706円✓（2026-01-19）を付けた"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/prices/daily.csv"
+          - "data/fundamentals/4440.csv"
+          - "https://irbank.net/4440/ir"
+        evidence: "daily.csv の 2025-09-01 以降の採用終値で最小は 1000.0（2025-11-19）、最大は 1706.0（2026-01-19）。fundamentals の ordinary_income は Q2025-09_2025-11=236(OK)・Q2024-09_2024-11=124(OK) で 236/124-1 = +90.32%。IR BANK の開示一覧（200）に「2026/01/09 2026年8月期第1四半期決算短信〔日本基準〕(連結)（12:00）」。"
+      - id: V49
+        section: price
+        quote: "**そこから8月27日まで −29.5%** で、同じ期間の TOPIX は +12.6%"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/prices/daily.csv"
+          - "data/indices/topix.csv"
+        evidence: "1203/1706-1 = -29.48%。topix.csv 2026-01-19 close=3656.4(OK) → 4117.22/3656.4-1 = +12.60%。"
+      - id: V50
+        section: price
+        quote: "この間の開示は2月17日の子会社取得と4月13日の中間決算だけで、下方修正は出ていない。"
+        verdict: contradicted
+        tier: secondary
+        sources:
+          - "https://irbank.net/4440/ir"
+        evidence: "「この間」は直前の文が定める 2026-01-19〜2026-08-27。IR BANK の開示一覧（200）はこの期間に、2026/02/17 子会社等の異動を伴う株式取得・2026/03/26 【メディア掲載】・2026/04/13 第2四半期(中間期)決算短信 に加えて、**2026/07/14 の2件（2026年8月期の連結業績予想の修正に関するお知らせ／第3四半期決算短信）**を載せている。レポート自身も次の段落（『7月14日の第3四半期決算と上方修正の日は…』）でこの開示に触れており、「だけ」は本文内でも整合しない。なお「下方修正は出ていない」の部分は一覧と矛盾しない。"
+        action: "「だけ」を落として 7/14 の開示を含めるか、対象期間を高値〜7月13日に限定する"
+      - id: V51
+        section: price
+        quote: "7月14日の第3四半期決算と上方修正の日は 1,131円✓→1,187円✓の +5.0%、出来高 86,700株※。ただし7月末には 1,144円✓まで戻っており"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/prices/daily.csv"
+        evidence: "daily.csv: 2026-07-13 close=1131.0(OK)、2026-07-14 close=1187.0(OK)・volume=86700、2026-07-31 close=1144.0(OK)。1187/1131-1 = +4.95% → +5.0%。"
+      - id: V52
+        section: price
+        quote: "8月26日 1,209円✓・8月27日 1,203円✓（出来高 57,200株※）と来て、28日の急騰につながった"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/prices/daily.csv"
+        evidence: "daily.csv: 2026-08-26 close=1209.0(OK)、2026-08-27 close=1203.0(OK)・volume=57200。"
+      - id: V53
+        section: price
+        quote: "- 会社計画の1株当たり当期純利益 112.87円†に対して、採用終値 1,203円✓は 10.7倍程度"
+        verdict: unverifiable
+        tier: none
+        evidence: "1203/112.87 = 10.66 → 10.7倍で算術は合うが、分母 112.87 は短信 PDF 由来で再取得できない。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。 当台帳の採用値 eps_plan は 112.52（status OK）で 1203/112.52 = 10.69。株探（200）の「PER 15.9 倍」と現在値 1,785円から逆算した 1785/15.9 = 112.3 も 112.5 近辺を指す。"
+        action: "分母を採用値 112.52 にするか、112.87 の出典を機械抽出で取り込む"
+      - id: V54
+        section: price
+        quote: "1株当たり純資産 708.46円✓（2025年8月期末）に対して 1.70倍程度"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+          - "data/prices/daily.csv"
+        evidence: "fundamentals の FY2025-08 bps=708.46(OK・kabutan と irbank が一致)。1203/708.46 = 1.698 → 1.70倍。"
+      - id: V55
+        section: price
+        quote: "第3四半期末の自己資本 3,188百万円†を自己株式を除く株数で割った 797円で見れば 1.51倍程度"
+        verdict: unverifiable
+        tier: none
+        evidence: "3,188百万円は短信 PDF 由来（fundamentals の equity は SINGLE_SOURCE で採用値ではない）、株数も PDF 由来。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。 算術は 3,188,000,000/3,999,341 = 797.1、1203/797 = 1.509 で合う。傍証として株探（200）は「PBR 2.24 倍」・現在値 1,785円 → 1785/2.24 = 796.9 と、IR BANK（200）は「PBR 1.86倍」・8/28 終値 1,485円 → 1485/1.86 = 798.4 と、いずれも 797円前後の1株純資産を示唆する。ただし採用値ではないので判定は据え置く。"
+      - id: V56
+        section: price
+        quote: "現金及び預金 2,573百万円†（第3四半期末）は1株あたり 643円程度。株価からこれを引いた 560円を会社計画の1株益で割ると 5.0倍程度になる"
+        verdict: unverifiable
+        tier: none
+        evidence: "現金及び預金は短信 PDF 由来（fundamentals の cash_equivalents に該当期の採用値は無い）。再取得は 200 で到達するが content-type: application/pdf、fetch_source.py はテキスト化しない（本文に到達できない）。機械抽出の受け皿である data/tanshin/4440.csv も存在しない（data/tanshin にあるのは 150A・4073・6570 のみ）。したがって この文脈では確かめられない。 算術は 2,573,000,000/3,999,341 = 643.4、(1203-643)/112.87 = 4.96 で合う。"
+      - id: V57
+        section: price
+        quote: "未照合の 1,485円※で同じ計算をすると 13.2倍程度になる"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://irbank.net/4440/ir"
+          - "data/prices/daily.csv"
+        evidence: "1485/112.87 = 13.16 → 13.2倍。独立の傍証として IR BANK（200）の銘柄ヘッダが 「2026/08/28 PER 予 13.2倍」を表示している（1485/13.2 = 112.5 で当台帳の eps_plan 112.52 と整合）。1,485円は daily.csv 2026-08-28 の value_primary（status=SINGLE_SOURCE）で、採用値ではない旨は本文が※で明示している。"
+      - id: V58
+        section: price
+        quote: "7月24日は 148.3千株※・44.94倍※で、8月の1か月は横ばいだった"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/margin/4440.csv"
+        evidence: "margin/4440.csv: 2026-07-24 long=148.3 ratio=44.94、2026-07-31 153.8/48.06、2026-08-07 151.1/47.22、2026-08-14 147.3/42.09、2026-08-21 144.8/45.25。148.3 → 144.8 で -2.4%。なお株探の現在のページは直近4週（07/31 以降）しか出しておらず、7/24 の行は当台帳の append-only 記録にしか無い。"
+      - id: V59
+        section: price
+        quote: "株探が「比較される銘柄」に挙げるのはＰＣＩホールディングス・東海ソフト・ＳＩＧグループ（2026-08-31 取得・二次情報）"
+        verdict: supported
+        tier: secondary
+        sources:
+          - "https://kabutan.jp/stock/?code=4440"
+        evidence: "kabutan 基本情報（200・2026-08-31 再取得）: 「比較される銘柄 ＰＣＩＨＤ , 東海ソフト , ＳＩＧＧ」。ページ表記は略称（ＰＣＩＨＤ／ＳＩＧＧ）。"
+      - id: V60
+        section: price
+        quote: "8月28日に一緒に動いたのはイーソル・アイサンテクノロジー・ティアフォーといった自動運転の銘柄だった"
+        verdict: unsupported
+        tier: secondary
+        sources:
+          - "https://s.kabutan.jp/news/n202608280819/"
+          - "https://kabutan.jp/news/marketnews/?b=n202608261057"
+        evidence: "8/28 の大引け記事（200）で確認できるのは「イーソル<4420>、ヴィッツ<4440>…がストップ高」と「アイサンテクノロジー<4667>は一時ストップ高」まで。ティアフォーはこの記事本文に無く、関連記事の見出し「話題株ピックアップ【夕刊】（1）：ティアフォー、オンコリス、リミックス (08/28)」に名前が出るだけで、値動きは分からない。8/26 の株探特集（200）は自動運転／ロボタクシー関連としてティアフォー<593A>・アイサンテクノロジー<4667>・ヴィッツ<4440>などを挙げているが、イーソルはこの6銘柄に入っていない。3社をまとめて「自動運転の銘柄」と束ねる根拠は再取得した出典には無い。"
+        action: "イーソルとアイサンに限るか、ティアフォーの 8/28 の値動きとイーソルの分類の出典を足す"
+      - id: V61
+        section: price
+        quote: "{date: \"2026-08-27\", label: \"自動運転の報道で出来高が急増\"}"
+        verdict: unsupported
+        tier: secondary
+        sources:
+          - "data/prices/daily.csv"
+          - "https://car.watch.impress.co.jp/docs/news/2136234.html"
+        evidence: "daily.csv では 2026-08-27 の出来高 57,200株（前日 8,800株）で急増自体は事実。ただし本文が根拠に挙げるトヨタの報道は Car Watch（200）の記事日時が「2026年8月27日 17:29」＝当日の取引終了後で、8/27 場中の出来高の説明にはならない。出来高が 562,600株になった 8/28 は採用終値が無く図に載らない（D53）。8/26 の株探特集（200・当社を自動運転関連として実名で挙げている）が 8/27 の出来高増の説明になりうるが、図のラベルはどの報道かを示していない。"
+        action: "ラベルの日付か文言を見直す（例: 8/26 の特集記事を指すと明示する）"
+      - id: V62
+        section: sources
+        quote: "† を付けた数値は、下表の会社開示PDFから直接読み取ったもので"
+        verdict: unsupported
+        tier: primary
+        sources:
+          - "https://www.witz-inc.co.jp/company/overview"
+        evidence: "† が付いた数値のうち「資本金 612,524千円†」と「1997年6月設立†」は、PDF ではなく会社概要ページ（HTML・200）に「資本金 | 612,524千円」「創立 | 1997年6月」として載っている。凡例の「決算短信（一次情報）から直接」および本文の「会社開示PDFから」は、少なくともこの2件には当てはまらない。"
+        action: "凡例を「会社開示（PDF・会社サイト）から直接」に直すか、会社サイト由来の数値に別の印を付ける"
+      - id: V63
+        section: sources
+        quote: "会社自身のIRサイトは開示一覧を JavaScript でしか出さないため"
+        verdict: unsupported
+        tier: primary
+        sources:
+          - "https://www.witz-inc.co.jp/ir/news/result/"
+          - "https://www.witz-inc.co.jp/ir"
+        evidence: "https://www.witz-inc.co.jp/ir/news/result/ を再取得（200・本文2,007字）すると、静的HTMLの中に「2026/01/09 / 2026年8月期　第1四半期決算短信〔日本基準〕（連結） / PDF （234KB）」の1件が出ている（＝一覧が全く出ないわけではない）。https://www.witz-inc.co.jp/ir （200・1,968字）はナビゲーションのみで開示行は無い。fetch_source.py は JavaScript を実行しないので、残りが出ない理由が JS かどうかはこの道具では判定できない。"
+        action: "「一覧の大半が静的HTMLに出ない」程度に弱めるか、理由の断定を落とす"
+      - id: V64
+        section: sources
+        quote: "| IR情報（開示の入口） | — | https://www.witz-inc.co.jp/ir |"
+        verdict: unsupported
+        tier: primary
+        sources:
+          - "https://www.witz-inc.co.jp/ir"
+          - "https://www.witz-inc.co.jp/ir/news/result/"
+        evidence: "一次情報（会社開示）の表に置かれているが、再取得すると本文はグローバルナビとサイトマップだけで、開示の本文も一覧も無い（200・1,968字）。同じ表の「決算短信の一覧」（https://www.witz-inc.co.jp/ir/news/result/）も、静的HTMLに出るのは2026/01/09 の第1四半期短信1件のみで、本文が † で引いている数値の出所にはならない。SKILL.md の「一次の欄の URL が再取得すると目次だけなら unsupported」に該当する。"
+        action: "目次ページは二次情報の表か「参考リンク」に移し、一次情報の表は実際に数値の出所になっている開示（PDF）に限る"
+      - id: V65
+        section: sources
+        quote: "株価の採用終値は 241/270日ぶんで、2025年7月22日から8月29日までと2026年8月28日は照合が成立していない"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/prices/daily.csv"
+        evidence: "daily.csv の 4440 は270行、うち status に OK を含む行は241行。OK でない29行は 2025-07-22〜2025-08-29 の28営業日（すべて SINGLE_SOURCE）と 2026-08-28（SINGLE_SOURCE）で、本文の記述と一致する。"
+      - id: V66
+        section: sources
+        quote: "当台帳の採用値（株探とIR BANKの一致）は 112.52円✓"
+        verdict: supported
+        tier: dataset
+        sources:
+          - "data/fundamentals/4440.csv"
+        evidence: "fundamentals の FY2026-08 eps_plan: value=112.52・status=OK|ROUNDING・sources_all=kabutan_fy=112.5|kabutan_fy10=112.5|kabutan_fy_profit=112.5|irbank_pl_consolidated=112.52。運営の異なる2サイト（kabutan と irbank）が許容幅 0.1 の中で一致しており、採用値は解像度の高い irbank 側の 112.52。列 source_primary / source_secondary はどちらも kabutan の別ページだが、OK 判定は site の異なり数（reconcile の sites）で決まる。"
+
+# --- 出典と食い違った記述の始末（D44: contradicted は機械確認でのみ解除）---
+resolutions:
+  - id: V50
+    resolved_at: "2026-08-31T16:20:00+09:00"
+    how: rewritten
+    quote: "この間の開示は2月17日の子会社取得、3月26日のメディア掲載、4月13日の中間決算、7月14日の第3四半期決算と通期計画の上方修正で、下方修正は出ていない。"
+    note: >-
+      「だけ」が誤り。IR BANK の開示一覧に 3/26 のメディア掲載と 7/14 の2件
+      （通期予想の修正・第3四半期短信）がある。レポート自身が次の段落で 7/14 に
+      触れており本文内でも整合していなかったので、期間を狭めるのではなく開示を
+      列挙する形に直した。「下方修正は出ていない」は一覧と矛盾しないので残した

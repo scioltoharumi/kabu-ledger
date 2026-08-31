@@ -1,5 +1,5 @@
 # 銘柄マスタ
-# 出所: 楽天証券スクリーニング「成長株0606」2026-08-21 12:48 取得（15分ディレイ）
+# 出所: 楽天証券スクリーニング「成長株0830（per）」2026-08-30 19:15 取得（15分ディレイ）
 # TO_VERIFY = 未検証。resolve ジョブが二重照合で埋めるまで null 扱い。推測で埋めない。
 #
 # flags はコードが読む固定語彙。**自由記述を混ぜない**（読まれない情報を置かない）。
@@ -10,12 +10,12 @@
 #   "時価総額が極小"      表示のみ。判定には使わない
 
 screening:
-  name: "成長株0606"
-  captured_at: "2026-08-21T12:48:00+09:00"
+  name: "成長株0830（per）"
+  captured_at: "2026-08-30T19:15:00+09:00"
   source: "楽天証券アプリ / 検索結果 / 15分ディレイ"
-  hit_count: 3
+  hit_count: 10
   note: "スクリーニング条件そのものは Notion 側。条件変更時は screening.revision を上げる"
-  revision: 1
+  revision: 2
 
 stocks:
   - code: "150A"
@@ -293,6 +293,208 @@ stocks:
       buy_price: null
       buy_date: null
       shares: null
+  # --- 楽天証券スクリーニング「成長株0830（per）」から9銘柄（2026-08-30）------
+  #
+  # スクショから取ったのは**証券コードと社名だけ**。スクショに出ていた株価・
+  # 変化率（15分ディレイのザラ場値）は2ソース照合を通っていないので写していない。
+  # 数値は fetch*.py が取得元チェーンから取る。
+  #
+  # 社名は株探と IR BANK の2媒体のタイトルで綴りを確認した（2026-08-30）。
+  # スクショで途中省略されていた 9344「アクシスコンサル…」は
+  # IR BANK のタイトル「9344 アクシスコンサルティング」で補った（推測ではない）。
+  # 表記は IR BANK 側に合わせてある（fetch_fundamentals の企業コード解決が
+  # タイトルとの一致で別会社を掴んでいないことを確認するため。5243 は "note"）。
+  #
+  # market と sector は JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）で確認した。
+  # スクショの「東S／東G／東P」表示は根拠にしていない（150A と同じ扱い）。結果は
+  # 一致したが、それは一次情報を引いた後で分かったことで、根拠はあくまで JPX 側。
+  # valuation_model / fiscal_year_end / ir_url / peers は未確認なので TO_VERIFY の
+  # まま置く。**推測で埋めない。**valuation_model は業種だけでは決まらず人間の確認が要る。
+
+  - code: "4440"
+    name: "ヴィッツ"
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証スタンダード"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "情報・通信業"
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件
+    watch_since: "2026-08-30"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "4707"
+    name: "キタック"
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証スタンダード"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "サービス業"
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件
+    watch_since: "2026-08-30"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "5137"
+    name: "スマートドライブ"
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証グロース"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "情報・通信業"
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件
+    watch_since: "2026-08-30"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "5243"
+    # IR BANK のタイトル表記が "note"（半角）。fetch_fundamentals の企業コード解決が
+    # タイトルとの一致で確認するので、綴りをそちらに合わせている
+    name: "note"
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証グロース"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "情報・通信業"
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件
+    watch_since: "2026-08-30"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "6027"
+    name: "弁護士ドットコム"
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証プライム"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "サービス業"
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件
+    watch_since: "2026-08-30"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "6647"
+    name: "森尾電機"
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証スタンダード"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "電気機器"
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件
+    watch_since: "2026-08-30"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "6904"
+    name: "原田工業"
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証スタンダード"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "電気機器"
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件
+    watch_since: "2026-08-30"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "7093"
+    name: "アディッシュ"
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証グロース"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "サービス業"
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件
+    watch_since: "2026-08-30"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "9344"
+    # スクショでは「アクシスコンサル…」と省略されていた。IR BANK のタイトル
+    # 「9344 アクシスコンサルティング」で補った（推測で埋めていない）
+    name: "アクシスコンサルティング"
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証グロース"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "サービス業"
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件
+    watch_since: "2026-08-30"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
 liquidity_gate:
   min_avg_turnover_20d_jpy: 30000000   # 20日平均売買代金 3,000万円
   on_fail: "流動性低"

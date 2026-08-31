@@ -1,0 +1,596 @@
+code: '7093'
+runs:
+- run: '2026-08-31T23:20:00+09:00'
+  report_updated: '2026-08-31'
+  report_sha256: cee11bf9948d19bbf90a098559b9991f82110150b59b7f40d8690fe408e2f071
+  verifier: kabu-ledger-verify（別コンテキスト・F3）
+  urls_refetched:
+  - url: https://www.adish.co.jp/ir/
+    http_status: 200
+  - url: https://www.adish.co.jp/about/companyinfo/
+    http_status: 200
+  - url: https://kabutan.jp/stock/?code=7093
+    http_status: 200
+  - url: https://kabutan.jp/stock/news?code=7093
+    http_status: 200
+  - url: https://kabutan.jp/stock/news?code=7093&b=n202608280944
+    http_status: 200
+  - url: https://irbank.net/E35514
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260814/140120260814520392.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260213/140120260213559254.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260224/140120260224567377.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260213/140120260213559386.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260715/140120260715593741.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260701/140120260701585440.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260626/140120260626581303.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20251027/140120251027579227.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20251029/140120251029581686.pdf
+    http_status: 200
+  urls_delegated:
+  - url: https://kabutan.jp/stock/finance?code=7093
+    to: data/fundamentals/7093.csv
+  - url: https://irbank.net/E35514/results
+    to: data/fundamentals/7093.csv
+  claims:
+  - id: V01
+    section: updates
+    quote: 8/28 16:24 に中野邦人氏が大量保有報告書（変更報告書）を提出し、保有割合が 6.40%→7.62%（164,900株）に増えたと報告した。報告義務発生日は8月24日
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=7093&b=n202608280944
+    evidence: 再取得（200）。株探ニュース本文に「◆義務発生日　保有割合（前回→今回）　　　保有株数　　　　提出日時 / 2026/08/24　 6.40％　→　 7.62％　　　　 164,900　 2026/08/28 16:24」。記事見出しは「アディッシュについて、中野邦人氏は保有割合が増加したと報告 [変更報告書No.2]」、配信 2026年08月28日16時27分。
+  - id: V02
+    section: updates
+    quote: 同氏の保有増加は7月28日にも報じられており
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=7093
+    evidence: 再取得（200）。ニュース一覧に「26/07/28 17:05 | ５％ | アディッシュについて、中野邦人氏は保有割合が増加したと報告 [変更報告書No.2]」。
+  - id: V03
+    section: updates
+    quote: 保有目的は今回参照した二次情報の範囲では確認できていない
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=7093&b=n202608280944
+    evidence: 再取得（200）。記事本文に保有目的・共同保有者の詳細は無く、「提出者および共同保有者 (1) 中野邦人 6.40％ → 7.62％」と「詳しくはEDINETで原本をご確認ください」まで。
+  - id: V04
+    section: updates
+    quote: 先週（8/24〜8/28）の採用終値は 8/24 579円✓ → 8/27 580円✓。前週末 8/21 の574円✓から+1.0%で
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv（code=7093）: 2026-08-21 close 574.0 status OK / 08-24 579.0 OK / 08-25 580.0 OK / 08-26 581.0 OK / 08-27 580.0 OK。580 ÷ 574 − 1 = +1.045% → +1.0%。'
+  - id: V05
+    section: updates
+    quote: 8/28 は取得元が1つしか取れず採用終値が空のまま（`SINGLE_SOURCE`）で、参考値は599円※（高値609円※・安値574円※・出来高15,200株※）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv 2026-08-28: close 空・status SINGLE_SOURCE・value_primary 599.0・high 609.0・low 574.0・volume 15200。'
+  - id: V06
+    section: updates
+    quote: 売上高1,865百万円†
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: 'data/fundamentals/7093.csv の採用値: Q2026-01_2026-03 revenue 945（OK）＋ Q2026-04_2026-06 revenue 920（OK）＝ 1,865百万円。短信 PDF そのものは 再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。'
+  - id: V07
+    section: updates
+    quote: （前年同期比4.6%増）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値ベースの計算: 当中間期 945＋920＝1,865、前年同中間期 Q2025-01_2025-03 879 ＋ Q2025-04_2025-06 904 ＝1,783。1,865 ÷ 1,783 − 1 = +4.60%。基数は百万円に丸めた採用値であり、短信が印字する率そのものは PDF を読めないため未確認（丸め幅±0.5×2を効かせても +4.48%〜+4.71% の範囲で、4.6% と矛盾しない）。'
+    action: 短信の印字値で率を確かめるには data/tanshin/7093.csv が要る（src/fetch_tanshin.py 未実行）
+  - id: V08
+    section: updates
+    quote: 営業損失△3百万円†・経常利益22百万円†
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値: operating_income Q2026-01_2026-03 10（OK）＋ Q2026-04_2026-06 △13（OK）＝△3。ordinary_income 10（OK）＋12（OK）＝22。'
+  - id: V09
+    section: updates
+    quote: 中間純利益18百万円†
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf
+    evidence: '中間期短信 PDF は 再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。 data/fundamentals/7093.csv の四半期 net_income は Q2026-01_2026-03・Q2026-04_2026-06 とも SINGLE_SOURCE で採用値が無く、データ側でも確かめられない。'
+    action: src/fetch_tanshin.py で data/tanshin/7093.csv を作るか、中間純利益の記述を「未照合」と明示する
+  - id: V10
+    section: updates
+    quote: 通期計画は据え置き†
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=7093
+    evidence: 再取得（200）。株探 基本情報の業績推移が 2026-08-31 時点で「予 2026.12 | 41.0 | 0.7 | 0.6 | 27.9 | 0.0 | 26/02/13」を表示しており、8/14 の中間決算後も会社予想の発表日が 26/02/13 のまま＝予想は改定されていない。data/fundamentals/7093.csv の FY2026-12 計画（revenue_plan 4100・operating_income_plan 70・ordinary_income_plan 70・net_income_plan 60）も同じ。
+  - id: V11
+    section: updates
+    quote: 株価は発表翌営業日の8/17に565円✓（前日比△0.4%）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv: 2026-08-14 close 567.0（OK）→ 2026-08-17 close 565.0（OK）。565 ÷ 567 − 1 = △0.35% → △0.4%。'
+  - id: V12
+    section: updates
+    quote: 8/17 には Gainsight を使う「データ駆動型カスタマーサクセス支援サービス」の提供開始を開示している
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=7093
+    evidence: 再取得（200）。ニュース一覧に「26/08/17 17:00 | 開示 | アディッシュ、カスタマーサクセス支援強化に向け「Gainsight」を活用した「データ駆動型カスタマーサクセス支援サービス」を提供開始」。
+  - id: V13
+    section: updates
+    quote: ③出来高が直近60営業日の中央値1,700株※の水準に戻るか
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: data/prices/daily.csv（code=7093・270行）の直近60行の volume 中央値 = 1,700株。全270行の中央値は 6,000株。
+  - id: V14
+    section: company
+    quote: 2014年10月1日に株式会社ガイアックスからの会社分割で発足した
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://www.adish.co.jp/about/companyinfo/
+    evidence: 再取得（200）。会社概要に「設立 | 2014年10月1日」はあるが、ガイアックス・会社分割の記載は本文に無い。沿革は別ページ／説明資料 PDF 側にあると見られるが、いずれも出典表に無いか PDF で読めない。
+    action: 沿革ページ（会社サイト）を出典に足すか、会社分割の由来を落とす
+  - id: V15
+    section: company
+    quote: 代表取締役は江戸浩樹氏
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.adish.co.jp/about/companyinfo/
+    evidence: 再取得（200）。会社概要に「代表者名 | 代表取締役　江戸 浩樹」。
+  - id: V16
+    section: company
+    quote: 2020年3月に東証マザーズ（現グロース）へ上場した
+    verdict: unsupported
+    tier: secondary
+    sources:
+    - https://www.adish.co.jp/about/companyinfo/
+    - https://kabutan.jp/stock/?code=7093
+    evidence: 再取得（200・200）。会社概要に上場年月の記載は無い。株探 基本情報のテーマ欄に「2020年のIPO」はあるが、上場月（3月）と上場市場（マザーズ）を書いた記述は、再取得できたどの出典にも無い。
+    action: 沿革ページか有報を出典に足す
+  - id: V17
+    section: company
+    quote: 従業員は単体317名・連結460名（2026年6月末現在、臨時従業員を除く）†
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520392.pdf
+    evidence: '再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。 会社概要ページの従業員数は「628名（2025年12月31日現在/臨時従業員含む）」で、基準日も範囲（臨時従業員の扱い）も異なるため代替にならない。'
+    action: data/tanshin/7093.csv を作るか、会社概要ページの数字（基準日つき）に置き換える
+  - id: V18
+    section: company
+    quote: 連結子会社はアディッシュプラス株式会社（茨城県）と adish International Corporation（フィリピン）
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.adish.co.jp/about/companyinfo/
+    evidence: 再取得（200）。会社概要のグループ会社欄に「アディッシュプラス株式会社 …〒314-0031 茨城県鹿嶋市宮中 1-9-35」と「adish International Corporation … Makati City, Philippines」。
+  - id: V19
+    section: company
+    quote: '**会計上のセグメントは「カスタマーリレーション事業」の1つだけで、セグメント別の売上・利益は開示されない**†'
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf
+    evidence: '再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。'
+    action: data/tanshin/7093.csv を作る
+  - id: V20
+    section: company
+    quote: 2026年中間期のストック収益は18.1億円†、連結売上に占めるストック収益率は97.3%†、月次解約率は1.2%†、顧客あたりの平均年間収益（ARPA）は6.7百万円†
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520392.pdf
+    evidence: '決算説明資料 PDF は 再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。 4つのKPIはいずれも data/ 側に持っていない。'
+    action: 説明資料の該当ページを読める形（テキスト or data/kpi）で出典に足す
+  - id: V21
+    section: company
+    quote: 売上は2021年の29.9億円†から2024年の35.9億円†へ6億円増えた
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値: FY2021-12 revenue 2,992（OK|ROUNDING）／FY2024-12 revenue 3,592（OK|ROUNDING）。差 600百万円＝6億円。'
+  - id: V22
+    section: company
+    quote: 66,500株は当社の発行済株式数2,164,170株†の3.07%に当たる
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=7093
+    evidence: 再取得（200）。株探 基本情報に「発行済株式数 | 2,164,170 株」。66,500 ÷ 2,164,170 = 3.0728% → 3.07%。66,500株・3.07% という数字自体の出典（中間期決算説明資料 PDF）は読めていない。
+    action: ハンモックとの資本業務提携の開示原本を出典に足す（保有方向の推測はそのままでは裏が取れない）
+  - id: V23
+    section: financials
+    quote: '| 2025/12期 | 3,696 | 2.5 | 18 | △1.9 | △1.01 |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値 FY2025-12: revenue 3696 / operating_income 2.5 / ordinary_income 18 / net_income △1.9 / eps △1.01（いずれも status に OK）。'
+  - id: V24
+    section: financials
+    quote: '| 2026/12期（会社予想） | 4,100 | 70 | 70 | 60 | 27.87 |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値 FY2026-12: revenue_plan 4100 / operating_income_plan 70 / ordinary_income_plan 70 / net_income_plan 60 / eps_plan 27.87（いずれも OK）。'
+  - id: V25
+    section: financials
+    quote: 台帳が持つ2014/12期以降、売上高は毎期増えており（340百万円✓→3,696百万円✓）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値の revenue（FY 行、すべて status に OK）: 340 / 1,341 / 1,530 / 1,907 / 2,160 / 2,501 / 2,723 / 2,992 / 3,420 / 3,520 / 3,592 / 3,696。単調増加。'
+  - id: V26
+    section: financials
+    quote: 2025/12期は照合が成立していない（`MISMATCH`。取得元の値は0.05%※と0.07%※）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値 FY2025-12 operating_margin: value 空・status MISMATCH・value_primary 0.05・value_secondary 0.07。FY2024-12 operating_margin は △3.67（OK|ROUNDING）で本文の「2024/12期が△3.67%✓」と一致。'
+  - id: V27
+    section: financials
+    quote: 2026年2月13日に公表した2025年12月期決算短信は営業利益5百万円†・経常利益21百万円†・当期純利益0百万円†・1株益0.37円†だったが
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260213/140120260213559254.pdf
+    - https://tdnet-pdf.kabutan.jp/20260224/140120260224567377.pdf
+    evidence: '短信と訂正の PDF はいずれも 再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。 訂正**前**の値は data/ 側にも無い（採用値は訂正後の 2.5 / 18 / △1.9 / △1.01）。'
+    action: data/tanshin/7093.csv を作る
+  - id: V28
+    section: financials
+    quote: 台帳の採用値（3,696✓／2.5✓／18✓／△1.9✓／40.8%✓／255.17円✓）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値 FY2025-12: revenue 3696・operating_income 2.5・ordinary_income 18・net_income △1.9・equity_ratio 40.8・bps 255.17（いずれも OK）。「訂正後の数字と整合している」の相手側（訂正 PDF）は読めていない。'
+  - id: V29
+    section: financials
+    quote: 2025年12月期の会社計画（売上3,700百万円†・営業利益50百万円†・経常利益60百万円†・当期純利益50百万円†）に対して営業利益が89.9%†下振れた
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260213/140120260213559386.pdf
+    evidence: '再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。 なお計算だけ見ると、計画50百万円に対し訂正前の営業利益5百万円なら下振れ率は△89.9%になり、記述と整合する（訂正後の採用値2.5では△95%）。'
+    action: data/tanshin/7093.csv を作るか、訂正前後どちらの実績に対する率かを本文に書き添える
+  - id: V30
+    section: financials
+    quote: 営業キャッシュフローは2023/12期△249百万円✓・2024/12期△186百万円✓の後、2025/12期に13百万円✓のプラスへ戻った
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値 operating_cf: FY2023-12 △249（OK|ROUNDING）／FY2024-12 △186（OK）／FY2025-12 13（OK）。同じく free_cf は △263／△202／△13（すべて OK）で、本文の3期連続マイナスと一致。'
+  - id: V31
+    section: financials
+    quote: '**期末発行済株式数は1,818,360株†（2024年末）→2,142,470株†（2025年末）→2,164,170株†（2026年6月末）と、1年半で19%増えた**（当方の計算）'
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260213/140120260213559254.pdf
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf
+    evidence: '直近の 2,164,170株 だけは株探 基本情報で確認できるが、1,818,360株・2,142,470株 は短信 PDF が出典で 再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。 計算だけなら 2,164,170 ÷ 1,818,360 − 1 = +19.0% で記述と整合する。'
+    action: data/tanshin/7093.csv を作る
+  - id: V32
+    section: financials
+    quote: 2025年7-9月期に営業利益が7.8百万円✓で黒字に転じ、10-12月期23百万円✓・2026年1-3月期10百万円✓と続いたあと、4-6月期は△13百万円✓に戻った
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値 operating_income: Q2025-07_2025-09 7.8（OK|ROUNDING）／Q2025-10_2025-12 23（OK）／Q2026-01_2026-03 10（OK）／Q2026-04_2026-06 △13（OK）。同じ4-6月期の ordinary_income は 12（OK）で、本文「経常利益は12百万円✓の黒字」と一致。'
+  - id: V33
+    section: financials
+    quote: 2026年6月末の36百万円†
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.adish.co.jp/about/companyinfo/
+    evidence: '再取得（200）。会社概要に「資本金 | 36,086,850円（2026年5月2日現在）」。基準日は2026年5月2日で6月末そのものではないが、減資の効力発生日（本文の記載）と同じ日付で 36百万円台。減資額69百万円・欠損填補22百万円・2025年12月末99百万円は PDF 側で、再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。'
+  - id: V34
+    section: outlook
+    quote: 2026年12月期の会社計画は売上4,100百万円✓（+10.9%†）・営業利益70百万円✓・経常利益70百万円✓・当期純利益60百万円✓・1株益27.87円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    - https://kabutan.jp/stock/?code=7093
+    evidence: 採用値 FY2026-12（V24 と同じ）。増収率は株探 基本情報の業績推移「前期比(%) | +10.9」で表示を確認（再取得200）。採用値どうしなら 4,100 ÷ 3,696 − 1 = +10.93%。
+  - id: V35
+    section: outlook
+    quote: 中間期の実績は売上1,865百万円†で進捗45.5%、経常利益22百万円†で通期計画の3割強
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値の式: 中間期売上 945＋920＝1,865 に対し計画 4,100 → 1,865 ÷ 4,100 = 45.49%。中間期経常 10＋12＝22 に対し計画 70 → 22 ÷ 70 = 31.4%（3割強）。'
+  - id: V36
+    section: outlook
+    quote: '**営業利益は下期に70百万円強を丸ごと積む必要がある**'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値の式: 通期計画 operating_income_plan 70 −（中間期 10＋△13＝△3）＝ 73百万円。'
+  - id: V37
+    section: outlook
+    quote: 中長期ビジョンは2030年12月期に連結売上70億円・営業利益5億円†
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520392.pdf
+    evidence: '決算説明資料 PDF は 再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。'
+    action: 説明資料の該当ページを読める形で出典に足す
+  - id: V38
+    section: outlook
+    quote: 2026年7月15日、フィリピン子会社 adish International Corporation の全株式をタイガーテイル株式会社へ譲渡することを決議した†
+    verdict: unsupported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=7093
+    - https://tdnet-pdf.kabutan.jp/20260715/140120260715593741.pdf
+    evidence: '株探ニュース一覧（再取得200）に「26/07/15 16:00 | 開示 | 連結子会社の異動を伴う株式の譲渡に関するお知らせ」があり、日付と開示の存在は確認できた。ただし譲渡先「タイガーテイル株式会社」・「全株式」は見出しに無く、本体の PDF は 再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。'
+    action: 譲渡先と譲渡割合を読める出典（EDINET/会社IR の HTML）に置き換える
+  - id: V39
+    section: outlook
+    quote: 2025年12月期は売上35,090千フィリピンペソ†に対し当期純損失△1,195千ペソ†、純資産は△6,070千ペソ†の債務超過だった
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260715/140120260715593741.pdf
+    evidence: '再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。'
+  - id: V40
+    section: outlook
+    quote: '**2026年7月1日時点で利用再開の目途は立っていない**†'
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260701/140120260701585440.pdf
+    - https://kabutan.jp/stock/news?code=7093
+    evidence: '株探ニュース一覧（再取得200）に「26/07/01 16:00 | 開示 | 本社入居ビルにて発生した火災に関するお知らせ（開示事項の経過）及び当社業績への影響についてのお知らせ」があり開示の存在は確認できたが、本文は PDF で 再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。'
+  - id: V41
+    section: outlook
+    quote: 2026年6月30日までに受領した補償金は27,262千円†
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260701/140120260701585440.pdf
+    evidence: '再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。'
+  - id: V42
+    section: outlook
+    quote: 2025/12期の売上原価率は73.15%※（照合不成立）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    evidence: '採用値 FY2025-12 cost_ratio: value 空・status SINGLE_SOURCE・value_primary 73.15。本文が ※（未照合）で出しているのと一致する。'
+  - id: V43
+    section: outlook
+    quote: 10月27日に議決権比率15.16%†→10.80%†となって筆頭株主から外れ
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20251027/140120251027579227.pdf
+    - https://tdnet-pdf.kabutan.jp/20251029/140120251029581686.pdf
+    evidence: '再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。 株探ニュース一覧は再取得時点で 26/05/19 以降しか表示されず（それ以前は月別アーカイブ＝有料）、2025年10月の開示を一覧側でも確認できない。'
+  - id: V44
+    section: outlook
+    quote: 2026年5月にはコロプラの保有が5%未満に減ったと報じられている※
+    verdict: unsupported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=7093
+    evidence: 再取得（200）。ニュース一覧の表示範囲（26/05/19〜26/08/28 の15件）にコロプラの記事は無く、2026年5月分は月別アーカイブ側で株探プレミアム限定のため到達できない。本文にこの記述の個別URLも無い。
+    action: 該当記事の個別URLを出典に足すか、記述を落とす
+  - id: V45
+    section: outlook
+    quote: 台帳が持つ270営業日の出来高の中央値は6,000株※、直近60営業日では1,700株※まで落ちる。売買代金の中央値は約330万円※
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv（code=7093・270行）: volume 中央値 6,000株（全期間）／1,700株（直近60行）。売買代金（終値×出来高、終値が空の行は value_primary）の中央値は 3,311,850円＝約330万円で、これは**全270営業日**の中央値。直近60営業日の同じ中央値は 899,300円、src/judge.py --indicators-only の median_turnover_20d は 1,044,450円。'
+    action: 「売買代金の中央値」がどの期間の中央値かを本文に書き添える（直前の文が直近60営業日の話なので取り違えやすい）
+  - id: V46
+    section: outlook
+    quote: 2024/12期・2025/12期とも年間配当は0円†で、2026年12月期の予想も0円†
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=7093
+    evidence: 再取得（200）。株探 基本情報の業績推移の１株配欄が「2024.12 … 0.0」「2025.12 … 0.0」「予 2026.12 … 0.0」、ヘッダの利回りも「－ ％」。
+  - id: V47
+    section: price
+    quote: 台帳が持つ株価は2025-07-22〜2026-08-28の270営業日ぶん。うち採用終値（運営の異なる2つの取得元が一致した終値）が付いたのは240日
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv（code=7093）: 行数 270、最初 2025-07-22・最後 2026-08-28、status に OK を含む行は 240。'
+  - id: V48
+    section: price
+    quote: 期間の最安は476円✓（2026-06-25）、最高は876円✓（2025-09-24）。直近の採用終値は580円✓（2026-08-27）で、高値からは34%安く、安値からは22%高い水準にある
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: OK 行の close の最小＝476.0（2026-06-25）、最大＝876.0（2025-09-24）、最終＝580.0（2026-08-27）。580 ÷ 876 − 1 = △33.79%（34%安）、580 ÷ 476 − 1 = +21.85%（22%高）。
+  - id: V49
+    section: price
+    quote: '**2025-09-22〜09-25**：726円✓（+16.0%）→876円✓（+20.7%、ストップ高）→754円✓（△13.9%）。出来高は順に310,400株※・709,100株※・906,200株※'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'OK 行の close: 2025-09-19 626.0 → 09-22 726.0（+15.97%）→ 09-24 876.0（+20.66%）→ 09-25 754.0（△13.93%）。volume は 310,400／709,100／906,200。09-24 は前日終値726円に対し値幅制限+150円＝876円ちょうどで、ストップ高と整合。'
+  - id: V50
+    section: price
+    quote: この期間に対応する適時開示は見当たらず、**理由は特定できていない**
+    verdict: unsupported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=7093
+    evidence: 再取得（200）。株探ニュース一覧の1ページ目は 26/05/19〜26/08/28 の15件しか表示されず、2025年9月分は月別アーカイブ（株探プレミアム限定）でしか辿れない。**開示が無いこと**をこの出典では確かめられない。
+    action: 2025年9月の開示一覧を辿れる出典（TDnet 検索や会社IRニュース）を足すか、「確認範囲」を本文に明記する
+  - id: V51
+    section: price
+    quote: '**2025-10-24〜10-29**：737円✓→734円✓→727円✓→644円✓（△11.4%、出来高581,700株※）'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'OK 行の close: 2025-10-24 737.0／10-27 734.0／10-28 727.0／10-29 644.0。644 ÷ 727 − 1 = △11.42%、10-29 の volume 581,700。同日に並記された「10月27日に筆頭株主の異動」「10月29日に…保有割合減少」は PDF 側で、再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。'
+  - id: V52
+    section: price
+    quote: 翌営業日16日の終値は590円✓（+1.2%）で、日中は618円※まで買われた。2月24日の短信訂正の日は606円✓（△2.3%）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'OK 行: 2026-02-13 close 583.0 → 02-16 close 590.0（+1.20%）・high 618.0。2026-02-20 close 620.0 → 02-24 close 606.0（△2.26%）。'
+  - id: V53
+    section: price
+    quote: 日中に625円※（前日終値541円✓比で+15.5%）まで買われたが終値は544円✓（+0.6%）。出来高58,100株※
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'OK 行: 2026-04-27 close 541.0 → 04-28 high 625.0（541比 +15.53%）・close 544.0（+0.55%）・volume 58,100。'
+  - id: V54
+    section: price
+    quote: 日中高値619円※に対し終値は523円✓（+0.8%）で、出来高は533,300株※と期間中4番目。翌20日は504円✓（△3.6%）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    - https://kabutan.jp/stock/news?code=7093
+    evidence: 'OK 行: 2026-05-18 close 519.0 → 05-19 high 619.0・close 523.0（+0.77%）・volume 533,300 → 05-20 close 504.0（△3.63%）。270行の volume 降順は 906,200／709,100／581,700／533,300… で 4番目。05-19 の高値619円は前日終値519円＋値幅制限100円ちょうど。株探ニュース一覧（再取得200）にも「26/05/19 15:41 | 材料 | 本日の【ストップ高／ストップ安】 引け　　S高＝ 14 銘柄…」がこの銘柄のニュースとして載る。'
+  - id: V55
+    section: price
+    quote: 株探が2026-08-31に表示していた指標はPER21.5倍※・PBR2.21倍※・時価総額12.9億円※・発行済株式数2,164,170株※
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=7093
+    evidence: 再取得（200・2026-08-31 23:05 JST）。「PER | PBR | 利回り | 信用倍率 / 21.5 倍 | 2.21 倍 | － ％ | － 倍」「時価総額 | 12.9 億円」「発行済株式数 | 2,164,170 株」「単元株数 | 100 株」。
+  - id: V56
+    section: price
+    quote: PBR2.21倍※は2026年6月末の自己資本582百万円†に対する評価
+    verdict: unverifiable
+    tier: none
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf
+    evidence: '自己資本582百万円は中間期短信 PDF が出典で 再取得は 200（content_type: application/pdf）だが、fetch_source.py は PDF をテキスト化しない。data/tanshin/7093.csv も存在しないため、短信・説明資料の本文と突き合わせられない。 計算だけなら 時価総額12.9億円 ÷ 582百万円 = 2.22倍 で表示PBRと近い。'
+    action: data/tanshin/7093.csv を作る
+  - id: V57
+    section: price
+    quote: 信用取引は制度信用の買建のみができる銘柄（貸借銘柄ではない）で、2026-08-21時点の買残231.5千株※・売残0株※、売り方がいないため信用倍率は算出されない
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=7093
+    - data/margin/7093.csv
+    evidence: 再取得（200）。株探に「証券取引所が指定する制度信用銘柄のうち、買建(信用買い)のみができる銘柄」、信用取引欄「08/21 | 0.0 | 231.5 | －」。data/margin/7093.csv の 2026-08-21 行も long_balance 231.5・short_balance 0.0・ratio 空・status RATIO_NA。
+  - id: V58
+    section: price
+    quote: 買残は7月24日の219.5千株※から4週で増えており、**発行済株式数の10.7%**に当たる
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/margin/7093.csv
+    - https://kabutan.jp/stock/?code=7093
+    evidence: 'data/margin/7093.csv: 2026-07-24 219.5 → 07-31 221.6 → 08-07 225.4 → 08-14 234.7 → 08-21 231.5（千株）。231,500 ÷ 2,164,170（株探の発行済株式数）= 10.70%。'
+  - id: V59
+    section: sources
+    quote: 決算短信・適時開示のPDFは配信元がTDnetで、下記はいずれも株探が提供するミラー（`tdnet-pdf.kabutan.jp`）のURL
+    verdict: supported
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520384.pdf
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520392.pdf
+    - https://tdnet-pdf.kabutan.jp/20260213/140120260213559254.pdf
+    - https://tdnet-pdf.kabutan.jp/20260224/140120260224567377.pdf
+    - https://tdnet-pdf.kabutan.jp/20260213/140120260213559386.pdf
+    - https://tdnet-pdf.kabutan.jp/20260715/140120260715593741.pdf
+    - https://tdnet-pdf.kabutan.jp/20260701/140120260701585440.pdf
+    - https://tdnet-pdf.kabutan.jp/20260626/140120260626581303.pdf
+    - https://tdnet-pdf.kabutan.jp/20251027/140120251027579227.pdf
+    - https://tdnet-pdf.kabutan.jp/20251029/140120251029581686.pdf
+    evidence: '一次情報の表に並ぶ tdnet-pdf.kabutan.jp の10本すべてを再取得し、いずれも http_status 200・content_type: application/pdf。ただし fetch_source.py は PDF をテキスト化しないため、**この run では † を付けた記述の本文照合が一切できていない**。'
+    action: src/fetch_tanshin.py で data/tanshin/7093.csv を作り、次の run で † 記述を当て直す
+  - id: V60
+    section: sources
+    quote: 会社IRサイトのライブラリーはJavaScriptで一覧を組み立てており、個別PDFの固定URLを取得できなかった
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.adish.co.jp/ir/
+    evidence: 再取得（200・1,337文字）。本文に「IRライブラリー」「決算短信」「決算説明資料」「有価証券報告書」の見出しは出るが、"pdf|PDF|tdnet" に当たる行は0件で、個別PDFのURLは HTML には現れない。
+  - id: V61
+    section: sources
+    quote: 決算短信の値は△66.69円†
+    verdict: unverifiable
+    tier: none
+    sources: []
+    evidence: 2024年12月期決算短信のURLはレポートの出典表に無く、`--list` の18URLにも含まれないため再取得できない。data/fundamentals/7093.csv の FY2024-12 eps は MISMATCH（株探 △66.7／IR BANK △63.97）で、△66.69 という2桁小数はどちらの取得元にも無い。
+    action: 2024年12月期決算短信のURLを出典表に足すか、この数字を落とす
+  - id: V62
+    section: sources
+    quote: 2025/12期の営業利益（許容1.0／採用2.5）と当期純利益（許容1.0／採用△1.9）は許容幅が採用値の10%を超えており
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/7093.csv
+    - src/checks.py
+    evidence: 'data/fundamentals/7093.csv FY2025-12: operating_income tolerance 1 / value 2.5（1÷2.5＝40%）、net_income tolerance 1 / value △1.9（1÷1.9＝53%）。src/checks.py に「照合の許容幅が採用値の10%を超えている（この行は事実上ノーチェック）」の検査がある。'
+  - id: V63
+    section: sources
+    quote: 30日は取得元が1つしか取れず照合不成立（`SINGLE_SOURCE`）。2026-07-03 は出来高0で売買が成立していない
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 270行 − OK 240行 = 30行。2026-07-03 は volume 0・status SINGLE_SOURCE|NO_TRADE・close 空。
+  - id: V64
+    section: sources
+    quote: 株探が挙げる比較銘柄はガイアックス・イーガーディアン・オルトプラス※
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=7093
+    evidence: 再取得（200）。株探 基本情報の「比較される銘柄」に「ガイアックス, イーガーディ, オルトＰ」（表示は略称）。同ページの業績推移の決算期は 2024.12／2025.12／予 2026.12 で、本文「決算期は12月31日†」とも整合。

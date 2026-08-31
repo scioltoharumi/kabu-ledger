@@ -171,6 +171,51 @@ def status_days(code: str, status: str) -> int:
                if status in str(r.get("status") or "").split("|"))
 
 
+# --- 指標が未計算になる銘柄（薄い銘柄の欠測） -----------------------------------
+
+def min_bars_needed() -> int:
+    """全指標を算出するのに必要な最小の営業日数（**定数から導く**）。
+
+    ここに実データの行数（1076 等）を書くと、次の週次取得で意味を失ううえ、
+    「何本あれば足りるのか」がテストから読み取れなくなる。要求は指標側の
+    定数で決まっているので、そこから引く。
+    """
+    import indicators as ind
+    return max(
+        ind.ICHIMOKU_SPAN_B_PERIODS + ind.ICHIMOKU_DISPLACEMENT + 1,
+        ind.VOLUME_RATIO_LOOKBACK_DAYS + ind.VOLUME_RATIO_WINDOW_DAYS,
+        ind.WEEKLY_MA_LONG_PERIODS * 5,      # 26週ぶんの営業日
+    )
+
+
+def close_gap_days(code: str, window: int | None = None) -> list[str]:
+    """確定足の直近 window 本のうち、採用終値を持たない日。
+
+    `indicators.sma` は**窓に欠測が1つでもあれば None** を返す（設計。
+    穴のある窓で平均を出すと嘘になる）。だから穴のある銘柄は指標がまとめて
+    未計算になる。**これは欠陥ではない。** 売買が成立しない日がある薄い銘柄では
+    普通に起きる（実測 2026-08-30: 6647 森尾電機は 270営業日中 18日が NO_TRADE。
+    他の17銘柄は 0〜6日）。
+
+    実データを使う検査は、戻り値が空でない銘柄について「指標が None でもよい」
+    と扱う。**穴が無いのに未計算なら本物の欠陥**なので、そちらは落とす。
+    全銘柄に算出を要求すると、**薄い銘柄を台帳に載せられない**＝
+    フラグを立てた瞬間に公開が止まる仕掛けになる（`excluded` の末尾要求で
+    同じ罠を踏んでいる）。判定側は未計算のゲートを通過扱いにせず「調査」で
+    止めるので、ここを緩めても危ない方向には倒れない。
+
+    末尾の未確定行（最新営業日は照合が成立していないのが普通）は、指標側の
+    `drop_unconfirmed_tail` と同じく先に落としてから数える。
+    """
+    rows = sorted(price_rows(code), key=lambda r: r["date"])
+    while rows and not str(rows[-1].get("close") or "").strip():
+        rows.pop()
+    if window:
+        rows = rows[-window:]
+    return [r["date"] for r in rows
+            if not str(r.get("close") or "").strip()]
+
+
 def index_rows(index_id: str) -> list[dict]:
     _, rows = read_csv(DATA / "indices" / f"{index_id}.csv")
     return sorted(rows, key=lambda r: r["date"])

@@ -53,8 +53,10 @@ const VERIFY_SCHEMA = {
 
 const COMMON = `
 リポジトリ: ${REPO}（相対パスはこのディレクトリを基点にする）
-シェルは Windows PowerShell 5.1。&& と || は使えない。; と if ($?) を使う。
-Python を叩く前に $env:PYTHONIOENCODING = "utf-8" を設定する。
+シェルは実行環境で違う。ローカルは Windows PowerShell 5.1、CI とクラウドセッションは
+POSIX sh。**まずどちらかを確かめてから**その流儀で書く（PowerShell では && と || が
+使えないので ; と if ($?) を使う）。Python を叩く前に文字コードを UTF-8 にする
+（PowerShell なら $env:PYTHONIOENCODING = "utf-8" ／ sh なら export PYTHONIOENCODING=utf-8）。
 
 **あなたは1銘柄だけを担当する。** 他の銘柄の reports/ や data/verification/ を
 読まない・書かない（並列実行で衝突する）。
@@ -93,9 +95,9 @@ ${FORCE_MODE ? `モードは "${FORCE_MODE}" を強制する。` : 'モードは
 
 追記ルール・書き方・モード判定・出典の扱いはすべて SKILL.md が正（ここに要約は置かない）。
 
-終わったら ${REPO} で
-\`$env:PYTHONIOENCODING="utf-8"; python src/checks.py > "$env:TEMP\\checks-${code}.txt"\`
-を実行し、出力ファイルを Grep で「${code}」を含む行だけ確認して
+終わったら ${REPO} で python src/checks.py を実行し、**出力は一時ファイルに落として**
+（PowerShell なら > "$env:TEMP\\checks-${code}.txt" ／ sh なら > "$TMPDIR/checks-${code}.txt"。
+$TMPDIR が空なら /tmp）、そのファイルを Grep で「${code}」を含む行だけ確認して
 自銘柄の FAIL が無いことを確かめる。**出力全文をコンテキストに読み込まない**
 （他の銘柄の FAIL は並列作業中の別エージェントのもの。直そうとしない・
 自分の失敗として報告しない。報告文に1行添えるだけでよい）。
@@ -142,7 +144,6 @@ const final = await agent(
 ${REPO} で次を順に実行し、結果をそのまま報告せよ。**直してはならない**
 （何が落ちているかを人間に見せるのが仕事。勝手に直すと原因が消える）。
 
-    $env:PYTHONIOENCODING = "utf-8"
     python src/checks.py
     python tools/run_tests.py
     python src/build.py

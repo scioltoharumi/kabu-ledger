@@ -127,9 +127,15 @@ def test_price_metric_resolves_without_any_kpi():
     実リポジトリに決算が入っても回帰テストとして生き続ける。
     """
     repo = repo_without_kpi()
+    need = rd.min_bars_needed()
     for code in rd.codes():
         mv = S.resolve_metric(code, "avg_turnover_20d", AS_OF, repo)
         eq(mv.source, S.SRC_PRICE, f"{code}: 経路は price")
+        # 採用終値に穴がある薄い銘柄は算出できない（設計）。ここで見たいのは
+        # 「KPI が無くても株価の経路に乗ること」なので、穴の有無とは別。
+        # 理由は realdata.close_gap_days に書いてある。
+        if mv.value is None and rd.close_gap_days(code, need):
+            continue
         assert mv.value is not None, f"{code}: 株価から解決できるはず: {mv.detail}"
         eq(mv.as_of, rd.last_confirmed_date(code), f"{code}: 値の基準日")
 
@@ -137,11 +143,18 @@ def test_price_metric_resolves_without_any_kpi():
 def test_price_metrics_all_resolve_on_real_data():
     repo = S.Repo()
     price_metrics = [m.name for m in S.CATALOG if m.source == S.SRC_PRICE]
+    need = rd.min_bars_needed()
     for code in rd.codes():
+        gapped = bool(rd.close_gap_days(code, need))
         for name in price_metrics:
             mv = S.resolve_metric(code, name, AS_OF, repo)
-            assert mv.value is not None, f"{code} {name} が未計算: {mv.detail}"
             eq(mv.source, S.SRC_PRICE, f"{code} {name} の経路")
+            # 採用終値に穴がある薄い銘柄は未計算になる（設計。judge は
+            # 未計算のゲートを通過扱いにせず「調査」で止める）。
+            # 穴が無いのに未計算なら本物の欠陥なので落とす。
+            if mv.value is None and gapped:
+                continue
+            assert mv.value is not None, f"{code} {name} が未計算: {mv.detail}"
 
 
 def test_ordinal_metric_is_comparable():

@@ -1,0 +1,588 @@
+code: '9344'
+runs:
+- run: '2026-08-31T23:20:00+09:00'
+  report_updated: '2026-08-31'
+  report_sha256: 97d81bde6d18ac32c6c18e05d9a55f46e5606fe4d9f8c7f77246af22c806e79b
+  verifier: kabu-ledger-verify（別コンテキスト・F3）
+  urls_refetched:
+  - url: https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf
+    http_status: 200
+  - url: https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf
+    http_status: 200
+  - url: https://ssl4.eir-parts.net/doc/9344/tdnet/2615414/00.pdf
+    http_status: 200
+  - url: https://www2.jpx.co.jp/disc/93440/140120260513531621.pdf
+    http_status: 200
+  - url: https://prtimes.jp/main/html/rd/p/000000131.000026996.html
+    http_status: 200
+  - url: https://axc-g.co.jp/ir/
+    http_status: 200
+  urls_delegated:
+  - url: https://kabutan.jp/stock/finance?code=9344
+    to: data/fundamentals/9344.csv
+  - url: https://irbank.net/E38452/results
+    to: data/fundamentals/9344.csv
+  - url: https://kabutan.jp/stock/?code=9344
+    to: data/prices/daily.csv
+  claims:
+  - id: V01
+    section: updates
+    quote: 楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうち1件として `data/master.yaml` に登録された
+    verdict: unverifiable
+    tier: none
+    sources: []
+    evidence: SKILL.md §隔離により data/master.yaml を開かない。スクリーニング結果の原本もリポジトリ内に無い。登録の事実・通過件数・watch_since を確かめる材料がこのコンテキストには存在しない。
+    action: 検証者側では確かめられない。人間か weekly 側で master.yaml と突き合わせる
+  - id: V02
+    section: updates
+    quote: 2026-08-14 に2026年6月期の決算短信（連結）と通期決算説明資料が開示された
+    verdict: supported
+    tier: primary
+    sources:
+    - https://prtimes.jp/main/html/rd/p/000000131.000026996.html
+    - https://axc-g.co.jp/ir/
+    - https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf
+    - https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf
+    evidence: PR TIMES の会社発表（再取得200）に「2026年8月14日 18時00分」「本日、2026年6月期通期決算を発表いたしました」。会社IRページ（再取得200）の「最新IR資料のダウンロード」に「2026年6月期
+      決算説明資料」「2026年6月期 通期決算短信〔日本基準〕（連結）」が並ぶ。tdnet の2件（2874447=短信・2874451=説明資料）もいずれも HTTP 200 で到達（本文はPDFでテキスト化されない）。
+  - id: V03
+    section: updates
+    quote: 売上高8,289百万円✓・営業利益492百万円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: 採用値 FY2026-06 revenue=8289（OK|ROUNDING）・operating_income=492（OK）。いずれも2ソース照合済み。
+  - id: V04
+    section: updates
+    quote: 会社は「期初計画および第3四半期決算発表時に公表した修正計画を上回って着地」と説明している
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://prtimes.jp/main/html/rd/p/000000131.000026996.html
+    evidence: 出典に挙がっている決算説明資料 p.5（https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf）は HTTP 200
+      で到達するが content_type=application/pdf で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv
+      も存在しないため、この記述は本文を読まずに確かめる手段が無い。 読める会社発信（PR TIMES・再取得200）の見出しは「2026年6月期通期業績は期初計画を大幅に上回って着地」で、「期初計画を上回って着地」までは重なるが、「第3四半期決算発表時に公表した修正計画」への言及は無い。
+    action: 決算短信を data/tanshin/9344.csv に取り込むか、この一文の出典をHTMLの会社発信（PR TIMES）に寄せる
+  - id: V05
+    section: updates
+    quote: 同時に出た2027年6月期の会社計画は売上高9,600百万円✓・営業利益800百万円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: 採用値 FY2027-06 revenue_plan=9600（OK）・operating_income_plan=800（OK）。いずれも2ソース照合済み。
+  - id: V06
+    section: updates
+    quote: 会社は中期経営計画で置いていた27/6期の目標（売上高9,060百万円※・営業利益750百万円※）を上回る計画に設定したと説明している
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://prtimes.jp/main/html/rd/p/000000131.000026996.html
+    evidence: 定性の部分は PR TIMES（再取得200）に「2027年6月期計画は…中期経営計画の目標値から上方修正しました」、副題に「2027年6月期計画は中期経営計画の目標値を上回る売上高・営業利益を設定」があり一致する。ただし
+      9,060／750 の実数が載る出典はS3（https://ssl4.eir-parts.net/doc/9344/tdnet/2615414/00.pdf）と S2 で、HTTP 200 で到達するが
+      content_type=application/pdf で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv も存在しないため、この記述は本文を読まずに確かめる手段が無い。
+      実数そのものは確かめられない。
+    action: 中計目標値の出どころをテキストで読める形（説明資料のHTML版・ファクトシート等）で足すか、実数を落として定性の記述に留める
+  - id: V07
+    section: updates
+    quote: 週明け2026-08-17 は始値・高値・安値・終値がすべて1,139円※（終値1,139円✓／前日比+150円）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: data/prices/daily.csv の 2026-08-17（status=OK）は open=high=low=close=1139.0。前営業日 2026-08-14
+      の採用終値 989.0 との差は 1139-989=+150.0円。
+  - id: V08
+    section: updates
+    quote: '**8/17 は値幅制限の上限に張り付いた（ストップ高）と読める**が、板情報は確認していないので断定しない'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 確かめられたのは四本値が全て 1,139.0 で同値であること、前日終値 989.0 からの変化がちょうど +150.0円であることの2点（data/prices/daily.csv・status=OK、出来高5,700株）。値幅制限の幅そのものはこの検証で叩ける出典に無いため「ストップ高」を機械では確定できないが、本文もそこは断定していない。
+  - id: V09
+    section: updates
+    quote: 翌2026-08-18 は出来高210,100株※（8/14の5,900株※の約36倍）を伴って終値1,369円✓と直近52週の高値をつけた
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv: 2026-08-18 volume=210100・close=1369.0（status=OK）、2026-08-14 volume=5900。210100/5900=35.61→約36倍。2025-08-29〜2026-08-27
+      の採用終値（status に OK を含む239行）の最大値は 1369.0（2026-08-18）で、この日が窓内の最高値。'
+  - id: V10
+    section: updates
+    quote: 直近の採用終値は2026-08-27 の1,321円✓で、決算前の8/14終値から+33.6%
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 採用終値（status に OK を含む行）の最終は 2026-08-27 close=1321.0（2026-08-28 は SINGLE_SOURCE で採用値なし）。1321/989-1=+33.57%→+33.6%。
+  - id: V11
+    section: updates
+    quote: 台帳の機械判定は「流動性低」。20日平均売買代金2,902万円※がゲートの3,000万円に届いていない
+    verdict: unverifiable
+    tier: none
+    sources: []
+    evidence: 判定スタンプの再現と閾値の確認には data/master.yaml（judge.py のSTAMP_LIQUIDITY 説明文が「閾値は data/master.yaml の
+      liquidity_gate」と書いている）が要るが、SKILL.md §隔離により開かない。judge.py を引数なしで走らせるのも禁じられている。2,902万円という数値そのものは V12
+      で別に確認した。
+    action: 閾値と判定スタンプの照合は master.yaml を見られる文脈（weekly／人間）に回す
+  - id: V12
+    section: updates
+    quote: 20日平均売買代金2,902万円※
+    verdict: supported
+    tier: dataset
+    sources:
+    - src/judge.py
+    - data/prices/daily.csv
+    evidence: 'python src/judge.py --indicators-only の 9344: avg_turnover_20d=29024870.0（as_of 2026-08-27）＝2,902万円。採用終値×出来高の直近20営業日平均を自分でも計算して同値を得た。'
+  - id: V13
+    section: updates
+    quote: 同じ期間の中央値は584万円※
+    verdict: supported
+    tier: dataset
+    sources:
+    - src/judge.py
+    - data/prices/daily.csv
+    evidence: 同じ出力の median_turnover_20d=5837600.0＝584万円。平均 2,902万円 に対して中央値が 584万円 で、平均が上に引っ張られている。
+  - id: V14
+    section: updates
+    quote: 信用買い残は2026-08-14 の102.5千株※から2026-08-21 の155.5千株※へ増えた。売り残は0株※のままで信用倍率は定義できない
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/margin/9344.csv
+    evidence: 'data/margin/9344.csv: 2026-08-14 long_balance=102.5・short_balance=0.0、2026-08-21 long_balance=155.5・short_balance=0.0（単位=千株）。両行とも
+      ratio 列は空で status=RATIO_NA。'
+  - id: V15
+    section: company
+    quote: 2002年4月設立、東証グロース上場
+    verdict: supported
+    tier: primary
+    sources:
+    - https://prtimes.jp/main/html/rd/p/000000131.000026996.html
+    evidence: PR TIMES の会社発信（再取得200）の会社概要に「設立：2002年4月」、同ページ下部の会社情報に「上場 東証グロース」「設立 2002年04月」。
+  - id: V16
+    section: company
+    quote: 会計上のセグメントは「ヒューマンキャピタル事業」の1つだけで
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://prtimes.jp/main/html/rd/p/000000131.000026996.html
+    evidence: PR TIMES（再取得200）に「業務内容：ハイエンド人材領域における人材紹介およびスキルシェアの複合サービスを提供するヒューマンキャピタル事業」とあり事業名は一致するが、**報告セグメントが1つだけ**（単一セグメント）である旨の記載は無い。出典として挙がっている
+      S1（https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf）は HTTP 200 で到達するが content_type=application/pdf
+      で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv も存在しないため、この記述は本文を読まずに確かめる手段が無い。
+    action: 単一セグメントであることの出典を、テキストで読める形で足す
+  - id: V17
+    section: company
+    quote: 会社自身が売上を「平均年収 × 平均手数料率 × 入社決定人数」と説明している
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: 出典 S1（https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf）は HTTP 200 で到達するが content_type=application/pdf
+      で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv も存在しないため、この記述は本文を読まずに確かめる手段が無い。
+      読める会社発信（PR TIMES・会社IRページ）にこの算式は載っていない。
+    action: KPI の算式が載る資料をテキストで読める形で足す
+  - id: V18
+    section: company
+    quote: 会社は規模を約11万人※としている
+    verdict: supported
+    tier: primary
+    sources:
+    - https://prtimes.jp/main/html/rd/p/000000131.000026996.html
+    evidence: PR TIMES（再取得200）に「約11万人規模のスキルデータベースを基盤とし」。本文が付けている※（未照合）の扱いとも整合する（会社の自称値で二重照合は無い）。
+  - id: V19
+    section: company
+    quote: 2026年2月3日に**株式会社サン・システムプランニング（SSP）**の全株式を456百万円※で取得して連結子会社にした
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://prtimes.jp/main/html/rd/p/000000131.000026996.html
+    evidence: SSP がグループ会社であること自体は PR TIMES（再取得200）で確認できる（「グループ企業：株式会社サン・システムプランニング」「SES事業を担うSSP社」）。しかし取得日
+      2026年2月3日・取得価額 456百万円は S1（https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf）にしか無く、HTTP 200
+      で到達するが content_type=application/pdf で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv
+      も存在しないため、この記述は本文を読まずに確かめる手段が無い。
+    action: 取得日と取得価額の出典を、テキストで読める形（適時開示のHTML等）で足す
+  - id: V20
+    section: company
+    quote: のれん247百万円※を8年で均等償却する
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: 'S1（https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf）は HTTP 200 で到達するが content_type=application/pdf
+      で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv も存在しないため、この記述は本文を読まずに確かめる手段が無い。
+      数字の内部整合だけは確認した: 247/8=30.875 で、本文が後段（リスク4）で書く「毎期およそ31百万円※」と一致する。金額・年数そのものは未確認。'
+    action: のれんと償却年数の出典を、テキストで読める形で足す
+  - id: V21
+    section: company
+    quote: 従業員は197名※（2026年6月末）
+    verdict: supported
+    tier: primary
+    sources:
+    - https://prtimes.jp/main/html/rd/p/000000131.000026996.html
+    evidence: PR TIMES（再取得200）の会社概要に「従業員数：197名（2026年6月末現在）」。
+  - id: V22
+    section: financials
+    quote: '| 2023/6期 | 4,342 | 673 | 644 | 418 |
+
+      | 2024/6期 | 4,665 | 833 | 831 | 502 |
+
+      | 2025/6期 | 5,271 | 210 | 219 | 321 |
+
+      | 2026/6期 | 8,289 | 492 | 497 | 288 |
+
+      | 2027/6期（会社計画） | 9,600 | 800 | 780 | 500 |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: data/fundamentals/9344.csv の採用値と全20セルが一致した。FY2023-06 4342/673/644/418、FY2024-06 4665/833/831/502、FY2025-06
+      5271/210/219/321、FY2026-06 8289/492/497/288、FY2027-06 revenue_plan 9600／operating_income_plan 800／ordinary_income_plan
+      780／net_income_plan 500。すべて status に OK を含む。
+  - id: V23
+    section: financials
+    quote: 2026/6期から連結決算に変わったので、2025/6期以前と縦に比べられない
+    verdict: supported
+    tier: primary
+    sources:
+    - https://prtimes.jp/main/html/rd/p/000000131.000026996.html
+    - data/fundamentals/9344.csv
+    evidence: PR TIMES（再取得200）に「当期からの連結決算へ移行に伴い、販管費に子会社取得費用を計上しています」。data/fundamentals/9344.csv も FY2025-06
+      までの行がstatus に NONCONSOLIDATED を持ち、FY2026-06 の行は持たない（四半期も Q2025-10_2025-12 までが NONCONSOLIDATED、Q2026-01_2026-03
+      から外れる）。
+  - id: V24
+    section: financials
+    quote: 連結の8,289百万円✓と単体の5,271百万円✓を並べたものである
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: 採用値 FY2026-06 revenue=8289（連結）／FY2025-06 revenue=5271（status に NONCONSOLIDATED）。8289/5271-1=+57.26%で、本文がいう会社の参考値「57.3%増」と丸めまで一致する。
+  - id: V25
+    section: financials
+    quote: 単体どうしで比べると2026/6期の単体売上高は8,021百万円※・前期比52.2%※増、単体営業利益は521百万円※・同147.5%※増で
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: '単体（個別）の数値は data/fundamentals/9344.csv に無く（FY2026-06 の行は連結）、S1（https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf）は
+      HTTP 200 で到達するが content_type=application/pdf で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv
+      も存在しないため、この記述は本文を読まずに確かめる手段が無い。 内部整合の確認のみ: 8021/5271-1=+52.17%→52.2% は一致。営業利益は 521/210-1=+148.10%
+      で本文の147.5%と 0.6pt ずれるが、短信は百万円未満切捨て前の実額から率を出すため、実額が520.5〜521.5／209.5〜210.5百万円の範囲なら率は +147.27〜+148.93%
+      を取り、147.5% はこの範囲に入る。**丸めた採用値どうしの割り算では否定できない**のでcontradicted にはしない。'
+    action: 単体の実額と増減率を短信から data/tanshin/9344.csv に取り込んで再判定する
+  - id: V26
+    section: financials
+    quote: 1Q（2025年7〜9月）は営業損失255百万円✓、2Qで64百万円✓の黒字に戻り、3Q 329百万円✓・4Q 354百万円✓と積み上げて通期492百万円✓に着地している
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: '採用値 operating_income: Q2025-07_2025-09=-255、Q2025-10_2025-12=64、Q2026-01_2026-03=329、Q2026-04_2026-06=354（いずれも
+      status に OK）。合計 -255+64+329+354=492 で通期 FY2026-06 の 492 と一致。'
+  - id: V27
+    section: financials
+    quote: 売上も1,456百万円✓→1,698百万円✓→2,305百万円✓→2,830百万円✓と四半期ごとに増えた
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: '採用値 revenue: Q2025-07_2025-09=1456、Q2025-10_2025-12=1698、Q2026-01_2026-03=2305、Q2026-04_2026-06=2830（いずれも
+      status に OK）。合計 8289 で通期と一致し、単調増加も成立している。'
+  - id: V28
+    section: financials
+    quote: '| 2024/6期 | – | 77.0 | 4,112 | 446 | 201 | 3,023 |
+
+      | 2025/6期 | 3.98 | 73.5 | 4,515 | -183 | -322 | 2,999 |
+
+      | 2026/6期 | 5.94 | 59.5 | 5,664 | 1,049 | 737 | 3,319 |
+
+      | 2027/6期（会社計画） | 8.33 | – | – | – | – | – |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: '採用値と一致: equity_ratio 77（FY2024-06）/73.5/59.5、total_assets 4112/4515/5664、operating_cf 446/-183/1049、free_cf
+      201/-322/737、cash_equivalents 3023/2999/3319、operating_margin FY2025-06=3.98・FY2026-06=5.94・FY2027-06
+      plan=8.33。FY2024-06 の operating_margin は SINGLE_SOURCE（採用値なし）で、本文が「–」と空けているのと整合する。'
+  - id: V29
+    section: financials
+    quote: 自己資本比率は77.0%✓→73.5%✓→59.5%✓と下がった
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: '採用値 equity_ratio: FY2024-06=77（OK）、FY2025-06=73.5（OK|NONCONSOLIDATED）、FY2026-06=59.5（OK）。単調に低下している。'
+  - id: V30
+    section: financials
+    quote: 有利子負債は317百万円※（単一ソースのため参考値）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: data/fundamentals/9344.csv の FY2026-06 interest_bearing_debt は status=SINGLE_SOURCE で value
+      列は空、raw は irbank_bs=317（「317百万」）。本文が※を付けて「単一ソースのため参考値」と書いているのは CSV の状態そのもの。
+  - id: V31
+    section: financials
+    quote: 配当は2026/6期35円※（配当性向60.4%※）、2027/6期予想41円※
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: '配当は data/fundamentals/9344.csv に metric が無い（bps/eps/cf 等のみ）。S1（https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf）は
+      HTTP 200 で到達するが content_type=application/pdf で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv
+      も存在しないため、この記述は本文を読まずに確かめる手段が無い。 内部整合のみ確認: 35/57.92=60.43%→60.4% で、本文が別記する短信EPS 57.92円と整合する（採用値57.83円で割ると60.52%）。'
+    action: 配当と配当性向を短信から data/tanshin/9344.csv に取り込む
+  - id: V32
+    section: financials
+    quote: 決算短信の1株当たり当期純利益は57.92円※だが、台帳の採用値は57.83円✓である
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: '台帳側は確認できた: 採用値 FY2026-06 eps=57.83（OK|ROUNDING。irbank=57.83／kabutan=57.9 の照合）。短信側の 57.92円
+      は S1（https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf）にしかなく、HTTP 200 で到達するが content_type=application/pdf
+      で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv も存在しないため、この記述は本文を読まずに確かめる手段が無い。
+      本文の説明の内部整合だけは成立する: 288/4.980525=57.825→57.83、純利益の実額が288.4〜288.5百万円なら 57.92 になる。期中平均株式数4,980,525株も同じ理由で未確認。'
+    action: 短信の EPS と期中平均株式数を data/tanshin/9344.csv に取り込む
+  - id: V33
+    section: outlook
+    quote: 売上高9,600百万円✓（+15.8%）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: 採用値 FY2027-06 revenue_plan=9600／FY2026-06 revenue=8289。9600/8289-1=+15.82%→+15.8%。切捨て前の実額（8,289.0〜8,290.0）で計算しても+15.80〜+15.83%
+      の範囲に収まり、丸めは変わらない。
+  - id: V34
+    section: outlook
+    quote: 営業利益800百万円✓（+62.4%）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: '金額は採用値と一致（FY2027-06 operating_income_plan=800／FY2026-06 operating_income=492、いずれも OK）。増減率は確定できない:
+      丸めた採用値どうしなら 800/492-1=+62.60% だが、短信は百万円未満切捨て前の実額から率を出すため、実額が 492.0〜493.0百万円 の範囲では率は +62.27〜+62.60%
+      を取り、本文の +62.4% はこの範囲に入る。短信（https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf）は HTTP 200 で到達するが
+      content_type=application/pdf で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv も存在しないため、この記述は本文を読まずに確かめる手段が無い。
+      **どちらとも言えないので contradicted にしない。**'
+    action: 短信の増減率を data/tanshin/9344.csv に取り込んで確定させる（一次に率が書かれていればそれが正）
+  - id: V35
+    section: outlook
+    quote: 経常利益780百万円✓・当期純利益500百万円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: 採用値 FY2027-06 ordinary_income_plan=780（OK）・net_income_plan=500（OK）。
+  - id: V36
+    section: outlook
+    quote: サービス別の内訳は人材紹介4,760百万円※・スキルシェア4,300百万円※・SSP 540百万円※
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: 'サービス別の内訳は data/fundamentals/9344.csv に無い（会計セグメントは1本）。S2（https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf）は
+      HTTP 200 で到達するが content_type=application/pdf で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv
+      も存在しないため、この記述は本文を読まずに確かめる手段が無い。 内部整合のみ確認: 4760+4300+540=9600 で会社計画の売上高と一致する。'
+    action: 説明資料のサービス別計画をテキストで読める形の出典で裏付ける
+  - id: V37
+    section: outlook
+    quote: 増収による売上総利益の増加（+1,009百万円※）が人件費・採用費の増加（-681百万円※）とその他販管費（-214百万円※）を吸収し、TVCM費用の反動減で広告宣伝費が減るぶん（+194百万円※）が上乗せされる
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: 'S2（https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf）は HTTP 200 で到達するが content_type=application/pdf
+      で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv も存在しないため、この記述は本文を読まずに確かめる手段が無い。
+      内部整合のみ確認: 492+1009-681-214+194=800 で会社計画の営業利益に着地する（採用値 FY2026-06 operating_income=492／FY2027-06
+      operating_income_plan=800）。各項目の実数そのものは未確認。'
+    action: 増益ブリッジの出典をテキストで読める形で足す
+  - id: V38
+    section: outlook
+    quote: 決算前の20営業日（2026-07-16〜08-14）で計算し直すと平均は約218万円※で、ゲートの1割にも届かない
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: data/prices/daily.csv の 2026-07-16〜2026-08-14 で status に OK を含む行はちょうど20行。採用終値×出来高の平均は 2,178,280円＝約218万円（中央値176.6万円）。V12
+      の20日平均2,902万円の 7.5% に当たる。なお「ゲートの1割」の基準値そのものは master.yaml 側で未確認（V11 と同じ）。
+  - id: V39
+    section: outlook
+    quote: 2025/6期は人材紹介の四半期売上高が4四半期とも前年割れした
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: サービス別・四半期別の売上は data/fundamentals/9344.csv に無い（四半期は全社の revenue/operating_income/ordinary_income
+      のみ）。S2（https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf）は HTTP 200 で到達するが content_type=application/pdf
+      で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv も存在しないため、この記述は本文を読まずに確かめる手段が無い。
+    action: 説明資料のサービス別四半期推移をテキストで読める出典で裏付ける
+  - id: V40
+    section: outlook
+    quote: 人材紹介の4Q売上高は1,527百万円※・前年同期比+99%※
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: 同上。サービス別の四半期売上は台帳に無く、S2（https://ssl4.eir-parts.net/doc/9344/tdnet/2874451/00.pdf）は HTTP
+      200 で到達するが content_type=application/pdf で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv
+      も存在しないため、この記述は本文を読まずに確かめる手段が無い。 全社の 4Q 売上（採用値 Q2026-04_2026-06 revenue=2830）との整合は1,527<2,830 で矛盾しない、という以上のことは言えない。
+  - id: V41
+    section: outlook
+    quote: '`data/master.yaml` の `valuation_model` / `fiscal_year_end` / `ir_url` / `peers` が `TO_VERIFY`
+      のままである'
+    verdict: unverifiable
+    tier: none
+    sources: []
+    evidence: SKILL.md §隔離により data/master.yaml を開かない。TO_VERIFY のままかどうかをこの文脈で確かめる手段が無い。
+    action: master.yaml の未確定項目の確認は人間か weekly 側に回す
+  - id: V42
+    section: price
+    quote: 直近52週（2025-08-29〜2026-08-27）の採用終値は、安値808円✓（2025-09-03）から高値1,369円✓（2026-08-18）のあいだ
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: data/prices/daily.csv の 9344・status に OK を含む行を 2025-08-29〜2026-08-27 で抽出すると239行（最初の採用行は2025-09-01）。採用終値の最小は
+      808.0（2025-09-03）、最大は 1369.0（2026-08-18）。
+  - id: V43
+    section: price
+    quote: 決算直前の2026-07-24〜08-14 の15営業日は920〜989円✓の帯でほとんど動いておらず
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 同区間の採用行はちょうど15行（8/11は休場）。採用終値の最小 920.0（2026-07-30・07-31）、最大 989.0（2026-08-14）。
+  - id: V44
+    section: price
+    quote: '| 時価総額 | 約65.7億円 | 1,321円✓ × 4,974,848株（期末発行済株式数から自己株式を除いた数。決算短信 p.13〔S1〕） |'
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - data/prices/daily.csv
+    evidence: '採用終値 1,321円（2026-08-27）は確認済み。株数 4,974,848株 は S1（https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf）にしかなく、HTTP
+      200 で到達するが content_type=application/pdf で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv
+      も存在しないため、この記述は本文を読まずに確かめる手段が無い。 計算そのものは合う: 1321×4,974,848=6,571,774,208円＝65.72億円（冒頭の「約66億円※」とも整合）。'
+    action: 期末発行済株式数（自己株式控除後）を data/tanshin/9344.csv に取り込む
+  - id: V45
+    section: price
+    quote: '| 予想PER | 約13.1倍 | 会社計画EPS 100.51円〔S1〕 |'
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - data/fundamentals/9344.csv
+    evidence: 'EPS 100.51円は採用値ではない: data/fundamentals/9344.csv の FY2027-06 eps_plan は status=SINGLE_SOURCE（kabutan
+      系のみ 100.5、value 列は空）。S1（https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf）は HTTP 200 で到達するが
+      content_type=application/pdf で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv も存在しないため、この記述は本文を読まずに確かめる手段が無い。
+      計算は 1321/100.51=13.14、1321/100.5 でも 13.14 で「約13.1倍」に落ちる。'
+    action: 会社計画EPSを短信から取り込むか、本文で「二次情報の100.5円」と出どころを明示する
+  - id: V46
+    section: price
+    quote: '| PBR | 約1.95倍 | 1株当たり純資産677.22円✓ |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/9344.csv
+    - data/prices/daily.csv
+    evidence: 採用値 FY2026-06 bps=677.22（OK|ROUNDING）と採用終値 1,321円（2026-08-27）。1321/677.22=1.9506→約1.95倍。
+  - id: V47
+    section: price
+    quote: '| 予想配当利回り | 約3.1% | 会社予想の1株配当41円〔S1〕 |'
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - data/prices/daily.csv
+    evidence: 1株配当41円は台帳に metric が無く、S1（https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf）は HTTP
+      200 で到達するが content_type=application/pdf で、fetch_source.py は「PDF。この道具はテキスト化しない」を返す。data/tanshin/9344.csv
+      も存在しないため、この記述は本文を読まずに確かめる手段が無い。 計算は 41/1321=3.10%。
+    action: 配当予想を短信から data/tanshin/9344.csv に取り込む
+  - id: V48
+    section: price
+    quote: 25日移動平均1,058.16円※に対する乖離は+24.8%※
+    verdict: supported
+    tier: dataset
+    sources:
+    - src/judge.py
+    - data/prices/daily.csv
+    evidence: 'python src/judge.py --indicators-only の 9344: ma_mid=1058.16、ma_deviation_pct=24.8393（as_of
+      2026-08-27）。judge.py の ma_mid は tech.DAILY_MA_MID_PERIODS=25 の単純移動平均で、採用終値25本の平均を自分で計算しても 1058.16
+      になる。'
+  - id: V49
+    section: price
+    quote: 週足の中期MAの傾きは+1.10%/週※、長期MAは+0.63%/週※で、どちらも上向き
+    verdict: supported
+    tier: dataset
+    sources:
+    - src/judge.py
+    evidence: '同出力: weekly_ma_mid_slope_pct=1.1049（direction=up）、weekly_ma_long_slope_pct=0.6327（direction=up）、weekly_bars_used=57。'
+  - id: V50
+    section: price
+    quote: 一目均衡表では雲の上（雲の上限936.5円※）
+    verdict: supported
+    tier: dataset
+    sources:
+    - src/judge.py
+    - src/indicators.py
+    - data/prices/daily.csv
+    evidence: 'judge.py --indicators-only は ichimoku_position=above。雲の上限は--indicators-only の出力に無いので src/indicators.py
+      の ichimoku() を採用終値・高値・安値（2026-08-27まで）で直接呼んだ: cloud_top=936.5・cloud_bottom=931.5・position=''above''。'
+  - id: V51
+    section: price
+    quote: 3か月に対する出来高比は4.63倍※
+    verdict: supported
+    tier: dataset
+    sources:
+    - src/judge.py
+    evidence: '同出力: volume_ratio_3m=4.625→4.63倍。'
+  - id: V52
+    section: price
+    quote: 信用倍率は定義できない（2026-08-21 時点で売り残0株※・買い残155.5千株※）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/margin/9344.csv
+    evidence: 'data/margin/9344.csv の最終行 2026-08-21: long_balance=155.5・short_balance=0.0・ratio 空・status=RATIO_NA。'
+  - id: V53
+    section: price
+    quote: '**機械判定は「流動性低」で①流動性ゲートに引っかかり、②トレンド以降は評価されていない。**'
+    verdict: unverifiable
+    tier: none
+    sources: []
+    evidence: V11 と同じ理由。判定の再現には data/master.yaml が要り、SKILL.md §隔離で開かない。judge.py は --indicators-only しか回していない。
+    action: 判定スタンプの照合は master.yaml を見られる文脈に回す
+  - id: V54
+    section: price
+    quote: アナリストによるカバレッジの有無は確認していない（未確認）
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://axc-g.co.jp/ir/
+    evidence: 会社IRページ（再取得200）の IR LIBRARY に「企業調査レポート」という項目が並んでおり、カバレッジが存在する可能性を示す。ただしその個別ページのURLはレポート本文の出典に無く、fetch_source.py
+      では叩けないため有無は判定できない。本文の自己申告（確認していない）と食い違う材料は得られていない。
+    action: IR LIBRARY の「企業調査レポート」ページを出典に足せばカバレッジの有無を確定できる
+  - id: V55
+    section: sources
+    quote: '| S5 | [プレスリリース「2026年6月期通期業績は期初計画を大幅に上回って着地」（会社発信）](https://prtimes.jp/main/html/rd/p/000000131.000026996.html)
+      | 2026-08-14 |'
+    verdict: supported
+    tier: primary
+    sources:
+    - https://prtimes.jp/main/html/rd/p/000000131.000026996.html
+    evidence: 再取得200。ページ表題は「アクシスコンサルティング、2026年6月期通期業績は期初計画を大幅に上回って着地」で本文の記載と一致、日付は「2026年8月14日 18時00分」。発信元は「アクシスコンサルティング株式会社」で、一次情報（企業自身の発信）の欄に置くのは妥当。
+  - id: V56
+    section: sources
+    quote: '| S6 | [IR情報（会社IRページ）](https://axc-g.co.jp/ir/) | — |'
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://axc-g.co.jp/ir/
+    evidence: 再取得200・993文字。中身はナビゲーションと資料名の一覧（「最新IR資料のダウンロード」「IR LIBRARY」等）だけで、本文のどの記述も直接には支えない目次ページ。SKILL.md
+      の「一次の欄のURLが再取得すると目次だけなら unsupported 1件として記録する」に当たる。
+    action: 個別資料のURL（決算短信・説明資料のページ）に差し替えるか、S6 を二次的な案内として扱う
+  - id: V57
+    section: sources
+    quote: '| S1 | [2026年6月期 決算短信〔日本基準〕（連結）](https://ssl4.eir-parts.net/doc/9344/tdnet/2874447/00.pdf)
+      | 2026-08-14 |'
+    verdict: unverifiable
+    tier: primary
+    sources: []
+    evidence: S1〜S4（tdnet 3件と JPX 1件）は4件とも HTTP 200 で到達したが、いずれも content_type=application/pdf・本文82文字（「PDF。この道具はテキスト化しない」）。data/tanshin/9344.csv
+      も無いため、**この銘柄の一次情報は今回1文字も読めていない**。本記録の unverifiable の大半はこれが原因で、記述が誤りだと判定したものではない。
+    action: kabu-ledger スキル（決算取込）で 2026年6月期の短信を data/tanshin/9344.csv に取り込む。取り込めば V25/V31/V32/V34/V44/V45/V47
+      は次の run で判定できる

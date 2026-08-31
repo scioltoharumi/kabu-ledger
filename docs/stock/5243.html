@@ -1,0 +1,697 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>note（5243）</title><style>
+:root{--paper:#f5f4f0;--card:#ffffff;--ink:#1c1c1a;--dim:#5f5e58;--rule:#dedcd4;
+--soft:#f0eee8;--accent:#23548c;--accent-soft:#eef3f9;--warn:#8a5a00;
+--danger:#9a3324;--good:#1f6f43;--flag:#7a4f9a;
+--pos:#1d5fae;--neg:#b32e2e;
+--shadow:0 1px 2px rgba(28,28,26,.05);--shadow-2:0 2px 8px rgba(28,28,26,.07)}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);margin:0;
+font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+line-height:1.85;font-size:15.5px;-webkit-text-size-adjust:100%}
+main{max-width:52rem;margin:0 auto;padding:1.6rem 1.25rem 4rem}
+/* 全ページ共通の固定ヘッダー。どのページからでも1タップで台帳へ戻れる */
+.site{position:sticky;top:0;z-index:30;background:var(--paper);
+border-bottom:1px solid var(--rule)}
+@supports (backdrop-filter:blur(8px)){
+.site{background:color-mix(in srgb,var(--paper) 86%,transparent);
+backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}}
+/* ヘッダーは全幅（ブランド左端・ナビ右端）。本文列の幅がページごとに
+   違っても（52rem / wide 74rem）、ヘッダーだけはどのページでも同じ見え方 */
+.site-in{margin:0 auto;display:flex;align-items:center;
+gap:.4rem .9rem;padding:.5rem 1.5rem;flex-wrap:wrap}
+.brand{font-weight:700;color:var(--ink);text-decoration:none;font-size:.95rem;
+letter-spacing:.02em;white-space:nowrap}
+.brand:hover{color:var(--accent)}
+.site nav{margin:0 0 0 auto;display:flex;gap:.4rem;flex-wrap:wrap}
+h1{font-size:1.7rem;font-weight:700;letter-spacing:.02em;margin:0 0 .4rem;line-height:1.35}
+h2{font-size:1.15rem;font-weight:700;margin:3rem 0 1rem;padding:.15rem 0 .15rem .7rem;
+border-left:4px solid var(--accent);border-bottom:0;line-height:1.5}
+h3{font-size:1rem;font-weight:700;margin:2rem 0 .4rem;color:var(--ink)}
+h4{font-size:.92rem;font-weight:700;margin:1.4rem 0 .3rem;color:var(--dim)}
+p{margin:.7rem 0}
+.lede{color:var(--dim);margin:0 0 1.5rem;font-size:.92rem}
+nav{font-size:.82rem;color:var(--dim)}
+nav a{display:inline-block;padding:.16rem .7rem;
+background:var(--card);border:1px solid var(--rule);border-radius:999px;
+text-decoration:none;color:var(--dim)}
+nav a:hover{color:var(--ink);border-color:var(--ink)}
+nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:1rem 0;
+background:var(--card);border:1px solid var(--rule);border-radius:6px;
+box-shadow:var(--shadow)}
+.scroll table{margin:0}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.88rem}
+th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--rule);
+vertical-align:top}
+thead th{font-weight:700;color:var(--dim);font-size:.76rem;letter-spacing:.04em;
+white-space:nowrap;background:var(--soft);border-bottom:1px solid var(--rule)}
+tbody tr:last-child td{border-bottom:0}
+/* ゼブラ。行を目で追いやすくする（一覧表はホバー色があるので除外） */
+table:not(.list-table) tbody tr:nth-child(even) td{background:#faf9f6}
+/* 1列目を折り返さないのは、日付・コードのような短い見出し列だけを想定している。
+   本文が入る列にかかると表が画面外まで伸び、他の列が押し出されて行が縦に潰れる。
+   本文を持つ表（一覧・Markdown 由来）は .prose-table を付けて折り返させる。 */
+td:first-child{white-space:nowrap}
+.prose-table td{white-space:normal;overflow-wrap:anywhere}
+blockquote{margin:1.2rem 0;padding:.9rem 1.1rem;background:var(--accent-soft);
+border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.92rem}
+blockquote p{margin:.3rem 0}
+ul,ol{margin:.7rem 0;padding-left:1.4rem}
+li{margin:.35rem 0}
+code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.85em;
+background:var(--soft);padding:.08rem .32rem;border-radius:2px;overflow-wrap:anywhere}
+pre{background:var(--soft);padding:.9rem;overflow-x:auto;font-size:.82rem;
+line-height:1.6;border-radius:6px}
+pre code{background:none;padding:0}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;
+text-decoration-color:var(--rule);overflow-wrap:anywhere}
+a:hover{text-decoration-color:var(--accent)}
+hr{border:0;border-top:1px solid var(--rule);margin:2.5rem 0}
+footer{margin-top:4rem;padding-top:1rem;border-top:1px solid var(--rule);
+color:var(--dim);font-size:.78rem}
+
+/* KPI タイル。重要数値を大きく・囲って出す（値はすべて data/ 由来。
+   採用値でないものはラベルに（参考）等を必ず併記する） */
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));
+gap:.7rem;margin:1.3rem 0 1.8rem}
+.kpi-tile{background:var(--card);border:1px solid var(--rule);border-radius:8px;
+padding:.75rem .9rem .7rem;box-shadow:var(--shadow)}
+.kpi-tile .k-label{display:block;font-size:.72rem;font-weight:700;
+color:var(--dim);letter-spacing:.05em;margin-bottom:.15rem}
+.kpi-tile .k-value{display:block;font-size:1.45rem;font-weight:700;
+line-height:1.3;font-variant-numeric:tabular-nums;letter-spacing:.01em;
+white-space:nowrap}
+.kpi-tile .k-sub{display:block;font-size:.72rem;color:var(--dim);margin-top:.1rem;
+overflow-wrap:anywhere}
+.kpi-tile .k-value-sm{font-size:1.02rem;padding:.2rem 0 .15rem}
+.k-unit{font-size:.8rem;font-weight:700;color:var(--dim);margin-left:.1rem}
+/* 騰落の色。図（.viz）と同じ意味づけ＝青が改善・赤が悪化（符号も必ず併記する。
+   色だけに意味を持たせない） */
+.chg-pos{color:var(--pos)}
+.chg-neg{color:var(--neg)}
+
+/* 銘柄カード（一覧） */
+.card{border:1px solid var(--rule);border-radius:8px;padding:1.1rem 1.2rem;
+margin:1.1rem 0;background:var(--card);box-shadow:var(--shadow)}
+.card h3{margin:0 0 .1rem;font-size:1.1rem}
+.card .meta{color:var(--dim);font-size:.78rem;margin:0 0 .7rem}
+.card .oneline{font-size:.95rem;margin:.5rem 0 .8rem}
+.card .week{background:var(--soft);padding:.6rem .8rem;border-radius:6px;
+font-size:.86rem;margin:.6rem 0 0}
+.card .week .wk{font-weight:700;font-size:.78rem;color:var(--dim);
+display:block;margin-bottom:.2rem}
+.flag{display:inline-block;padding:.08rem .55rem;border-radius:999px;font-size:.72rem;
+font-weight:700;color:#fff;background:var(--flag);margin-left:.4rem;
+vertical-align:middle}
+.pill{display:inline-block;padding:.08rem .55rem;border-radius:999px;font-size:.72rem;
+font-weight:700;background:var(--soft);color:var(--dim);margin-right:.4rem}
+.pill-warn{background:#f8ecd4;color:var(--warn)}
+.pill-danger{background:#f7e5e1;color:var(--danger)}
+.pill-good{background:#e2efe6;color:var(--good)}
+.none{color:var(--dim);font-size:.9rem;padding:1rem;background:var(--soft);
+border-radius:6px}
+.num{font-variant-numeric:tabular-nums;
+font-family:ui-monospace,"SF Mono",Menlo,monospace}
+/* 数値セルは桁の途中で折り返さない（.prose-table の overflow-wrap:anywhere が
+   数字にも効いて「1桁ずつ縦に落ちる」のを防ぐ。幅が足りない表は .scroll が
+   横スクロールで受ける） */
+td.num,th.num{white-space:nowrap;overflow-wrap:normal}
+/* 週次アップデートの1エントリ＝1カード。長い時系列を面で区切る */
+.upd{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--accent);
+border-radius:6px;padding:1rem 1.2rem;margin:1.1rem 0;box-shadow:var(--shadow)}
+.upd h3{display:inline-block;margin:0 0 .5rem;font-size:.8rem;font-weight:700;
+color:var(--accent);background:var(--accent-soft);padding:.12rem .7rem;
+border-radius:999px}
+.upd h4{margin-top:1rem}
+
+/* 図。色は dataviz のバリデータで検証済み（light 面 #fdfdfc 上で全項目 PASS）。
+   黒字=青 / 赤字=赤。「黒字=緑」は赤緑色覚で赤との ΔE が 4.1 しかなく採らない。 */
+.viz{margin:1.6rem 0;background:var(--card);border:1px solid var(--rule);
+border-radius:8px;padding:1rem 1rem .8rem;box-shadow:var(--shadow);
+--viz-pos:#2a78d6;--viz-neg:#d03b3b;--viz-grid:#e1e0d9;--viz-axis:#c3c2b7;
+--viz-ink:#0b0b0b;--viz-muted:#898781;--viz-surface:#ffffff}
+.viz svg{width:100%;height:auto;display:block;overflow:visible}
+.viz figcaption{color:var(--dim);font-size:.82rem;margin-top:.5rem;line-height:1.7}
+/* 図の出所。検証済みか手書きかを図と一緒に必ず見せる（同じ見た目で並べない） */
+.viz-src{color:var(--dim);font-size:.74rem;line-height:1.6;margin:.45rem 0 0;
+padding:.35rem .55rem;background:var(--soft);border-left:2px solid var(--good);
+border-radius:2px;overflow-wrap:anywhere}
+.viz-src-hand{border-left-color:var(--warn);background:#f8ecd4;color:var(--warn)}
+/* 一覧のフィルター（checkbox + label + 兄弟セレクタ。JS なし）。
+   既定は対象外を隠し、ボタンで出す。隠した行は Ctrl+F でも当たらないので、
+   ボタンのラベルに件数を必ず出す（build.py 側で組み立てている）。
+   ★行を隠す規則そのものは**スタイルシート末尾**にある（カスケードの教訓） */
+.list-wrap{position:relative}
+.filter-toggle{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.list-toolbar{display:flex;align-items:center;gap:.5rem .8rem;flex-wrap:wrap;
+margin:1rem 0 .2rem}
+.filter-btn{display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;
+user-select:none;padding:.34rem .9rem;border:1px solid var(--rule);
+border-radius:999px;background:var(--card);color:var(--dim);
+font-size:.8rem;font-weight:700;line-height:1.6;box-shadow:var(--shadow);
+transition:background .12s ease,color .12s ease,border-color .12s ease}
+.filter-btn::before{content:"";width:.55rem;height:.55rem;border-radius:50%;
+background:var(--rule);transition:background .12s ease}
+.filter-btn:hover{background:var(--soft);color:var(--ink)}
+/* トグルの input は自分の label の**直前**に置く（build.py の _toggle が正）。
+   見た目は隣接セレクタ + で自分の label だけに効かせる。
+   行の表示・非表示は末尾の :has() 規則が担う */
+.filter-toggle:focus-visible+.filter-btn{
+outline:2px solid var(--accent);outline-offset:2px}
+.filter-toggle:checked+.filter-btn{background:var(--accent-soft);
+border-color:var(--accent);color:var(--accent)}
+.filter-toggle:checked+.filter-btn::before{background:var(--accent)}
+.filter-btn .f-off{display:none}
+.filter-toggle:checked+.filter-btn .f-on{display:none}
+.filter-toggle:checked+.filter-btn .f-off{display:inline}
+/* 絞り込みチップ。既定=表示（checked）なので、checked を強調色にせず
+   「外した（隠している）」側を消し込みの見た目にする */
+.filter-btn.chip{padding:.16rem .6rem;font-size:.74rem;box-shadow:none;
+margin:0}
+.filter-toggle:checked+.filter-btn.chip{background:var(--card);
+border-color:var(--rule);color:var(--dim)}
+.filter-toggle:checked+.filter-btn.chip::before{background:var(--good)}
+.filter-toggle:not(:checked)+.filter-btn.chip{opacity:.5;border-style:dashed;
+text-decoration:line-through}
+.list-filters{margin:.1rem 0 .2rem;gap:.35rem .45rem}
+.fl-cap{font-size:.72rem;font-weight:700;color:var(--dim);margin-left:.3rem}
+.fl-cap:first-child{margin-left:0}
+.filter-note{font-size:.74rem;color:var(--dim);line-height:1.7;flex:1 1 16rem}
+/* 表示中の対象外行は「凍った記録」だと分かる見た目にする（PC・スマホ共通） */
+tr.row-excluded td{background:#f6f3ea}
+.list-table tr.row-excluded:hover td{background:#f6f3ea}
+tr.row-excluded .nm a{color:var(--dim)}
+/* 一覧の判定スタンプと前週末比・スパークライン */
+.stamp{display:inline-block;padding:.1rem .6rem;border-radius:6px;
+font-size:.76rem;font-weight:700;background:var(--soft);color:var(--dim);
+border:1px solid var(--rule);margin-top:.4rem}
+.stamp-buy{background:#e2efe6;color:var(--good);border-color:#bcd9c6}
+.stamp-sell{background:#f7e5e1;color:var(--danger);border-color:#e5c0b8}
+.stamp-hot{background:#f8ecd4;color:var(--warn);border-color:#e6d3a8}
+.wchg{display:block;font-size:.78rem;font-weight:700;margin-top:.25rem}
+.spark{display:block;width:7.5rem;max-width:100%;height:auto;
+color:var(--accent);margin:.4rem 0 0;opacity:.9}
+/* 推定と会社計画・市場予想の乖離（一覧）。コンパクト表示でも隠さない */
+.est-line{display:block;font-size:.74rem;font-weight:700;color:var(--ink);
+margin-top:.35rem;line-height:1.7;white-space:normal;cursor:help}
+.est-line .k-unit{font-size:.68rem}
+.est-line .pill{margin:0 0 0 .3rem}
+.est-line .nb{white-space:nowrap}
+
+/* 監視対象から外した銘柄の注記。図の「手書き（未検証）」と同じ扱いで、
+   同じ見た目のまま黙って並べない（消す方法は用意しない） */
+.note-warn{border-left:3px solid var(--warn);background:#f8ecd4;color:var(--warn);
+padding:.6rem .8rem;border-radius:3px;font-size:.86rem;line-height:1.8;margin:.9rem 0}
+.viz-tick{fill:#898781;font-size:12px;font-family:inherit}
+.viz-value{fill:#0b0b0b;font-size:13px;font-weight:700;font-family:inherit}
+.viz-bar rect,.viz-dot circle{transition:opacity .12s ease}
+.viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
+.viz-bar,.viz-dot{cursor:default}
+
+/* 検証状態の記号バッジ（✓=2ソース照合済み ※=未照合参考 †=一次情報から直接）。
+   意味は title 属性（ブラウザ標準 tooltip）と about.html の凡例が持つ。
+   上付き風に小さく出す。色: 照合済み=青（.chg-pos と同系）・参考=橙（警告系）・
+   一次情報=グレー。色だけに意味を持たせない（記号そのものが常に見える） */
+.vm{font-size:.7em;font-weight:700;vertical-align:super;line-height:1;
+padding:0 .06em;cursor:help}
+.vm-ok{color:var(--pos)}
+.vm-ref{color:var(--warn)}
+.vm-pri{color:var(--dim)}
+
+/* 週次アップデートの古い週の折りたたみ。カード（.upd）より一段控えめにして
+   「畳んであるだけで消えてはいない」ことを見せる */
+details.upd-old{background:var(--soft);border-style:dashed;
+box-shadow:none;padding:.5rem .8rem}
+details.upd-old>summary{font-weight:400}
+
+/* 折りたたみ（裏取りで「裏付けが取れた記述」を畳む。JSは使わない） */
+details{margin:1rem 0;border:1px solid var(--rule);border-radius:6px;
+padding:.5rem .8rem;background:var(--card)}
+details summary{cursor:pointer;font-size:.88rem;font-weight:700;color:var(--dim)}
+details[open] summary{margin-bottom:.4rem}
+
+/* 銘柄ページの2大セクション（週次アップデート／会社概要）。既定は閉。
+   #verify 等へのアンカーは、現行ブラウザが details を自動展開して届く */
+details.sec{margin:1.6rem 0;padding:0;border:1px solid var(--rule);
+border-radius:8px;background:var(--card);box-shadow:var(--shadow)}
+details.sec>summary{list-style:none;cursor:pointer;margin:0;
+padding:1.05rem 1.2rem;display:flex;align-items:baseline;gap:.6rem;
+flex-wrap:wrap;color:var(--ink)}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::before{content:"▸";color:var(--accent);
+font-size:1.05rem;line-height:1}
+details.sec[open]>summary::before{content:"▾"}
+details.sec[open]>summary{margin:0;border-bottom:1px solid var(--rule)}
+details.sec .sec-title{font-size:1.12rem;font-weight:700}
+details.sec .sec-hint{font-size:.76rem;color:var(--dim);font-weight:400}
+details.sec>.sec-body{padding:.2rem 1.2rem 1.3rem}
+details.sec>.sec-body>h2:first-child{margin-top:1.4rem}
+details.sec>summary:hover .sec-title{color:var(--accent)}
+/* 推定フォールド内の表は、狭い画面で潰して桁を折るより横スクロールさせる */
+.est .scroll table{min-width:34rem}
+/* 変数カード（推定）。表に長文メモを並べると他列が潰れて変数名が縦に折れる。
+   メモ・出典はカードの中に畳み、クリックで開く */
+.var-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));
+gap:.6rem;margin:1rem 0}
+details.var{margin:0;padding:0;border:1px solid var(--rule);border-radius:8px;
+background:var(--card)}
+details.var>summary{list-style:none;cursor:pointer;padding:.6rem .75rem .55rem;
+display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;margin:0}
+details.var>summary::-webkit-details-marker{display:none}
+details.var>summary::after{content:"▾";color:var(--dim);font-size:.72rem;
+margin-left:auto}
+details.var[open]>summary::after{content:"▴"}
+details.var[open]>summary{margin:0}
+details.var code{white-space:nowrap;overflow-wrap:normal;background:none;
+padding:0;font-size:.78rem;color:var(--dim)}
+details.var .v-seg{font-size:.68rem;color:var(--dim);width:100%;line-height:1.4}
+details.var .v-val{font-weight:700;font-variant-numeric:tabular-nums;
+font-size:1.08rem;white-space:nowrap}
+details.var>div{margin:0 .75rem .6rem;padding-top:.5rem;font-size:.8rem;
+color:var(--dim);line-height:1.75;border-top:1px dashed var(--rule);
+overflow-wrap:anywhere}
+/* PC では推定フォールドだけ本文列（52rem）より広く使う */
+@media(min-width:1140px){
+details.sec.sec-wide{width:min(76rem,calc(100vw - 5rem));position:relative;
+left:50%;transform:translateX(-50%)}
+details.sec.sec-wide .est .kpi{grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))}
+}
+
+/* 読み取りの手がかり（図の下に置く短い注記） */
+.readout{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;
+font-size:.82rem;color:var(--dim)}
+.readout b{color:var(--ink);font-weight:700}
+
+/* 一覧表（銘柄が増えても詰まらないように） */
+.list-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+.list-table th{font-size:.75rem;color:var(--dim);text-align:left;
+padding:.5rem .6rem;border-bottom:1px solid var(--rule);white-space:nowrap;
+background:var(--soft)}
+.list-table td{padding:.85rem .6rem;border-bottom:1px solid var(--rule);
+vertical-align:top}
+.list-table tr:hover td{background:#f8f7f3}
+/* 行全体がタップ領域（data-href。委譲スクリプトが拾う）。指す先が
+   分かるよう、ホバーで銘柄名をリンク色にする */
+.list-table tr[data-href]{cursor:pointer}
+.list-table tr[data-href]:hover .nm a{color:var(--accent)}
+.list-table .nm{font-weight:700;font-size:1.02rem}
+.list-table .nm a{color:var(--ink);text-decoration-color:var(--rule)}
+.list-table .sub{color:var(--dim);font-size:.76rem;display:block;margin-top:.15rem}
+.list-table .one{color:var(--dim);font-size:.84rem;line-height:1.7;
+display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;
+overflow:hidden;margin-top:.4rem}
+.list-table .price{font-size:1.15rem;font-weight:700}
+/* nowrap にすると、中の長いURLが分割不能トークンになってスマホ幅で
+   ページ自体を横スクロールさせる（tools\shot.ps1 の採寸で 623px > 500px）。 */
+.ext{font-size:.72rem;color:var(--dim);text-decoration:none;
+border:1px solid var(--rule);border-radius:999px;padding:.02rem .45rem;
+margin-left:.35rem;white-space:normal;overflow-wrap:anywhere;
+max-width:100%;display:inline-block}
+.ext:hover{border-color:var(--ink);color:var(--ink)}
+/* 列幅を固定し、余りを1列目（銘柄と概要）に渡す。auto レイアウトだと概要文の
+   長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */
+@media(min-width:641px){
+.list-table{table-layout:fixed}
+.list-table th:nth-child(2),.list-table td:nth-child(2){width:9.5rem}
+.list-table th:nth-child(3),.list-table td:nth-child(3){width:12rem}
+.list-table td:nth-child(2) .sub{white-space:nowrap}
+}
+/* PC の広い画面では**トップページ全体**（main.wide）を広く使う。
+   一覧だけを translateX で広げると、見出し・KPI と左端が揃わず崩れて見える */
+@media(min-width:1140px){
+main.wide{max-width:74rem}
+}
+
+@media(max-width:640px){
+body{font-size:15px}
+h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:2.2rem}
+table{font-size:.8rem}th,td{padding:.45rem .5rem}
+.card{padding:.9rem 1rem}
+.kpi{grid-template-columns:repeat(2,1fr);gap:.55rem}
+.kpi-tile .k-value{font-size:1.25rem}
+.upd{padding:.85rem 1rem}
+details.sec>summary{padding:.85rem .9rem}
+details.sec>.sec-body{padding:.2rem .9rem 1rem}
+/* 一覧表はスマホでカード状に積む（横スクロールさせない） */
+.list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
+.list-table thead{display:none}
+.list-table tr{border:1px solid var(--rule);border-radius:8px;
+padding:.7rem .8rem;margin:.7rem 0;background:var(--card);box-shadow:var(--shadow)}
+.list-table td{border:0;padding:.15rem 0}
+.list-table td[data-l]::before{content:attr(data-l) "　";color:var(--dim);
+font-size:.72rem;font-weight:700}
+.list-table tr:hover td{background:transparent}
+.viz{padding:.7rem .7rem .6rem}
+.viz figcaption{font-size:.78rem}
+.viz-tick{font-size:15px}.viz-value{font-size:16px}
+.site-in{padding:.45rem .85rem}
+main{padding:1.1rem .85rem 3rem}
+}
+
+/* ★表示切り替えの規則は必ずスタイルシートの末尾に置く（!important 併用）。
+   スマホのカード積み替え（.list-table tr{display:block}）と同じ詳細度の
+   display 規則は後勝ちで負けるため、位置と !important の両方で守る。
+   トグルが増えたため、状態は :has() で引く（input が label の直前にあり、
+   .scroll の兄弟ではないので兄弟セレクタでは届かない）。input が
+   描画されないキーは :has が成立せず**表示側に倒れる**（隠れて消えない）。 */
+/* 対象外: チェックが外れている間だけ隠す（既定＝隠す） */
+.list-wrap:has(#f-excluded:not(:checked)) tr.row-excluded{display:none!important}
+/* 判定・裏取りの絞り込み。チップを外すとその状態の行を隠す。
+   キーは build.py の STAMP_KEYS / VF_LABELS と一対（固定語彙・全キーぶん置く） */
+.list-wrap:has(#f-st-buy:not(:checked)) tr.st-buy{display:none!important}
+.list-wrap:has(#f-st-watch:not(:checked)) tr.st-watch{display:none!important}
+.list-wrap:has(#f-st-probe:not(:checked)) tr.st-probe{display:none!important}
+.list-wrap:has(#f-st-hot:not(:checked)) tr.st-hot{display:none!important}
+.list-wrap:has(#f-st-sell:not(:checked)) tr.st-sell{display:none!important}
+.list-wrap:has(#f-st-liq:not(:checked)) tr.st-liq{display:none!important}
+.list-wrap:has(#f-st-trend:not(:checked)) tr.st-trend{display:none!important}
+.list-wrap:has(#f-st-other:not(:checked)) tr.st-other{display:none!important}
+.list-wrap:has(#f-vf-ok:not(:checked)) tr.vf-ok{display:none!important}
+.list-wrap:has(#f-vf-part:not(:checked)) tr.vf-part{display:none!important}
+.list-wrap:has(#f-vf-none:not(:checked)) tr.vf-none{display:none!important}
+/* コンパクト表示（既定=ON。build.py が checked で出す）: 概要文・外部リンク・
+   スパークラインを畳み、1行1銘柄で 20〜30 銘柄を見渡せるようにする */
+.list-wrap:has(#v-compact:checked) .one,
+.list-wrap:has(#v-compact:checked) .ext,
+.list-wrap:has(#v-compact:checked) .spark{display:none!important}
+/* セルの中身を流し込んで行高を最小にする（.sub/.wchg は通常 block）。
+   終値セルは nowrap のままだと固定列幅を突き抜けて隣に重なるので折り返す。
+   繰り返しの日付・週ラベル（全行同じ）はこの表示では出さない */
+.list-wrap:has(#v-compact:checked) .list-table .sub{display:inline!important;
+margin:0 0 0 .5rem}
+.list-wrap:has(#v-compact:checked) td[data-l="終値・判定"]{white-space:normal;
+overflow-wrap:normal}
+.list-wrap:has(#v-compact:checked) td[data-l="終値・判定"] .sub{display:none!important}
+.list-wrap:has(#v-compact:checked) td[data-l="今週"] .sub{display:none!important}
+.list-wrap:has(#v-compact:checked) .wk-txt{display:-webkit-box;
+-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.list-wrap:has(#v-compact:checked) .wchg{display:inline-block!important;margin:0}
+.list-wrap:has(#v-compact:checked) .stamp{display:inline-block!important;
+margin:0;padding:.02rem .5rem}
+.list-wrap:has(#v-compact:checked) .stamp .st-p{display:none}
+.list-wrap:has(#v-compact:checked) .list-table .nm{font-size:.95rem}
+.list-wrap:has(#v-compact:checked) .list-table .price{font-size:1rem;
+margin-right:.5rem}
+@media(min-width:641px){
+.list-wrap:has(#v-compact:checked) .list-table td{padding:.4rem .6rem}
+.list-wrap:has(#v-compact:checked) .list-table th:nth-child(2),
+.list-wrap:has(#v-compact:checked) .list-table td:nth-child(2){width:12.5rem}
+}
+@media(max-width:640px){
+/* スマホのコンパクトはカードの見出しラベルと余白も詰める */
+.list-wrap:has(#v-compact:checked) .list-table td[data-l]::before{content:none}
+.list-wrap:has(#v-compact:checked) .list-table tr{padding:.5rem .75rem;
+margin:.45rem 0}
+}
+
+/* --- 前提知識（knowledge.html） -------------------------------------------
+   左カラム＝分類ツリー、右＝記事。表示切替は :target のみ（JSなし）。
+   どの記事も選ばれていないときは一覧（.kb-home）が出る。 */
+.kb-wrap{display:grid;grid-template-columns:14.5rem minmax(0,1fr);
+gap:1.4rem;align-items:start}
+@media(max-width:760px){.kb-wrap{grid-template-columns:1fr}}
+.kb-side{position:sticky;top:3.4rem;background:var(--card);
+border:1px solid var(--rule);border-radius:8px;padding:.9rem 1rem;
+font-size:.85rem;max-height:calc(100vh - 4.4rem);overflow-y:auto}
+@media(max-width:760px){.kb-side{position:static;max-height:none}}
+.kb-side .kb-cat{font-weight:700;margin:.8rem 0 .15rem;color:var(--ink)}
+.kb-side .kb-cat:first-child{margin-top:0}
+.kb-side .kb-cat.d1{margin-left:.6rem;font-size:.8rem;color:var(--dim)}
+.kb-side .kb-cat.d2{margin-left:1.2rem;font-size:.8rem;color:var(--dim)}
+.kb-side a{display:block;background:none;border:0;border-radius:0;
+border-left:2px solid var(--rule);margin:.12rem 0 .12rem .35rem;
+padding:.2rem .55rem;color:var(--accent);text-decoration:none;
+font-size:.85rem;line-height:1.5}
+.kb-side a:hover{border-left-color:var(--accent);color:var(--ink)}
+.kb-article{display:none;scroll-margin-top:3.6rem}
+.kb-article:target{display:block}
+.kb-main:has(.kb-article:target) .kb-home{display:none}
+.kb-crumb{font-size:.78rem;color:var(--dim);margin:0 0 .6rem}
+.kb-crumb .kb-date{margin-left:.8rem}
+.kb-index{padding-left:1.2rem}
+.kb-index li{margin:.6rem 0}
+.kb-index .kb-crumb{margin:0}
+/* 図（手描きSVG）。狭い画面では横スクロールで原寸を保つ */
+.kb-figure{margin:1.2rem 0 0;background:var(--card);
+border:1px solid var(--rule);border-radius:6px;padding:1rem .9rem .5rem}
+.kb-fig-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.kb-fig-scroll svg{display:block;min-width:760px;width:100%;height:auto}
+.kb-figure figcaption{font-size:.8rem;color:var(--dim);
+border-top:1px dashed var(--rule);margin-top:.7rem;
+padding:.6rem .2rem .4rem;line-height:1.7}
+.kb-kpis{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.2rem 0 0}
+.kb-kpi{flex:1 1 11rem;background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.7rem .9rem}
+.kb-kpi .v{font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.kb-kpi .l{font-size:.76rem;color:var(--dim);line-height:1.6;margin-top:.15rem}
+.kb-src,.kb-srcs{font-size:.72rem;color:var(--dim)}
+.kb-srcs{padding-left:1.2rem}
+.kb-srcs li{margin:.3rem 0;overflow-wrap:anywhere}
+.kb-note{background:var(--soft);border-left:3px solid var(--warn);
+padding:.7rem 1rem;border-radius:0 6px 6px 0;font-size:.86rem;margin:1.2rem 0 0}
+.kb-eq{display:flex;flex-wrap:wrap;gap:.5rem;align-items:stretch;
+justify-content:center;background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:1rem;margin:1.2rem 0 0}
+.kb-eq .term{flex:1 1 9rem;max-width:14rem;text-align:center;
+padding:.7rem .5rem;border:1px dashed var(--rule);border-radius:6px}
+.kb-eq .term.hot{border:1.5px solid var(--accent);background:var(--accent-soft)}
+.kb-eq .op{align-self:center;font-size:1.4rem;color:var(--dim)}
+.kb-eq .t-name{font-weight:700}
+.kb-eq .t-desc{font-size:.76rem;color:var(--dim);margin-top:.2rem;line-height:1.6}
+.kb-vs{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1.2rem 0 0}
+@media(max-width:640px){.kb-vs{grid-template-columns:1fr}}
+.kb-vs .col{background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.9rem 1rem}
+.kb-vs .col.hot{border-color:var(--accent)}
+.kb-vs .tag{font-size:.72rem;letter-spacing:.1em;color:var(--dim)}
+.kb-vs .col.hot .tag{color:var(--accent)}
+.kb-vs h3{margin:.3rem 0 .4rem}
+.kb-vs ul{margin:0;padding-left:1.2em;font-size:.84rem;color:var(--dim)}
+.kb-vs li{margin:.3em 0}
+.kb-vs .q{margin-top:.7rem;padding-top:.5rem;
+border-top:1px dashed var(--rule);font-size:.85rem}
+.kb-layers{display:flex;flex-direction:column;gap:.6rem;margin:1.2rem 0 0}
+.kb-layer{background:var(--card);border:1px solid var(--rule);
+border-left-width:4px;border-radius:6px;padding:.8rem 1rem}
+.kb-layer.v-takes{border-left-color:var(--good)}
+.kb-layer.v-open{border-left-color:var(--warn)}
+.kb-layer.v-pass,.kb-layer.v-out{border-left-color:var(--dim)}
+.kb-layer .who{font-size:.78rem;color:var(--dim);margin-top:.1rem}
+.kb-layer .why{font-size:.85rem;margin-top:.35rem}
+.kb-pill{display:inline-block;font-size:.68rem;font-weight:700;
+padding:.1rem .6rem;border-radius:999px;white-space:nowrap;
+vertical-align:.1em;background:var(--soft)}
+.kb-pill.p-takes{color:var(--good)}
+.kb-pill.p-open{color:var(--warn)}
+.kb-pill.p-pass,.kb-pill.p-out{color:var(--dim)}
+.kb-cands{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));
+gap:.6rem;margin:1.2rem 0 0}
+.kb-cand{background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.7rem .9rem}
+.kb-cand .code{font-size:.72rem;color:var(--accent);font-weight:700}
+.kb-cand .nm{font-weight:700;margin:.1rem 0 .3rem}
+.kb-cand p{font-size:.78rem;color:var(--dim);margin:0;line-height:1.65}
+</style></head><body><header class="site"><div class="site-in"><a class="brand" href="../index.html">銘柄調査台帳</a><nav><a href="../index.html">台帳</a><a href="../knowledge.html">前提知識</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav></div></header><main><h1>note（5243）</h1><p class="lede">東証グロース／レポート更新 2026-08-31<br>記述の裏取り <a href="#verify">30/53件が裏付けあり／23件は未確認・要修正</a>（検証 2026-08-31）<br><a class="ext" href="https://ir.note.jp/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://note.com/note_ir" target="_blank" rel="noopener">IR note（公式） ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=5243" target="_blank" rel="noopener">株探 ↗</a><a class="ext" href="https://irbank.net/5243" target="_blank" rel="noopener">IR BANK ↗</a></p><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">2,792<span class="k-unit">円</span></span><span class="k-sub">2026-08-27・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+3.6%</span></span><span class="k-sub">2026-08-26 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">1,170 〜 3,110</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">調査</span></span><span class="k-sub">src/judge.py の機械判定</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value">30<span class="k-unit">/53</span></span><span class="k-sub">裏付けあり／全記述・検証 2026-08-31</span></div></div><blockquote>
+<p><strong>一行でいうと</strong>：クリエイターが投稿するメディアプラットフォーム「note」と、法人向けSaaS「note pro」を運営し、流通した金額から手数料を取る会社。2024年11月期に営業黒字化し、2026年11月期は7月に営業利益の計画を11.0億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>へ引き上げ、前期実績2.6億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>の4.3倍を見込む。ただし引き上げの主因は増収ではなく費用の下振れで、株価はすでに年初来高値の近くまで戻している。</p>
+</blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W36・全 1 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W36（2026-08-31 週）</h3><p><strong>（初回レポート。直近の材料は前週8/26の自動翻訳の対象拡大で、株価は8/24週に週間+9.5%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。ただし週末8/28の急伸を説明する開示は見当たらない）</strong></p>
+<ul>
+<li>スクリーニング起点で 2026-08-30 に登録した銘柄のため、今週が最初のエントリになる。以下は 2026-08-28 までに取れているデータと開示に基づく</li>
+<li>8/26に「note、英語の自動翻訳を有料記事にも拡大　韓国語対応も順次開始」を開示（一次情報・TDnet、取得日 2026-08-31）。5/27に全クリエイター向けに始めた自動翻訳の対象を、単発の有料記事にも広げ、無料記事では韓国語への翻訳を同日から順次開始するという内容。会社は開始から2か月で英訳記事が225の国と地域から読まれ、最多はアメリカだったとしている（会社開示・未照合）。<a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/f9898ce2/249b/447a/a35d/657684558c33/140120260826526264.pdf" target="_blank" rel="noopener">contents.xj-storage.jp ↗</a></li>
+<li>株探は同日ザラ場に「ノートが頑強、英語の自動翻訳を有料記事に拡大」と報じた（二次情報、取得日 2026-08-31）。<a class="ext" href="https://kabutan.jp/stock/news?code=5243" target="_blank" rel="noopener">株探 ↗</a></li>
+<li>採用終値は 8/25 2,551円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span> → 8/26 2,695円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span> → 8/27 2,792円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。8/21終値2,550円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>との比較で週間+9.5%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span></li>
+<li><strong>8/28は照合が成立せず、採用終値は空のまま</strong>（取得できたのは1ソースのみ）。参考値は3,085円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、出来高883,700株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で直近60営業日の平均（約41万株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）のおよそ2倍。TDnetの開示一覧にも株探のニュース一覧にも、8/27〜8/28の会社開示・材料記事は無い（取得日 2026-08-31）。<strong>この日の上昇の理由は特定できていない</strong></li>
+<li>信用買い残は 8/7 1,456.2千株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span> → 8/14 1,362.0千株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span> → 8/21 1,308.8千株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>と3週続けて減った。売り残はほぼ無く、信用倍率は算出されていない（RATIO_NA）。<a class="ext" href="https://kabutan.jp/stock/?code=5243" target="_blank" rel="noopener">株探 ↗</a></li>
+</ul>
+<p><strong>次週に見ること</strong>：①8/28の急伸に後追いの開示・報道が出るか、出なければ需給要因として扱う ②3Q（6〜8月）の決算発表日の告知（過去2期は10月上旬に3Q決算と同時に業績予想を修正している。二次情報・未照合） ③上方修正の主因だった費用の下振れが3Qも続くか（増収は計画比+0.9%にとどまっていた）</p></div></div></details><details class="sec"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">まだ作成していない</span></summary><div class="sec-body"><p class="none">推定モデルは未作成。「この銘柄の推定モデルを組んで」と Claude に言えば起案できる（手順は <code>.claude/skills/kabu-ledger-estimate/</code>）。</p></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><p><strong>クリエイターの投稿が集まる場所を運営し、そこで動いたお金から手数料を取る会社。</strong> 主力は個人向けのメディアプラットフォーム「note」と、法人・自治体向けのSaaS「note pro」。連結子会社に note AI creative とTales &amp; Co. を持ち、決算説明資料では note／note pro・法人向けサービス／AI関連／IP・コンテンツクリエーション／その他という区分で売上を示している（AI関連とIP・コンテンツクリエーションは今期に新設された区分。一次情報・出典節）。</p>
+<figure class="viz"><svg viewBox="0 0 720 222" role="img" preserveAspectRatio="xMidYMid meet"><rect x="14.0" y="26" width="114.4" height="170" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="71.2" y="72.0" text-anchor="middle" class="viz-value">クリエイター</text><text x="71.2" y="91.0" text-anchor="middle" class="viz-value">が投稿する</text><text x="71.2" y="111.0" text-anchor="middle" class="viz-tick">文章・画像・</text><text x="71.2" y="127.0" text-anchor="middle" class="viz-tick">音声・動画。</text><text x="71.2" y="143.0" text-anchor="middle" class="viz-tick">無料でも有料</text><text x="71.2" y="159.0" text-anchor="middle" class="viz-tick">でも出せる</text><line x1="133.4" y1="111.0" x2="147.4" y2="111.0" stroke="var(--viz-muted)" stroke-width="2"/><path d="M153.4,111.0 l-8,-5 l0,10 z" fill="var(--viz-muted)"/><rect x="158.4" y="26" width="114.4" height="170" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="215.6" y="72.0" text-anchor="middle" class="viz-value">読者が買う・</text><text x="215.6" y="91.0" text-anchor="middle" class="viz-value">支援する</text><text x="215.6" y="111.0" text-anchor="middle" class="viz-tick">単発の有料記</text><text x="215.6" y="127.0" text-anchor="middle" class="viz-tick">事、定期購読</text><text x="215.6" y="143.0" text-anchor="middle" class="viz-tick">マガジン、メ</text><text x="215.6" y="159.0" text-anchor="middle" class="viz-tick">ンバーシップ</text><line x1="277.8" y1="111.0" x2="291.8" y2="111.0" stroke="var(--viz-muted)" stroke-width="2"/><path d="M297.8,111.0 l-8,-5 l0,10 z" fill="var(--viz-muted)"/><rect x="302.8" y="26" width="114.4" height="170" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="360.0" y="62.5" text-anchor="middle" class="viz-value">流通した金額</text><text x="360.0" y="81.5" text-anchor="middle" class="viz-value">から手数料を</text><text x="360.0" y="100.5" text-anchor="middle" class="viz-value">取る</text><text x="360.0" y="120.5" text-anchor="middle" class="viz-tick">プラットフォ</text><text x="360.0" y="136.5" text-anchor="middle" class="viz-tick">ーム利用料と</text><text x="360.0" y="152.5" text-anchor="middle" class="viz-tick">、決済にかか</text><text x="360.0" y="168.5" text-anchor="middle" class="viz-tick">る事務手数料</text><line x1="422.2" y1="111.0" x2="436.2" y2="111.0" stroke="var(--viz-muted)" stroke-width="2"/><path d="M442.2,111.0 l-8,-5 l0,10 z" fill="var(--viz-muted)"/><rect x="447.2" y="26" width="114.4" height="170" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="504.4" y="53.0" text-anchor="middle" class="viz-value">法人は no</text><text x="504.4" y="72.0" text-anchor="middle" class="viz-value">te pro</text><text x="504.4" y="91.0" text-anchor="middle" class="viz-value"> を月額で使</text><text x="504.4" y="110.0" text-anchor="middle" class="viz-value">う</text><text x="504.4" y="130.0" text-anchor="middle" class="viz-tick">オウンドメデ</text><text x="504.4" y="146.0" text-anchor="middle" class="viz-tick">ィアのSaa</text><text x="504.4" y="162.0" text-anchor="middle" class="viz-tick">S。こちらは</text><text x="504.4" y="178.0" text-anchor="middle" class="viz-tick">継続課金</text><line x1="566.6" y1="111.0" x2="580.6" y2="111.0" stroke="var(--viz-muted)" stroke-width="2"/><path d="M586.6,111.0 l-8,-5 l0,10 z" fill="var(--viz-muted)"/><rect x="591.6" y="26" width="114.4" height="170" rx="8" fill="var(--viz-grid)" opacity="0.45" stroke="var(--viz-axis)"/><text x="648.8" y="54.5" text-anchor="middle" class="viz-value">AI・IP </text><text x="648.8" y="73.5" text-anchor="middle" class="viz-value">はまだ別の稼</text><text x="648.8" y="92.5" text-anchor="middle" class="viz-value">ぎ方</text><text x="648.8" y="112.5" text-anchor="middle" class="viz-tick">国の実証事業</text><text x="648.8" y="128.5" text-anchor="middle" class="viz-tick">に近いAI関</text><text x="648.8" y="144.5" text-anchor="middle" class="viz-tick">連と、書籍化</text><text x="648.8" y="160.5" text-anchor="middle" class="viz-tick">・映像化を狙</text><text x="648.8" y="176.5" text-anchor="middle" class="viz-tick">うIP開発</text></svg><figcaption>お金の入り方（定性図）</figcaption><p class="viz-src">定性図（数値を含まない）</p></figure>
+<p>稼ぎ方は大きく2本ある。ひとつは「note」の流通総額（GMV）に対するテイクレート。有料記事や定期購読マガジン、メンバーシップで読者が払った金額のうち、プラットフォーム利用料と決済の事務手数料を取る。もうひとつが「note pro」の月額課金で、こちらはARR（年間経常収益）で管理されている。会社は重視する事業KPIとして「noteのGMV」と「note proのARR」を挙げている（一次情報・出典節）。</p>
+<p>規模感として、会社は2026年5月末時点の会員登録者数を1,248万人<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、MAUを9,123万<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、累計ユニーククリエイター数を241万人<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>としている。GMVは2026年11月期2Q（3〜5月）が64.8億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で前年同期比+24.6%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、有料コンテンツの比率は公開記事の23.5%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>。note proは同2Qに大型キャンペーンを実施して契約数を前四半期比+140件<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>積み増した一方、割引適用が増えて1契約あたりの単価が一時的に下がったとしている。いずれも会社開示の単一ソースで、照合は通っていない。</p>
+<p>株主構成も事業の姿を映している。2026年5月末時点の上位は代表取締役CEOの加藤貞顕が26.26%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、NAVER Corporationが7.38%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、KADOKAWAが5.16%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、GOOGLE INTERNATIONAL LLCが5.08%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（一次情報・決算説明資料）。Google（2025年1月）、NAVER（2025年11月決議）、KADOKAWA（2026年3月決議）と、いずれも資本業務提携を伴う出資である。事業提携先が株主に並ぶ構造で、提携の中身が業績に効くまでの時間差がそのまま評価の振れ幅になりやすい。</p>
+<p>なお、<code>data/master.yaml</code> ではこの銘柄の <code>valuation_model</code> / <code>fiscal_year_end</code> / <code>ir_url</code> / <code>peers</code> が <code>TO_VERIFY</code> のまま置かれている。決算期が11月であることは決算短信で確認できるが、マスタの更新は本レポートの担当外なので未確認として残す。</p><h2>財務の推移と健全性</h2><p><strong>赤字を続けたプラットフォームが、2024年11月期に営業黒字へ折り返し、2025年11月期から利益の伸びが売上の伸びを大きく上回りはじめている。</strong></p>
+<p>表の数値はすべて2ソース照合済みの採用値。空欄は採用値が無いことを示す（推定で埋めていない）。2022年11月期までは単体、2024年11月期以降は連結。</p>
+<div class="scroll"><table class="prose-table">
+<thead>
+<tr>
+<th>決算期</th>
+<th style="text-align: right;">売上高（百万円）</th>
+<th style="text-align: right;">営業利益（百万円）</th>
+<th style="text-align: right;">経常利益（百万円）</th>
+<th style="text-align: right;">最終利益（百万円）</th>
+<th style="text-align: right;">自己資本比率（％）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2022年11月期</td>
+<td style="text-align: right;">2,317</td>
+<td style="text-align: right;">-732</td>
+<td style="text-align: right;">-742</td>
+<td style="text-align: right;">-756</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>2023年11月期</td>
+<td style="text-align: right;">2,777</td>
+<td style="text-align: right;">-380</td>
+<td style="text-align: right;">-413</td>
+<td style="text-align: right;">-414</td>
+<td style="text-align: right;">47.1</td>
+</tr>
+<tr>
+<td>2024年11月期</td>
+<td style="text-align: right;">3,312</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">45.2</td>
+</tr>
+<tr>
+<td>2025年11月期</td>
+<td style="text-align: right;">4,141</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">262</td>
+<td style="text-align: right;">440</td>
+<td style="text-align: right;">45.9</td>
+</tr>
+<tr>
+<td>2026年11月期 会社計画</td>
+<td style="text-align: right;">5,650</td>
+<td style="text-align: right;">1,100</td>
+<td style="text-align: right;">1,130</td>
+<td style="text-align: right;">1,200</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table></div>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">56.5億円</text><g class="viz-bar"><title>2020/11: 15.2億円</title><rect x="77.7" y="186.0" width="46.0" height="62.0" fill="var(--viz-pos)" rx="3"/></g><text x="100.7" y="268.0" text-anchor="middle" class="viz-tick">2020/11</text><g class="viz-bar"><title>2021/11: 18.8億円</title><rect x="171.1" y="171.3" width="46.0" height="76.7" fill="var(--viz-pos)" rx="3"/></g><text x="194.1" y="268.0" text-anchor="middle" class="viz-tick">2021/11</text><g class="viz-bar"><title>2022/11: 23.2億円</title><rect x="264.6" y="153.7" width="46.0" height="94.3" fill="var(--viz-pos)" rx="3"/></g><text x="287.6" y="268.0" text-anchor="middle" class="viz-tick">2022/11</text><g class="viz-bar"><title>2023/11: 27.8億円</title><rect x="358.0" y="135.0" width="46.0" height="113.0" fill="var(--viz-pos)" rx="3"/></g><text x="381.0" y="268.0" text-anchor="middle" class="viz-tick">2023/11</text><g class="viz-bar"><title>2024/11: 33.1億円</title><rect x="451.4" y="113.2" width="46.0" height="134.8" fill="var(--viz-pos)" rx="3"/></g><text x="474.4" y="268.0" text-anchor="middle" class="viz-tick">2024/11</text><g class="viz-bar"><title>2025/11: 41.4億円</title><rect x="544.9" y="79.4" width="46.0" height="168.6" fill="var(--viz-pos)" rx="3"/></g><text x="567.9" y="268.0" text-anchor="middle" class="viz-tick">2025/11</text><g class="viz-bar"><title>26/11期 計画: 56.5億円 — 会社計画（上方修正後）</title><rect x="638.3" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="661.3" y="12.0" text-anchor="middle" class="viz-value">56.5億円</text><text x="661.3" y="268.0" text-anchor="middle" class="viz-tick">26/11期 計画</text></svg><figcaption>売上高の推移（通期）。右端の1本だけ会社計画</figcaption><p class="viz-src">出所: data/fundamentals/5243.csv の採用値（別サイト2つ以上が一致した値だけ）。7/7点を採用。</p></figure>
+<p>売上は2020年11月期の15.2億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>から2025年11月期の41.4億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>まで、毎期二桁の伸びを続けている。目立つのは利益側の変化で、2023年11月期の営業赤字3.8億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>から2024年11月期に52百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>の黒字へ折り返し、2025年11月期は2.6億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、営業利益率6.18%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>まで来た。</p>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">303百万円</text><g class="viz-bar"><title>24/6-8: 22.0百万円</title><rect x="71.9" y="231.3" width="46.0" height="16.7" fill="var(--viz-pos)" rx="3"/></g><text x="94.9" y="268.0" text-anchor="middle" class="viz-tick">24/6-8</text><g class="viz-bar"><title>24/9-11: 18.0百万円</title><rect x="153.6" y="234.3" width="46.0" height="13.7" fill="var(--viz-pos)" rx="3"/></g><text x="176.6" y="268.0" text-anchor="middle" class="viz-tick">24/9-11</text><g class="viz-bar"><title>24/12-25/2: 5.5百万円</title><rect x="235.4" y="243.8" width="46.0" height="4.2" fill="var(--viz-pos)" rx="3"/></g><text x="258.4" y="268.0" text-anchor="middle" class="viz-tick">24/12-25/2</text><g class="viz-bar"><title>25/3-5: 18.0百万円</title><rect x="317.1" y="234.3" width="46.0" height="13.7" fill="var(--viz-pos)" rx="3"/></g><text x="340.1" y="268.0" text-anchor="middle" class="viz-tick">25/3-5</text><g class="viz-bar"><title>25/6-8: 104百万円</title><rect x="398.9" y="169.1" width="46.0" height="78.9" fill="var(--viz-pos)" rx="3"/></g><text x="421.9" y="268.0" text-anchor="middle" class="viz-tick">25/6-8</text><g class="viz-bar"><title>25/9-11: 129百万円</title><rect x="480.6" y="150.1" width="46.0" height="97.9" fill="var(--viz-pos)" rx="3"/></g><text x="503.6" y="268.0" text-anchor="middle" class="viz-tick">25/9-11</text><g class="viz-bar"><title>25/12-26/2: 235百万円</title><rect x="562.4" y="69.6" width="46.0" height="178.4" fill="var(--viz-pos)" rx="3"/></g><text x="585.4" y="268.0" text-anchor="middle" class="viz-tick">25/12-26/2</text><g class="viz-bar"><title>26/3-5: 303百万円</title><rect x="644.1" y="18.0" width="46.0" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="667.1" y="268.0" text-anchor="middle" class="viz-tick">26/3-5</text></svg><figcaption>四半期ごとの営業利益。直近8四半期</figcaption><p class="viz-src">出所: data/fundamentals/5243.csv の採用値（別サイト2つ以上が一致した値だけ）。8/8点を採用。</p></figure>
+<p>四半期で見ると変化はもっと急である。2024年6〜8月期の営業利益22百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>に対し、2026年3〜5月期は3.0億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、営業利益率21.9%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。売上も8.5億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>から13.9億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>へ伸びているが、利益の伸び方はそれを大きく超えている。売上が増えても原価がほとんど増えない構造（限界利益率の高さ）と、費用の抑制が同時に効いた形と読める。</p>
+<p>財務の安全性は2026年11月期の上期に一段変わった。決算短信によれば2026年5月末の総資産は109.3億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、純資産77.2億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、自己資本比率70.1%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>で、前期末の45.9%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>から大きく上がっている。理由は利益ではなく資本の受け入れで、2025年12月1日にNAVER Corporationへ1,429,500株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（1株1,399円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、払込総額約20.0億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）、2026年4月9日にKADOKAWAへ1,000,000株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（1株2,212円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、差引手取約22.0億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）を第三者割当で発行している。会社は同期間に借入金6.8億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>を全額返済したとしている。</p>
+<p>一方で、この資本増強は既存株主の持ち分の希薄化でもある。発行済株式数は2025年11月末の16,748,700株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>から2026年5月末の19,368,800株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>へ増えた（一次情報・決算短信）。2026年11月期の1株当たり利益は取得元によって値が割れており（MISMATCH）、この台帳では採用値を持っていない。</p>
+<p>キャッシュフローは2025年11月期で営業CF 3.9億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、投資CF -7.5億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、フリーCF -3.5億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、財務CF 12.4億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。営業では稼げているが、投資と資本調達で残高を積む局面にある。期末の現金同等物は30.6億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>だった。無配で、配当予想も無い（一次情報・決算短信）。</p><h2>今後の展望とリスク</h2><p><strong>今期の計画は7月7日に引き上げられたが、上がったのは主に利益であって売上ではない。</strong> 会社が公表した修正の内容は、売上高を56.0億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>から56.5億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（+0.9%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）、営業利益を7.0億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>から11.0億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（+57.1%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）、経常利益を7.0億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>から11.3億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、当期純利益を8.5億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>から12.0億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>へというもの。会社が挙げた理由は、①note事業とnote pro・法人向けサービスの好調による増収、②全社的なAI活用による生産性向上で営業費用全体が期初計画を約3.5億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>下回る見込みになったこと、の2点で、②の内訳として採用・人員配置の最適化による人件費の抑制と、広告宣伝費の抑制的な運用を挙げている（一次情報・出典節）。</p>
+<p>つまり今期の増益の大半は、需要が跳ねたからではなく、費用が想定より出なかったことによる。会社自身も「収益性が構造的に改善している」と述べているが、費用側の下振れは同じ幅で毎期繰り返せる性質のものではない。<strong>構造改善なのか一度きりの余剰なのかは、3Q以降に増収がどれだけ利益に落ちるかを見ないと分けられない。</strong></p>
+<p>中長期では、2028〜2030年頃に連結売上高100億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、EBITDAマージン30〜40%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>を財務目標として掲げている（期初から変更なし）。成長の柱として note／note pro のプラットフォーム事業に加え、AI関連事業とIP事業を置き、M&amp;Aも選択肢に入れるとしている。7月7日には深津貴之がCXOからCSO（最高戦略責任者）に就き、「AI時代のコンテンツ流通インフラ」を掲げた成長戦略を公表した。具体策として、感想・レビューを自動集約してキーワードページを生成する「AIコンテクストネットワーク」（Netflix・松竹などが参加）、経産省主導の生成AI事業「GENIAC」でのRAG向けデータベース構築、自動多言語対応、IP360に採択された物語IPのゲーム化実証などが並ぶ。</p>
+<p>リスクとして見えているものを、確度の高い順に置く。</p>
+<ul>
+<li><strong>AI関連事業は売上が伸びても利益にほぼ効かない可能性がある。</strong> 会社は決算説明資料で、AI関連事業について「売上原価とほぼ同額を売上に計上している」と説明している（一次情報・出典節）。トップラインの成長率にはAI関連が乗るが、利益貢献は別物として読む必要がある。会社も2Qの成長率について、AI関連を除いた伸びを併記している</li>
+<li><strong>今期の増益の質。</strong> 上で書いたとおり、増益の主因は費用の下振れである。人員数は緩やかに減らしながら売上を伸ばしたと会社は説明しているが、採用を絞り続けることが将来の成長率にどう跳ね返るかは分からない</li>
+<li><strong>提携が業績に効くまでの時間差。</strong> KADOKAWA・NAVER・Googleとの提携はいずれも「これから協業する」段階の記述が中心で、KADOKAWAとの提携について会社自身が「2026年11月期通期連結業績予想に与える影響は軽微」としている（一次情報・出典節）。提携の発表と業績の反映は別のタイミングで来る</li>
+<li><strong>希薄化の継続。</strong> 2期連続で第三者割当を実施しており、ストックオプションの発行も継続している。1株あたりの価値で見るときは、成長率と発行済株式数の増加を並べて見る必要がある</li>
+<li><strong>プラットフォームの外部依存。</strong> 検索・AI検索からの流入が事業の前提に組み込まれている。会社はAIに引用されやすい構造を強みとして説明しているが、これは外部プラットフォームのアルゴリズム次第で変わる変数でもある</li>
+</ul><h2>値動きと市場の評価</h2><p><strong>年初の決算で急騰したあと6月まで下げ、7月の上方修正から戻して、現在は52週レンジの上端寄りにいる。</strong></p>
+<figure class="viz"><svg viewBox="0 0 720 150" role="img" preserveAspectRatio="xMidYMid meet"><rect x="44" y="52" width="632" height="12" rx="6" fill="var(--viz-grid)"/><rect x="44" y="52" width="528.4" height="12" rx="6" fill="var(--viz-pos)" opacity="0.35"/><g class="viz-dot"><title>現在: 2,792円</title><circle cx="572.4" cy="58.0" r="9" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2.5"/></g><line x1="572.4" y1="70.0" x2="572.4" y2="110.0" stroke="var(--viz-muted)" stroke-width="1"/><text x="572.4" y="122.0" text-anchor="middle" class="viz-value">現在 2,792円</text><text x="44" y="94.0" text-anchor="middle" class="viz-tick">安値<tspan x="44" dy="14">1,170円</tspan></text><text x="676" y="94.0" text-anchor="middle" class="viz-tick">高値<tspan x="676" dy="14">3,110円</tspan></text></svg><figcaption>直近52週の採用終値のレンジと、現在の位置</figcaption><p class="viz-src">出所: data/prices/daily.csv の採用終値（2つの取得元が一致した終値だけ）。ザラ場の高値・安値は照合を通っていないので使っていない。3/3点を採用、52週の採用終値 241営業日。安値 2025-10-02 / 高値 2026-01-21 / 現在 2026-08-27。</p></figure>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="59.2" x2="704" y2="59.2" stroke="var(--viz-grid)" stroke-width="1"/><text x="46" y="63.2" text-anchor="end" class="viz-tick">3,110円</text><line x1="54" y1="226.8" x2="704" y2="226.8" stroke="var(--viz-grid)" stroke-width="1"/><text x="46" y="230.8" text-anchor="end" class="viz-tick">1,170円</text><path d="M54.0,215.9 L55.8,215.6 L57.6,218.2 L59.4,217.6 L61.2,220.0 L66.6,216.4 L68.4,213.9 L70.2,213.8 L72.1,216.9 L73.9,217.5 L81.1,217.0 L82.9,217.9 L84.7,213.4 L86.5,210.7 L91.9,210.9 L95.5,214.5 L97.3,216.4 L99.1,216.9 L104.6,218.0 L106.4,221.4 L108.2,224.5 L110.0,226.8 L111.8,225.1 L117.2,217.9 L119.0,211.8 L120.8,185.9 L122.6,197.2 L124.4,198.3 L131.6,205.7 L133.4,199.2 L135.2,202.0 L137.1,206.2 L142.5,200.7 L144.3,204.0 L146.1,199.6 L147.9,202.3 L149.7,202.1 L155.1,204.9 L156.9,209.5 L158.7,215.1 L160.5,212.2 L162.3,215.8 L169.6,218.0 L171.4,215.6 L173.2,189.7 L175.0,196.0 L180.4,202.0 L182.2,205.6 L184.0,198.9 L185.8,202.9 L187.6,205.1 L193.0,209.4 L194.8,212.7 L196.6,209.6 L198.4,203.5 L200.2,205.2 L207.5,191.5 L209.3,190.9 L211.1,176.7 L212.9,184.3 L218.3,192.6 L220.1,190.5 L221.9,191.8 L223.7,199.5 L225.5,196.5 L230.9,192.5 L232.8,188.6 L234.6,198.3 L236.4,205.2 L238.2,202.3 L243.6,195.8 L245.4,201.1 L247.2,200.0 L249.0,200.0 L250.8,191.3 L256.2,193.5 L258.0,196.0 L259.8,195.1 L261.6,192.9 L263.4,189.9 L268.9,181.2 L270.7,186.9 L281.5,184.2 L283.3,183.0 L285.1,180.0 L286.9,172.6 L288.7,159.4 L295.9,165.9 L297.8,131.3 L299.6,88.1 L301.4,109.2 L306.8,91.7 L308.6,88.3 L310.4,59.2 L312.2,78.3 L314.0,71.2 L319.4,90.4 L321.2,106.7 L323.0,115.7 L324.8,105.8 L326.6,98.2 L332.1,106.7 L333.9,103.7 L335.7,102.9 L337.5,92.6 L339.3,87.8 L344.7,112.3 L346.5,112.2 L350.1,124.7 L351.9,135.0 L357.3,132.5 L359.1,135.9 L360.9,125.9 L362.8,124.3 L364.6,141.3 L371.8,153.2 L373.6,144.7 L375.4,142.6 L377.2,136.4 L382.6,147.1 L384.4,152.7 L386.2,158.3 L388.0,154.3 L389.8,143.4 L395.2,149.7 L397.1,128.0 L398.9,117.2 L400.7,124.8 L402.5,111.0 L407.9,118.4 L409.7,128.0 L411.5,124.8 L413.3,138.9 L420.5,146.2 L422.3,135.5 L424.1,113.2 L425.9,116.8 L427.8,110.2 L433.2,118.5 L435.0,116.6 L436.8,106.5 L438.6,115.4 L440.4,108.3 L445.8,107.4 L447.6,110.4 L449.4,91.7 L451.2,95.0 L453.0,94.3 L458.4,76.5 L460.2,67.8 L462.1,110.1 L463.9,88.6 L465.7,102.5 L471.1,102.5 L472.9,105.7 L474.7,95.4 L476.5,112.7 L478.3,116.3 L483.7,126.6 L485.5,111.6 L489.1,118.5 L490.9,123.7 L501.8,133.4 L503.6,142.1 L509.0,143.4 L510.8,133.9 L512.6,119.9 L514.4,129.4 L516.2,133.1 L521.6,132.3 L523.4,137.4 L525.2,142.4 L527.1,136.4 L528.9,133.7 L534.3,138.6 L536.1,137.8 L537.9,149.9 L539.7,149.7 L541.5,149.1 L546.9,154.4 L548.7,163.7 L550.5,160.7 L552.3,171.0 L554.1,168.2 L559.6,176.4 L561.4,178.9 L563.2,183.1 L565.0,182.5 L566.8,184.9 L572.2,183.4 L574.0,178.6 L575.8,170.6 L577.6,165.4 L579.4,175.8 L584.8,172.4 L586.6,177.5 L588.4,177.9 L590.2,178.4 L592.1,177.1 L597.5,169.1 L599.3,162.0 L601.1,162.0 L602.9,153.0 L604.7,148.6 L610.1,133.5 L611.9,136.2 L613.7,130.1 L615.5,154.2 L617.3,132.8 L622.8,145.9 L624.6,149.8 L626.4,142.7 L628.2,138.2 L630.0,150.8 L637.2,151.5 L639.0,161.2 L640.8,154.0 L642.6,152.9 L648.0,145.4 L649.8,151.2 L651.6,149.5 L653.4,151.7 L655.2,144.0 L660.7,156.5 L662.5,141.4 L664.3,130.2 L666.1,128.0 L667.9,131.4 L673.3,121.5 L676.9,114.2 L678.7,109.1 L680.5,106.7 L685.9,105.6 L687.8,105.8 L689.6,112.7 L691.4,103.6 L693.2,107.6 L698.6,107.6 L700.4,107.5 L702.2,95.0 L704.0,86.6" fill="none" stroke="var(--viz-pos)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><text x="54" y="272" text-anchor="start" class="viz-tick">25/9/1</text><text x="704" y="272" text-anchor="end" class="viz-tick">26/8/27</text><g class="viz-dot"><title>26/1/13 前期決算と今期計画を公表: 1,875円</title><circle cx="295.9" cy="165.9" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="295.9" y1="157.9" x2="295.9" y2="135.9" stroke="var(--viz-muted)" stroke-width="1"/><text x="295.9" y="131.9" text-anchor="middle" class="viz-value">前期決算と今期計画を公表</text><text x="295.9" y="145.9" text-anchor="middle" class="viz-tick">26/1/13</text><g class="viz-dot"><title>26/3/24 KADOKAWAと資本業務提携: 2,227円</title><circle cx="422.3" cy="135.5" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="422.3" y1="127.5" x2="422.3" y2="68.5" stroke="var(--viz-muted)" stroke-width="1"/><text x="422.3" y="64.5" text-anchor="middle" class="viz-value">KADOKAWAと資本業務提携</text><text x="422.3" y="78.5" text-anchor="middle" class="viz-tick">26/3/24</text><g class="viz-dot"><title>26/7/7 中間決算と通期の上方修正: 2,219円</title><circle cx="611.9" cy="136.2" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="611.9" y1="128.2" x2="608.0" y2="106.2" stroke="var(--viz-muted)" stroke-width="1"/><text x="608.0" y="102.2" text-anchor="middle" class="viz-value">中間決算と通期の上方修正</text><text x="608.0" y="116.2" text-anchor="middle" class="viz-tick">26/7/7</text><g class="viz-dot"><title>26/8/26 自動翻訳を有料記事へ拡大: 2,695円</title><circle cx="702.2" cy="95.0" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="702.2" y1="103.0" x2="608.0" y2="146.0" stroke="var(--viz-muted)" stroke-width="1"/><text x="608.0" y="158.0" text-anchor="middle" class="viz-value">自動翻訳を有料記事へ拡大</text><text x="608.0" y="172.0" text-anchor="middle" class="viz-tick">26/8/26</text></svg><figcaption>採用終値と、開示のあった日</figcaption><p class="viz-src">出所: data/prices/daily.csv の採用終値（2つの取得元が一致した終値だけ）。ザラ場の高値・安値は照合を通っていないので使っていない。245/245点を採用、52週の採用終値 241営業日、出来事 4/4件を配置。</p></figure>
+<p>採用終値で見た直近52週のレンジは、安値が2025年10月2日の1,170円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、高値が2026年1月21日の3,110円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。最新の採用終値は2026年8月27日の2,792円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>で、レンジの上端に近い位置にある。2026年に入ってからの安値は6月12日の1,655円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>で、そこからの戻りは大きい。</p>
+<p>主な節目と、そのときの値動きは以下のとおり。</p>
+<ul>
+<li><strong>2026年1月13日</strong>：前期決算と今期計画を公表。当日終値1,875円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>のあと、1月14日2,275円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、1月15日2,775円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>と2日で+48.0%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。1月21日に52週高値3,110円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>を付けた</li>
+<li><strong>2026年3月24日</strong>：KADOKAWAとの資本業務提携を16時に開示。翌3月25日の終値は2,485円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>で前日比+11.6%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span></li>
+<li><strong>2026年7月7日</strong>：中間決算と通期上方修正を15時30分に開示。翌7月8日は2,289円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（+3.2%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）と上げたが、7月9日は2,010円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（-12.2%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）と反落した。<strong>上方修正それ自体が買われ続けたわけではない</strong>と読める</li>
+<li><strong>2026年8月26日</strong>：自動翻訳の対象拡大を開示。当日2,695円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（+5.6%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）、翌27日2,792円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（+3.6%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）</li>
+</ul>
+<p>市場が付けている倍率は、株探の2026年8月31日時点の表示でPER 49.9倍<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、PBR 7.82倍<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、時価総額599億円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、発行済株式数19,414,000株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（いずれも二次情報・単一ソースで照合していない。株価は15分ディレイのザラ場値）。2026年5月末の決算短信ベースの発行済株式数19,368,800株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>との差は、その後のストックオプション行使などによるものと考えられる（推測・<code>assumed: true</code>。行使状況の開示は未確認）。</p>
+<p>需給面では、信用買い残が2026年8月21日時点で1,308.8千株<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>、売り残はほぼゼロ<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>。買い残は3週続けて減っているが、発行済株式数に対しては小さくない水準で、戻り局面での上値の重さにつながる可能性がある。制度信用では買建のみが可能な銘柄で、貸借銘柄ではない（二次情報・株探）。</p>
+<p>この銘柄の株価は、決算・提携・上方修正といった単発の開示に対して1日で二桁動く。<strong>開示の中身よりも、開示があったこと自体に反応している局面が混じっていると読める</strong>（7月8〜9日の往復がその例）。判断の材料としては、四半期の営業利益が積み上がり続けるかどうかのほうが、個々の開示より重い。</p><h2>出典</h2><p>凡例: <span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>=2ソース照合済みの採用値 ／ <span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>=未照合・参考値 ／ <span class="vm vm-pri" title="決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし">†</span>=決算短信（一次情報）から直接</p>
+<h3>一次情報（会社開示・TDnet）</h3>
+<div class="scroll"><table class="prose-table">
+<thead>
+<tr>
+<th>資料</th>
+<th>日付</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026年11月期第2四半期（中間期）決算短信〔日本基準〕（連結）</td>
+<td>2026-07-07</td>
+<td><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/b6303b7a/398a/470b/a8f8/a7b6e580ca14/140120260707588920.pdf" target="_blank" rel="noopener">contents.xj-storage.jp ↗</a></td>
+</tr>
+<tr>
+<td>通期連結業績予想の修正（上方修正）に関するお知らせ</td>
+<td>2026-07-07</td>
+<td><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/eb259f3b/8bb5/4b0c/bf2a/3e35bb152cca/140120260707588967.pdf" target="_blank" rel="noopener">contents.xj-storage.jp ↗</a></td>
+</tr>
+<tr>
+<td>2026年11月期第2四半期 決算説明資料</td>
+<td>2026-07-07</td>
+<td><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/a4ea5483/a46e/4111/9347/89dede346794/140120260707589041.pdf" target="_blank" rel="noopener">contents.xj-storage.jp ↗</a></td>
+</tr>
+<tr>
+<td>株式会社KADOKAWAとの資本業務提携及び第三者割当による新株式発行に関するお知らせ</td>
+<td>2026-03-24</td>
+<td><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/4eb303b6/1ad7/48a9/886c/b46097f80778/140120260324587697.pdf" target="_blank" rel="noopener">contents.xj-storage.jp ↗</a></td>
+</tr>
+<tr>
+<td>第三者割当による新株式発行の払込完了に関するお知らせ（NAVER Corporation）</td>
+<td>2025-12-01</td>
+<td><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/009d06cf/ab03/4be1/82ca/a478b9120969/140120251201512849.pdf" target="_blank" rel="noopener">contents.xj-storage.jp ↗</a></td>
+</tr>
+<tr>
+<td>note、英語の自動翻訳を有料記事にも拡大　韓国語対応も順次開始</td>
+<td>2026-08-26</td>
+<td><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/f9898ce2/249b/447a/a35d/657684558c33/140120260826526264.pdf" target="_blank" rel="noopener">contents.xj-storage.jp ↗</a></td>
+</tr>
+<tr>
+<td>IRサイト</td>
+<td>—</td>
+<td><a class="ext" href="https://ir.note.jp/" target="_blank" rel="noopener">ir.note.jp ↗</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>いずれも取得日 2026-08-31。</p>
+<h3>二次情報</h3>
+<div class="scroll"><table class="prose-table">
+<thead>
+<tr>
+<th>媒体</th>
+<th>使った内容</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>株探</td>
+<td>PER・PBR・時価総額・発行済株式数・信用残・修正履歴・ニュース一覧</td>
+<td><a class="ext" href="https://kabutan.jp/stock/?code=5243" target="_blank" rel="noopener">株探 ↗</a></td>
+</tr>
+<tr>
+<td>株探（決算）</td>
+<td>通期・半期・四半期の業績推移、業績修正の履歴</td>
+<td><a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">株探 ↗</a></td>
+</tr>
+<tr>
+<td>株探（ニュース）</td>
+<td>8月の材料記事と開示の一覧</td>
+<td><a class="ext" href="https://kabutan.jp/stock/news?code=5243" target="_blank" rel="noopener">株探 ↗</a></td>
+</tr>
+<tr>
+<td>Yahoo!ファイナンス</td>
+<td>適時開示情報の一覧（開示の有無の確認）</td>
+<td><a class="ext" href="https://finance.yahoo.co.jp/quote/5243.T/disclosure" target="_blank" rel="noopener">finance.yahoo.co.jp ↗</a></td>
+</tr>
+<tr>
+<td>IR BANK</td>
+<td>財務数値の照合先（<code>data/fundamentals/5243.csv</code> の副ソース）</td>
+<td><a class="ext" href="https://irbank.net/5243" target="_blank" rel="noopener">IR BANK ↗</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>いずれも取得日 2026-08-31。</p>
+<h3>この台帳の中の出所</h3>
+<ul>
+<li>株価・出来高：<code>data/prices/daily.csv</code>（採用終値は2ソース照合済み。2025-07-22〜2026-08-28 のうち採用終値は241/270日）</li>
+<li>財務数値：<code>data/fundamentals/5243.csv</code></li>
+<li>信用残：<code>data/margin/5243.csv</code></li>
+</ul>
+<h3>未確認（この時点で確かめられていないこと）</h3>
+<ul>
+<li><strong>2026年8月28日の急伸の理由。</strong> 会社開示・報道のいずれにも該当する材料が見当たらない。同日の採用終値も照合が成立していない</li>
+<li><strong>3Q（2026年6〜8月）決算の発表予定日。</strong> IRカレンダーに到達できず確認できていない</li>
+<li><strong>売上高の事業別内訳の実額。</strong> 決算説明資料では図として示されており、テキストからは実額を取れていない</li>
+<li><strong><code>data/master.yaml</code> の <code>valuation_model</code> / <code>fiscal_year_end</code> / <code>ir_url</code> / <code>peers</code> が <code>TO_VERIFY</code> のまま。</strong> 本レポートの担当外</li>
+<li><strong>2026年11月期の1株当たり利益（会社計画）は取得元間で値が割れている（MISMATCH）</strong> ため、この台帳では採用していない</li>
+<li><strong>2026年11月期上期（中間期）の売上・利益は取得元1件のみで照合が成立していない。</strong> 本文では決算短信の値を参考値として <span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span> 付きで扱っている</li>
+<li><strong>裏取り記録（<code>data/verification/5243.yaml</code>）がまだ無い。</strong> 本レポートの記述は別コンテキストでの検証を通していない</li>
+</ul><h2 id="verify">記述の裏取り</h2><p class="lede">本文の記述を、書いたのとは別の文脈が出典URLを取り直して1件ずつ判定した結果（<a href="../about.html">読み方</a>）。</p><p class="readout"><span>検証日 <b>2026-08-31</b></span><span>検証した記述 <b>53</b></span><span>裏付けあり <b>30</b></span><span>取得日から値が動いた <b>1</b></span><span>この出典では確かめられない（別の出典が要る） <b>5</b></span><span>出典と食い違う <b>2</b></span><span>確かめられない（到達不可・出典なし） <b>15</b></span><span>再取得した出典 <b>13</b></span></p><h3>裏が取れなかった記述</h3><p>出典を取り直しても確かめられなかったもの。<strong>本文に残っているが、確認済みとして読んではいけない。</strong></p><div class="scroll"><table><thead><tr><th>判定</th><th>本文の記述</th><th>再取得して分かったこと</th><th>出典</th><th>どうするか</th></tr></thead><tbody><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>会社は開始から2か月で英訳記事が225の国と地域から読まれ、最多はアメリカだったとしている（会社開示・未照合）</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は 140120260826526264.pdf。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-danger">出典と食い違う</span></td><td>増収は計画比+0.8%にとどまっていた</td><td>株探決算（200）の修正履歴 2026.11期: 「26/01/13 初 … 5,600 | 700 | 700 | 850」、「26/07/07 修 … 5,650 | 1,100 | 1,130 | 1,200」。(5650-5600)/5600 = 0.0089286 → +0.89%、四捨五入で +0.9%。本文の +0.8% は出典の実額から計算した値と一致しない（同じレポートは営業利益で (1100-700)/700=57.142…→+57.1%、前期比 1100/256=4.296…→4.3倍 と四捨五入しており、丸め方が揃っていない）。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>「+0.9%」に直す。同じ誤りが「今後の展望とリスク」の「（+0.8%※）」にもある（V30）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>連結子会社に note AI creative とTales &amp; Co. を持ち</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は決算短信 140120260707588920.pdf と決算説明資料 140120260707589041.pdf。株探の会社情報欄（200）は「個人CtoCメディアプラットフォーム「note」、法人向けメディアSaaS「note pro」の運営」までで子会社名を持たない。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>会社は重視する事業KPIとして「noteのGMV」と「note proのARR」を挙げている（一次情報・出典節）</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は決算説明資料 140120260707589041.pdf。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>会社は2026年5月末時点の会員登録者数を1,248万人※、MAUを9,123万※、累計ユニーククリエイター数を241万人※としている</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は決算説明資料 140120260707589041.pdf。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>GMVは2026年11月期2Q（3〜5月）が64.8億円※で前年同期比+24.6%※、有料コンテンツの比率は公開記事の23.5%※</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は決算説明資料 140120260707589041.pdf。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>2026年5月末時点の上位は代表取締役CEOの加藤貞顕が26.26%※、NAVER Corporationが7.38%※、KADOKAWAが5.16%※、GOOGLE INTERNATIONAL LLCが5.08%※（一次情報・決算説明資料）</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は決算説明資料 140120260707589041.pdf。株探の「大株主」タブは本文の出典URLに無いので叩いていない。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>なお、data/master.yaml ではこの銘柄の valuation_model / fiscal_year_end / ir_url / peers が TO_VERIFY のまま置かれている。</td><td>SKILL.md §隔離 により、裏取りのコンテキストは data/master.yaml を開かない（買値・買付日・数量が入るため。D18）。よってこの記述はこのコンテキストでは確かめられない。</td><td>出典なし<br>—</td><td>master.yaml の TO_VERIFY は checks.py と人間の担当。裏取りの対象から外すか、本文から落として BACKLOG.md 側に置く</td></tr><tr><td><span class="pill pill-warn">この出典では確かめられない（別の出典が要る）</span></td><td>2022年11月期までは単体、2024年11月期以降は連結。</td><td>株探決算（200）の業績推移は「単 2022.11*／単 2023.11／連 2024.11／連 2025.11／連 予 2026.11」、財務【実績】も「単 2023.11／連 2024.11／連 2025.11／連 25.12-05」で、出典では2023年11月期も『単』（非連結）。本文の区切りは表に載っている2023年11月期がどちらなのかを示しておらず、この出典では「2022年11月期まで」という線を裏付けられない。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>「2023年11月期までは単体、2024年11月期以降は連結」に直す</td></tr><tr><td><span class="pill pill-warn">この出典では確かめられない（別の出典が要る）</span></td><td>純資産77.2億円※</td><td>株探決算（200）財務【実績】の 連 25.12-05 が持つのは「自己資本 7,660百万円（76.6億円）」で、純資産（net assets）の欄が無い。自己資本と純資産は別概念なので 77.2億円は裏付けられない。data/fundamentals/5243.csv の H2025-12_2026-05 にも net_assets 行は無い（equity 7660 は status=SINGLE_SOURCE で採用値ではない）。決算短信PDFはテキスト化されない。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>決算短信から純資産を取り込む（data/tanshin/5243.csv）か、「自己資本76.6億円※」に直す</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>2025年12月1日にNAVER Corporationへ1,429,500株※（1株1,399円※、払込総額約20.0億円※）、2026年4月9日にKADOKAWAへ1,000,000株※（1株2,212円※、差引手取約22.0億円※）を第三者割当で発行している</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は 140120251201512849.pdf（NAVER払込完了）と 140120260324587697.pdf（KADOKAWA）。Yahoo!適時開示（200）で1ページ目から遡れたのは 2026-07-15 までで、2025-12-01 と 2026-03-24 の行は出ない。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>発行済株式数は2025年11月末の16,748,700株※から2026年5月末の19,368,800株※へ増えた（一次情報・決算短信）</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は決算短信 140120260707588920.pdf。株探基本情報（200）が持つのは2026-08-31 時点の 19,414,000株だけで、期末時点の株数は無い。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-danger">出典と食い違う</span></td><td>売上高を56.0億円※から56.5億円✓（+0.8%※）</td><td>株探決算（200）の修正履歴 2026.11期: 期初「26/01/13 初 … 5,600」、修正「26/07/07 修 … 5,650」。56.0億→56.5億は一致する。増減率は (5650-5600)/5600 = 0.0089286 → +0.89%、四捨五入で +0.9%。本文の +0.8% は出典の実額から計算した値と一致しない。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>「+0.9%」に直す。週次アップデートの「増収は計画比+0.8%にとどまっていた」（V10）も同じ</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>②全社的なAI活用による生産性向上で営業費用全体が期初計画を約3.5億円※下回る見込みになったこと</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は業績予想修正 140120260707588967.pdf と決算説明資料 140120260707589041.pdf。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>2028〜2030年頃に連結売上高100億円※、EBITDAマージン30〜40%※を財務目標として掲げている（期初から変更なし）</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は決算説明資料 140120260707589041.pdf。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-warn">この出典では確かめられない（別の出典が要る）</span></td><td>7月7日には深津貴之がCXOからCSO（最高戦略責任者）に就き</td><td>株探ニュース（200）に「26/08/06 11:00 | 開示 | note CEO加藤貞顕×CSO深津貴之が語るエコシステム戦略 対談記事公開のお知らせ」があり、深津貴之がCSOであることは裏付く。しかし就任日が7月7日であること、CXOからの異動であることは、到達できたどの出典にも書かれていない。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/news?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>役員異動の適時開示（HTMLで読めるもの）を出典に足すか、日付と「CXOから」を落とす</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>会社は決算説明資料で、AI関連事業について「売上原価とほぼ同額を売上に計上している」と説明している（一次情報・出典節）</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は決算説明資料 140120260707589041.pdf。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>KADOKAWAとの提携について会社自身が「2026年11月期通期連結業績予想に与える影響は軽微」としている（一次情報・出典節）</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は 140120260324587697.pdf。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作るか、同じ内容が読めるHTMLの出典を足す。それまでは「未確認」のまま残す</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>KADOKAWAとの資本業務提携を16時に開示</td><td>出典PDF は http 200 で到達するが fetch_source.py はPDFをテキスト化しない（本文82文字の告知だけが返る）。data/tanshin/5243.csv も存在せず、到達できる他の出典（株探・Yahoo!適時開示一覧）にも該当記述が無い。 対象は 140120260324587697.pdf。Yahoo!適時開示（200）は1ページ目で 2026-07-15 までしか遡れず、3/24 の行と開示時刻を持たない。</td><td>出典なし<br>—</td><td>開示時刻が読める出典を足すか、「16時に」を落とす</td></tr><tr><td><span class="pill pill-warn">この出典では確かめられない（別の出典が要る）</span></td><td>中間決算と通期上方修正を15時30分に開示</td><td>株探決算（200）は 26/07/07 を 2026.11期の修正日および第2四半期累計（25.12-05）の発表日として表示しており、日付は裏付けられる。しかし「15時30分」という開示時刻は到達できたどの出典にも無い。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>開示時刻の出典を足すか、時刻を落とす</td></tr><tr><td><span class="pill pill-warn">この出典では確かめられない（別の出典が要る）</span></td><td>| IRサイト | — | &lt;https://ir.note.jp/&gt; |</td><td>再取得（200）で返るのは515文字のナビゲーション見出し（IRトップ／IRニュース／IRライブラリ／経営情報／…／IRカレンダー／電子公告）だけで、本文コンテンツが無い。一次情報の欄に置かれているが、この URL から裏付けられる記述は無い。</td><td>一次情報<br><a class="ext" href="https://ir.note.jp/" target="_blank" rel="noopener">出典 ↗</a></td><td>一次情報の欄からは外すか、個別の開示ページ（HTMLで本文が読めるもの）に差し替える</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>| 2026年11月期第2四半期 決算説明資料 | 2026-07-07 | &lt;https://contents.xj-storage.jp/xcontents/AS05592/a4ea5483/a46e/4111/9347/89dede346794/140120260707589041.pdf&gt; |</td><td>一次情報表の6本のPDF（…588920 / …588967 / …589041 / …587697 / …512849 / …526264）はいずれも http 200 で到達するが、fetch_source.py はPDFをテキスト化しない（本文82文字の告知のみ）。data/tanshin/5243.csv も存在しないため、一次情報を根拠にすると書かれた本文の記述はこの run では1件も内容確認できていない（V06/V11〜V15/V25/V26/V32/V33/V36/V37/V44）。</td><td>出典なし<br>—</td><td>python src/fetch_tanshin.py で data/tanshin/5243.csv を作る。説明資料・提携リリースはHTML版があればそちらを出典に足す</td></tr><tr><td><span class="pill pill-warn">取得日から値が動いた</span></td><td>裏取り記録（data/verification/5243.yaml）がまだ無い。 本レポートの記述は別コンテキストでの検証を通していない</td><td>この run（2026-08-31）で data/verification/5243.yaml を新規に作成した。レポート更新時点（2026-08-31・sha256 a77c8e27…）では正しいが、本 run 以降は成立しない。</td><td>検証済みデータ<br><code>data/verification/5243.yaml</code></td><td>次回のレポート更新で当該項目を落とす</td></tr></tbody></table></div><details><summary>裏付けが取れた記述 30件</summary><div class="scroll"><table><thead><tr><th>判定</th><th>本文の記述</th><th>再取得して分かったこと</th><th>出典</th><th>どうするか</th></tr></thead><tbody><tr><td><span class="pill pill-good">裏付けあり</span></td><td>採用終値は 8/25 2,551円✓ → 8/26 2,695円✓ → 8/27 2,792円✓。8/21終値2,550円✓との比較で週間+9.5%✓</td><td>data/prices/daily.csv（code=5243・status に OK を含む行）: 2026-08-21 close=2550.0 / 2026-08-25 close=2551.0 / 2026-08-26 close=2695.0 / 2026-08-27 close=2792.0。(2792-2550)/2550=0.094902 → +9.5%。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>8/28は照合が成立せず、採用終値は空のまま（取得できたのは1ソースのみ）</td><td>2026-08-28 の行は status=SINGLE_SOURCE・close 空・source_primary=yahoo_jp・source_secondary 空。D53 に従い status で数えた。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>参考値は3,085円※、出来高883,700株※で直近60営業日の平均（約41万株※）のおよそ2倍</td><td>2026-08-28 の行は value_primary=3085.0（yahoo_jp）・volume=883700。直近60営業日（2026-06-04〜2026-08-28 の60行）の volume 平均=413,793株 → 約41万株。883700/413793=2.14倍。株探の基本情報ページ（再取得200）も「前日終値 3,085 ( 08/28 )」と表示する。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <a class="ext" href="https://kabutan.jp/stock/?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>8/28 は株探・Yahoo!の双方が 3,085 を出しており、再取得すれば照合が成立する可能性がある（data/revisions.csv に repair として記録する取得側の仕事。D38）</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>TDnetの開示一覧にも株探のニュース一覧にも、8/27〜8/28の会社開示・材料記事は無い</td><td>Yahoo!ファイナンス適時開示（200）: 最新行が「note、英語の自動翻訳を有料記事にも拡大　韓国語対応も順次開始 8/26 11:00 TDnet」、その次が 8/24 11:00 で 8/27・8/28 の行が無い。株探ニュース（200）: 「26/08/26 15:38」の次が「26/08/29 08:50」で 8/27・8/28 の記事が無い。</td><td>二次情報<br><a class="ext" href="https://finance.yahoo.co.jp/quote/5243.T/disclosure" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://kabutan.jp/stock/news?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>8/26に「note、英語の自動翻訳を有料記事にも拡大　韓国語対応も順次開始」を開示（一次情報・TDnet、取得日 2026-08-31）</td><td>Yahoo!ファイナンス適時開示（200）に「note、英語の自動翻訳を有料記事にも拡大　韓国語対応も順次開始 / 8/26 11:00 / TDnet / PDF (969KB)」。株探ニュース（200）にも「26/08/26 11:00 | 開示 | note、英語の自動翻訳を有料記事にも拡大　韓国語対応も順次開始」。表題と開示日は一致する。PDF本体は 200 だがテキスト化されないので中身は未確認。</td><td>二次情報<br><a class="ext" href="https://finance.yahoo.co.jp/quote/5243.T/disclosure" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://kabutan.jp/stock/news?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>株探は同日ザラ場に「ノートが頑強、英語の自動翻訳を有料記事に拡大」と報じた（二次情報、取得日 2026-08-31）</td><td>株探ニュース（200）に「26/08/26 13:07 | 材料 | ノートが頑強、英語の自動翻訳を有料記事に拡大」。13:07 は東証の立会時間内。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/news?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>信用買い残は 8/7 1,456.2千株※ → 8/14 1,362.0千株※ → 8/21 1,308.8千株※と3週続けて減った。売り残はほぼ無く、信用倍率は算出されていない（RATIO_NA）</td><td>data/margin/5243.csv: 2026-08-07 long=1456.2/short=0.2/ratio=7281.0/status=OK、2026-08-14 long=1362.0/short=0.0/ratio 空/status=RATIO_NA、2026-08-21 long=1308.8/short=0.1/ratio 空/status=RATIO_NA。1456.2&gt;1362.0&gt;1308.8。株探基本情報（200）の信用取引表も 08/21 0.1|1,308.8|－、08/14 0.0|1,362.0|－、08/07 0.2|1,456.2|7,281 で一致。</td><td>検証済みデータ<br><code>data/margin/5243.csv</code> <a class="ext" href="https://kabutan.jp/stock/?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>8/7 だけは倍率 7,281倍が算出されている（status=OK）。本文は 8/21 時点の話なので矛盾しないが、「算出されていない」は直近週に限る話だと分かる書き方が安全</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>過去2期は10月上旬に3Q決算と同時に業績予想を修正している。二次情報・未照合</td><td>株探決算（200）の修正履歴: 2024.11期に「24/10/09 修」、2025.11期に「25/10/07 修」。3ヵ月決算の発表日も 連 24.06-08 が 24/10/09、連 25.06-08 が 25/10/07 で同日。いずれも10月上旬で、3Q決算と業績予想修正が同日。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>表の数値はすべて2ソース照合済みの採用値。空欄は採用値が無いことを示す（推定で埋めていない）。</td><td>本文表の全セルを data/fundamentals/5243.csv と突合。値のあるセルはすべて status に OK を含む: FY2022-11 revenue 2317 / operating_income -732 / ordinary_income -742 / net_income -756、FY2023-11 2777 / -380 / -413 / -414 / equity_ratio 47.1、FY2024-11 3312 / 52 / 75 / 98 / 45.2、FY2025-11 4141 / 256 / 262 / 440 / 45.9、FY2026-11 revenue_plan 5650 / operating_income_plan 1100 / ordinary_income_plan 1130 / net_income_plan 1200。空欄も一致: FY2022-11 equity_ratio は status=SINGLE_SOURCE（irbank_bs 55・value 空）、FY2026-11 に equity_ratio 行は無い。</td><td>検証済みデータ<br><code>data/fundamentals/5243.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>売上は2020年11月期の15.2億円✓から2025年11月期の41.4億円✓まで、毎期二桁の伸びを続けている。</td><td>data/fundamentals/5243.csv の revenue（すべて status に OK を含む）: FY2020-11=1523、FY2021-11=1884、FY2022-11=2317、FY2023-11=2777、FY2024-11=3312、FY2025-11=4141。1523→15.2億、4141→41.4億。前年比 1884/1523-1=+23.7%、2317/1884-1=+23.0%、2777/2317-1=+19.9%、3312/2777-1=+19.3%、4141/3312-1=+25.0% でいずれも二桁。株探決算（200）の成長性表の表示（+23.7 / +23.0 / +19.9 / +19.3 / +25.0）とも一致。</td><td>検証済みデータ<br><code>data/fundamentals/5243.csv</code> <a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2023年11月期の営業赤字3.8億円✓から2024年11月期に52百万円✓の黒字へ折り返し、2025年11月期は2.6億円✓、営業利益率6.18%✓まで来た。</td><td>operating_income（status OK）: FY2023-11=-380（-3.8億）、FY2024-11=52、FY2025-11=256（2.56億≒2.6億）。operating_margin FY2025-11=6.18（status=OK|ROUNDING、kabutan_fy_profit 6.18 / irbank 6.19）。</td><td>検証済みデータ<br><code>data/fundamentals/5243.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2024年6〜8月期の営業利益22百万円✓に対し、2026年3〜5月期は3.0億円✓、営業利益率21.9%✓。売上も8.5億円✓から13.9億円✓へ伸びている</td><td>Q2024-06_2024-08: operating_income=22（OK）・revenue=845（OK）→8.45億。Q2026-03_2026-05: operating_income=303（OK）→3.03億・operating_margin=21.9（OK）・revenue=1386（OK）→13.86億。株探決算（200）の3ヵ月決算表とも一致（連 24.06-08 845|22、連 26.03-05 1,386|303|…|21.9）。</td><td>検証済みデータ<br><code>data/fundamentals/5243.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2026年5月末の総資産は109.3億円※</td><td>株探決算（200）財務【実績】: 「連 25.12-05 | － | 70.1 | 10,934 | 7,660 | 1,092 | － | 26/07/07」。総資産 10,934百万円＝109.34億円。単位注記「総資産、自己資本、剰余金は「百万円」」を確認した。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>自己資本比率70.1%※で、前期末の45.9%✓から大きく上がっている</td><td>株探決算（200）財務【実績】: 連 25.12-05 の自己資本比率 70.1、連 2025.11 の自己資本比率 45.9。data/fundamentals/5243.csv でも FY2025-11 equity_ratio=45.9（status=OK、kabutan_bs/irbank_bs とも45.9）。7,660/10,934=70.06% で 70.1 と整合。</td><td>検証済みデータ<br><code>data/fundamentals/5243.csv</code> <a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>キャッシュフローは2025年11月期で営業CF 3.9億円✓、投資CF -7.5億円✓、フリーCF -3.5億円✓、財務CF 12.4億円✓</td><td>FY2025-11（すべて status に OK を含む）: operating_cf=393、investing_cf=-747、free_cf=-354、financing_cf=1244。株探決算（200）のCF表「連 2025.11 | 256 | -354 | 393 | -747 | 1,244 | 3,056 | 49.73」と一致。</td><td>検証済みデータ<br><code>data/fundamentals/5243.csv</code> <a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>期末の現金同等物は30.6億円✓だった。無配で、配当予想も無い（一次情報・決算短信）</td><td>FY2025-11 cash_equivalents=3056（status=OK|ROUNDING、kabutan_cf 3056 / irbank_cf 3060）→30.6億円。株探決算（200）の業績推移は 2022.11〜2025.11 と 予 2026.11 の「修正 1株配」がすべて 0、株探基本情報（200）も「利回り － ％」。</td><td>検証済みデータ<br><code>data/fundamentals/5243.csv</code> <a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>株探は予想1株配を「0」と表示する（＝無配予想）。「配当予想も無い」より「配当予想も0円」のほうが出典に忠実。なお引用した一次情報（決算短信PDF）は再取得できていない</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2026年11月期の1株当たり利益は取得元によって値が割れており（MISMATCH）、この台帳では採用値を持っていない</td><td>FY2026-11 eps_plan: status=MISMATCH、value 空、source_primary=kabutan_fy:61.8 / source_secondary=irbank_pl_comprehensive:61.96。</td><td>検証済みデータ<br><code>data/fundamentals/5243.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>営業利益を7.0億円※から11.0億円✓（+57.1%※）、経常利益を7.0億円※から11.3億円✓、当期純利益を8.5億円※から12.0億円✓へというもの</td><td>株探決算（200）の修正履歴 2026.11期: 「初 … 5,600 | 700 | 700 | 850」→「修 … 5,650 | 1,100 | 1,130 | 1,200」。7.0億→11.0億、7.0億→11.3億、8.5億→12.0億はすべて一致。(1100-700)/700=0.571428→+57.1%。修正後の値は data/fundamentals/5243.csv の FY2026-11 operating_income_plan=1100 / ordinary_income_plan=1130 / net_income_plan=1200（いずれも status=OK）とも一致。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>「AIコンテクストネットワーク」（Netflix・松竹などが参加）</td><td>Yahoo!ファイナンス適時開示（200）に「Netflixが、ファンの感想と公式情報がひとつの場に集まるnoteのAIコンテクストネットワークに参加 7/15 13:00 TDnet」と「映画会社初、松竹がnoteのAIコンテクストネットワークに参加　注目の新作邦画のファンの声と公式情報を集約 7/16 12:00 TDnet」。</td><td>二次情報<br><a class="ext" href="https://finance.yahoo.co.jp/quote/5243.T/disclosure" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>採用終値で見た直近52週のレンジは、安値が2025年10月2日の1,170円✓、高値が2026年1月21日の3,110円✓。最新の採用終値は2026年8月27日の2,792円✓</td><td>data/prices/daily.csv の code=5243・status に OK を含む行のうち直近52週（2025-09-01〜2026-08-28、241行）で close の最小は 1170.0（2025-10-02）、最大は 3110.0（2026-01-21）。最終の採用終値は 2026-08-27 の 2792.0（2026-08-28 は SINGLE_SOURCE で採用値なし）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2026年に入ってからの安値は6月12日の1,655円✓</td><td>2026年の採用終値（status OK）の最小は 2026-06-12 の 1655.0。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>当日終値1,875円✓のあと、1月14日2,275円✓、1月15日2,775円✓と2日で+48.0%✓</td><td>close: 2026-01-13=1875.0、2026-01-14=2275.0、2026-01-15=2775.0（いずれも status=OK）。(2775-1875)/1875=0.48 → +48.0%。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>翌3月25日の終値は2,485円✓で前日比+11.6%✓</td><td>close: 2026-03-24=2227.0、2026-03-25=2485.0（status=OK）。(2485-2227)/2227=0.115851 → +11.6%。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>翌7月8日は2,289円✓（+3.2%✓）と上げたが、7月9日は2,010円✓（-12.2%✓）と反落した</td><td>close: 2026-07-07=2219.0、2026-07-08=2289.0、2026-07-09=2010.0（status=OK）。(2289-2219)/2219=0.031546 → +3.2%、(2010-2289)/2289=-0.121887 → -12.2%。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>当日2,695円✓（+5.6%✓）、翌27日2,792円✓（+3.6%✓）</td><td>close: 2026-08-25=2551.0、2026-08-26=2695.0、2026-08-27=2792.0（status=OK）。(2695-2551)/2551=0.056448 → +5.6%、(2792-2695)/2695=0.035993 → +3.6%。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>市場が付けている倍率は、株探の2026年8月31日時点の表示でPER 49.9倍※、PBR 7.82倍※、時価総額599億円※、発行済株式数19,414,000株※</td><td>株探基本情報を再取得（200・ページ表示 2026-08-31 15:14）: 「PER | PBR | 利回り | 信用倍率 / 49.9 倍 | 7.82 倍 | － ％ | － 倍」「時価総額 | 599 億円」「発行済株式数 | 19,414,000 株」。4項目とも一致。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>同日 15:15 時点の株探ニュースページは PER 49.8倍・PBR 7.81倍・時価総額598億円を表示しており、ザラ場中に動く値である。本文の「15分ディレイのザラ場値」という但し書きはそのとおり</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>制度信用では買建のみが可能な銘柄で、貸借銘柄ではない（二次情報・株探）</td><td>株探基本情報（200）の信用欄に「証券取引所が指定する制度信用銘柄のうち、買建(信用買い)のみができる銘柄」。制度信用の売建ができない＝貸借銘柄ではない。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/?code=5243" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>株価・出来高：data/prices/daily.csv（採用終値は2ソース照合済み。2025-07-22〜2026-08-28 のうち採用終値は241/270日）</td><td>code=5243 の行は270行、最初 2025-07-22・最後 2026-08-28。status に OK を含む行は241行（D53 に従い close の有無ではなく status で数えた。close が入っている行数も241で一致）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>caption: &quot;売上高の推移（通期）。右端の1本だけ会社計画&quot;</td><td>図が引く7点はすべて status に OK を含む採用値: revenue FY2020-11=1523 / FY2021-11=1884 / FY2022-11=2317 / FY2023-11=2777 / FY2024-11=3312 / FY2025-11=4141、revenue_plan FY2026-11=5650。会社計画は右端の1本のみ。SINGLE_SOURCE・MISMATCH の行は使われていない（D41）。</td><td>検証済みデータ<br><code>data/fundamentals/5243.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>caption: &quot;四半期ごとの営業利益。直近8四半期&quot;</td><td>図が引く8期の operating_income はすべて status に OK を含む採用値: Q2024-06_2024-08=22 / Q2024-09_2024-11=18 / Q2024-12_2025-02=5.5 / Q2025-03_2025-05=18 / Q2025-06_2025-08=104 / Q2025-09_2025-11=129 / Q2025-12_2026-02=235 / Q2026-03_2026-05=303。data/fundamentals/5243.csv で確認できる直近8四半期と一致する。</td><td>検証済みデータ<br><code>data/fundamentals/5243.csv</code></td><td>—</td></tr></tbody></table></div></details><h3>この欄の材料</h3><p>検証した時刻 2026-08-31T15:40:00+09:00。記録は <code>data/verification/5243.yaml</code>（append-only）。</p><h4>実際に取り直した出典</h4><ul><li><a class="ext" href="https://ir.note.jp/" target="_blank" rel="noopener">https://ir.note.jp/ ↗</a>（HTTP 200）</li><li><a class="ext" href="https://note.com/note_ir" target="_blank" rel="noopener">https://note.com/note_ir ↗</a>（HTTP 200）</li><li><a class="ext" href="https://kabutan.jp/stock/?code=5243" target="_blank" rel="noopener">https://kabutan.jp/stock/?code=5243 ↗</a>（HTTP 200）</li><li><a class="ext" href="https://irbank.net/5243" target="_blank" rel="noopener">https://irbank.net/5243 ↗</a>（HTTP 200）</li><li><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/f9898ce2/249b/447a/a35d/657684558c33/140120260826526264.pdf" target="_blank" rel="noopener">https://contents.xj-storage.jp/xcontents/AS05592/f9898ce2/249b/447a/a35d/657684558c33/140120260826526264.pdf ↗</a>（HTTP 200）</li><li><a class="ext" href="https://kabutan.jp/stock/news?code=5243" target="_blank" rel="noopener">https://kabutan.jp/stock/news?code=5243 ↗</a>（HTTP 200）</li><li><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/b6303b7a/398a/470b/a8f8/a7b6e580ca14/140120260707588920.pdf" target="_blank" rel="noopener">https://contents.xj-storage.jp/xcontents/AS05592/b6303b7a/398a/470b/a8f8/a7b6e580ca14/140120260707588920.pdf ↗</a>（HTTP 200）</li><li><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/eb259f3b/8bb5/4b0c/bf2a/3e35bb152cca/140120260707588967.pdf" target="_blank" rel="noopener">https://contents.xj-storage.jp/xcontents/AS05592/eb259f3b/8bb5/4b0c/bf2a/3e35bb152cca/140120260707588967.pdf ↗</a>（HTTP 200）</li><li><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/a4ea5483/a46e/4111/9347/89dede346794/140120260707589041.pdf" target="_blank" rel="noopener">https://contents.xj-storage.jp/xcontents/AS05592/a4ea5483/a46e/4111/9347/89dede346794/140120260707589041.pdf ↗</a>（HTTP 200）</li><li><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/4eb303b6/1ad7/48a9/886c/b46097f80778/140120260324587697.pdf" target="_blank" rel="noopener">https://contents.xj-storage.jp/xcontents/AS05592/4eb303b6/1ad7/48a9/886c/b46097f80778/140120260324587697.pdf ↗</a>（HTTP 200）</li><li><a class="ext" href="https://contents.xj-storage.jp/xcontents/AS05592/009d06cf/ab03/4be1/82ca/a478b9120969/140120251201512849.pdf" target="_blank" rel="noopener">https://contents.xj-storage.jp/xcontents/AS05592/009d06cf/ab03/4be1/82ca/a478b9120969/140120251201512849.pdf ↗</a>（HTTP 200）</li><li><a class="ext" href="https://kabutan.jp/stock/finance?code=5243" target="_blank" rel="noopener">https://kabutan.jp/stock/finance?code=5243 ↗</a>（HTTP 200）</li><li><a class="ext" href="https://finance.yahoo.co.jp/quote/5243.T/disclosure" target="_blank" rel="noopener">https://finance.yahoo.co.jp/quote/5243.T/disclosure ↗</a>（HTTP 200）</li></ul><h4>機械抽出に委ねている出典</h4><p>毎週コードが表を抜いて突き合わせているもの。人が読み直すより、そちらの記録のほうが強い。</p><ul><li><a class="ext" href="https://irbank.net/5243" target="_blank" rel="noopener">https://irbank.net/5243 ↗</a> → <code>data/fundamentals/5243.csv</code></li></ul><h2>数値の検証状況</h2><p class="lede">2つの取得元で一致した値だけを採用し、欠測は0で埋めない。この銘柄でどこまで確かめられているかの開示（<a href="../about.html">読み方</a>）。</p><p class="readout"><span>2ソース照合済み <b>102</b></span><span>2ソースが食い違う <b>5</b></span><span>1ソースのみ <b>200</b></span><span>決算短信から直接 <b>0</b></span><span>株価の採用終値 <b>241</b>/270日</span></p><div class="scroll"><table><thead><tr><th>図</th><th>数値の出どころ</th><th>状態</th></tr></thead><tbody><tr><td><code>biz_model</code></td><td><span class="pill">定性図</span>定性図（数値を含まない）</td><td>—</td></tr><tr><td><code>events_52w</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>245/245点すべて採用値</td></tr><tr><td><code>op_income_q</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>8/8点すべて採用値</td></tr><tr><td><code>price_52w</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>3/3点すべて採用値</td></tr><tr><td><code>revenue_fy</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>7/7点すべて採用値</td></tr></tbody></table></div><h3>2つの取得元が食い違った項目</h3><p>どちらが正しいか決められないため、<strong>どちらの値も採用していない</strong>。この項目を本文で断定形で書いてはいけない。</p><p>2024/11 ROA、2024/11 ROE、2025/11 ROA、2025/11 ROE、2026/11 1株益（会社計画）</p><h3>この欄の材料</h3><ul><li>財務数値: <code>data/fundamentals/5243.csv</code>（307行）— 2サイトの表を機械的に抜いて突き合わせた結果</li><li>決算短信: <code>data/tanshin/5243.csv</code>（0行・開示日 —）— PDF本文からの抽出 </li><li>株価: <code>data/prices/daily.csv</code> の <code>close</code>。始値・高値・安値・出来高は主ソースのみで照合を通っていないため、図には使っていない</li></ul></div></details><footer>集計基準日 2026-08-27／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
