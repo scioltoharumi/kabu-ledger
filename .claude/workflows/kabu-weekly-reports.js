@@ -56,7 +56,7 @@ const COMMON = `
 シェルは実行環境で違う。ローカルは Windows PowerShell 5.1、CI とクラウドセッションは
 POSIX sh。**まずどちらかを確かめてから**その流儀で書く（PowerShell では && と || が
 使えないので ; と if ($?) を使う）。Python を叩く前に文字コードを UTF-8 にする
-（PowerShell: `$env:PYTHONIOENCODING = "utf-8"` ／ sh: `export PYTHONIOENCODING=utf-8`）。
+（PowerShell なら $env:PYTHONIOENCODING = "utf-8" ／ sh なら export PYTHONIOENCODING=utf-8）。
 
 **あなたは1銘柄だけを担当する。** 他の銘柄の reports/ や data/verification/ を
 読まない・書かない（並列実行で衝突する）。
@@ -95,8 +95,8 @@ ${FORCE_MODE ? `モードは "${FORCE_MODE}" を強制する。` : 'モードは
 
 追記ルール・書き方・モード判定・出典の扱いはすべて SKILL.md が正（ここに要約は置かない）。
 
-終わったら ${REPO} で `python src/checks.py` を実行し、**出力は一時ファイルに落として**
-（PowerShell: `> "$env:TEMP\\checks-${code}.txt"` ／ sh: `> "$TMPDIR/checks-${code}.txt"`。
+終わったら ${REPO} で python src/checks.py を実行し、**出力は一時ファイルに落として**
+（PowerShell なら > "$env:TEMP\\checks-${code}.txt" ／ sh なら > "$TMPDIR/checks-${code}.txt"。
 $TMPDIR が空なら /tmp）、そのファイルを Grep で「${code}」を含む行だけ確認して
 自銘柄の FAIL が無いことを確かめる。**出力全文をコンテキストに読み込まない**
 （他の銘柄の FAIL は並列作業中の別エージェントのもの。直そうとしない・
