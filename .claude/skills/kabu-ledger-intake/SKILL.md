@@ -95,6 +95,8 @@ description: 楽天証券スクリーニング結果のスクショから銘柄�
 ```powershell
 $env:PYTHONIOENCODING = "utf-8"
 python src/fetch.py --historical        # 日足を1年分さかのぼる（D16）
+python src/fetch_index.py               # 指数。**株価だけ進めると相対騰落率が
+                                        #   算出できずテストが落ちる。必ず対で回す**
 python src/fetch_margin.py              # 信用残（直近4週ぶんが毎回返る）
 python src/fetch_fundamentals.py        # 財務数値（別サイト2つの一致でだけ採用）
 python src/fetch_tanshin.py             # 決算短信PDF。落ちても止めない
