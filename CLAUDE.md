@@ -71,6 +71,12 @@
 ### 判定ロジック
 
 - 割安さの単一軸ソートを実装しない
+- **銘柄を「有望」と名指しする前に `python src/screen.py` を通す。**
+  警告（MOMENTUM_NEGATIVE / MOMENTUM_REVERSED / PLAN_FLAT / NO_PRICE_DATA /
+  NO_QUARTERLY）が付いた銘柄を推さない。効くのは利益率の水準ではなく
+  **利益が何％増えるか**で、通期は全社が増益に見えるため
+  **四半期の前年同期比まで降りる**（2026-09-01。高砂熱学を通期と ROE 計画だけで
+  推し、直近2四半期が減益だったのを見落とした事故に由来）
 - 買い側: 流動性ゲートが最上位。未計算のゲートは通過扱いにせず「調査」で止める。
   ただし n/a と unknown を区別する（1Q進捗率は非1Q期間は n/a）
 - 売り側（保有銘柄のみ）: 売りシグナルは買い側のどのゲートよりも**先に**評価する。
@@ -112,7 +118,8 @@
   ビジネスモデルを図解する記事をここに書き、人間の理解を経てから判定に進む。
   SVG の marker 等の id は記事 slug で名前空間を切る＝1ページに全記事が載るため）
 - `docs/` Pages 出力。**直接編集しない**（build.py が生成。CI が上書きする）
-- `src/` 取得・検査・判定・生成（fetch_news=見出し収集・weekly_note=週次追記の機械化）／
+- `src/` 取得・検査・判定・生成（fetch_news=見出し収集・weekly_note=週次追記の機械化・
+  **screen=利益の勢いと名指しの検査**）／
   `tests/` 素の python で動く test_*.py ／
   `tools/` run_tests.py・shot.ps1・published.ps1/.py
 - `.claude/skills/` intake・weekly・report・verify・kabu-ledger（決算取込）・
@@ -121,7 +128,9 @@
 ## 実行順
 
 ```text
-fetch*.py → checks.py → score.py → fetch_news.py
+fetch*.py（**fetch.py と fetch_index.py は対で回す**。株価だけ進めると
+  相対騰落率が算出できずテストが落ちる）
+  → checks.py → score.py → screen.py（利益の勢い・名指しの前提）→ fetch_news.py
   → weekly_note.py（機械追記＋一筆）→ build.py → push
 →（CI・無人）ci      : test（push・PR とも）／PR（draft 以外）はさらに automerge
               publish : site → deploy-pages → notify（ci が緑のときだけ）
