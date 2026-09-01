@@ -311,6 +311,71 @@ stocks:
   # valuation_model / fiscal_year_end / ir_url / peers は未確認なので TO_VERIFY の
   # まま置く。**推測で埋めない。**valuation_model は業種だけでは決まらず人間の確認が要る。
 
+  # --- segments/ai-dc-power-cooling.yaml から降ろした2社（2026-09-01）-----------
+  #
+  # 2本目のセグメント（DC の電力・冷却＝機器メーカー）から、**利益の伸び**を
+  # 根拠に降ろす。E1 の層判定そのものは open に降格しており（会社ごとに
+  # バラバラだった）、**層ではなく個社の数字で選んだ**のがこの2社。
+  #
+  #   ダイヘン 受注残 +30.7%／受注高 +46.5%（Q1）／営業利益 +29.0%（Q1）・計画 +33.1%
+  #   明電舎   受注高 +12.4%（Q1）・電力インフラ +20.9%／計画 営業利益 +21.7%
+  #
+  # 同じ層の東光高岳は見送り: 会社自身の来期計画が営業利益 +2.4%（横ばい）で、
+  # 受注残の伸びも +4.0% と鈍い（segments/ai-dc-power-cooling.yaml の moat_analysis）。
+  #
+  # valuation_model は**人間の確認待ち**。重電メーカーは設備投資が重く償却が
+  # 効くため ev_ebitda が候補だが、提案の域を出ないので埋めない。
+
+  - code: "6508"
+    name: "明電舎"
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証プライム"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "電気機器"
+    valuation_model: TO_VERIFY
+    # 決算短信・決算補足資料が3月期で揃っている（一次情報・2026-09-01 確認）
+    fiscal_year_end: "03"
+    # 公式サイトを直接取得し HTTP 200・title に社名を確認（2026-09-01）
+    ir_url: "https://www.meidensha.co.jp/ir/"
+    # segments/ai-dc-power-cooling.yaml の E1 の顔ぶれ（自社と非上場を除く）
+    peers: ["6617", "6622", "6504"]
+    watch: active
+    watch_reason: >-
+      セグメント起点で登録。E1 電力インフラ機器。FY2026 は受注 -6.6% と落ちたが
+      FY2027 Q1 で受注 +12.4%・電力インフラ +20.9% と回復し、通期計画は
+      営業利益 +21.7%。谷を越えたかを四半期で追う
+    watch_since: "2026-09-01"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "6622"
+    name: "ダイヘン"
+    # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
+    market: "東証プライム"
+    # JPX 上場銘柄一覧の33業種区分（一次情報・基準日 2026-07-31）
+    sector: "電気機器"
+    valuation_model: TO_VERIFY
+    # 決算短信が3月期（一次情報・2026-09-01 確認）
+    fiscal_year_end: "03"
+    # 公式サイトを直接取得し HTTP 200・title に社名を確認（2026-09-01）
+    ir_url: "https://www.daihen.co.jp/ir/"
+    # segments/ai-dc-power-cooling.yaml の E1 の顔ぶれ（自社と非上場を除く）
+    peers: ["6617", "6508", "6504"]
+    watch: active
+    watch_reason: >-
+      セグメント起点で登録。E1 電力インフラ機器。受注残 +30.7%（売上 +5.0%）で
+      生産能力2倍の投資を進めながら積み上がっており、Q1 も受注高 +46.5%。
+      ただし受注残の伸びは半導体向け（+88.7%）が牽引で、受変電は +20.6%
+    watch_since: "2026-09-01"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
   - code: "4440"
     name: "ヴィッツ"
     # JPX 上場銘柄一覧（一次情報・基準日 2026-07-31）
