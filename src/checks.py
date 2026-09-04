@@ -961,7 +961,11 @@ def _key_columns(rel: str, cols: list[str] | None = None) -> tuple[str, ...]:
     if not have:
         return ("code", "date")
     if rel.endswith("link_status.csv") or ("url" in have and "checked_at" in have):
-        return tuple(c for c in ("url", "checked_at") if c in have)
+        # 同じ URL を複数銘柄のレポートが同一時刻（1回の --check-links 実行）に
+        # 参照することがあり、(url, checked_at) だけでは行が一意にならず
+        # 自己衝突する（2026-09-04 に link_status.csv で実際に発生）。
+        # code も鍵に加えて一意にする
+        return tuple(c for c in ("code", "url", "checked_at") if c in have)
     day = next((c for c in KEY_DATE_ALIASES if c in have), None)
     keys = [c for c in ("code",) if c in have]
     if day:
