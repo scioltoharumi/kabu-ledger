@@ -495,7 +495,7 @@ def _print_code(code: str, root: Path) -> int:
     model = est["models"][-1]                      # 追記型: 末尾が最新
     out = outputs(model)
     unit = model["revenue"]["unit"]
-    status = model["status"] + ("（マスター未確認）" if model["status"] == "draft" else "")
+    status = model["status"] + ("（作りかけ）" if model["status"] == "draft" else "")
     print(f"== {code} 検証 OK（モデル {len(est['models'])}件・最新を表示） ==")
     print(f"as_of={model['as_of']} / period={model['period']} / status={status}")
     if str(model.get("note") or "").strip():
