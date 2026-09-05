@@ -486,50 +486,116 @@ def stamp_legend() -> str:
     )
 
 
-def estimate_line(code: str) -> str:
-    """一覧に出す「次期推定と会社計画・市場予想の乖離」の1行。
+# 前期の営業利益率がこれ未満（または赤字）なら「低ベース」。前期比の率は
+# 分母が小さいほど極端に出るので、率だけを見て並べ替えると水準の低い銘柄が
+# 上に来る。率を隠しはしないが、印を付けて額で見るよう促す
+LOW_BASE_MARGIN = 0.02
 
-    この差が投資判断の核になるため、推定モデルのある銘柄は一覧（コンパクト
-    表示でも）に常時出す。値は estimates/{code}.yaml から src/estimate.py が
-    機械計算したもの。**推定は推定と明示する**（未確定の下書きにはピルを付け、
-    ツールチップで「会社計画でも的中予想でもない」ことを必ず言う）。
-    比べる相手が1つも無いときは出さない（乖離こそが載せる理由なので）。
+# 一覧の並び替えキー（select の option と <tr data-est-*> の名前。順序固定・D8）
+SORT_KEYS = (
+    ("", "コード順"),
+    ("growth", "推定OP 前期比が大きい順"),
+    ("plan", "推定OP 会社計画比が大きい順"),
+    ("op", "推定OP の額が大きい順"),
+)
+
+
+def estimate_metrics(code: str) -> dict | None:
+    """一覧に出す推定由来の数値。推定モデルが無い／壊れている／比べる相手が
+    1つも無いときは None。
+
+    値は estimates/{code}.yaml から src/estimate.py が機械計算したもの:
+      op          推定営業利益（百万円）
+      growth_pct  前期実績比（fundamentals の採用値。**利益が何％増えるか**＝
+                  判断の第一軸。segments の growth_axis と同じ）
+      plan_pct    会社計画比 ／ mf_pct 市場予想比（比べられないときは None）
+      low_base    前期の利益率が小さい（率が極端に出る）
+      draft       マスター未確認の下書き
     """
     data = EST.load_estimate(code, root=ROOT)
     if data is None or data.get("errors") or not data.get("models"):
-        return ""
+        return None
     m = data["models"][-1]
     try:
         out = EST.outputs(m)
     except Exception:  # noqa: BLE001 — 推定の形式劣化で一覧を壊さない
-        return ""
+        return None
     op = out.get("operating_income")
     if op is None:
-        return ""
+        return None
     unit = str((m.get("revenue") or {}).get("unit") or "")
     period = str(m.get("period", ""))
     comp = EST.comparisons(code, period, root=ROOT, unit=unit)
+    prev = comp.get("prev_actual") or {}
+    prev_op = prev.get("operating_income")
+    prev_rev = prev.get("revenue")
     plan_op = (comp.get("plan") or {}).get("operating_income")
     mf = data.get("market_forecast") or {}
     mf_op = mf.get("operating_income")
+    growth_pct = _rel_pct(op, prev_op)
     plan_pct = _rel_pct(op, plan_op)
     mf_pct = _rel_pct(op, mf_op if isinstance(mf_op, (int, float)) else None)
-    if plan_pct is None and mf_pct is None:
+    if growth_pct is None and plan_pct is None and mf_pct is None:
+        return None
+    low_base = bool(prev_op is not None and (
+        prev_op <= 0 or (prev_rev and prev_op / prev_rev < LOW_BASE_MARGIN)))
+    return {
+        "op": float(op), "period": period,
+        "growth_pct": growth_pct, "plan_pct": plan_pct, "mf_pct": mf_pct,
+        "low_base": low_base,
+        "draft": str(m.get("status", "draft")) != "confirmed",
+    }
+
+
+def _est_row_attrs(est: dict | None) -> str:
+    """<tr> に付ける data-est-*（並び替えの材料）。値が無いキーは付けない
+    （並び替えスクリプトは属性の無い行を末尾に置く。「無い」を 0 と読ませない）。"""
+    if not est:
         return ""
+    parts = [f' data-est-op="{est["op"]:.0f}"']
+    for key in ("growth", "plan"):
+        v = est.get(f"{key}_pct")
+        if v is not None:
+            parts.append(f' data-est-{key}="{v:.1f}"')
+    return "".join(parts)
+
+
+def _estimate_line_html(est: dict | None) -> str:
+    """一覧に出す「次期推定と前期実績・会社計画・市場予想の乖離」の1行。
+
+    利益が何％増えるかが投資判断の核になるため、推定モデルのある銘柄は一覧
+    （コンパクト表示でも）に常時出す。**推定は推定と明示する**（未確定の下書きには
+    ピルを付け、ツールチップで「会社計画でも的中予想でもない」ことを必ず言う）。
+    前期の利益が小さい銘柄の前期比には「低ベース」の印を付ける（率だけで並べると
+    上に来るため）。比べる相手が1つも無いときは出さない。
+    """
+    if not est:
+        return ""
+    op = est["op"]
     parts = [f'推定OP {op:,.0f}<span class="k-unit">百万円</span>']
-    if plan_pct is not None:
-        parts.append(f"会社計画比 {_pct_span(plan_pct)}")
-    if mf_pct is not None:
-        parts.append(f"市場予想比 {_pct_span(mf_pct)}")
-    draft = ('<span class="pill pill-warn">未確定</span>'
-             if str(m.get("status", "draft")) != "confirmed" else "")
+    if est.get("growth_pct") is not None:
+        low = ('<span class="pill pill-warn" title="前期の営業利益が小さく（利益率 '
+               f'{LOW_BASE_MARGIN:.0%} 未満か赤字）、率が極端に出る。額で見ること">'
+               "低ベース</span>" if est.get("low_base") else "")
+        parts.append(f"前期比 {_pct_span(est['growth_pct'])}{low}")
+    if est.get("plan_pct") is not None:
+        parts.append(f"会社計画比 {_pct_span(est['plan_pct'])}")
+    if est.get("mf_pct") is not None:
+        parts.append(f"市場予想比 {_pct_span(est['mf_pct'])}")
+    draft = ('<span class="pill pill-warn">未確定</span>' if est.get("draft") else "")
     title = html.escape(
-        f"当台帳の次期推定（対象期 {period}）。検証済みデータと明示した仮定から "
-        "src/estimate.py が機械計算した概算で、会社計画でも的中予想でもない。"
+        f"当台帳の次期推定（対象期 {est.get('period', '')}）。検証済みデータと明示した"
+        "仮定から src/estimate.py が機械計算した概算で、会社計画でも的中予想でもない。"
+        "前期比は fundamentals の前期実績（採用値）に対する伸び。"
         "分解と根拠は銘柄ページの「次期売上・利益推定」にある")
     # ラベルの途中で折り返さない（区切りの「・」でだけ折る）
     joined = "・".join(f'<span class="nb">{p}</span>' for p in parts)
     return f'<span class="est-line" title="{title}">{joined}{draft}</span>'
+
+
+def estimate_line(code: str) -> str:
+    """一覧の推定1行（estimate_metrics → _estimate_line_html）。"""
+    return _estimate_line_html(estimate_metrics(code))
 
 
 # 判定スタンプ → 行クラス・絞り込みチップの固定キー（語彙は judge.py が正。
@@ -588,6 +654,9 @@ def render_row(stock: dict, rep: R.Report | None,
         + ([f"st-{st_key}"] if st_key else [])
         + ([f"vf-{vf_key}"] if vf_key else []))
     tr_cls = f' class="{classes}"' if classes else ""
+    # 推定由来の数値（並び替えの材料）。対象外は凍った記録なので引かない
+    est = estimate_metrics(code) if not watch_pill else None
+    est_attrs = _est_row_attrs(est)
 
     # 終値セル。監視中の銘柄には前週末比・スパークライン・判定も重ねて、
     # 一覧だけで「いま見に行く価値があるか」を判断できるようにする。
@@ -605,13 +674,14 @@ def render_row(stock: dict, rep: R.Report | None,
         price_cell += sparkline(series)
         if st:
             price_cell += stamp_pill(st)
-        # 推定と会社計画・市場予想の乖離。この差が投資判断の核なので
-        # 推定モデルのある銘柄は一覧に常時出す（コンパクト表示でも隠さない）
-        price_cell += estimate_line(code)
+        # 推定と前期実績・会社計画・市場予想の乖離。利益が何％増えるかが
+        # 投資判断の核なので、推定モデルのある銘柄は一覧に常時出す
+        # （コンパクト表示でも隠さない）
+        price_cell += _estimate_line_html(est)
 
     if rep is None:
         row = (
-            f'<tr{tr_cls}><td data-l="銘柄"><span class="nm">{name}</span>'
+            f'<tr{tr_cls}{est_attrs}><td data-l="銘柄"><span class="nm">{name}</span>'
             f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}</span></td>'
             f'<td data-l="終値・判定" class="num">{price_cell}</td>'
             f'<td data-l="状態"><span class="pill">レポート未作成</span></td>'
@@ -658,7 +728,7 @@ def render_row(stock: dict, rep: R.Report | None,
     # 拾う。リンク・ボタンの上と、文字列選択中は飛ばない）。銘柄名の <a> は
     # 残す——JS が無くても届く経路であり、新しいタブで開く操作も効く
     row = (
-        f'<tr{tr_cls} data-href="stock/{html.escape(code)}.html">'
+        f'<tr{tr_cls}{est_attrs} data-href="stock/{html.escape(code)}.html">'
         f'<td data-l="銘柄"><span class="nm">'
         f'<a href="stock/{html.escape(code)}.html">{name}</a>{flag}{site}</span>'
         f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}{earn_pill}'
@@ -760,7 +830,17 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
                            f"対象外 {n}銘柄を隠す")
         note = ('<span class="filter-note">対象外は取得も判定も止めている。'
                 "数値と判定はその時点で凍ったもの</span>")
-    filter_ui = '<div class="list-toolbar">' + toolbar + note + "</div>"
+    # 並び替え（推定由来の数値）。select と <tr data-est-*> は静的に出し、
+    # 並べ替えだけを下の小さなスクリプトが行う（JS が無ければコード順のまま）。
+    # 推定の無い行・対象外の行は常に末尾（「値が無い」を「小さい」に読ませない）
+    sort_ui = ('<span class="list-sort-wrap">'
+               '<label class="list-sort-label" for="list-sort">並び替え</label>'
+               '<select id="list-sort" class="list-sort" title="推定モデルのある銘柄を、'
+               'その推定由来の数値で並べ替える（大きい順）。推定の無い銘柄は末尾に残る">'
+               + "".join(f'<option value="{k}">{html.escape(v)}</option>'
+                         for k, v in SORT_KEYS)
+               + "</select></span>")
+    filter_ui = ('<div class="list-toolbar">' + toolbar + sort_ui + note + "</div>")
 
     # 絞り込みチップ（既定=すべて表示。外すとその行を隠す）。
     # 見えない行があっても件数はチップに常時出る（「見えない＝無い」にしない）
@@ -803,6 +883,21 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         "if(s&&String(s).length)return;"
         'var tr=e.target.closest("tr[data-href]");'
         'if(tr)location.href=tr.getAttribute("data-href")});'
+        # 並び替え: data-est-<key> を持つ行を値の降順に、無い行は元の順のまま末尾へ。
+        # 選んだキーは localStorage に覚える（表示切替と同じ扱い）
+        'var sel=document.getElementById("list-sort");'
+        "if(sel&&t){var tb=t.tBodies[0],orig=Array.prototype.slice.call(tb.rows);"
+        "var apply=function(k){var rows=orig.slice();"
+        "if(k){rows.sort(function(a,b){"
+        'var x=a.getAttribute("data-est-"+k),y=b.getAttribute("data-est-"+k);'
+        "if(x===null&&y===null)return orig.indexOf(a)-orig.indexOf(b);"
+        "if(x===null)return 1;if(y===null)return -1;"
+        "return(parseFloat(y)-parseFloat(x))||(orig.indexOf(a)-orig.indexOf(b))})}"
+        "rows.forEach(function(r){tb.appendChild(r)})};"
+        'var sk="kabu:list-sort",sv=localStorage.getItem(sk);'
+        "if(sv){sel.value=sv;if(sel.value===sv)apply(sv)}"
+        'sel.addEventListener("change",function(){'
+        "localStorage.setItem(sk,sel.value);apply(sel.value)})}"
         "}catch(e){}})();</script>")
 
     table = (
@@ -846,10 +941,14 @@ def howto_block() -> str:
         "「この台帳が見ていない鉄則」</a>を併読）。売買の判断は人間が行う</li>"
         "<li>終値の下の小さな線は直近約3か月の採用終値"
         "（2ソース照合済みの値のみ）。傾向の手がかりで、数値は銘柄ページの図が正</li>"
-        "<li>「推定OP …・会社計画比 ±x%」は、推定モデルを作成済みの銘柄だけに出る。"
-        "当台帳の次期推定（<code>src/estimate.py</code> の機械計算）が会社計画・"
-        "市場予想からどれだけ乖離しているかで、<strong>この差が投資判断の核</strong>。"
-        "分解と根拠は銘柄ページの「次期売上・利益推定」にある</li>"
+        "<li>「推定OP …・前期比 ±x%・会社計画比 ±x%」は、推定モデルを作成済みの"
+        "銘柄だけに出る。当台帳の次期推定（<code>src/estimate.py</code> の機械計算）が"
+        "前期実績から<strong>何％増えるか</strong>と、会社計画・市場予想からどれだけ"
+        "乖離しているか。<strong>利益が何％増えるかが投資判断の核</strong>で、"
+        "一覧の「並び替え」でこの数値順に並べられる（推定の無い銘柄は末尾）。"
+        "「低ベース」は前期の利益が小さく率が極端に出る印で、額で見ること。"
+        "「未確定」はマスター未承認の下書き。分解と根拠は銘柄ページの"
+        "「次期売上・利益推定」にある</li>"
         '<li><span class="flag">再調査</span> が付いた銘柄は毎週すべての項目を'
         "見直している。付いていない銘柄はニュースと値動きだけ追っている</li>"
         "<li>再調査の対象を変えたいときは Claude に「4073 を再調査して」と言えばよい</li>"
