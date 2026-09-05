@@ -103,6 +103,10 @@ python src/fetch_tanshin.py             # 決算短信PDF。落ちても止め�
 python src/checks.py --scan-all         # 初回だけ全履歴で分割・外れ値を走査
 ```
 
+履歴が入ったら**チャート形状**も付ける（`.claude/skills/kabu-ledger-weekly/SKILL.md`
+の ①' と同じ手順。`python src/shape_chart.py` → 画像を見る → `--set CODE=形状`）。
+画像判定※であってゲートではない。採用終値が足りず描けない銘柄は「描けない」のまま残す。
+
 `checks.py` が **FAIL したら先に進まない**。取得の失敗は推定値で埋めず、
 `null` + `status` のまま残す（`close` が空＝データが無い、ではない）。
 

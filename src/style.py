@@ -209,6 +209,11 @@ border:1px solid var(--rule);margin-top:.4rem}
 .stamp-sell{background:#f7e5e1;color:var(--danger);border-color:#e5c0b8}
 .stamp-hot{background:#f8ecd4;color:var(--warn);border-color:#e6d3a8}
 .wchg{display:block;font-size:.78rem;font-weight:700;margin-top:.25rem}
+/* チャート形状（6か月・画像判定※）。一覧の終値セルと銘柄ページのタイルに出す */
+.shape-line{display:block;font-size:.72rem;color:var(--dim);margin-top:.15rem;white-space:nowrap}
+.shape-line .shape-img{height:1.35rem;width:auto;vertical-align:middle;border-radius:3px;margin-right:.3rem}
+.shape-line .shape-nm{font-weight:700;color:var(--ink)}
+.kpi-tile .shape-img{display:block;width:100%;max-width:12rem;height:auto;border-radius:4px;margin:.25rem 0 .1rem}
 .spark{display:block;width:7.5rem;max-width:100%;height:auto;
 color:var(--accent);margin:.4rem 0 0;opacity:.9}
 /* 推定と会社計画・市場予想の乖離（一覧）。コンパクト表示でも隠さない */
@@ -395,6 +400,7 @@ main{padding:1.1rem .85rem 3rem}
 .list-wrap:has(#f-st-sell:not(:checked)) tr.st-sell{display:none!important}
 .list-wrap:has(#f-st-liq:not(:checked)) tr.st-liq{display:none!important}
 .list-wrap:has(#f-st-trend:not(:checked)) tr.st-trend{display:none!important}
+.list-wrap:has(#f-st-cloud:not(:checked)) tr.st-cloud{display:none!important}
 .list-wrap:has(#f-st-other:not(:checked)) tr.st-other{display:none!important}
 .list-wrap:has(#f-vf-ok:not(:checked)) tr.vf-ok{display:none!important}
 .list-wrap:has(#f-vf-part:not(:checked)) tr.vf-part{display:none!important}

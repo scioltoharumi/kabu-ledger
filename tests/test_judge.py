@@ -263,48 +263,57 @@ def test_liquidity_unknown_when_threshold_missing():
 # ② トレンドゲート（鉄則の第一条）
 # =============================================================================
 
-def test_trend_down_fail():
+def test_trend_negative_is_reference_only():
+    """2026-09-05 改訂: 週足MAの傾きはゲートではない。負でも判定を止めない。
+
+    旧実装の「13週/26週の回帰傾きが負なら見送(トレンド)」は当リポジトリ独自の定義で、
+    楽天・株探・SBI のどの上昇トレンド定義とも一致しなかった（BACKLOG.md 改訂履歴）。
+    傾きは参考行（n/a）と注意に残し、トレンドの読みはチャート形状（画像判定※）が担う。
+    """
     v = run(_bars(_walk(_N, 2000.0, _DOWN)))
-    assert_verdict(v, J.STAMP_TREND, "trend", J.FAIL, "週足中期MA下向き")
-    assert "週足中期MAが下向き" in v.reason, v.reason
+    assert v.stamp != J.STAMP_TREND, "見送(トレンド)はもう出ない"
+    assert v.stage != "trend", f"②で確定しない: {v.stage}"
+    c = check(v, "trend")
+    eq(c.result, J.NA, "参考行（pass でも fail でもない）")
+    assert "参考" in c.detail, c.detail
+    assert any("傾きが負" in x for x in v.cautions), v.cautions
     eq(check(v, "liquidity").result, J.PASS, "流動性は通っている")
 
 
-def test_trend_unknown_becomes_probe():
-    # 30営業日（6週）では13週MAが張れない → 通過ではなく調査
+def test_trend_unknown_does_not_stop():
+    # 30営業日（6週）では13週MAが張れない。以前は「調査」で止めていたが、
+    # 参考行に格下げしたので判定は先へ進む（未計算の指標名は unknowns に残る）
     v = run(clean_bars()[-30:])
-    assert_verdict(v, J.STAMP_PROBE, "trend", J.UNKNOWN, "週足MA未計算")
-    eq(check(v, "trend").result, J.UNKNOWN, "unknown（pass ではない）")
+    assert v.stage != "trend", f"②で確定しない: {v.stage}"
+    c = check(v, "trend")
+    eq(c.result, J.NA, "参考行")
+    assert "算出できない" in c.detail, c.detail
+    assert v.stamp != J.STAMP_TREND
 
 
-def test_trend_evaluates_both_13w_and_26w():
-    """「中期」が13週か26週かは未確定。**両方を見て保守側を採る**。
-
-    13週だけを見ていた旧実装では、実データの 4073 が 13週 flat で通過し、
-    26週 down だけがゲートを止められる状態だった。
-    """
+def test_trend_reports_both_13w_and_26w():
+    """13週と26週の両方を計算し、参考行に両方の値を出す（どちらかが無ければそう書く）。"""
     b = clean_bars()
     i = J.compute(b, _config())
     assert i.weekly_ma_mid_slope_pct is not None, "13週が算出できること"
     assert i.weekly_ma_long_slope_pct is not None, "26週が算出できること"
     eq(sorted(i.weekly_ma_slopes), [13, 26], "両方の期間を持つ")
-    # 26週だけ落として unknown にすると、13週が上向きでも通過させない
+    v = run(b)
+    d = check(v, "trend").detail
+    assert "13週" in d and "26週" in d, d
     short = b[-(13 + 4) * 5:]           # 17週ぶん。13週MAは張れるが26週は張れない
     j = J.compute(short, _config())
     assert j.weekly_ma_mid_slope_pct is not None, "13週は算出できる"
     is_none(j.weekly_ma_long_slope_pct, "26週は期間不足")
     v = run(short)
-    assert_verdict(v, J.STAMP_PROBE, "trend", J.UNKNOWN, "26週が未計算なら調査")
-    assert "26週" in check(v, "trend").detail, check(v, "trend").detail
+    c = check(v, "trend")
+    eq(c.result, J.NA, "参考行")
+    assert "26週" in c.detail, c.detail
+    assert v.stage != "trend"
 
 
-def test_trend_fails_on_negative_slope_inside_flat_band():
-    """不感帯（±0.25%/週）の中でも**傾きが負なら不通過**にする。
-
-    鉄則が不感帯を要求しているのはゴールデン/デッドクロスの側だけ。
-    トレンドゲートに流用すると年率-12%の下降が「横ばい」で通過していた。
-    """
-    # 週あたり約 -0.1%（不感帯 0.25 の内側）でじわじわ下がる系列
+def test_trend_negative_inside_flat_band_is_a_caution():
+    """不感帯（±0.25%/週）の中の負の傾きも注意には出す（表示ラベルは横ばいのまま）。"""
     closes = [1000.0 * (1.0 - 0.0002) ** i for i in range(_N)]
     b = _bars(closes, volume=100_000)
     i = J.compute(b, _config())
@@ -313,7 +322,8 @@ def test_trend_fails_on_negative_slope_inside_flat_band():
         f"不感帯の内側の負の傾きであること: {slope}"
     eq(i.weekly_ma_mid_direction, "flat", "表示ラベルは横ばいのまま")
     v = run(b)
-    assert_verdict(v, J.STAMP_TREND, "trend", J.FAIL, "負の傾きは不通過")
+    assert any("傾きが負" in x for x in v.cautions), v.cautions
+    assert v.stamp != J.STAMP_TREND
 
 
 def tech_flat() -> float:
@@ -337,7 +347,7 @@ def test_trend_drops_incomplete_last_week():
 
 def test_cloud_breakdown_sell():
     v = run(flat_then_breakdown_bars())
-    assert_verdict(v, J.STAMP_SELL, "cloud", J.FAIL, "雲の下抜け")
+    assert_verdict(v, J.STAMP_CLOUD, "cloud", J.FAIL, "雲の下抜け（非保有は見送）")
     eq(v.metrics["ichimoku_position"], "below", "雲の下")
     eq(v.metrics["ichimoku_recent_cross"], "breakdown", "下抜けイベント")
     assert "雲の下" in v.reason, v.reason
@@ -517,7 +527,7 @@ def test_holding_sell_is_not_masked_by_upstream_gates():
 
     # (4) 保有していなければ requirements F5 の順序どおり ③ で評価する
     v4 = run(b, kpi=_kpi())
-    assert_verdict(v4, J.STAMP_SELL, "cloud", J.FAIL, "非保有は③で確定")
+    assert_verdict(v4, J.STAMP_CLOUD, "cloud", J.FAIL, "非保有は③で確定（見送の語）")
 
 
 def test_holding_status_vocabulary_is_validated():

@@ -31,6 +31,7 @@ import chart as C
 import chartdata as CD
 import estimate as EST
 import judge as J
+import shape_chart as SC
 import report as R
 import verification as VF
 import yamlio as Y
@@ -43,6 +44,7 @@ CHART_RE = re.compile(r"(?:<p>)?\{\{chart:([a-z0-9_]+)\}\}(?:</p>)?")
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 STAMPS = ROOT / "scoring" / "stamps.json"
+SHAPES_SRC = ROOT / SC.IMAGE_DIR          # チャート形状の PNG（shape_chart.py が描く）
 KNOWLEDGE = ROOT / "knowledge"
 
 MD_EXT = ["tables", "fenced_code", "sane_lists"]
@@ -327,6 +329,9 @@ def kpi_tiles(code: str, meta: dict | None = None, as_of: str = "") -> str:
         tiles.append(_tile("判定",
                            f'<span class="k-value-sm">{html.escape(stamp)}</span>',
                            "src/judge.py の機械判定"))
+    shape_tile = shape_kpi_tile(code, as_of)
+    if shape_tile:
+        tiles.append(shape_tile)
 
     # 次回決算。front matter に書かれた予定日。**過去日付は出さない**
     # （発表済みの日付を「次回」として掲げるのは表示の嘘。intake が
@@ -410,6 +415,92 @@ def week_change(series: list[tuple[str, float]]) -> tuple[str, float] | None:
         return None
     d1, c1 = prev[-1]
     return d1, (c0 - c1) / c1 * 100.0
+
+
+def shape_state(code: str) -> tuple[str | None, str | None, str]:
+    """チャート形状（6か月・9分類）。(形状, 基準日, 状態)。判定は src/shape_chart.py の記録。
+
+    状態 ok 以外は形状を出さない（画像が変わったのに古い判定を「今の形」に見せない）。
+    """
+    return SC.image_status(code, ROOT)
+
+
+def shape_line(code: str, prefix: str = "") -> str:
+    """一覧の終値セルに置く1行。画像判定※（コードの機械判定ではない）と明示する。"""
+    shape, as_of, status = shape_state(code)
+    img = ""
+    if status != "noimage":
+        img = (f'<img class="shape-img" src="shapes/{html.escape(code)}.png" '
+               f'alt="" loading="lazy">')
+    if status == "ok" and shape:
+        body = (f'<span class="shape-nm">{html.escape(shape)}</span>'
+                f'<span class="shape-mark" title="6か月（直近{SC.WINDOW_DAYS}営業日）の'
+                f'採用終値を描いた画像を見て、楽天「チャート形状検索」の9分類のどれに'
+                f'最も近いかを記録したもの。コードの機械判定ではない。基準日 '
+                f'{html.escape(as_of or "")}">（{SC.MARK}）</span>')
+    elif status == "stale":
+        body = '<span class="shape-mark">未判定（画像が更新された）</span>'
+    elif status == "none":
+        body = '<span class="shape-mark">未判定</span>'
+    else:
+        return ""
+    return f'<span class="shape-line">{img}{prefix}形状 {body}</span>'
+
+
+def shape_kpi_tile(code: str, as_of: str) -> str:
+    """銘柄ページの KPI タイル。画像そのものを載せ、判定語と基準日を添える。"""
+    shape, judged, status = shape_state(code)
+    if status == "noimage":
+        return ""
+    img = f'<img class="shape-img" src="../shapes/{html.escape(code)}.png" alt="">'
+    if status == "ok" and shape:
+        value = f'<span class="k-value-sm">{html.escape(shape)}</span>{img}'
+        sub = f"{SC.MARK}・6か月・基準日 {judged or as_of}"
+    else:
+        value = f'<span class="k-value-sm">未判定</span>{img}'
+        sub = f"{SC.MARK}・6か月・" + ("画像が更新された" if status == "stale" else "記録なし")
+    return _tile("チャート形状", value, sub)
+
+
+def shape_block() -> str:
+    """about.html: チャート形状（画像判定）の説明。語彙は shape_chart.SHAPES が正。"""
+    vocab = " ／ ".join(html.escape(x) for x in SC.SHAPES)
+    return (
+        '<h2 id="shape">チャート形状（6か月・画像判定※）</h2>'
+        '<p class="lede">楽天証券 iSPEED／マーケットスピード II の「チャート形状検索」と同じ'
+        f'9分類（{vocab}）。楽天は分類の式を公開していないので、当台帳は'
+        f'<strong>直近{SC.WINDOW_DAYS}営業日の採用終値を軸なしの線画にし、その画像を見て'
+        '9分類のどれに最も近いかを記録する</strong>（<code>src/shape_chart.py</code>）。'
+        '線画はコードが決定論的に描き、分類は週次ルーティンで Claude が画像を見て決め、'
+        '人間が確認する。<strong>コードの機械判定ではないので、判定スタンプのゲートには'
+        '使わない。</strong>判定に使った画像のハッシュを記録し、画像が変わった週は'
+        '「未判定」に戻る（古い判定を今の形に見せない）。判定の履歴は '
+        '<code>scoring/shapes_history.csv</code> に追記のみで残す。'
+        '2026-09-05 のマスター決定で「判定はコード」の不変条件の唯一の例外として認めた'
+        '（BACKLOG.md 改訂履歴）。</p>'
+    )
+
+
+def copy_shape_images() -> None:
+    """scoring/shapes/*.png を docs/shapes/ へ複製する（Pages からは docs/ しか見えない）。
+
+    生成ではなく複製。描くのは shape_chart.py（週次ルーティン・intake）で、CI は描かない
+    （CI では Claude を動かさず、画像が変わっても判定できないため）。
+    """
+    dst = DOCS / "shapes"
+    dst.mkdir(parents=True, exist_ok=True)
+    if not SHAPES_SRC.exists():
+        return
+    for src in sorted(SHAPES_SRC.glob("*.png")):
+        data = src.read_bytes()
+        target = dst / src.name
+        if not target.exists() or target.read_bytes() != data:
+            target.write_bytes(data)
+    # 元が消えた（採用終値不足で描けなくなった）銘柄の画像は docs からも消す
+    keep = {p.name for p in SHAPES_SRC.glob("*.png")}
+    for old in dst.glob("*.png"):
+        if old.name not in keep:
+            old.unlink()
 
 
 SPARK_DAYS = 60   # 一覧のスパークラインに使う採用日数（約3か月）
@@ -604,7 +695,8 @@ def estimate_line(code: str) -> str:
 STAMP_KEYS = {
     J.STAMP_BUY: "buy", J.STAMP_WATCH: "watch", J.STAMP_PROBE: "probe",
     J.STAMP_OVERHEAT: "hot", J.STAMP_SELL: "sell",
-    J.STAMP_LIQUIDITY: "liq", J.STAMP_TREND: "trend",
+    J.STAMP_LIQUIDITY: "liq", J.STAMP_CLOUD: "cloud",
+    J.STAMP_TREND: "trend",   # 旧判定（出ないが、古い stamps を読んでも落ちないように残す）
 }
 VF_LABELS = {"ok": "裏取り済", "part": "裏取り未達あり", "none": "裏取り未実施"}
 
@@ -674,6 +766,7 @@ def render_row(stock: dict, rep: R.Report | None,
         price_cell += sparkline(series)
         if st:
             price_cell += stamp_pill(st)
+        price_cell += shape_line(code, prefix="")
         # 推定と前期実績・会社計画・市場予想の乖離。利益が何％増えるかが
         # 投資判断の核なので、推定モデルのある銘柄は一覧に常時出す
         # （コンパクト表示でも隠さない）
@@ -935,7 +1028,7 @@ def howto_block() -> str:
         "<li>レポートは<strong>「週次アップデート」と「会社概要」の2つ</strong>に"
         "畳んである。見出しを押すと開く</li>"
         f"<li>節は <strong>{order}</strong> の順に並んでいる</li>"
-        '<li>「判定」の札は <code>src/judge.py</code> の機械判定。7種の意味は下の'
+        f'<li>「判定」の札は <code>src/judge.py</code> の機械判定。{len(J.STAMPS)}種の意味は下の'
         '<a href="#stamps">「判定スタンプの意味」</a>にある。「買」は実装済みの'
         'ゲートを通過したという意味しかない（<a href="#unevaluated">'
         "「この台帳が見ていない鉄則」</a>を併読）。売買の判断は人間が行う</li>"
@@ -1903,6 +1996,7 @@ def build_about_page(as_of: str) -> None:
         "</ul>"
         + stamp_legend()
         + unevaluated_block()
+        + shape_block()
     )
     (DOCS / "about.html").write_text(page("この台帳の読み方", body, as_of, 0),
                                      encoding="utf-8", newline="\n")
@@ -2021,6 +2115,7 @@ def main() -> int:
     # 判定スタンプを先に書く。銘柄ページの「判定」タイルが stamps.json を
     # 読むため、後に回すと前回の判定が1週遅れで表示される
     write_stamps(master)
+    copy_shape_images()
 
     build_index(master, reports, as_of)
     build_data_page(master, reports, as_of)
