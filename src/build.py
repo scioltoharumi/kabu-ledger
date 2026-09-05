@@ -425,26 +425,28 @@ def shape_state(code: str) -> tuple[str | None, str | None, str]:
     return SC.image_status(code, ROOT)
 
 
-def shape_line(code: str, prefix: str = "") -> str:
-    """一覧の終値セルに置く1行。画像判定※（コードの機械判定ではない）と明示する。"""
+def shape_cell_html(code: str) -> str:
+    """一覧の「形状（6か月）」列。線画＋分類語＋「画像判定※」（コードの機械判定ではない）。
+
+    2026-09-05 マスター指示で終値セルから独立した列にした。旧スパークライン
+    （直近3か月の採用終値）は同じ役割の絵なので廃止し、この線画に置き換えた。
+    """
     shape, as_of, status = shape_state(code)
-    img = ""
-    if status != "noimage":
-        img = (f'<img class="shape-img" src="shapes/{html.escape(code)}.png" '
-               f'alt="" loading="lazy">')
+    if status == "noimage":
+        return '<span class="sub">描けない（採用終値が不足）</span>'
+    img = (f'<img class="shape-img" src="shapes/{html.escape(code)}.png" '
+           f'alt="直近{SC.WINDOW_DAYS}営業日の採用終値の線画" loading="lazy">')
     if status == "ok" and shape:
         body = (f'<span class="shape-nm">{html.escape(shape)}</span>'
                 f'<span class="shape-mark" title="6か月（直近{SC.WINDOW_DAYS}営業日）の'
-                f'採用終値を描いた画像を見て、楽天「チャート形状検索」の9分類のどれに'
+                f'採用終値を描いた線画を見て、楽天「チャート形状検索」の9分類のどれに'
                 f'最も近いかを記録したもの。コードの機械判定ではない。基準日 '
-                f'{html.escape(as_of or "")}">（{SC.MARK}）</span>')
+                f'{html.escape(as_of or "")}">{SC.MARK}</span>')
     elif status == "stale":
         body = '<span class="shape-mark">未判定（画像が更新された）</span>'
-    elif status == "none":
-        body = '<span class="shape-mark">未判定</span>'
     else:
-        return ""
-    return f'<span class="shape-line">{img}{prefix}形状 {body}</span>'
+        body = '<span class="shape-mark">未判定</span>'
+    return img + body
 
 
 def shape_kpi_tile(code: str, as_of: str) -> str:
@@ -501,39 +503,6 @@ def copy_shape_images() -> None:
     for old in dst.glob("*.png"):
         if old.name not in keep:
             old.unlink()
-
-
-SPARK_DAYS = 60   # 一覧のスパークラインに使う採用日数（約3か月）
-
-
-def sparkline(series: list[tuple[str, float]]) -> str:
-    """一覧に置く小さな値動きの線。採用終値（2ソース照合済み）だけで描く。
-
-    数値軸・目盛は持たない（傾向の手がかり。数値は銘柄ページの図が正）。
-    座標は固定小数1桁で出す（D8 決定論）。
-    """
-    pts = series[-SPARK_DAYS:]
-    if len(pts) < 2:
-        return ""
-    vals = [c for _, c in pts]
-    lo, hi = min(vals), max(vals)
-    w, h, pad = 120, 30, 3
-    xs = [pad + i * (w - 2 * pad) / (len(pts) - 1) for i in range(len(pts))]
-    if hi == lo:
-        ys = [h / 2.0] * len(pts)
-    else:
-        ys = [pad + (hi - v) * (h - 2 * pad) / (hi - lo) for v in vals]
-    d = " ".join(f"{'M' if i == 0 else 'L'}{x:.1f} {y:.1f}"
-                 for i, (x, y) in enumerate(zip(xs, ys)))
-    label = html.escape(
-        f"{pts[0][0]}〜{pts[-1][0]} の採用終値 {len(pts)}日"
-        "（2ソース照合済みの値のみ。数値は銘柄ページの図で）")
-    return (f'<svg class="spark" viewBox="0 0 {w} {h}" role="img" '
-            f'aria-label="{label}"><title>{label}</title>'
-            f'<path d="{d}" fill="none" stroke="currentColor" stroke-width="1.5" '
-            'stroke-linejoin="round" stroke-linecap="round"/>'
-            f'<circle cx="{xs[-1]:.1f}" cy="{ys[-1]:.1f}" r="2.4" '
-            'fill="currentColor"/></svg>')
 
 
 def _stamp_cls(stamp: str) -> str:
@@ -651,19 +620,13 @@ def _est_row_attrs(est: dict | None) -> str:
     return "".join(parts)
 
 
-def _estimate_line_html(est: dict | None) -> str:
-    """一覧に出す「次期推定と前期実績・会社計画・市場予想の乖離」の1行。
-
-    利益が何％増えるかが投資判断の核になるため、推定モデルのある銘柄は一覧
-    （コンパクト表示でも）に常時出す。**推定は推定と明示する**（作りかけの下書きには
-    ピルを付け、ツールチップで「会社計画でも的中予想でもない」ことを必ず言う）。
-    前期の利益が小さい銘柄の前期比には「低ベース」の印を付ける（率だけで並べると
-    上に来るため）。比べる相手が1つも無いときは出さない。
-    """
-    if not est:
-        return ""
+def _estimate_parts(est: dict) -> tuple[list[str], str, str]:
+    """一覧の推定表示の部品 (各項目のHTML, 作りかけピル, ツールチップ)。行版・列版で共有。"""
     op = est["op"]
-    parts = [f'推定営業利益 {op:,.0f}<span class="k-unit">百万円</span>']
+    # 「推定営業利益」の語は列見出しが持つので、列版では PC で隠す（.op-l）。
+    # スマホのカード表示は見出しが消えるため出す
+    parts = [f'<span class="op"><span class="op-l">推定営業利益 </span>{op:,.0f}'
+             '<span class="k-unit">百万円</span></span>']
     if est.get("growth_pct") is not None:
         low = ('<span class="pill pill-warn" title="前期の営業利益が小さく（利益率 '
                f'{LOW_BASE_MARGIN:.0%} 未満か赤字）、率が極端に出る。額で見ること">'
@@ -679,6 +642,26 @@ def _estimate_line_html(est: dict | None) -> str:
         "仮定から src/estimate.py が機械計算した概算で、会社計画でも的中予想でもない。"
         "前期比は fundamentals の前期実績（採用値）に対する伸び。"
         "分解と根拠は銘柄ページの「次期売上・利益推定」にある")
+    return parts, draft, title
+
+
+def _estimate_cell_html(est: dict | None) -> str:
+    """一覧の「推定営業利益」列。項目を縦に積む（2026-09-05 マスター指示で独立した列に）。"""
+    if not est:
+        return ""
+    parts, draft, title = _estimate_parts(est)
+    body = "".join(f'<span class="nb">{p}</span>' for p in parts)
+    return f'<span class="est-cell" title="{title}">{body}{draft}</span>'
+
+
+def _estimate_line_html(est: dict | None) -> str:
+    """推定の1行表示（銘柄ページ等）。**推定は推定と明示する**（作りかけの下書きには
+    ピルを付け、ツールチップで「会社計画でも的中予想でもない」ことを必ず言う）。
+    前期の利益が小さい銘柄の前期比には「低ベース」の印を付ける。比べる相手が無ければ出さない。
+    """
+    if not est:
+        return ""
+    parts, draft, title = _estimate_parts(est)
     # ラベルの途中で折り返さない（区切りの「・」でだけ折る）
     joined = "・".join(f'<span class="nb">{p}</span>' for p in parts)
     return f'<span class="est-line" title="{title}">{joined}{draft}</span>'
@@ -750,8 +733,9 @@ def render_row(stock: dict, rep: R.Report | None,
     est = estimate_metrics(code) if not watch_pill else None
     est_attrs = _est_row_attrs(est)
 
-    # 終値セル。監視中の銘柄には前週末比・スパークライン・判定も重ねて、
-    # 一覧だけで「いま見に行く価値があるか」を判断できるようにする。
+    # 終値セル。監視中の銘柄には前週末比と判定を重ねる。値動きの形は隣の
+    # 「形状」列（6か月の線画＋画像判定※）が担うので、ここにスパークラインは置かない
+    # （2026-09-05。同じ情報を2つの絵で出さない）。
     # 対象外は凍った記録なので終値と日付だけにする（動きの表現を足さない）。
     price_cell = (f'<span class="price">{close_txt}</span>'
                   f'<span class="sub">{html.escape(date)}</span>')
@@ -763,20 +747,23 @@ def render_row(stock: dict, rep: R.Report | None,
             price_cell += (f'<span class="wchg {cls}" '
                            f'title="前週末（{html.escape(d1)}）の採用終値比">'
                            f"前週末比 {pct:+.1f}%</span>")
-        price_cell += sparkline(series)
         if st:
             price_cell += stamp_pill(st)
-        price_cell += shape_line(code, prefix="")
-        # 推定と前期実績・会社計画・市場予想の乖離。利益が何％増えるかが
-        # 投資判断の核なので、推定モデルのある銘柄は一覧に常時出す
-        # （コンパクト表示でも隠さない）
-        price_cell += _estimate_line_html(est)
+
+    # 形状（6か月・画像判定※）と推定営業利益は**別の列**に出す（2026-09-05 マスター指示。
+    # 終値セルに積むと読めない）。対象外は凍った記録なので両方「—」
+    shape_cell = shape_cell_html(code) if not watch_pill else '<span class="sub">—</span>'
+    # 推定と前期実績・会社計画・市場予想の乖離。利益が何％増えるかが投資判断の核
+    # なので、推定モデルのある銘柄はコンパクト表示でも隠さない
+    est_cell = _estimate_cell_html(est) or '<span class="sub">—</span>'
 
     if rep is None:
         row = (
             f'<tr{tr_cls}{est_attrs}><td data-l="銘柄"><span class="nm">{name}</span>'
             f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}</span></td>'
             f'<td data-l="終値・判定" class="num">{price_cell}</td>'
+            f'<td data-l="形状" class="shape-cell">{shape_cell}</td>'
+            f'<td data-l="推定営業利益" class="est-td">{est_cell}</td>'
             f'<td data-l="状態"><span class="pill">レポート未作成</span></td>'
             f"</tr>"
         )
@@ -828,6 +815,8 @@ def render_row(stock: dict, rep: R.Report | None,
         f"{verify_pill_html}</span>"
         f'<span class="one">{oneline}</span></td>'
         f'<td data-l="終値・判定" class="num">{price_cell}</td>'
+        f'<td data-l="形状" class="shape-cell">{shape_cell}</td>'
+        f'<td data-l="推定営業利益" class="est-td">{est_cell}</td>'
         f'<td data-l="今週"><span class="sub">{week_head}</span>'
         f'<span class="wk-txt">{week_txt}</span></td>'
         f"</tr>"
@@ -996,7 +985,8 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     table = (
         '<div class="list-wrap">' + filter_ui
         + '<div class="scroll"><table class="list-table prose-table"><thead><tr>'
-        "<th>銘柄</th><th>終値・判定</th><th>今週の動き</th>"
+        "<th>銘柄</th><th>終値・判定</th><th>形状（6か月）</th>"
+        "<th>推定営業利益</th><th>今週の動き</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div></div>"
         + remember
     )
@@ -1020,7 +1010,7 @@ def howto_block() -> str:
         "<li>行のどこを押しても、その銘柄の調査レポートが開く"
         "（「IR情報」など小さなリンクの上だけは、そのリンク先へ）</li>"
         "<li>一覧は既定でコンパクト（1行1銘柄）。「詳細表示」ボタンで"
-        "概要文とスパークラインが開く</li>"
+        "概要文が開く</li>"
         "<li>「判定」「裏取り」のチップを外すと、その状態の行を一時的に隠せる"
         "（件数はチップに常時出る）。選んだ表示・絞り込みは次回も覚えている</li>"
         "<li>対象外の銘柄は既定で隠している。「対象外を表示」ボタンで元の位置に出る"
@@ -1032,9 +1022,11 @@ def howto_block() -> str:
         '<a href="#stamps">「判定スタンプの意味」</a>にある。「買」は実装済みの'
         'ゲートを通過したという意味しかない（<a href="#unevaluated">'
         "「この台帳が見ていない鉄則」</a>を併読）。売買の判断は人間が行う</li>"
-        "<li>終値の下の小さな線は直近約3か月の採用終値"
-        "（2ソース照合済みの値のみ）。傾向の手がかりで、数値は銘柄ページの図が正</li>"
-        "<li>「推定営業利益 …・前期比 ±x%・会社計画比 ±x%」は、推定モデルを作成済みの"
+        f"<li>「形状（6か月）」列は直近{SC.WINDOW_DAYS}営業日の採用終値（2ソース照合済み）"
+        "の線画と、楽天「チャート形状検索」の9分類のどれに近いかの"
+        "<strong>画像判定※</strong>。コードの機械判定ではなくゲートにも使わない"
+        "（<a href=\"#shape\">「チャート形状」</a>を併読）</li>"
+        "<li>「推定営業利益」列（前期比・会社計画比・市場予想比）は、推定モデルを作成済みの"
         "銘柄だけに出る。当台帳の次期推定（<code>src/estimate.py</code> の機械計算）が"
         "前期実績から<strong>何％増えるか</strong>と、会社計画・市場予想からどれだけ"
         "乖離しているか。<strong>利益が何％増えるかが投資判断の核</strong>で、"
