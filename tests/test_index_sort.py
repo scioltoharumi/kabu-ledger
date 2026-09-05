@@ -101,7 +101,7 @@ class using_root:
 # =============================================================================
 
 def test_metrics_growth_and_plan():
-    """推定OP 120（1000×1.2×0.1）。前期 100 → 前期比 +20%、計画 150 → 計画比 -20%。"""
+    """推定営業利益 120（1000×1.2×0.1）。前期 100 → 前期比 +20%、計画 150 → 計画比 -20%。"""
     with using_root(sandbox(prev_rev=1000, prev_op=100, plan_op=150)):
         m = B.estimate_metrics("9999")
     assert m is not None
