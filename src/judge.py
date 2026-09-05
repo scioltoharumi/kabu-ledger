@@ -21,8 +21,9 @@
           雲の下 / 逆指値ライン抵触 / 6か月2倍ライン到達×デッドクロス気味 → 売り
     H0. 逆指値ラインの判定可否（保有のみ）  算出できない                  → 調査
      1. 流動性ゲート       20日平均売買代金 < 3,000万円          → 流動性低
-     2. トレンドゲート     週足13週/26週MAのいずれかが下向き     → 見送(トレンド)  ★鉄則の第一条
-     3. 売りシグナル       雲の下                                → 売り            ★即売り
+     2. 週足MAの傾き       参考表示のみ（2026-09-05 にゲートから格下げ。
+                           トレンドの読みは src/shape_chart.py の画像判定※）
+     3. 売りシグナル       雲の下                                → 売り（保有）／見送(雲の下)（非保有）
      4. 過熱チェック       RSI>80 / 25日乖離率>8% / 信用倍率>5倍 → 様子見(過熱)
     H5. 6か月2倍ライン     到達×平行 / 未到達（保有のみ）        → 監視
                            到達×ゴールデンクロス気味             → ⑤へ（買い増し可）
@@ -66,14 +67,15 @@ import yamlio as Y
 # =============================================================================
 
 STAMP_LIQUIDITY = "流動性低"   # 旧「見送(流動性)」。2026-08-30 改名（表示だけでなく語彙そのもの）
-STAMP_TREND = "見送(トレンド)"
+STAMP_TREND = "見送(トレンド)"   # 2026-09-05 以降は出ない（旧 last_stamps.json の読み取り互換のため残す）
 STAMP_SELL = "売り"
+STAMP_CLOUD = "見送(雲の下)"    # 非保有×雲の下。2026-09-05 追加（旧実装は非保有にも「売り」を出していた）
 STAMP_OVERHEAT = "様子見(過熱)"
 STAMP_PROBE = "調査"
 STAMP_WATCH = "監視"
 STAMP_BUY = "買"
 
-STAMPS = (STAMP_LIQUIDITY, STAMP_TREND, STAMP_SELL, STAMP_OVERHEAT,
+STAMPS = (STAMP_LIQUIDITY, STAMP_CLOUD, STAMP_SELL, STAMP_OVERHEAT,
           STAMP_PROBE, STAMP_WATCH, STAMP_BUY)
 
 
@@ -150,11 +152,12 @@ STAMP_MEANINGS = {
     STAMP_LIQUIDITY: ("20日平均売買代金が閾値（data/master.yaml の "
                       "liquidity_gate）に満たない。判定が正しくても"
                       "建てられず降りられない"),
-    STAMP_TREND: "週足13週/26週移動平均のいずれかが下向き（鉄則の第一条）",
+    STAMP_CLOUD: ("保有していない銘柄で、終値が一目均衡表の雲の下にある。"
+                  "買いで入らない（保有していれば「売り」）"),
     STAMP_OVERHEAT: (f"RSI>{tech.RSI_OVERHEAT:.0f}・25日乖離率>"
                      f"{tech.MA_DEVIATION_OVERHEAT_PCT:.0f}%・信用倍率>"
                      f"{DEFAULT_JUDGE['margin_ratio_overheat']:.0f}倍の"
-                     "いずれかに該当。トレンドのゲートは通過している"),
+                     "いずれかに該当。流動性ゲートと雲は通過している"),
     STAMP_PROBE: ("買い側のゲートで指標が未計算・判定不能だった。"
                   "「通過」に見せず、ここで止める"),
     STAMP_WATCH: ("保有銘柄のみ。6か月2倍ラインに未到達、"
@@ -172,7 +175,7 @@ STAGE_ORDER: tuple[tuple[str, str], ...] = (
     ("holding_sell", "HS 保有中の売りシグナル（保有のみ・最優先）"),
     ("holding_stop_loss", "H0 逆指値ライン（保有のみ）"),
     ("liquidity", "① 流動性ゲート"),
-    ("trend", "② トレンドゲート（週足中期MA）"),
+    ("trend", "② 週足MAの傾き（参考・ゲートではない）"),
     ("cloud", "③ 売りシグナル（雲の下抜け）"),
     ("overheat", "④ 過熱チェック"),
     ("holding_target", "H5 6か月2倍ライン（保有のみ）"),
@@ -1175,40 +1178,37 @@ def judge(stock: dict, bars: Sequence[tech.Bar], ind: PriceIndicators | None,
         f"20日平均売買代金 {_man(turnover)} ≥ {_man(gate_min)}"
         f"（同期間の中央値 {_man(ind.median_turnover_20d)}）")
 
-    # --- ②. トレンドゲート（鉄則の第一条・F5-2） -------------------------------
+    # --- ②. 週足MAの傾き（参考・ゲートではない） ------------------------------
     #
-    # 2026-08-12 の改訂点（2つとも「見送 > 買」の向き）:
-    #   (a) 「中期」が 13週か26週かは投資ルールに書かれていない。**両方を評価し、
-    #        どちらかが下がっていれば不通過**にする。実データでは 4073 が
-    #        13週 flat / 26週 down で結論が割れていた。
-    #   (b) 不感帯（±0.25%/週）は鉄則が要求していない。傾きが負なら不通過にする。
-    #        許容するのは丸め誤差ぶんだけ（trend_negative_tolerance_pct_per_week）。
+    # 2026-09-05 改訂: 「13週/26週MAの回帰傾きが負なら見送」は当リポジトリ独自の定義で、
+    # 楽天・株探・SBI のどの「上昇トレンド」定義とも一致しなかった（実データでは
+    # 株価が両MAの上にあり日足25/75日線も上向きの銘柄を、26週線がわずかに負という
+    # だけで止めていた）。トレンドの読みは楽天「チャート形状検索」の9分類
+    # （src/shape_chart.py・画像判定※・ゲートには使わない）に移し、ここは参考表示に
+    # 格下げする。**傾きが負でも未計算でも判定を止めない。** 経緯は BACKLOG.md 改訂履歴。
     tol = float(cfg["trend_negative_tolerance_pct_per_week"])
     periods = sorted(ind.weekly_ma_slopes)
     week_note = (f"・最終週は未了（{ind.weekly_bars - ind.weekly_bars_used}本）"
                  "のため傾きの計算から除外" if ind.weekly_last_incomplete else "")
     missing = [p for p in periods if ind.weekly_ma_slopes.get(p) is None]
     if missing:
-        add("trend", UNKNOWN,
-            "週足MAの傾きが算出できない: "
+        add("trend", NA,
+            "参考: 週足MAの傾きが算出できない: "
             + " / ".join(f"{p}週" for p in missing)
-            + f"（週足 {ind.weekly_bars_used}本・欠測または期間不足{week_note}）")
-        return finish(STAMP_PROBE, "trend", UNKNOWN,
-                      "週足中期MAの傾きが算出できずトレンドを確認できない"
-                      f"（{' / '.join(f'{p}週' for p in missing)}）")
-    falling = [p for p in periods if ind.weekly_ma_slopes[p] < -tol]
-    if falling:
-        detail = " / ".join(
-            f"{p}週 {_f(ind.weekly_ma_slopes[p], '+.3f')}%/週" for p in falling)
-        add("trend", FAIL, f"週足MAの傾きが負: {detail}{week_note}")
-        return finish(STAMP_TREND, "trend", FAIL,
-                      f"週足中期MAが下向き（{detail}）。"
-                      "鉄則の第一条により買いで入らない")
-    add("trend", PASS,
-        "週足MAの傾き "
-        + " / ".join(f"{p}週 {_f(ind.weekly_ma_slopes[p], '+.3f')}%/週"
-                     f"（{ind.weekly_ma_directions.get(p)}）" for p in periods)
-        + week_note)
+            + f"（週足 {ind.weekly_bars_used}本・欠測または期間不足{week_note}）"
+            "。ゲートではないので判定は止めない")
+    else:
+        falling = [p for p in periods if ind.weekly_ma_slopes[p] < -tol]
+        slopes = " / ".join(
+            f"{p}週 {_f(ind.weekly_ma_slopes[p], '+.3f')}%/週"
+            f"（{ind.weekly_ma_directions.get(p)}）" for p in periods)
+        if falling:
+            cautions.append(
+                "週足MAの傾きが負（参考・ゲートではない）: "
+                + " / ".join(f"{p}週 {_f(ind.weekly_ma_slopes[p], '+.3f')}%/週"
+                             for p in falling))
+        add("trend", NA, f"参考: 週足MAの傾き {slopes}{week_note}"
+            + "。トレンドの読みはチャート形状（画像判定※）を見る")
 
     # --- ③. 売りシグナル（雲の下抜け・F5-3） -----------------------------------
     pos = ind.ichimoku.position
@@ -1223,8 +1223,13 @@ def judge(stock: dict, bars: Sequence[tech.Bar], ind: PriceIndicators | None,
                 if ind.recent_cloud_cross == "breakdown" else "継続して雲の下")
         add("cloud", FAIL,
             f"終値 {_f(ind.close)} < 雲の下端 {_f(ind.ichimoku.cloud_bottom)}（{when}）")
-        return finish(STAMP_SELL, "cloud", FAIL,
-                      f"雲の下（{when}）。鉄則によりすぐ売る・損切設定")
+        if is_holding:
+            return finish(STAMP_SELL, "cloud", FAIL,
+                          f"雲の下（{when}）。鉄則によりすぐ売る・損切設定")
+        # 非保有に「売り」は行動として意味を持たない（2026-09-05。②の格下げで
+        # ここに到達する非保有銘柄が増えたため、見送の語で出す）
+        return finish(STAMP_CLOUD, "cloud", FAIL,
+                      f"雲の下（{when}）。買いで入らない")
     add("cloud", PASS,
         f"雲に対する位置 {pos}（上端 {_f(ind.ichimoku.cloud_top)} / "
         f"下端 {_f(ind.ichimoku.cloud_bottom)}）")
@@ -1364,9 +1369,9 @@ def judge(stock: dict, bars: Sequence[tech.Bar], ind: PriceIndicators | None,
 
     # --- ⑥. すべて通過 ---------------------------------------------------------
     tail = "（保有・買い増し可）" if is_holding else ""
-    add("all_clear", PASS, "①〜⑤のすべてを通過")
+    add("all_clear", PASS, "①③④⑤のすべてを通過（②は参考）")
     return finish(STAMP_BUY, "all_clear", PASS,
-                  f"流動性・トレンド・雲・過熱・ファンダのすべてを通過{tail}")
+                  f"流動性・雲・過熱・ファンダのすべてを通過{tail}")
 
 
 # =============================================================================

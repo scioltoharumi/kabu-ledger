@@ -55,7 +55,13 @@ _TMPDIRS: list[Path] = []
 _PATCH_TARGETS = (
     ("judge", {"ROOT": ""}),
     ("build", {"ROOT": "", "DOCS": "docs", "STAMPS": "scoring/stamps.json",
-               "KNOWLEDGE": "knowledge"}),
+               "KNOWLEDGE": "knowledge", "SHAPES_SRC": "scoring/shapes"}),
+    # SHAPES_SRC: copy_shape_images() が docs/shapes へ複製する元。ROOT に追随しない
+    # 定数なので差し替える（実リポジトリの画像を一時 docs に混ぜない）
+    ("shape_chart", {"ROOT": ""}),
+    # shape_chart の全 API は root= 注入可で、build.py は build.ROOT を渡す。ROOT は
+    # CLI の既定値。差し替えるのは image_status() の既定引数が実リポジトリを
+    # 指したまま固定されるのを防ぐため
     # STAMPS は import 時に実リポジトリを指したまま固定される。ROOT を差し替えても
     # 追随せず、判定が変わった週に build.main() が実リポジトリの
     # scoring/stamps.json を書き換える。data/ ではないので append-only 検査には

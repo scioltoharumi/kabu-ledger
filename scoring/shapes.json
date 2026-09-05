@@ -1,0 +1,82 @@
+{
+  "1942": {
+    "as_of": "2026-09-03",
+    "image_sha256": "42d82f851bd422d5dadaa4cc83816fc8ee2efc9892f1cb8690a14b786495c3b2",
+    "shape": "調整"
+  },
+  "1944": {
+    "as_of": "2026-09-03",
+    "image_sha256": "12a89bdda3ea1e3989e097168554665194a0ae96ef2dd368eb70b2df287f3f9a",
+    "shape": "調整"
+  },
+  "1959": {
+    "as_of": "2026-09-03",
+    "image_sha256": "d7b2a57973b9003968cef5cd54ab5d14f1af883de23650c0812fa3a6ff40b4af",
+    "shape": "下落"
+  },
+  "1969": {
+    "as_of": "2026-09-03",
+    "image_sha256": "3d807757145aeda24206a5800c67fd55ddcb00d9f82a77c052719e7331364585",
+    "shape": "調整"
+  },
+  "4440": {
+    "as_of": "2026-09-03",
+    "image_sha256": "182995c1397301bc2287d4e601ceb5d1b58bd51ff7f6a364285e30dec4f38fff",
+    "shape": "急上昇"
+  },
+  "4707": {
+    "as_of": "2026-09-03",
+    "image_sha256": "c8744464e01e877e1e185d53164f2cfeac83c3523cc2880edf1590fbe6d879ea",
+    "shape": "もみ合い"
+  },
+  "5137": {
+    "as_of": "2026-09-03",
+    "image_sha256": "29fc7296cec0abca3d197824c7975d5b00566629e33e0fa54695967c5f3c2f80",
+    "shape": "リバウンド"
+  },
+  "5243": {
+    "as_of": "2026-09-03",
+    "image_sha256": "fc56fde8ba42f28c5bdfa130401379bf16a72076221bcb66af7604e409e37a24",
+    "shape": "リバウンド"
+  },
+  "6027": {
+    "as_of": "2026-09-03",
+    "image_sha256": "27e5aca12a89dc22283f5bf042f7c37a83254989f225a66313f9c35e0385544f",
+    "shape": "急上昇"
+  },
+  "6508": {
+    "as_of": "2026-09-03",
+    "image_sha256": "f542547412283ac0ce5db224b54b8bae6403ddd032726bc533c7d9511904e46f",
+    "shape": "上昇"
+  },
+  "6570": {
+    "as_of": "2026-09-03",
+    "image_sha256": "b1f49ca2cf75c8698144e0995a32d791e2b9199f17883cd54e59ed0d2d8d728d",
+    "shape": "急上昇"
+  },
+  "6622": {
+    "as_of": "2026-09-03",
+    "image_sha256": "fe85ecc3a32478edded193de23aeab0eedf32f396f649caca98d5cf9a8d1177e",
+    "shape": "調整"
+  },
+  "6647": {
+    "as_of": "2026-09-03",
+    "image_sha256": "5e9f807b2e4756c2b393818ab9558f9e442b265a323af9565944e616f452af4f",
+    "shape": "急上昇"
+  },
+  "6904": {
+    "as_of": "2026-09-03",
+    "image_sha256": "068288aa8b7c91896ba02faf1eb0bec4f2a0fc35db077cc24b5c00bac5f2b784",
+    "shape": "急上昇"
+  },
+  "7093": {
+    "as_of": "2026-09-03",
+    "image_sha256": "b1b9c3f84a3ac1609b152f391c90a88771c87868f456a9053495bdda555cd544",
+    "shape": "リバウンド"
+  },
+  "9344": {
+    "as_of": "2026-09-03",
+    "image_sha256": "f49f2a07b24b104f2e48dad03d0462d9facc0d7e5eb132cee95df9fce4d5f81e",
+    "shape": "急上昇"
+  }
+}
