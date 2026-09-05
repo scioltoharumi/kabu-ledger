@@ -188,6 +188,22 @@ def test_vocabulary_is_the_nine_rakuten_shapes():
         assert w in SC.SHAPES, w
 
 
+def test_index_filter_keys_cover_every_shape():
+    """一覧の絞り込みキー（build.SHAPE_KEYS）が9分類を漏れなく持ち、CSS に規則がある。"""
+    import re
+    import build as B      # noqa: WPS433  markdown が要るので遅延 import
+    import style as S
+    eq(set(B.SHAPE_KEYS), set(SC.SHAPES), "語彙とキーの対応が一致")
+    keys = set(B.SHAPE_KEYS.values()) | {B.SHAPE_NONE_KEY}
+    eq(len(keys), 10, "キーは9分類＋未判定")
+    css = S.CSS if hasattr(S, "CSS") else S.css()
+    for k in keys:
+        assert re.search(rf"#f-sh-{k}:not\(:checked\)\)\s*tr\.sh-{k}", css), \
+            f"形状キー {k} の絞り込み規則が style.py に無い"
+    for k in B.SHAPE_KEYS.values():
+        assert k in B.SHAPE_TONE, f"色調が未定義: {k}"
+
+
 if __name__ == "__main__":
     import shutil
     tests = [(n, f) for n, f in sorted(globals().items())

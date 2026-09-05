@@ -191,8 +191,15 @@ border:1px solid var(--rule);margin-top:.4rem}
 .wchg{display:block;font-size:.78rem;font-weight:700;margin-top:.25rem}
 /* チャート形状（6か月・画像判定※）。一覧の独立した列と銘柄ページのタイルに出す */
 .shape-cell .shape-img{display:block;width:6.5rem;max-width:100%;height:auto;border-radius:4px}
-.shape-cell .shape-nm{display:block;font-weight:700;font-size:.88rem;margin-top:.25rem}
-.shape-cell .shape-mark{display:block;font-size:.7rem;color:var(--dim);white-space:nowrap}
+/* 分類語は枠付きのバッジ。色調は上向き／下向き／横ばいの3つだけで、語が常に見える */
+.shape-cell .shape-nm{display:inline-block;margin-top:.3rem;padding:.12rem .55rem;
+border-radius:6px;border:1.5px solid var(--rule);font-weight:700;font-size:.86rem;
+line-height:1.35;background:var(--card);color:var(--ink)}
+.shape-cell .shape-nm.tone-up{border-color:#8fc4a4;background:#e9f4ec;color:var(--good)}
+.shape-cell .shape-nm.tone-down{border-color:#e0a89c;background:#f9e9e5;color:var(--danger)}
+.shape-cell .shape-nm.tone-flat{border-color:#cfcbbf;background:#f2f0ea;color:var(--ink)}
+.shape-cell .shape-nm.tone-none{border-style:dashed;color:var(--dim);font-weight:600}
+.shape-cell .shape-sub{display:block;font-size:.68rem;color:var(--dim);margin-top:.1rem}
 /* 推定営業利益の列。項目を縦に積み、ラベルの途中で折らない */
 .est-cell{display:block;font-size:.76rem;line-height:1.55;color:var(--ink)}
 .est-cell .nb{display:block;white-space:nowrap}
@@ -392,6 +399,16 @@ main{padding:1.1rem .85rem 3rem}
 .list-wrap:has(#f-vf-ok:not(:checked)) tr.vf-ok{display:none!important}
 .list-wrap:has(#f-vf-part:not(:checked)) tr.vf-part{display:none!important}
 .list-wrap:has(#f-vf-none:not(:checked)) tr.vf-none{display:none!important}
+.list-wrap:has(#f-sh-upstop:not(:checked)) tr.sh-upstop{display:none!important}
+.list-wrap:has(#f-sh-up:not(:checked)) tr.sh-up{display:none!important}
+.list-wrap:has(#f-sh-surge:not(:checked)) tr.sh-surge{display:none!important}
+.list-wrap:has(#f-sh-pullback:not(:checked)) tr.sh-pullback{display:none!important}
+.list-wrap:has(#f-sh-range:not(:checked)) tr.sh-range{display:none!important}
+.list-wrap:has(#f-sh-rebound:not(:checked)) tr.sh-rebound{display:none!important}
+.list-wrap:has(#f-sh-plunge:not(:checked)) tr.sh-plunge{display:none!important}
+.list-wrap:has(#f-sh-down:not(:checked)) tr.sh-down{display:none!important}
+.list-wrap:has(#f-sh-downstop:not(:checked)) tr.sh-downstop{display:none!important}
+.list-wrap:has(#f-sh-none:not(:checked)) tr.sh-none{display:none!important}
 /* コンパクト表示（既定=ON。build.py が checked で出す）: 概要文・外部リンク・
    スパークラインを畳み、1行1銘柄で 20〜30 銘柄を見渡せるようにする */
 .list-wrap:has(#v-compact:checked) .one,
@@ -412,7 +429,8 @@ overflow-wrap:normal}
 margin:0;padding:.02rem .5rem}
 .list-wrap:has(#v-compact:checked) .stamp .st-p{display:none}
 .list-wrap:has(#v-compact:checked) .shape-cell .shape-img{width:4.5rem}
-.list-wrap:has(#v-compact:checked) .shape-cell .shape-nm{font-size:.82rem;margin-top:.15rem}
+.list-wrap:has(#v-compact:checked) .shape-cell .shape-nm{font-size:.78rem;margin-top:.2rem;padding:.06rem .45rem}
+.list-wrap:has(#v-compact:checked) .shape-cell .shape-sub{display:none}
 .list-wrap:has(#v-compact:checked) .list-table .nm{font-size:.95rem}
 .list-wrap:has(#v-compact:checked) .list-table .price{font-size:1rem;
 margin-right:.5rem}

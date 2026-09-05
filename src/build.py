@@ -425,28 +425,34 @@ def shape_state(code: str) -> tuple[str | None, str | None, str]:
     return SC.image_status(code, ROOT)
 
 
-def shape_cell_html(code: str) -> str:
-    """一覧の「形状（6か月）」列。線画＋分類語＋「画像判定※」（コードの機械判定ではない）。
+def shape_cell_html(code: str) -> tuple[str, str]:
+    """一覧の「形状（6か月）」列。(HTML, 絞り込みキー)。
 
-    2026-09-05 マスター指示で終値セルから独立した列にした。旧スパークライン
-    （直近3か月の採用終値）は同じ役割の絵なので廃止し、この線画に置き換えた。
+    線画＋分類語のバッジ。「画像判定※」の文言は一覧には出さない（2026-09-05 マスター指示）。
+    明示は列見出しの ※ と about.html の凡例が担う（CLAUDE.md「明示は記号 ※＋凡例でよい」）。
+    ツールチップには根拠を残す。旧スパークライン（直近3か月の採用終値）は
+    同じ役割の絵なので廃止し、この線画に置き換えた。
     """
     shape, as_of, status = shape_state(code)
     if status == "noimage":
-        return '<span class="sub">描けない（採用終値が不足）</span>'
+        return ('<span class="shape-nm tone-none">描けない</span>'
+                '<span class="shape-sub">採用終値が不足</span>', SHAPE_NONE_KEY)
     img = (f'<img class="shape-img" src="shapes/{html.escape(code)}.png" '
            f'alt="直近{SC.WINDOW_DAYS}営業日の採用終値の線画" loading="lazy">')
     if status == "ok" and shape:
-        body = (f'<span class="shape-nm">{html.escape(shape)}</span>'
-                f'<span class="shape-mark" title="6か月（直近{SC.WINDOW_DAYS}営業日）の'
-                f'採用終値を描いた線画を見て、楽天「チャート形状検索」の9分類のどれに'
-                f'最も近いかを記録したもの。コードの機械判定ではない。基準日 '
-                f'{html.escape(as_of or "")}">{SC.MARK}</span>')
-    elif status == "stale":
-        body = '<span class="shape-mark">未判定（画像が更新された）</span>'
-    else:
-        body = '<span class="shape-mark">未判定</span>'
-    return img + body
+        key = SHAPE_KEYS.get(shape, SHAPE_NONE_KEY)
+        tone = SHAPE_TONE.get(key, "none")
+        title = (f"6か月（直近{SC.WINDOW_DAYS}営業日）の採用終値を描いた線画を見て、"
+                 f"楽天「チャート形状検索」の9分類のどれに最も近いかを記録したもの"
+                 f"（{SC.MARK}。コードの機械判定ではなく、判定にも使わない）。"
+                 f"基準日 {as_of or ''}")
+        body = (f'<span class="shape-nm tone-{tone}" title="{html.escape(title)}">'
+                f'{html.escape(shape)}</span>')
+        return img + body, key
+    note = "画像が更新された" if status == "stale" else "今週の判定待ち"
+    body = (f'<span class="shape-nm tone-none">未判定</span>'
+            f'<span class="shape-sub">{note}</span>')
+    return img + body, SHAPE_NONE_KEY
 
 
 def shape_kpi_tile(code: str, as_of: str) -> str:
@@ -683,10 +689,26 @@ STAMP_KEYS = {
 }
 VF_LABELS = {"ok": "裏取り済", "part": "裏取り未達あり", "none": "裏取り未実施"}
 
+# チャート形状（9分類）→ 行クラス・絞り込みチップの固定キーと色調。
+# 語彙は shape_chart.SHAPES が正。キーを増減したら style.py の絞り込み規則と
+# バッジ色（.shape-nm.tone-*）も揃えること（tests/test_shape_chart.py が突き合わせる）。
+# 色調は「上向き／下向き／横ばい」の3つだけ。語が常に見えるので色だけに意味を持たせない
+SHAPE_KEYS = {
+    "上昇ストップ": "upstop", "上昇": "up", "急上昇": "surge",
+    "調整": "pullback", "もみ合い": "range", "リバウンド": "rebound",
+    "急落": "plunge", "下落": "down", "下げとまった": "downstop",
+}
+SHAPE_TONE = {
+    "upstop": "up", "up": "up", "surge": "up", "rebound": "up",
+    "pullback": "down", "plunge": "down", "down": "down", "downstop": "down",
+    "range": "flat",
+}
+SHAPE_NONE_KEY = "none"      # 未判定・描けない
+
 
 def render_row(stock: dict, rep: R.Report | None,
-               as_of: str = "") -> tuple[str, str | None, str, str]:
-    """一覧の1行。(HTML, 判定スタンプ, 判定キー, 裏取りキー) を返す。
+               as_of: str = "") -> tuple[str, str | None, str, str, str]:
+    """一覧の1行。(HTML, 判定スタンプ, 判定キー, 裏取りキー, 形状キー) を返す。
 
     キーは絞り込みチップの件数集計と行クラスに使う（対象外の行は空。
     対象外は f-excluded のトグルだけが束ねる）。
@@ -724,10 +746,16 @@ def render_row(stock: dict, rep: R.Report | None,
             st_key = STAMP_KEYS.get(st, "other")
         vf_key = ("none" if not present
                   else "ok" if passed == claims else "part")
+    # 形状キーは行クラスと絞り込みチップの材料（対象外は付けない）
+    sh_key = ""
+    shape_cell = '<span class="sub">—</span>'
+    if not watch_pill:
+        shape_cell, sh_key = shape_cell_html(code)
     classes = " ".join(
         (["row-excluded"] if watch_pill else [])
         + ([f"st-{st_key}"] if st_key else [])
-        + ([f"vf-{vf_key}"] if vf_key else []))
+        + ([f"vf-{vf_key}"] if vf_key else [])
+        + ([f"sh-{sh_key}"] if sh_key else []))
     tr_cls = f' class="{classes}"' if classes else ""
     # 推定由来の数値（並び替えの材料）。対象外は凍った記録なので引かない
     est = estimate_metrics(code) if not watch_pill else None
@@ -752,7 +780,6 @@ def render_row(stock: dict, rep: R.Report | None,
 
     # 形状（6か月・画像判定※）と推定営業利益は**別の列**に出す（2026-09-05 マスター指示。
     # 終値セルに積むと読めない）。対象外は凍った記録なので両方「—」
-    shape_cell = shape_cell_html(code) if not watch_pill else '<span class="sub">—</span>'
     # 推定と前期実績・会社計画・市場予想の乖離。利益が何％増えるかが投資判断の核
     # なので、推定モデルのある銘柄はコンパクト表示でも隠さない
     est_cell = _estimate_cell_html(est) or '<span class="sub">—</span>'
@@ -767,7 +794,7 @@ def render_row(stock: dict, rep: R.Report | None,
             f'<td data-l="状態"><span class="pill">レポート未作成</span></td>'
             f"</tr>"
         )
-        return row, st, st_key, vf_key
+        return row, st, st_key, vf_key, sh_key
 
     flag = '<span class="flag">再調査</span>' if rep.deep_dive else ""
     site = ""
@@ -821,7 +848,7 @@ def render_row(stock: dict, rep: R.Report | None,
         f'<span class="wk-txt">{week_txt}</span></td>'
         f"</tr>"
     )
-    return row, st, st_key, vf_key
+    return row, st, st_key, vf_key, sh_key
 
 
 _ORDER_MARKS = "①②③④⑤⑥⑦⑧⑨⑩"
@@ -854,12 +881,15 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     # 絞り込みチップの件数（監視中のみ。対象外はキーを持たない）
     st_counts: dict[str, tuple[str, int]] = {}
     vf_counts: dict[str, int] = {}
-    for _, st, st_key, vf_key in row_data:
+    sh_counts: dict[str, int] = {}
+    for _, st, st_key, vf_key, sh_key in row_data:
         if st_key:
             _, n = st_counts.get(st_key, (st, 0))
             st_counts[st_key] = (str(st), n + 1)
         if vf_key:
             vf_counts[vf_key] = vf_counts.get(vf_key, 0) + 1
+        if sh_key:
+            sh_counts[sh_key] = sh_counts.get(sh_key, 0) + 1
     scr = master.get("screening", {})
     scr_name = html.escape(str(scr.get("name", "")))
     n_deep = sum(1 for r in reports.values() if r.deep_dive)
@@ -945,6 +975,19 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
             chips.append(_toggle(f"f-vf-{key}", lbl, lbl,
                                  checked=True, cls="filter-btn chip",
                                  title="外すと、この裏取り状態の行を隠す"))
+    # 形状（9分類＋未判定）。並びは楽天のアイコンの並び（shape_chart.SHAPES）
+    sh_order = [SHAPE_KEYS[n] for n in SC.SHAPES if SHAPE_KEYS[n] in sh_counts]
+    if SHAPE_NONE_KEY in sh_counts:
+        sh_order.append(SHAPE_NONE_KEY)
+    if sh_order:
+        sh_label = {v: k for k, v in SHAPE_KEYS.items()}
+        sh_label[SHAPE_NONE_KEY] = "未判定"
+        chips.append('<span class="fl-cap">形状</span>')
+        for key in sh_order:
+            lbl = f"{sh_label[key]} {sh_counts[key]}"
+            chips.append(_toggle(f"f-sh-{key}", lbl, lbl,
+                                 checked=True, cls="filter-btn chip",
+                                 title="外すと、この形状の行を隠す"))
     if chips:
         filter_ui += ('<div class="list-toolbar list-filters">'
                       + "".join(chips) + "</div>")
@@ -985,7 +1028,10 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     table = (
         '<div class="list-wrap">' + filter_ui
         + '<div class="scroll"><table class="list-table prose-table"><thead><tr>'
-        "<th>銘柄</th><th>終値・判定</th><th>形状（6か月）</th>"
+        "<th>銘柄</th><th>終値・判定</th>"
+        '<th title="直近6か月の線画を見て楽天の9分類に寄せた画像判定※。'
+        'コードの機械判定ではなく、判定にも使わない（読み方ページの「チャート形状」）">'
+        "形状（6か月）※</th>"
         "<th>推定営業利益</th><th>今週の動き</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div></div>"
         + remember
@@ -1011,7 +1057,7 @@ def howto_block() -> str:
         "（「IR情報」など小さなリンクの上だけは、そのリンク先へ）</li>"
         "<li>一覧は既定でコンパクト（1行1銘柄）。「詳細表示」ボタンで"
         "概要文が開く</li>"
-        "<li>「判定」「裏取り」のチップを外すと、その状態の行を一時的に隠せる"
+        "<li>「判定」「裏取り」「形状」のチップを外すと、その状態の行を一時的に隠せる"
         "（件数はチップに常時出る）。選んだ表示・絞り込みは次回も覚えている</li>"
         "<li>対象外の銘柄は既定で隠している。「対象外を表示」ボタンで元の位置に出る"
         "（記録は消えない。<a href=\"data.html\">データの出どころ</a>には常に全銘柄が載る）</li>"
