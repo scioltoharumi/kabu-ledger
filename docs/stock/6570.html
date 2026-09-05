@@ -197,6 +197,13 @@ margin-top:.35rem;line-height:1.7;white-space:normal;cursor:help}
 .est-line .k-unit{font-size:.68rem}
 .est-line .pill{margin:0 0 0 .3rem}
 .est-line .nb{white-space:nowrap}
+/* 一覧の並び替え（推定由来の数値）。select は静的で、並べ替えだけを小さな
+   スクリプトが行う。JS が無ければコード順のまま */
+.list-sort-wrap{display:inline-flex;align-items:center;gap:.35rem;margin-left:.3rem}
+.list-sort-label{font-size:.74rem;font-weight:700;color:var(--dim)}
+.list-sort{font:inherit;font-size:.78rem;padding:.22rem .55rem;border:1px solid var(--rule);
+border-radius:999px;background:#fff;color:var(--ink);max-width:100%;cursor:pointer}
+.list-sort:hover{border-color:var(--ink)}
 
 /* 監視対象から外した銘柄の注記。図の「手書き（未検証）」と同じ扱いで、
    同じ見た目のまま黙って並べない（消す方法は用意しない） */
