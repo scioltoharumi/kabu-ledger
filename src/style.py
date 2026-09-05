@@ -297,11 +297,14 @@ font-size:1.08rem;white-space:nowrap}
 details.var>div{margin:0 .75rem .6rem;padding-top:.5rem;font-size:.8rem;
 color:var(--dim);line-height:1.75;border-top:1px dashed var(--rule);
 overflow-wrap:anywhere}
-/* PC では推定フォールドだけ本文列（52rem）より広く使う */
+/* PC では推定フォールドだけ、**開いたときに限り**本文列（52rem）より広く使う。
+   閉じたままでも広げると、他のフォールドと左右が揃わず枠だけがはみ出して
+   「崩れて」見える（2026-09-05 に実際に指摘された）。表・タイルに幅が要るのは
+   開いたときだけなので、[open] で切る */
 @media(min-width:1140px){
-details.sec.sec-wide{width:min(76rem,calc(100vw - 5rem));position:relative;
+details.sec.sec-wide[open]{width:min(76rem,calc(100vw - 5rem));position:relative;
 left:50%;transform:translateX(-50%)}
-details.sec.sec-wide .est .kpi{grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))}
+details.sec.sec-wide[open] .est .kpi{grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))}
 }
 
 /* 読み取りの手がかり（図の下に置く短い注記） */

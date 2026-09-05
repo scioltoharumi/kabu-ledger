@@ -494,9 +494,9 @@ LOW_BASE_MARGIN = 0.02
 # 一覧の並び替えキー（select の option と <tr data-est-*> の名前。順序固定・D8）
 SORT_KEYS = (
     ("", "コード順"),
-    ("growth", "推定OP 前期比が大きい順"),
-    ("plan", "推定OP 会社計画比が大きい順"),
-    ("op", "推定OP の額が大きい順"),
+    ("growth", "推定営業利益 前期比が大きい順"),
+    ("plan", "推定営業利益 会社計画比が大きい順"),
+    ("op", "推定営業利益の額が大きい順"),
 )
 
 
@@ -572,7 +572,7 @@ def _estimate_line_html(est: dict | None) -> str:
     if not est:
         return ""
     op = est["op"]
-    parts = [f'推定OP {op:,.0f}<span class="k-unit">百万円</span>']
+    parts = [f'推定営業利益 {op:,.0f}<span class="k-unit">百万円</span>']
     if est.get("growth_pct") is not None:
         low = ('<span class="pill pill-warn" title="前期の営業利益が小さく（利益率 '
                f'{LOW_BASE_MARGIN:.0%} 未満か赤字）、率が極端に出る。額で見ること">'
@@ -941,7 +941,7 @@ def howto_block() -> str:
         "「この台帳が見ていない鉄則」</a>を併読）。売買の判断は人間が行う</li>"
         "<li>終値の下の小さな線は直近約3か月の採用終値"
         "（2ソース照合済みの値のみ）。傾向の手がかりで、数値は銘柄ページの図が正</li>"
-        "<li>「推定OP …・前期比 ±x%・会社計画比 ±x%」は、推定モデルを作成済みの"
+        "<li>「推定営業利益 …・前期比 ±x%・会社計画比 ±x%」は、推定モデルを作成済みの"
         "銘柄だけに出る。当台帳の次期推定（<code>src/estimate.py</code> の機械計算）が"
         "前期実績から<strong>何％増えるか</strong>と、会社計画・市場予想からどれだけ"
         "乖離しているか。<strong>利益が何％増えるかが投資判断の核</strong>で、"
