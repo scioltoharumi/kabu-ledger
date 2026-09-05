@@ -1088,7 +1088,7 @@ def check_estimates(rep: Report, repo_root: Path) -> None:
 
     書けたつもりで計算できない・描かれない推定を公開させない（図の
     「書いたのに描かれない書き方」検査と同じ趣旨）。値の妥当性は検査しない
-    —— それは人間の確認（status: confirmed）の仕事。
+    —— それは note に書かれた根拠を読む人の仕事（承認工程は置かない・2026-09-05）。
     """
     est_dir = repo_root / "estimates"
     if not est_dir.exists():

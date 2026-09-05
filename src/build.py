@@ -510,7 +510,7 @@ def estimate_metrics(code: str) -> dict | None:
                   判断の第一軸。segments の growth_axis と同じ）
       plan_pct    会社計画比 ／ mf_pct 市場予想比（比べられないときは None）
       low_base    前期の利益率が小さい（率が極端に出る）
-      draft       マスター未確認の下書き
+      draft       作りかけ（値を置き切っていない。承認工程は無い・2026-09-05）
     """
     data = EST.load_estimate(code, root=ROOT)
     if data is None or data.get("errors") or not data.get("models"):
@@ -564,7 +564,7 @@ def _estimate_line_html(est: dict | None) -> str:
     """一覧に出す「次期推定と前期実績・会社計画・市場予想の乖離」の1行。
 
     利益が何％増えるかが投資判断の核になるため、推定モデルのある銘柄は一覧
-    （コンパクト表示でも）に常時出す。**推定は推定と明示する**（未確定の下書きには
+    （コンパクト表示でも）に常時出す。**推定は推定と明示する**（作りかけの下書きには
     ピルを付け、ツールチップで「会社計画でも的中予想でもない」ことを必ず言う）。
     前期の利益が小さい銘柄の前期比には「低ベース」の印を付ける（率だけで並べると
     上に来るため）。比べる相手が1つも無いときは出さない。
@@ -582,7 +582,7 @@ def _estimate_line_html(est: dict | None) -> str:
         parts.append(f"会社計画比 {_pct_span(est['plan_pct'])}")
     if est.get("mf_pct") is not None:
         parts.append(f"市場予想比 {_pct_span(est['mf_pct'])}")
-    draft = ('<span class="pill pill-warn">未確定</span>' if est.get("draft") else "")
+    draft = ('<span class="pill pill-warn">作りかけ</span>' if est.get("draft") else "")
     title = html.escape(
         f"当台帳の次期推定（対象期 {est.get('period', '')}）。検証済みデータと明示した"
         "仮定から src/estimate.py が機械計算した概算で、会社計画でも的中予想でもない。"
@@ -947,7 +947,8 @@ def howto_block() -> str:
         "乖離しているか。<strong>利益が何％増えるかが投資判断の核</strong>で、"
         "一覧の「並び替え」でこの数値順に並べられる（推定の無い銘柄は末尾）。"
         "「低ベース」は前期の利益が小さく率が極端に出る印で、額で見ること。"
-        "「未確定」はマスター未承認の下書き。分解と根拠は銘柄ページの"
+        "「作りかけ」は値を置き切っていない下書き（承認の工程は無く、調べた結果を"
+        "そのまま載せる）。分解と根拠は銘柄ページの"
         "「次期売上・利益推定」にある</li>"
         '<li><span class="flag">再調査</span> が付いた銘柄は毎週すべての項目を'
         "見直している。付いていない銘柄はニュースと値動きだけ追っている</li>"
@@ -1462,8 +1463,10 @@ def render_estimate(code: str) -> str:
     comp = EST.comparisons(code, str(m.get("period", "")), root=ROOT, unit=unit)
 
     confirmed = str(m.get("status", "draft")) == "confirmed"
-    status_pill = ('<span class="pill pill-good">マスター確認済み</span>' if confirmed
-                   else '<span class="pill pill-warn">未確定（マスター未確認の下書き）</span>')
+    # confirmed＝調べて値を置き切った（載せてよい）。draft＝作りかけ。
+    # マスターの承認工程は置かない（2026-09-05 方針。調べた結果をそのまま載せる）
+    status_pill = ('<span class="pill pill-good">作成済み</span>' if confirmed
+                   else '<span class="pill pill-warn">作りかけ（値を置き切っていない下書き）</span>')
 
     lede = (f'<p class="lede">{status_pill} 対象期 <b>{period}</b>・'
             f'起案 {html.escape(str(m.get("as_of", "")))}。'
@@ -1615,7 +1618,7 @@ def render_estimate(code: str) -> str:
              "<th>起案日</th><th>対象期</th><th>売上</th><th>営業利益</th><th>何を変えたか</th>"
              "</tr></thead><tbody>" + "".join(hist_rows) + "</tbody></table></div>")
 
-    status_ja = "確認済み" if confirmed else "未確定"
+    status_ja = "作成済み" if confirmed else "作りかけ"
     hint = f"対象 {m.get('period', '')}・{status_ja}・変数 {len(cards)} 個"
     return fold("次期売上・利益推定", hint, f'<div class="est">{body}</div>',
                 wide=True)
