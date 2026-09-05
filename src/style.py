@@ -209,13 +209,17 @@ border:1px solid var(--rule);margin-top:.4rem}
 .stamp-sell{background:#f7e5e1;color:var(--danger);border-color:#e5c0b8}
 .stamp-hot{background:#f8ecd4;color:var(--warn);border-color:#e6d3a8}
 .wchg{display:block;font-size:.78rem;font-weight:700;margin-top:.25rem}
-/* チャート形状（6か月・画像判定※）。一覧の終値セルと銘柄ページのタイルに出す */
-.shape-line{display:block;font-size:.72rem;color:var(--dim);margin-top:.15rem;white-space:nowrap}
-.shape-line .shape-img{height:1.35rem;width:auto;vertical-align:middle;border-radius:3px;margin-right:.3rem}
-.shape-line .shape-nm{font-weight:700;color:var(--ink)}
+/* チャート形状（6か月・画像判定※）。一覧の独立した列と銘柄ページのタイルに出す */
+.shape-cell .shape-img{display:block;width:6.5rem;max-width:100%;height:auto;border-radius:4px}
+.shape-cell .shape-nm{display:block;font-weight:700;font-size:.88rem;margin-top:.25rem}
+.shape-cell .shape-mark{display:block;font-size:.7rem;color:var(--dim);white-space:nowrap}
+/* 推定営業利益の列。項目を縦に積み、ラベルの途中で折らない */
+.est-cell{display:block;font-size:.76rem;line-height:1.55;color:var(--ink)}
+.est-cell .nb{display:block;white-space:nowrap}
+.est-cell .op{font-weight:700;font-size:.86rem}
+.est-cell .k-unit{font-size:.68rem}
+.est-cell .pill{margin:.15rem 0 0 0}
 .kpi-tile .shape-img{display:block;width:100%;max-width:12rem;height:auto;border-radius:4px;margin:.25rem 0 .1rem}
-.spark{display:block;width:7.5rem;max-width:100%;height:auto;
-color:var(--accent);margin:.4rem 0 0;opacity:.9}
 /* 推定と会社計画・市場予想の乖離（一覧）。コンパクト表示でも隠さない */
 .est-line{display:block;font-size:.74rem;font-weight:700;color:var(--ink);
 margin-top:.35rem;line-height:1.7;white-space:normal;cursor:help}
@@ -346,9 +350,12 @@ max-width:100%;display:inline-block}
 /* 列幅を固定し、余りを1列目（銘柄と概要）に渡す。auto レイアウトだと概要文の
    長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */
 @media(min-width:641px){
+.est-cell .op-l{display:none}   /* PC では列見出しが語を持つ */
 .list-table{table-layout:fixed}
 .list-table th:nth-child(2),.list-table td:nth-child(2){width:9.5rem}
-.list-table th:nth-child(3),.list-table td:nth-child(3){width:12rem}
+.list-table th:nth-child(3),.list-table td:nth-child(3){width:7.5rem}
+.list-table th:nth-child(4),.list-table td:nth-child(4){width:11rem}
+.list-table th:nth-child(5),.list-table td:nth-child(5){width:12rem}
 .list-table td:nth-child(2) .sub{white-space:nowrap}
 }
 /* PC の広い画面では**トップページ全体**（main.wide）を広く使う。
@@ -408,8 +415,7 @@ main{padding:1.1rem .85rem 3rem}
 /* コンパクト表示（既定=ON。build.py が checked で出す）: 概要文・外部リンク・
    スパークラインを畳み、1行1銘柄で 20〜30 銘柄を見渡せるようにする */
 .list-wrap:has(#v-compact:checked) .one,
-.list-wrap:has(#v-compact:checked) .ext,
-.list-wrap:has(#v-compact:checked) .spark{display:none!important}
+.list-wrap:has(#v-compact:checked) .ext{display:none!important}
 /* セルの中身を流し込んで行高を最小にする（.sub/.wchg は通常 block）。
    終値セルは nowrap のままだと固定列幅を突き抜けて隣に重なるので折り返す。
    繰り返しの日付・週ラベル（全行同じ）はこの表示では出さない */
@@ -425,6 +431,8 @@ overflow-wrap:normal}
 .list-wrap:has(#v-compact:checked) .stamp{display:inline-block!important;
 margin:0;padding:.02rem .5rem}
 .list-wrap:has(#v-compact:checked) .stamp .st-p{display:none}
+.list-wrap:has(#v-compact:checked) .shape-cell .shape-img{width:4.5rem}
+.list-wrap:has(#v-compact:checked) .shape-cell .shape-nm{font-size:.82rem;margin-top:.15rem}
 .list-wrap:has(#v-compact:checked) .list-table .nm{font-size:.95rem}
 .list-wrap:has(#v-compact:checked) .list-table .price{font-size:1rem;
 margin-right:.5rem}
