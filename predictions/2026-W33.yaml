@@ -32,5 +32,12 @@ predictions:
   reference: 30000000
   resolve_by: '2026-09-12'
   confidence: 0.5
-  status: open
+  status: resolved
   note: 流動性ゲートを通過し続けるか
+  result: 的中
+  actual: 50761980.0
+  actual_display: 50,761,980円（5,076.2万円）
+  reference_value: 30000000.0
+  metric_source: price
+  metric_as_of: '2026-08-27'
+  reason: 50,761,980円（5,076.2万円） > 30,000,000円（3,000.0万円）（2026-08-27 時点）
