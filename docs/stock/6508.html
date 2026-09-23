@@ -84,6 +84,11 @@ white-space:nowrap}
 .kpi-tile .k-sub{display:block;font-size:.72rem;color:var(--dim);margin-top:.1rem;
 overflow-wrap:anywhere}
 .kpi-tile .k-value-sm{font-size:1.02rem;padding:.2rem 0 .15rem}
+/* トップのタイルは銘柄名を並べるので、sub を読める大きさ・行間にする */
+.kpi-index .k-sub{font-size:.76rem;line-height:1.75}
+.kpi-index .k-value .k-value-sm{white-space:normal}
+.kpi-index a{color:var(--ink)}
+.kpi-index .nw{white-space:nowrap}
 .k-unit{font-size:.8rem;font-weight:700;color:var(--dim);margin-left:.1rem}
 /* 騰落の色。図（.viz）と同じ意味づけ＝青が改善・赤が悪化（符号も必ず併記する。
    色だけに意味を持たせない） */
@@ -237,7 +242,9 @@ padding:.6rem .8rem;border-radius:3px;font-size:.86rem;line-height:1.8;margin:.9
    一次情報=グレー。色だけに意味を持たせない（記号そのものが常に見える） */
 .vm{font-size:.7em;font-weight:700;vertical-align:super;line-height:1;
 padding:0 .06em;cursor:help}
-.vm-ok{color:var(--pos)}
+/* ✓（照合済み）は大半の数値に付くので沈める。注意を要する ※ と区別できる
+   ことだけ残す（消すと、記号の無い計算値まで照合済みに見える。2026-09-23） */
+.vm-ok{color:#aeaca4;font-weight:400;font-size:.6em}
 .vm-ref{color:var(--warn)}
 .vm-pri{color:var(--dim)}
 
@@ -326,6 +333,9 @@ vertical-align:top}
 .list-table .one{color:var(--dim);font-size:.84rem;line-height:1.7;
 display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;
 overflow:hidden;margin-top:.4rem}
+/* 「今週の動き」は概要文（.one）と同じ大きさ・色。指定が無いと表の .9rem・
+   本文色を継いで、銘柄の説明より目立っていた（2026-09-23 マスター指摘） */
+.list-table .wk-txt{display:block;color:var(--dim);font-size:.84rem;line-height:1.7}
 .list-table .price{font-size:1.15rem;font-weight:700}
 /* nowrap にすると、中の長いURLが分割不能トークンになってスマホ幅で
    ページ自体を横スクロールさせる（tools\shot.ps1 の採寸で 623px > 500px）。 */
@@ -385,8 +395,8 @@ main{padding:1.1rem .85rem 3rem}
    描画されないキーは :has が成立せず**表示側に倒れる**（隠れて消えない）。 */
 /* 対象外: チェックが外れている間だけ隠す（既定＝隠す） */
 .list-wrap:has(#f-excluded:not(:checked)) tr.row-excluded{display:none!important}
-/* 判定・裏取りの絞り込み。チップを外すとその状態の行を隠す。
-   キーは build.py の STAMP_KEYS / VF_LABELS と一対（固定語彙・全キーぶん置く） */
+/* 判定・形状の絞り込み。チップを外すとその状態の行を隠す。
+   キーは build.py の STAMP_KEYS / SHAPE_KEYS と一対（固定語彙・全キーぶん置く） */
 .list-wrap:has(#f-st-buy:not(:checked)) tr.st-buy{display:none!important}
 .list-wrap:has(#f-st-watch:not(:checked)) tr.st-watch{display:none!important}
 .list-wrap:has(#f-st-probe:not(:checked)) tr.st-probe{display:none!important}
@@ -396,9 +406,6 @@ main{padding:1.1rem .85rem 3rem}
 .list-wrap:has(#f-st-trend:not(:checked)) tr.st-trend{display:none!important}
 .list-wrap:has(#f-st-cloud:not(:checked)) tr.st-cloud{display:none!important}
 .list-wrap:has(#f-st-other:not(:checked)) tr.st-other{display:none!important}
-.list-wrap:has(#f-vf-ok:not(:checked)) tr.vf-ok{display:none!important}
-.list-wrap:has(#f-vf-part:not(:checked)) tr.vf-part{display:none!important}
-.list-wrap:has(#f-vf-none:not(:checked)) tr.vf-none{display:none!important}
 .list-wrap:has(#f-sh-upstop:not(:checked)) tr.sh-upstop{display:none!important}
 .list-wrap:has(#f-sh-up:not(:checked)) tr.sh-up{display:none!important}
 .list-wrap:has(#f-sh-surge:not(:checked)) tr.sh-surge{display:none!important}
@@ -533,9 +540,9 @@ border-radius:6px;padding:.7rem .9rem}
 .kb-cand .code{font-size:.72rem;color:var(--accent);font-weight:700}
 .kb-cand .nm{font-weight:700;margin:.1rem 0 .3rem}
 .kb-cand p{font-size:.78rem;color:var(--dim);margin:0;line-height:1.65}
-</style></head><body><header class="site"><div class="site-in"><a class="brand" href="../index.html">銘柄調査台帳</a><nav><a href="../index.html">台帳</a><a href="../knowledge.html">前提知識</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav></div></header><main><h1>明電舎（6508）</h1><p class="lede">東証プライム／レポート更新 2026-09-23<br><span class="pill pill-warn">未検証</span>本文の記述はまだ出典に当て直していない<br><a class="ext" href="https://www.meidensha.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://www.meidensha.co.jp/ir/ir_02/" target="_blank" rel="noopener">IR ライブラリ（決算短信・決算補足資料） ↗</a><a class="ext" href="https://irbank.net/E01741" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=6508" target="_blank" rel="noopener">株探 ↗</a></p><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">10,740<span class="k-unit">円</span></span><span class="k-sub">2026-09-17・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前採用日比</span><span class="k-value"><span class="chg-pos">+1.9%</span></span><span class="k-sub">2026-09-16 比</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">5,450 〜 12,660</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">様子見(過熱)</span></span><span class="k-sub">src/judge.py の機械判定</span></div><div class="kpi-tile"><span class="k-label">チャート形状</span><span class="k-value"><span class="k-value-sm">上昇ストップ</span><img class="shape-img" src="../shapes/6508.png" alt=""></span><span class="k-sub">画像判定※・6か月・基準日 2026-09-17</span></div><div class="kpi-tile"><span class="k-label">記述の裏取り</span><span class="k-value"><span class="k-value-sm">未検証</span></span><span class="k-sub">記録なし</span></div></div><blockquote>
+</style></head><body><header class="site"><div class="site-in"><a class="brand" href="../index.html">銘柄調査台帳</a><nav><a href="../index.html">台帳</a><a href="../knowledge.html">前提知識</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav></div></header><main><h1>明電舎（6508）</h1><p class="lede">東証プライム／レポート更新 2026-09-23<br><a class="ext" href="https://www.meidensha.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://www.meidensha.co.jp/ir/ir_02/" target="_blank" rel="noopener">IR ライブラリ（決算短信・決算補足資料） ↗</a><a class="ext" href="https://irbank.net/E01741" target="_blank" rel="noopener">IR BANK ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=6508" target="_blank" rel="noopener">株探 ↗</a></p><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">10,930<span class="k-unit">円</span></span><span class="k-sub">2026-09-18・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前週末比</span><span class="k-value"><span class="chg-pos">+5.9%</span></span><span class="k-sub">2026-09-11 比／前採用日比 +1.8%</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">5,450 〜 12,660</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">様子見(過熱)</span></span><span class="k-sub">過熱（信用倍率 7.08倍 &gt; 5.0倍（2026-09-11））</span></div><div class="kpi-tile"><span class="k-label">チャート形状</span><span class="k-value"><span class="k-value-sm">上昇ストップ</span><img class="shape-img" src="../shapes/6508.png" alt=""></span><span class="k-sub">画像判定※・6か月・基準日 2026-09-17</span></div></div><blockquote>
 <p><strong>一行でいうと</strong>：変圧器・開閉装置など送配電の機器と、水処理・EV向け電機を手がける重電メーカー。データセンターと再生可能エネルギーの増加で電力インフラ部門が伸び、営業利益は4期で3倍を超えた<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。ただし2026年3月期は受注高が前期比 -6.6%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>と落ち、直近の四半期で回復に転じたところ。株価は6か月で +61.1%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>上げており、台帳の機械判定は「様子見（過熱）」。</p>
-</blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W39・全 4 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W39（2026-09-21 週）</h3><p><strong>取引の無い週。判定「様子見(過熱)」で変わらず</strong></p>
+</blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W39・全 5 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W39（2026-09-21 週）</h3><p><strong>取引の無い週。判定「様子見(過熱)」で変わらず</strong></p>
 <ul>
 <li>株価: 今週の採用終値なし（照合成立 0日）</li>
 <li>出来高: 今週の出来高データなし<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>／信用倍率: 7.08倍（買残 129.5千株・売残 18.3千株、09/11時点）<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span></li>
@@ -543,7 +550,15 @@ border-radius:6px;padding:.7rem .9rem}
 </ul>
 <p>（解釈）今週は照合成立0日で、直近の採用終値は9/17の10740円のまま。
 ニュース・開示ともに0件。信用残（09/11時点 倍率7.08倍）も据え置き。</p>
-<p><strong>次週に見ること</strong>: ① 取引再開後の値動き</p></div><div class="upd"><h3>2026-W37（2026-09-07 週）</h3><p><strong>週間 -1.2%とほぼ横ばい。週内レンジは広めだが材料は見当たらない。</strong></p>
+<p><strong>次週に見ること</strong>: ① 取引再開後の値動き</p></div><div class="upd"><h3>2026-W38（2026-09-14 週）</h3><p><strong>9/15を除いて上げ、週末に週高値10,930円。材料は無し。</strong></p>
+<ul>
+<li>株価: 週間 +5.9%（10320→10930円・採用終値ベース、照合成立 5日、週内 10400〜10930円）</li>
+<li>出来高: 前週比 -13.4%（今週 981,000株／前週 1,132,800株）<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>／信用倍率: 7.08倍（買残 129.5千株・売残 18.3千株、09/11時点）<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span></li>
+<li>判定: 「様子見(過熱)」／開示: なし</li>
+</ul>
+<p>（解釈）（9/23 に後追いで記録。週次ルーティンが祝日に回り、この週を飛ばして W39 を書いたため）
+週間+5.9%（10,320→10,930円）で、9/15を除いて上げて引けた。関連する開示・報道の見出しは無かった。判定は「様子見(過熱)」のまま（信用倍率7.08倍が5.0倍超）。</p>
+<p><strong>次週に見ること</strong>: ① 信用倍率が5倍を割るか</p></div><div class="upd"><h3>2026-W37（2026-09-07 週）</h3><p><strong>週間 -1.2%とほぼ横ばい。週内レンジは広めだが材料は見当たらない。</strong></p>
 <ul>
 <li>株価: 週間 -1.2%（10800→10670円・採用終値ベース、照合成立 4日、週内 10410〜11200円）</li>
 <li>出来高: 前週比 -22.4%（今週 1,132,800株／前週 1,460,400株）<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>／信用倍率: 7.79倍（買残 148千株・売残 19千株、09/04時点）<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span></li>
@@ -551,7 +566,7 @@ border-radius:6px;padding:.7rem .9rem}
 </ul>
 <p>（解釈）週間 -1.2%（10800→10670円）とほぼ横ばい。週内高値11200円・安値10410円とレンジは広めだったが、ニュースは今週0件。
 出来高は前週比-22.4%と細り、判定は「様子見(過熱)」のまま。</p>
-<p><strong>次週に見ること</strong>: ① 新規開示の有無 ② レンジ拡大の理由が事後に判明するか</p></div><div class="upd"><h3>2026-W36（続報）</h3><p><strong>反落。未定だった中間配当予想が発表されたが株価は下げた</strong></p>
+<p><strong>次週に見ること</strong>: ① 新規開示の有無 ② レンジ拡大の理由が事後に判明するか</p></div><details class="upd-old"><summary>それ以前の週次アップデート（2件）</summary><div class="upd"><h3>2026-W36（続報）</h3><p><strong>反落。未定だった中間配当予想が発表されたが株価は下げた</strong></p>
 <ul>
 <li>株価: 週間 -10.2%（11720→10530円・採用終値ベース、照合成立 4日、週内 10530〜11870円）</li>
 <li>出来高: 前週比 -15.8%（今週 1,460,400株／前週 1,735,300株）<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>／信用倍率: 6.35倍（買残 172.7千株・売残 27.2千株、08/28時点）<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span></li>
@@ -561,7 +576,7 @@ border-radius:6px;padding:.7rem .9rem}
 </ul>
 <p>（解釈）8/31付で未定としていた中間配当予想を83円（36円増配）と発表したが、9/1付の記事は「反応限定的」で反落したと伝えている
 過熱感が高かった中での増配発表で、材料出尽くしとして売られた可能性がある</p>
-<p><strong>次週に見ること</strong>: ① 過熱感の解消（25日乖離・信用倍率）が続くか確認する</p></div><details class="upd-old"><summary>それ以前の週次アップデート（1件）</summary><div class="upd"><h3>2026-W36（2026-09-01 週）</h3><p><strong>セグメント分析（DC の電力・冷却）から台帳に登録した初回。利益は伸びているが、株価はすでに反応している。</strong></p>
+<p><strong>次週に見ること</strong>: ① 過熱感の解消（25日乖離・信用倍率）が続くか確認する</p></div><div class="upd"><h3>2026-W36（2026-09-01 週）</h3><p><strong>セグメント分析（DC の電力・冷却）から台帳に登録した初回。利益は伸びているが、株価はすでに反応している。</strong></p>
 <ul>
 <li>台帳に登録し、株価・財務・信用残・決算短信を取得した。日足は269営業日ぶんで、うち2ソース照合が成立した採用値は243件</li>
 <li>直近四半期（2026年4-6月）の営業利益は 4,664百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。前年同期の 348百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>からの回復で、伸び率としては十数倍になるが、<strong>前年が異常に小さかったための基数効果</strong>であり額面どおりには読めない。金額でみると四半期としては小さい部類で、この会社の利益は第4四半期（1-3月）に大きく偏る（<p class="none">図「q_op」を描けなかった — 検証済みの数値が1件も無い（25/4-6（単位を換算できない（JPY_million → ））／25/7-9（単位を換算できない（JPY_million → ））／25/10-12（単位を換算できない（JPY_million → ）））</p> 参照）</li>
@@ -759,4 +774,4 @@ border-radius:6px;padding:.7rem .9rem}
 <li><strong>受注残高が分からない。</strong> 会社が開示していないため、「作るより速く仕事が積み上がっているか」を直接は測れない</li>
 <li><strong>データセンター向けの売上比率が分からない。</strong> 電力インフラ部門の中でどれだけがデータセンター起因かは開示されていない。<strong>この会社をデータセンター関連として見るときの最大の未確認点</strong></li>
 <li>信用残・出来高は照合の仕組みが無く、すべて<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（未照合の参考値）</li>
-</ul><h2 id="verify">記述の裏取り</h2><p class="lede">本文の記述を、書いたのとは別の文脈が出典URLを取り直して1件ずつ判定した結果（<a href="../about.html">読み方</a>）。</p><p class="none"><span class="pill pill-warn">未検証</span>この銘柄はまだ裏取りしていない。本文の記述は、出典に当て直した確認を経ていない。</p><h2>数値の検証状況</h2><p class="lede">2つの取得元で一致した値だけを採用し、欠測は0で埋めない。この銘柄でどこまで確かめられているかの開示（<a href="../about.html">読み方</a>）。</p><p class="readout"><span>2ソース照合済み <b>115</b></span><span>2ソースが食い違う <b>7</b></span><span>1ソースのみ <b>490</b></span><span>決算短信から直接 <b>0</b></span><span>株価の採用終値 <b>256</b>/283日</span></p><div class="scroll"><table><thead><tr><th>図</th><th>数値の出どころ</th><th>状態</th></tr></thead><tbody><tr><td><code>biz_flow</code></td><td><span class="pill">定性図</span>定性図（数値を含まない）</td><td>—</td></tr><tr><td><code>equity</code></td><td><span class="pill pill-danger">描けず</span>検証済みCSVから自動で組み立て</td><td>検証済みの数値が1件も無い（2024/3（単位を換算できない（pct → ））／2025/3（単位を換算できない（pct → ））／2026/3（単位を換算できない（pct → ）））</td></tr><tr><td><code>fy_op</code></td><td><span class="pill pill-danger">描けず</span>検証済みCSVから自動で組み立て</td><td>検証済みの数値が1件も無い（2023/3（単位を換算できない（JPY_million → ））／2024/3（単位を換算できない（JPY_million → ））／2025/3（単位を換算できない（JPY_million → ）））</td></tr><tr><td><code>fy_revenue</code></td><td><span class="pill pill-danger">描けず</span>検証済みCSVから自動で組み立て</td><td>検証済みの数値が1件も無い（2022/3（単位を換算できない（JPY_million → ））／2023/3（単位を換算できない（JPY_million → ））／2024/3（単位を換算できない（JPY_million → ）））</td></tr><tr><td><code>q_op</code></td><td><span class="pill pill-danger">描けず</span>検証済みCSVから自動で組み立て</td><td>検証済みの数値が1件も無い（25/4-6（単位を換算できない（JPY_million → ））／25/7-9（単位を換算できない（JPY_million → ））／25/10-12（単位を換算できない（JPY_million → ）））</td></tr></tbody></table></div><h3>2つの取得元が食い違った項目</h3><p>どちらが正しいか決められないため、<strong>どちらの値も採用していない</strong>。この項目を本文で断定形で書いてはいけない。</p><p>2024/3 1株純資産、2025/3 1株純資産、2025/3 ROA、2025/3 ROE、2026/3 1株純資産、2026/3 ROA、2026/3 ROE</p><h3>図に穴があるところ</h3><ul><li>biz_flow: 図解に数値が含まれている（数値は検証済みデータ由来の図でしか出さない）</li><li>equity: 検証済みの数値が1件も無い（2024/3（単位を換算できない（pct → ））／2025/3（単位を換算できない（pct → ））／2026/3（単位を換算できない（pct → ）））</li><li>fy_op: 検証済みの数値が1件も無い（2023/3（単位を換算できない（JPY_million → ））／2024/3（単位を換算できない（JPY_million → ））／2025/3（単位を換算できない（JPY_million → ）））</li><li>fy_revenue: 検証済みの数値が1件も無い（2022/3（単位を換算できない（JPY_million → ））／2023/3（単位を換算できない（JPY_million → ））／2024/3（単位を換算できない（JPY_million → ）））</li><li>q_op: 検証済みの数値が1件も無い（25/4-6（単位を換算できない（JPY_million → ））／25/7-9（単位を換算できない（JPY_million → ））／25/10-12（単位を換算できない（JPY_million → ）））</li></ul><h3>この欄の材料</h3><ul><li>財務数値: <code>data/fundamentals/6508.csv</code>（612行）— 2サイトの表を機械的に抜いて突き合わせた結果</li><li>決算短信: <code>data/tanshin/6508.csv</code>（0行・開示日 —）— PDF本文からの抽出 </li><li>株価: <code>data/prices/daily.csv</code> の <code>close</code>。始値・高値・安値・出来高は主ソースのみで照合を通っていないため、図には使っていない</li></ul></div></details><footer>集計基準日 2026-09-17／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
+</ul><h2 id="verify">記述の裏取り</h2><p class="lede">本文の記述を、書いたのとは別の文脈が出典URLを取り直して1件ずつ判定した結果（<a href="../about.html">読み方</a>）。</p><p class="none"><span class="pill pill-warn">未検証</span>この銘柄はまだ裏取りしていない。本文の記述は、出典に当て直した確認を経ていない。</p><h2>数値の検証状況</h2><p class="lede">2つの取得元で一致した値だけを採用し、欠測は0で埋めない。この銘柄でどこまで確かめられているかの開示（<a href="../about.html">読み方</a>）。</p><p class="readout"><span>2ソース照合済み <b>115</b></span><span>2ソースが食い違う <b>7</b></span><span>1ソースのみ <b>490</b></span><span>決算短信から直接 <b>0</b></span><span>株価の採用終値 <b>257</b>/283日</span></p><div class="scroll"><table><thead><tr><th>図</th><th>数値の出どころ</th><th>状態</th></tr></thead><tbody><tr><td><code>biz_flow</code></td><td><span class="pill">定性図</span>定性図（数値を含まない）</td><td>—</td></tr><tr><td><code>equity</code></td><td><span class="pill pill-danger">描けず</span>検証済みCSVから自動で組み立て</td><td>検証済みの数値が1件も無い（2024/3（単位を換算できない（pct → ））／2025/3（単位を換算できない（pct → ））／2026/3（単位を換算できない（pct → ）））</td></tr><tr><td><code>fy_op</code></td><td><span class="pill pill-danger">描けず</span>検証済みCSVから自動で組み立て</td><td>検証済みの数値が1件も無い（2023/3（単位を換算できない（JPY_million → ））／2024/3（単位を換算できない（JPY_million → ））／2025/3（単位を換算できない（JPY_million → ）））</td></tr><tr><td><code>fy_revenue</code></td><td><span class="pill pill-danger">描けず</span>検証済みCSVから自動で組み立て</td><td>検証済みの数値が1件も無い（2022/3（単位を換算できない（JPY_million → ））／2023/3（単位を換算できない（JPY_million → ））／2024/3（単位を換算できない（JPY_million → ）））</td></tr><tr><td><code>q_op</code></td><td><span class="pill pill-danger">描けず</span>検証済みCSVから自動で組み立て</td><td>検証済みの数値が1件も無い（25/4-6（単位を換算できない（JPY_million → ））／25/7-9（単位を換算できない（JPY_million → ））／25/10-12（単位を換算できない（JPY_million → ）））</td></tr></tbody></table></div><h3>2つの取得元が食い違った項目</h3><p>どちらが正しいか決められないため、<strong>どちらの値も採用していない</strong>。この項目を本文で断定形で書いてはいけない。</p><p>2024/3 1株純資産、2025/3 1株純資産、2025/3 ROA、2025/3 ROE、2026/3 1株純資産、2026/3 ROA、2026/3 ROE</p><h3>図に穴があるところ</h3><ul><li>biz_flow: 図解に数値が含まれている（数値は検証済みデータ由来の図でしか出さない）</li><li>equity: 検証済みの数値が1件も無い（2024/3（単位を換算できない（pct → ））／2025/3（単位を換算できない（pct → ））／2026/3（単位を換算できない（pct → ）））</li><li>fy_op: 検証済みの数値が1件も無い（2023/3（単位を換算できない（JPY_million → ））／2024/3（単位を換算できない（JPY_million → ））／2025/3（単位を換算できない（JPY_million → ）））</li><li>fy_revenue: 検証済みの数値が1件も無い（2022/3（単位を換算できない（JPY_million → ））／2023/3（単位を換算できない（JPY_million → ））／2024/3（単位を換算できない（JPY_million → ）））</li><li>q_op: 検証済みの数値が1件も無い（25/4-6（単位を換算できない（JPY_million → ））／25/7-9（単位を換算できない（JPY_million → ））／25/10-12（単位を換算できない（JPY_million → ）））</li></ul><h3>この欄の材料</h3><ul><li>財務数値: <code>data/fundamentals/6508.csv</code>（612行）— 2サイトの表を機械的に抜いて突き合わせた結果</li><li>決算短信: <code>data/tanshin/6508.csv</code>（0行・開示日 —）— PDF本文からの抽出 </li><li>株価: <code>data/prices/daily.csv</code> の <code>close</code>。始値・高値・安値・出来高は主ソースのみで照合を通っていないため、図には使っていない</li></ul></div></details><footer>集計基準日 2026-09-18／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>

@@ -226,6 +226,19 @@ def assert_lines_preserved(before: str, after: str):
 # テスト本体
 # =============================================================================
 
+def test_default_week_is_the_week_of_the_latest_price() -> None:
+    """祝日・週明けに回しても、取引の無い週ではなく株価のある最新週を対象にする。"""
+    sb = Sandbox()
+    try:
+        # 最新の株価は 2024-01-11（W02）。翌週の水曜に回しても W02
+        assert W.default_week(date(2024, 1, 17)) == "2024-W02", \
+            W.default_week(date(2024, 1, 17))
+        # 株価より前の日付で回したときは、その日以前の最新（W01 の 1/5）
+        assert W.default_week(date(2024, 1, 6)) == "2024-W01"
+    finally:
+        sb.close()
+
+
 def test_collect_uses_only_ok_rows() -> None:
     sb = Sandbox()
     try:
@@ -355,6 +368,8 @@ def test_outputs_are_lf() -> None:
 
 def main() -> int:
     tests = [
+        ("--week 省略時は株価のある最新日の週（実行日の週ではない）",
+         test_default_week_is_the_week_of_the_latest_price),
         ("--collect は status OK 行だけを採用終値に使う（週境界も）",
          test_collect_uses_only_ok_rows),
         ("--write は挿入のみで既存行を変えない", test_write_preserves_existing_lines),

@@ -268,6 +268,46 @@ def test_parse_ohlcv():
     is_none(bars[1].volume, "読めない出来高は None（0 にしない）")
 
 
+# 株探は最新営業日を「本日」表に置き、次の営業日まで履歴表に入れない
+# （2026-09-18 が連休明けまで全銘柄 SINGLE_SOURCE になった原因）
+_HTML_TODAY = """
+<table class="stock_kabuka0">
+<tr><th>本日</th><th>始値</th><th>高値</th><th>安値</th><th>終値</th>
+    <th>前日比</th><th>前日比％</th><th>売買高(株)</th></tr>
+<tr><th>26/08/11</th><td>1,060</td><td>1,080</td><td>1,040</td><td>1,070</td>
+    <td>+20</td><td>+1.9</td><td>9,000</td></tr>
+</table>
+""" + _HTML
+
+_ENTRY_TODAY = {**_ENTRY, "today_selector": "table.stock_kabuka0"}
+
+
+def _jst(s: str):
+    return F.datetime.fromisoformat(s + "+09:00")
+
+
+def test_today_table_is_read_after_the_close():
+    bars = F.parse_ohlcv(_HTML_TODAY, _ENTRY_TODAY, "test", now=_jst("2026-08-11T16:00"))
+    eq([b.date for b in bars], ["2026-08-11", "2026-08-10", "2026-08-07"],
+       "引け後は本日表の行を先頭に足す")
+    eq(bars[0].close, 1070.0, "本日表も同じ列定義で読む")
+
+
+def test_today_table_is_read_on_a_later_day():
+    bars = F.parse_ohlcv(_HTML_TODAY, _ENTRY_TODAY, "test", now=_jst("2026-08-14T09:10"))
+    eq(bars[0].date, "2026-08-11", "過去日付の本日表（連休中など）は確定値")
+
+
+def test_today_table_is_skipped_during_the_session():
+    bars = F.parse_ohlcv(_HTML_TODAY, _ENTRY_TODAY, "test", now=_jst("2026-08-11T14:00"))
+    eq([b.date for b in bars], ["2026-08-10", "2026-08-07"], "ザラ場中の本日表は読まない")
+
+
+def test_today_table_is_ignored_without_the_selector():
+    bars = F.parse_ohlcv(_HTML_TODAY, _ENTRY, "test", now=_jst("2026-08-11T16:00"))
+    eq(len(bars), 2, "today_selector の無い取得元は履歴表だけ")
+
+
 def test_parse_ohlcv_missing_table_is_not_an_exception():
     eq(F.parse_ohlcv("<html><body>変更されたページ</body></html>", _ENTRY, "test"),
        [], "セレクタが外れたら空リスト（F1-7: 例外にしない）")

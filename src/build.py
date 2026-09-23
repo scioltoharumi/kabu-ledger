@@ -260,11 +260,12 @@ def load_adopted_series(code: str) -> list[tuple[str, float]]:
     return rows
 
 
-def _tile(label: str, value_html: str, sub: str) -> str:
+def _tile(label: str, value_html: str, sub: str, sub_html: str = "") -> str:
+    """KPI タイル。sub はエスケープする。リンク等を含めるときだけ sub_html を使う。"""
     return ('<div class="kpi-tile">'
             f'<span class="k-label">{html.escape(label)}</span>'
             f'<span class="k-value">{value_html}</span>'
-            f'<span class="k-sub">{html.escape(sub)}</span></div>')
+            f'<span class="k-sub">{sub_html or html.escape(sub)}</span></div>')
 
 
 def load_stamp(code: str) -> str | None:
@@ -281,13 +282,44 @@ def load_stamp(code: str) -> str | None:
     return str(v) if v else None
 
 
-def _future_earnings(meta: dict | None, as_of: str) -> str:
-    """next_earnings が集計基準日より先のときだけ返す（過去日付は予定ではない）。"""
-    earn = str((meta or {}).get("next_earnings") or "")
+# 判定の根拠。write_stamps が判定を計算したときに埋める（同じ計算を2回しない）
+_VERDICTS: dict[str, "J.Verdict"] = {}
+
+# 根拠文の「（未計算（決算行が無い／単位不一致／数値が読めない））」は指標ごとに
+# 同じ文が繰り返されるので、画面では「未計算」に畳む
+_UNCALC_RE = re.compile(r"（未計算（[^）]*））")
+
+
+def verdict_reason(code: str, stamp: str) -> str:
+    """機械判定の根拠1行（画面用に畳んだもの）。
+
+    表示中のスタンプ（stamps.json）と同じ判定の根拠だけを返す。再計算に失敗して
+    stamps.json が前回のまま残ったときに、別の判定の根拠を並べない。
+    """
+    v = _VERDICTS.get(code)
+    if v is None or v.stamp != stamp:
+        return ""
+    return _UNCALC_RE.sub("（未計算）", str(v.reason or ""))
+
+
+def _future_earnings(meta: dict | None, as_of: str,
+                     stock: dict | None = None) -> str:
+    """next_earnings が集計基準日より先のときだけ返す（過去日付は予定ではない）。
+
+    正は data/master.yaml の銘柄項目（fetch_earnings.py と kabu-ledger SKILL が書く）。
+    レポートの front matter（meta）は旧来の置き場所で、master に無いときだけ見る。
+    """
+    earn = ""
+    for src in (stock, meta):
+        v = str((src or {}).get("next_earnings") or "")
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", v):
+            earn = v
+            break
     return earn if earn and (not as_of or as_of == "—" or earn > as_of) else ""
 
 
-def kpi_tiles(code: str, meta: dict | None = None, as_of: str = "") -> str:
+def kpi_tiles(code: str, meta: dict | None = None, as_of: str = "",
+              stock: dict | None = None) -> str:
     """銘柄ページ冒頭の KPI タイル。値はすべて検証済みデータ由来（D8 決定論）。
 
     - 終値・レンジは採用終値（2ソース照合成立日）だけで組む。D53
@@ -304,14 +336,25 @@ def kpi_tiles(code: str, meta: dict | None = None, as_of: str = "") -> str:
                    f'{last_close:,.0f}<span class="k-unit">円</span>',
                    f"{last_date}・2ソース照合済み")]
 
-    if len(series) >= 2:
+    # 騰落は一覧と同じ「前週末比」を主にする（一覧 −19.6%・銘柄ページ −0.2% と
+    # 物差しが食い違っていた）。前採用日比は sub に小さく添える
+    dp = prev_date = None
+    if len(series) >= 2 and series[-2][1]:
         prev_date, prev_close = series[-2]
-        if prev_close:
-            pct = (last_close - prev_close) / prev_close * 100
-            cls = "chg-pos" if pct >= 0 else "chg-neg"
-            tiles.append(_tile("前採用日比",
-                               f'<span class="{cls}">{pct:+.1f}%</span>',
-                               f"{prev_date} 比"))
+        dp = (last_close - prev_close) / prev_close * 100
+    wc = week_change(series)
+    if wc is not None:
+        d1, pct = wc
+        cls = "chg-pos" if pct >= 0 else "chg-neg"
+        day_txt = f"／前採用日比 {dp:+.1f}%" if dp is not None else ""
+        tiles.append(_tile("前週末比",
+                           f'<span class="{cls}">{pct:+.1f}%</span>',
+                           f"{d1} 比{day_txt}"))
+    elif dp is not None:
+        cls = "chg-pos" if dp >= 0 else "chg-neg"
+        tiles.append(_tile("前採用日比",
+                           f'<span class="{cls}">{dp:+.1f}%</span>',
+                           f"{prev_date} 比"))
 
     # 52週 = 最新採用日から遡って365日（実行日は使わない。D8）
     y, m, d = (int(x) for x in last_date.split("-"))
@@ -324,11 +367,13 @@ def kpi_tiles(code: str, meta: dict | None = None, as_of: str = "") -> str:
                            "採用終値ベース・円"))
 
     # 判定スタンプ。無ければ出さない（未計算を「通過」に見せない）
+    # sub には機械判定の根拠（Verdict.reason）を出す。内部のファイル名は出さない
     stamp = load_stamp(code)
     if stamp:
+        why = verdict_reason(code, stamp)
         tiles.append(_tile("判定",
                            f'<span class="k-value-sm">{html.escape(stamp)}</span>',
-                           "src/judge.py の機械判定"))
+                           why or "機械判定"))   # _tile が escape する
     shape_tile = shape_kpi_tile(code, as_of)
     if shape_tile:
         tiles.append(shape_tile)
@@ -336,20 +381,11 @@ def kpi_tiles(code: str, meta: dict | None = None, as_of: str = "") -> str:
     # 次回決算。front matter に書かれた予定日。**過去日付は出さない**
     # （発表済みの日付を「次回」として掲げるのは表示の嘘。intake が
     # next_earnings を更新するまでタイルを消しておく）
-    earn = _future_earnings(meta, as_of)
+    earn = _future_earnings(meta, as_of, stock)
     if earn:
         tiles.append(_tile("次回決算",
                            f'<span class="k-value-sm">{html.escape(earn)}</span>',
                            "発表予定日"))
-
-    passed, claims, present, checked = verify_stat(code)
-    if not present:
-        tiles.append(_tile("記述の裏取り",
-                           '<span class="k-value-sm">未検証</span>', "記録なし"))
-    else:
-        tiles.append(_tile("記述の裏取り",
-                           f'{passed}<span class="k-unit">/{claims}</span>',
-                           f"裏付けあり／全記述・検証 {checked}"))
 
     return '<div class="kpi">' + "".join(tiles) + "</div>"
 
@@ -397,6 +433,20 @@ def first_sentence(text: str, limit: int = 78) -> str:
     if len(plain) > limit:
         plain = plain[: limit - 1] + "…"
     return plain
+
+
+def latest_moving_week(rep: R.Report) -> tuple[str, str] | None:
+    """一覧の「今週の動き」に出す週次エントリ = 採用終値のあった最新の週。
+
+    採用終値が1日も無い週（report.NO_CLOSE_LINE を持つエントリ。祝日の週や
+    週明けに回したとき）を出すと、実際に動いた前週が一覧から見えなくなる。
+    該当が無ければ最新のエントリ（何も無いよりは記録を見せる）。
+    """
+    entries = rep.week_entries()
+    for head, body in entries:
+        if R.NO_CLOSE_LINE not in body:
+            return head, body
+    return entries[0] if entries else None
 
 
 def week_change(series: list[tuple[str, float]]) -> tuple[str, float] | None:
@@ -522,12 +572,14 @@ def _stamp_cls(stamp: str) -> str:
     return cls
 
 
-def stamp_pill(stamp: str) -> str:
+def stamp_pill(stamp: str, code: str = "") -> str:
     """一覧に出す判定スタンプ。色だけに意味を持たせない（語が常に見える）。
-    ツールチップの文言は judge.STAMP_MEANINGS が正（手書きしない）。"""
+    ツールチップは「この銘柄の根拠（verdict_reason）→ 判定の意味」の順。
+    意味の文言は judge.STAMP_MEANINGS が正（手書きしない）。"""
     meaning = J.STAMP_MEANINGS.get(stamp, "")
-    title = (f"{meaning}（src/judge.py の機械判定）" if meaning
-             else "src/judge.py の機械判定")
+    why = verdict_reason(code, stamp) if code else ""
+    title = "／".join(x for x in (f"根拠: {why}" if why else "", meaning) if x) \
+        or "機械判定"
     # 「判定 」の接頭辞はコンパクト表示では CSS で省く（.st-p）
     return (f'<span class="{_stamp_cls(stamp)}" title="{html.escape(title)}">'
             f'<span class="st-p">判定 </span>{html.escape(stamp)}</span>')
@@ -645,8 +697,8 @@ def _estimate_parts(est: dict) -> tuple[list[str], str, str]:
     draft = ('<span class="pill pill-warn">作りかけ</span>' if est.get("draft") else "")
     title = html.escape(
         f"当台帳の次期推定（対象期 {est.get('period', '')}）。検証済みデータと明示した"
-        "仮定から src/estimate.py が機械計算した概算で、会社計画でも的中予想でもない。"
-        "前期比は fundamentals の前期実績（採用値）に対する伸び。"
+        "仮定から機械計算した概算で、会社計画でも的中予想でもない。"
+        "前期比は前期実績（2ソース照合済みの採用値）に対する伸び。"
         "分解と根拠は銘柄ページの「次期売上・利益推定」にある")
     return parts, draft, title
 
@@ -687,7 +739,6 @@ STAMP_KEYS = {
     J.STAMP_LIQUIDITY: "liq", J.STAMP_CLOUD: "cloud",
     J.STAMP_TREND: "trend",   # 旧判定（出ないが、古い stamps を読んでも落ちないように残す）
 }
-VF_LABELS = {"ok": "裏取り済", "part": "裏取り未達あり", "none": "裏取り未実施"}
 
 # チャート形状（9分類）→ 行クラス・絞り込みチップの固定キーと色調。
 # 語彙は shape_chart.SHAPES が正。キーを増減したら style.py の絞り込み規則と
@@ -707,8 +758,8 @@ SHAPE_NONE_KEY = "none"      # 未判定・描けない
 
 
 def render_row(stock: dict, rep: R.Report | None,
-               as_of: str = "") -> tuple[str, str | None, str, str, str]:
-    """一覧の1行。(HTML, 判定スタンプ, 判定キー, 裏取りキー, 形状キー) を返す。
+               as_of: str = "") -> tuple[str, str | None, str, str]:
+    """一覧の1行。(HTML, 判定スタンプ, 判定キー, 形状キー) を返す。
 
     キーは絞り込みチップの件数集計と行クラスに使う（対象外の行は空。
     対象外は f-excluded のトグルだけが束ねる）。
@@ -735,17 +786,16 @@ def render_row(stock: dict, rep: R.Report | None,
                       + "対象外" + (f"（{since}〜）" if since else "")
                       + "・更新を止めている</span>")
 
-    # 判定・裏取りの状態を先に確定する（行クラスと絞り込みチップの材料）。
-    # 対象外はキーを付けない——凍った記録をチップの母数に混ぜない
-    passed, claims, present, checked = verify_stat(code)
+    # 判定の状態を先に確定する（行クラスと絞り込みチップの材料）。
+    # 対象外はキーを付けない——凍った記録をチップの母数に混ぜない。
+    # 記述の裏取りは一覧に出さない（2026-09-23 マスター指示「投資判断に役立たない」。
+    # 記録は銘柄ページの会社概要末尾とデータの出どころに残る）
     st: str | None = None
-    st_key = vf_key = ""
+    st_key = ""
     if not watch_pill:
         st = load_stamp(code)
         if st:
             st_key = STAMP_KEYS.get(st, "other")
-        vf_key = ("none" if not present
-                  else "ok" if passed == claims else "part")
     # 形状キーは行クラスと絞り込みチップの材料（対象外は付けない）
     sh_key = ""
     shape_cell = '<span class="sub">—</span>'
@@ -754,7 +804,6 @@ def render_row(stock: dict, rep: R.Report | None,
     classes = " ".join(
         (["row-excluded"] if watch_pill else [])
         + ([f"st-{st_key}"] if st_key else [])
-        + ([f"vf-{vf_key}"] if vf_key else [])
         + ([f"sh-{sh_key}"] if sh_key else []))
     tr_cls = f' class="{classes}"' if classes else ""
     # 推定由来の数値（並び替えの材料）。対象外は凍った記録なので引かない
@@ -776,7 +825,7 @@ def render_row(stock: dict, rep: R.Report | None,
                            f'title="前週末（{html.escape(d1)}）の採用終値比">'
                            f"前週末比 {pct:+.1f}%</span>")
         if st:
-            price_cell += stamp_pill(st)
+            price_cell += stamp_pill(st, code)
 
     # 形状（6か月・画像判定※）と推定営業利益は**別の列**に出す（2026-09-05 マスター指示。
     # 終値セルに積むと読めない）。対象外は凍った記録なので両方「—」
@@ -787,14 +836,15 @@ def render_row(stock: dict, rep: R.Report | None,
     if rep is None:
         row = (
             f'<tr{tr_cls}{est_attrs}><td data-l="銘柄"><span class="nm">{name}</span>'
-            f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}</span></td>'
+            f'<span class="sub">{html.escape(code)}／{market}'
+            + (f"／{watch_pill}" if watch_pill else "") + "</span></td>"
             f'<td data-l="終値・判定" class="num">{price_cell}</td>'
             f'<td data-l="形状" class="shape-cell">{shape_cell}</td>'
             f'<td data-l="推定営業利益" class="est-td">{est_cell}</td>'
             f'<td data-l="状態"><span class="pill">レポート未作成</span></td>'
             f"</tr>"
         )
-        return row, st, st_key, vf_key, sh_key
+        return row, st, st_key, sh_key
 
     flag = '<span class="flag">再調査</span>' if rep.deep_dive else ""
     site = ""
@@ -809,27 +859,18 @@ def render_row(stock: dict, rep: R.Report | None,
     # （順序が逆だと `<strong>` ごとエスケープされる／注入経路にもなる）。
     oneline = mark_badges(_STRONG_RE.sub(r"<strong>\1</strong>",
                                          html.escape(R.one_liner(rep))))
-    earn = _future_earnings(rep.meta, as_of)   # 過去日付は予定として出さない
+    earn = _future_earnings(rep.meta, as_of, stock)   # 過去日付は予定として出さない
     earn_pill = ""
     if earn:
         earn_pill = (f'<span class="pill pill-warn">決算 '
                      f'{html.escape(earn)}</span>')
 
-    latest = rep.latest_week()
+    latest = latest_moving_week(rep)
     week_txt = "—"
     week_head = ""
     if latest is not None:
         week_head = html.escape(latest[0].split("（")[0])
         week_txt = mark_badges(html.escape(first_sentence(latest[1])))
-
-    # 裏取りの状態を一覧にも出す。銘柄ページを開かないと分からない状態にしない。
-    # 件数には検証日を併記する（鮮度の判断は読み手。verify_stat 参照）
-    if not present:
-        verify_pill_html = '<span class="pill pill-warn">裏取り未実施</span>'
-    else:
-        cls = "pill-good" if passed == claims else "pill-warn"
-        verify_pill_html = (f'<span class="pill {cls}">裏取り '
-                            f"{passed}/{claims}・{html.escape(checked)}</span>")
 
     # data-href: 行のどこを押しても銘柄ページへ飛ばす（小さな委譲スクリプトが
     # 拾う。リンク・ボタンの上と、文字列選択中は飛ばない）。銘柄名の <a> は
@@ -838,8 +879,9 @@ def render_row(stock: dict, rep: R.Report | None,
         f'<tr{tr_cls}{est_attrs} data-href="stock/{html.escape(code)}.html">'
         f'<td data-l="銘柄"><span class="nm">'
         f'<a href="stock/{html.escape(code)}.html">{name}</a>{flag}{site}</span>'
-        f'<span class="sub">{html.escape(code)}／{market}／{watch_pill}{earn_pill}'
-        f"{verify_pill_html}</span>"
+        f'<span class="sub">{html.escape(code)}／{market}'
+        + (f"／{watch_pill}{earn_pill}" if watch_pill or earn_pill else "")
+        + "</span>"
         f'<span class="one">{oneline}</span></td>'
         f'<td data-l="終値・判定" class="num">{price_cell}</td>'
         f'<td data-l="形状" class="shape-cell">{shape_cell}</td>'
@@ -848,7 +890,7 @@ def render_row(stock: dict, rep: R.Report | None,
         f'<span class="wk-txt">{week_txt}</span></td>'
         f"</tr>"
     )
-    return row, st, st_key, vf_key, sh_key
+    return row, st, st_key, sh_key
 
 
 _ORDER_MARKS = "①②③④⑤⑥⑦⑧⑨⑩"
@@ -867,6 +909,91 @@ def section_order_text() -> str:
     return " → ".join(parts)
 
 
+_ENTRY_STAMP_RE = re.compile(r"^- 判定: 「(.+?)」", flags=re.MULTILINE)
+EARNINGS_SOON_DAYS = 14
+
+
+def prev_week_stamp(rep: R.Report | None, as_of: str) -> str | None:
+    """基準日の週より前で最新の週次エントリに記録された判定（weekly_note の固定行）。"""
+    if rep is None or not as_of or as_of == "—":
+        return None
+    iso = _dt.date.fromisoformat(as_of).isocalendar()
+    this_week = f"{iso[0]}-W{iso[1]:02d}"
+    for head, body in rep.week_entries():
+        if head[:8] >= this_week:
+            continue
+        m = _ENTRY_STAMP_RE.search(body)
+        if m:
+            return m.group(1)
+    return None
+
+
+def index_tiles(watched: list[dict], reports: dict[str, R.Report],
+                as_of: str, n_excluded: int) -> str:
+    """トップの KPI タイル。**判断のきっかけになるもの**だけを置く。
+
+    台帳の管理用の数（レポート数・再調査数・裏取り件数）は置かない（2026-09-23）。
+    値はすべて検証済みデータ・機械判定・レポートの固定行から引く（D8 決定論）。
+    """
+    def link(code: str, name: str) -> str:
+        return (f'<a href="stock/{html.escape(code)}.html">'
+                f"{html.escape(name)}</a>")
+
+    changed, soon, moves = [], [], []
+    n_dated = 0
+    for s in watched:
+        code, name = str(s["code"]), str(s.get("name", s["code"]))
+        rep = reports.get(code)
+        cur = load_stamp(code)
+        prev = prev_week_stamp(rep, as_of)
+        if cur and prev and cur != prev:
+            changed.append(f"{link(code, name)}<br>"
+                           f'<span class="nw">{html.escape(prev)}</span>→'
+                           f'<strong class="nw">{html.escape(cur)}</strong>')
+        earn = _future_earnings(rep.meta if rep else None, as_of, s)
+        if earn:
+            n_dated += 1
+            days = (_dt.date.fromisoformat(earn)
+                    - _dt.date.fromisoformat(as_of)).days
+            if days <= EARNINGS_SOON_DAYS:
+                soon.append((earn, f"{link(code, name)} {earn[5:].replace('-', '/')}"))
+        wc = week_change(load_adopted_series(code))
+        if wc is not None:
+            moves.append((wc[1], code, name))
+
+    tiles = [_tile("判定が変わった", f'{len(changed)}<span class="k-unit">銘柄</span>',
+                   "前週の週次記録から変化なし", "<br>".join(changed))]
+    soon.sort()
+    tiles.append(_tile(
+        f"{EARNINGS_SOON_DAYS}日以内の決算",
+        f'{len(soon)}<span class="k-unit">銘柄</span>', "",
+        ("<br>".join(x for _, x in soon) + "<br>" if soon else "")
+        + f"予定日の登録 {n_dated}/{len(watched)}銘柄"))
+
+    def mv(rows) -> str:
+        out = []
+        for pct, code, name in rows:
+            cls = "chg-pos" if pct >= 0 else "chg-neg"
+            out.append(f'{link(code, name)} <span class="{cls}">{pct:+.1f}%</span>')
+        return "<br>".join(out)
+
+    moves.sort(key=lambda x: (-x[0], x[1]))
+    ups = [m for m in moves if m[0] > 0][:3]
+    downs = sorted([m for m in moves if m[0] < 0], key=lambda x: (x[0], x[1]))[:3]
+    for label, rows, none in (("前週末比 上位", ups, "上がった銘柄なし"),
+                              ("前週末比 下位", downs, "下がった銘柄なし")):
+        tiles.append(_tile(label,
+                           f'<span class="k-value-sm">{mv(rows[:1])}</span>'
+                           if rows else "—",
+                           none if not rows else "採用終値ベース",
+                           mv(rows[1:])))
+    tiles.append(_tile("基準日", f'<span class="k-value-sm">{html.escape(as_of)}</span>',
+                       f"監視中 {len(watched)}銘柄"
+                       + (f"・対象外 {n_excluded}銘柄（一覧のボタンで表示）"
+                          if n_excluded else "")))
+    return '<div class="kpi kpi-index">' + "".join(tiles) + "</div>"
+
+
 def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     stocks = sorted(master["stocks"], key=lambda s: s["code"])
     # 監視対象と対象外を分ける。対象外は**既定で畳む**が、消しはしない。
@@ -880,19 +1007,15 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
     rows_excluded = excluded
     # 絞り込みチップの件数（監視中のみ。対象外はキーを持たない）
     st_counts: dict[str, tuple[str, int]] = {}
-    vf_counts: dict[str, int] = {}
     sh_counts: dict[str, int] = {}
-    for _, st, st_key, vf_key, sh_key in row_data:
+    for _, st, st_key, sh_key in row_data:
         if st_key:
             _, n = st_counts.get(st_key, (st, 0))
             st_counts[st_key] = (str(st), n + 1)
-        if vf_key:
-            vf_counts[vf_key] = vf_counts.get(vf_key, 0) + 1
         if sh_key:
             sh_counts[sh_key] = sh_counts.get(sh_key, 0) + 1
     scr = master.get("screening", {})
     scr_name = html.escape(str(scr.get("name", "")))
-    n_deep = sum(1 for r in reports.values() if r.deep_dive)
 
     # トップは繰り返し見るページ。説明の長文は about.html に寄せ、ここは短く保つ
     intro = (
@@ -902,18 +1025,7 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
         '<a href="about.html">「読み方」</a>へ。</p>'
     )
 
-    summary = (
-        '<div class="kpi">'
-        + _tile("監視中", f'{len(watched)}<span class="k-unit">銘柄</span>',
-                (f"ほかに対象外 {len(excluded)}銘柄（既定で隠す。一覧のボタンで表示）"
-                 if excluded else "対象外は無し"))
-        + _tile("レポートあり", f"{len(reports)}", "調査済みの銘柄数")
-        + _tile("再調査", f"{n_deep}", "全節を見直しなおす対象")
-        + _tile("基準日",
-                f'<span class="k-value-sm">{html.escape(as_of)}</span>',
-                "確定している最後の営業日")
-        + "</div>"
-    )
+    summary = index_tiles(watched, reports, as_of, len(excluded))
 
     # 表は1つ。対象外の行は `row-excluded` を持ち、**既定では CSS で隠す**。
     # 先頭のフィルターボタン（チェックボックス＋label・JS なし）を押すと出る。
@@ -967,14 +1079,6 @@ def build_index(master: dict, reports: dict[str, R.Report], as_of: str) -> None:
             chips.append(_toggle(f"f-st-{key}", f"{lbl} {n}", f"{lbl} {n}",
                                  checked=True, cls="filter-btn chip",
                                  title="外すと、この判定の行を隠す"))
-    vf_order = [k for k in ("ok", "part", "none") if k in vf_counts]
-    if vf_order:
-        chips.append('<span class="fl-cap">裏取り</span>')
-        for key in vf_order:
-            lbl = f"{VF_LABELS[key]} {vf_counts[key]}"
-            chips.append(_toggle(f"f-vf-{key}", lbl, lbl,
-                                 checked=True, cls="filter-btn chip",
-                                 title="外すと、この裏取り状態の行を隠す"))
     # 形状（9分類＋未判定）。並びは楽天のアイコンの並び（shape_chart.SHAPES）
     sh_order = [SHAPE_KEYS[n] for n in SC.SHAPES if SHAPE_KEYS[n] in sh_counts]
     if SHAPE_NONE_KEY in sh_counts:
@@ -1057,7 +1161,7 @@ def howto_block() -> str:
         "（「IR情報」など小さなリンクの上だけは、そのリンク先へ）</li>"
         "<li>一覧は既定でコンパクト（1行1銘柄）。「詳細表示」ボタンで"
         "概要文が開く</li>"
-        "<li>「判定」「裏取り」「形状」のチップを外すと、その状態の行を一時的に隠せる"
+        "<li>「判定」「形状」のチップを外すと、その状態の行を一時的に隠せる"
         "（件数はチップに常時出る）。選んだ表示・絞り込みは次回も覚えている</li>"
         "<li>対象外の銘柄は既定で隠している。「対象外を表示」ボタンで元の位置に出る"
         "（記録は消えない。<a href=\"data.html\">データの出どころ</a>には常に全銘柄が載る）</li>"
@@ -1352,19 +1456,6 @@ def verify_stat(code: str) -> tuple:
     folded = rec.folded()
     passed = sum(1 for c, _ in folded if c.passed)
     return (passed, len(folded), True, rec.latest.run[:10])
-
-
-def verify_headline(code: str) -> str:
-    """ページ冒頭に置く1行。**警告ブロックで埋めない**（F5-4）ので1行に収める。
-    件数には検証日を必ず併記する（verify_stat の docstring 参照）。"""
-    passed, total, present, checked = verify_stat(code)
-    if not present:
-        return ('<br><span class="pill pill-warn">未検証</span>'
-                "本文の記述はまだ出典に当て直していない")
-    rest = total - passed
-    tail = "" if rest == 0 else f"／{rest}件は未確認・要修正"
-    return (f'<br>記述の裏取り <a href="#verify">{passed}/{total}件が裏付けあり'
-            f"{tail}</a>（検証 {html.escape(checked)}）")
 
 
 def render_verify(rep: R.Report) -> str:
@@ -1767,7 +1858,8 @@ def build_stock_page(rep: R.Report, as_of: str,
 
     links = "".join(ext_link(str(lk.get("url", "")), str(lk.get("label", "")))
                     for lk in rep.links if lk.get("url"))
-    verify_line = verify_headline(rep.code)
+    # 記述の裏取り件数は冒頭に出さない（2026-09-23 マスター指示「投資判断に
+    # 役立たない」）。記録は会社概要末尾の「記述の裏取り」欄とデータの出どころに残す
 
     # 監視から外した銘柄は、ページを直接開いた人にも必ず見えるようにする。
     # 一覧の印だけだと、リンクや検索で直接来た読み手が
@@ -1788,12 +1880,12 @@ def build_stock_page(rep: R.Report, as_of: str,
     head = (
         f"<h1>{name}（{code}）{flag}</h1>"
         f'<p class="lede">{market}／レポート更新 {html.escape(rep.updated)}'
-        f"{verify_line}"
         f"<br>{links}</p>"
         + watch_note
     )
     lead_md = strip_title(rep.lead)
-    body = head + kpi_tiles(rep.code, rep.meta, as_of) + to_html(lead_md, charts)
+    body = (head + kpi_tiles(rep.code, rep.meta, as_of, stock)
+            + to_html(lead_md, charts))
 
     # 大きく2つに畳む（既定は閉）: 週次アップデート／会社概要。
     # 検証の記録（裏取り・数値の検証状況）は会社概要の末尾に含める。
@@ -1996,7 +2088,8 @@ def build_about_page(as_of: str) -> None:
         "<td>本文では値の直後の ※</td></tr>"
         "</tbody></table></div>"
         '<p class="lede">凡例: ✓=2ソース照合済みの採用値 ／ ※=未照合・参考値 ／ '
-        "†=決算短信（一次情報）から直接。記号に指を載せる（マウスを重ねる）と"
+        "†=決算短信（一次情報）から直接。✓ は大半の数値に付くので薄く小さく出し、"
+        "注意の要る ※ を目立たせている。記号に指を載せる（マウスを重ねる）と"
         "意味が出る。段階ごとの件数は、各銘柄ページ末尾の"
         "<strong>「数値の検証状況」</strong>に機械が出している。</p>"
     )
@@ -2191,6 +2284,7 @@ def write_stamps(master: dict) -> None:
               f"{type(e).__name__}: {e}。scoring/stamps.json は更新しない")
         return
     stamps = {v.code: v.stamp for v in verdicts}
+    _VERDICTS.update({v.code: v for v in verdicts})
     if not stamps:
         print("  [WARN] 判定スタンプが0件。scoring/stamps.json は更新しない")
         return

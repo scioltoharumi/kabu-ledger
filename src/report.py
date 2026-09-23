@@ -36,6 +36,11 @@ SECTIONS = [
 
 _SEQ_RE = re.compile(r"（続報(\d*)）")
 
+# 採用終値が1日も無い週のエントリに weekly_note.build_entry が入れる固定行。
+# build.py はこの行を持つエントリを一覧の「今週の動き」に出さない
+# （取引の無い週で、実際に動いた前週を隠さない）
+NO_CLOSE_LINE = "- 株価: 今週の採用終値なし（照合成立 0日）"
+
 
 def _entry_order(head: str) -> tuple[str, int]:
     """週次エントリの並び順キー（週キー, 週内の連番）。

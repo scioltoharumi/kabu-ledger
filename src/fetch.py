@@ -4,7 +4,9 @@
   - 取得元は sources.yaml のチェーンのみ。探索しない。
   - 2ソースの生終値一致で採用。不一致は MISMATCH、1件のみは SINGLE_SOURCE。
   - CSVは append-only。既存 (code, date) は上書きしない。
-  - 本日のザラ場値は取らない。各ソースの時系列テーブルは前営業日までの確定値のみを含む。
+  - 本日のザラ場値は取らない。時系列テーブルとは別の「本日」表（`today_selector`。
+    株探は最新営業日を次の営業日まで履歴表に入れない）は、引け後（15:45 JST 以降）
+    または過去日付の行だけ読む（`final_today_rows`）。
   - 調整後終値は使わない（生終値のみ。混在は MISMATCH の主因になる）。
 
 使い方:
@@ -126,11 +128,30 @@ def find_table(soup: BeautifulSoup, entry: dict):
     return None
 
 
-def parse_ohlcv(html: str, entry: dict, source_id: str) -> list[Bar]:
+# 東証の大引けは 15:30。余裕を見て 15:45 以降に取った「本日」行だけを確定値とみなす
+MARKET_FINAL_JST = (15, 45)
+
+
+def final_today_rows(dates: list[str], now: datetime) -> set[str]:
+    """「本日」表の日付のうち、確定値として読んでよいもの。
+
+    当日の行は引け（MARKET_FINAL_JST）より前ならザラ場値なので捨てる。
+    過去日付の行（連休中に取った前営業日など）は確定している。
+    """
+    j = now.astimezone(JST)
+    today = j.date().isoformat()
+    closed = (j.hour, j.minute) >= MARKET_FINAL_JST
+    return {d for d in dates if d < today or (d == today and closed)}
+
+
+def parse_ohlcv(html: str, entry: dict, source_id: str,
+                now: datetime | None = None) -> list[Bar]:
     """sources.yaml の columns 定義に従って時系列テーブルを読む。
 
     セレクタが外れたら例外にせず空リストを返し、欠測として扱う。
     columns に無い項目（出来高を載せない指数ページなど）は None になる。
+    `today_selector` があれば「本日」表も同じ列定義で読み、確定している行
+    （final_today_rows）だけを足す。履歴表に同じ日付があれば履歴表を採る。
     """
     soup = BeautifulSoup(html, "html.parser")
     table = find_table(soup, entry)
@@ -144,8 +165,20 @@ def parse_ohlcv(html: str, entry: dict, source_id: str) -> list[Bar]:
         i = idx.get(name)
         return cells[i] if i is not None and i < len(cells) else ""
 
+    rows = list(_rows_from(table))
+    tsel = entry.get("today_selector")
+    today_table = soup.select_one(tsel) if tsel else None
+    if today_table is not None:
+        fmt = entry.get("date_format", "")
+        seen = {_norm_date(cell(c, "date"), fmt) for c in rows}
+        extra = [c for c in _rows_from(today_table)
+                 if _norm_date(cell(c, "date"), fmt) not in seen]
+        ok = final_today_rows([_norm_date(cell(c, "date"), fmt) or ""
+                               for c in extra], now or datetime.now(JST))
+        rows = [c for c in extra if _norm_date(cell(c, "date"), fmt) in ok] + rows
+
     bars: list[Bar] = []
-    for cells in _rows_from(table):
+    for cells in rows:
         if len(cells) < len(cols):
             continue
         date = _norm_date(cell(cells, "date"), entry.get("date_format", ""))
@@ -184,7 +217,9 @@ def fetch_source(code: str, entry: dict, pol: dict, pages: int) -> list[Bar]:
         urls.append(entry["url"].format(code=code))
 
     out: list[Bar] = []
-    for url in urls:
+    for n, url in enumerate(urls):
+        # 「本日」表は各ページに同じものが載るので、1ページ目だけで読む
+        ent = entry if n == 0 else {**entry, "today_selector": None}
         for attempt in range(pol["retries"] + 1):
             try:
                 r = requests.get(
@@ -193,7 +228,7 @@ def fetch_source(code: str, entry: dict, pol: dict, pages: int) -> list[Bar]:
                     timeout=pol["timeout_sec"],
                 )
                 r.raise_for_status()
-                got = parse_ohlcv(r.text, entry, entry["id"])
+                got = parse_ohlcv(r.text, ent, entry["id"])
                 if not got:
                     print(f"  [{code}] {entry['id']} セレクタ不一致: {url}", file=sys.stderr)
                 out.extend(got)

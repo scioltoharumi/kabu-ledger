@@ -75,6 +75,25 @@ def current_week(today: date | None = None) -> str:
     return f"{iso[0]}-W{iso[1]:02d}"
 
 
+def default_week(today: date | None = None) -> str:
+    """--week 省略時の対象週 = **株価のある最新日**（today 以前）が属する週。
+
+    実行日の週にすると、祝日や週明けに回したとき取引の無い週を「今週」として
+    書き、実際に動いた前週が記録から抜ける（2026-09-23 の実行で W38 が欠け、
+    W39 に「取引の無い週」が16銘柄ぶん入った）。株価が1行も無ければ実行日の週。
+    """
+    d = today or date.today()
+    latest = None
+    for r in _read_csv(DATA / "prices" / "daily.csv"):
+        try:
+            x = date.fromisoformat(str(r.get("date", ""))[:10])
+        except ValueError:
+            continue
+        if x <= d and (latest is None or x > latest):
+            latest = x
+    return current_week(latest or d)
+
+
 # =============================================================================
 # 入力の読み込み
 # =============================================================================
@@ -336,7 +355,7 @@ def build_entry(heading: str, facts: dict, note: dict) -> str:
         lines += [f"**{summary}**", ""]
 
     if facts["ok_days"] == 0:
-        lines.append("- 株価: 今週の採用終値なし（照合成立 0日）")
+        lines.append(R.NO_CLOSE_LINE)
     elif facts["pct"] is None:
         lines.append(
             f"- 株価: 週間騰落は算出不可（起点になる過去の採用終値なし）。"
@@ -433,7 +452,8 @@ def main(argv: list[str] | None = None) -> int:
                     help="銘柄ごとの週次事実を JSON で出す")
     ap.add_argument("--write", metavar="NOTES_JSON",
                     help="notes.json と合成してレポートに挿入する")
-    ap.add_argument("--week", help="対象の ISO 週（例 2026-W34）。省略時は今日の週")
+    ap.add_argument("--week", help="対象の ISO 週（例 2026-W34）。"
+                    "省略時は株価のある最新日の週（default_week）")
     ap.add_argument("--out", help="--collect の出力先ファイル。省略時は stdout")
     args = ap.parse_args(argv)
 
@@ -443,7 +463,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.collect:
         try:
-            week = args.week or current_week()
+            week = args.week or default_week()
             parse_week(week)
         except ValueError as e:
             print(str(e), file=sys.stderr)
@@ -468,7 +488,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     notes = json.loads(notes_path.read_text(encoding="utf-8"))
     try:
-        week = args.week or str(notes.get("week") or "") or current_week()
+        week = args.week or str(notes.get("week") or "") or default_week()
         parse_week(week)
     except ValueError as e:
         print(str(e), file=sys.stderr)

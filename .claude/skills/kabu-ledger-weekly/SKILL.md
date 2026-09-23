@@ -12,7 +12,7 @@ description: kabu-ledger の週次更新を最初から最後まで回す。差�
 ## 全体像
 
 ```
-① 差分取得（コード）   fetch*.py → checks → score → fetch_news
+① 差分取得（コード）   fetch*.py（決算予定日を含む）→ checks → score → fetch_news
 ② 事実の機械生成       weekly_note.py --collect → facts.json
 ③ 一筆（あなた）       facts と news を見て銘柄ごとに解釈2〜4行 → notes.json
 ④ 挿入（コード）       weekly_note.py --write → reports/*.md に追記
@@ -49,6 +49,7 @@ python src/fetch_margin.py
 python src/fetch_index.py
 python src/fetch_fundamentals.py
 python src/fetch_tanshin.py                    # 落ちても止めない
+python src/fetch_earnings.py                   # 決算予定日 → master.yaml。落ちても止めない
 python src/checks.py                           # FAIL → 修理枠へ。データ起因なら停止して報告
 python src/checks.py --check-links --no-git    # 落ちても止めない
 python src/score.py
@@ -92,10 +93,14 @@ python src/shape_chart.py --set 4073=急上昇 6570=上昇 ...   # 語彙外は�
 python src/weekly_note.py --collect --out facts.json
 ```
 
+対象週は `--week` を付けない（株価のある最新日の週をコードが選ぶ。祝日や週明けに
+回しても取引の無い週を書かない）。facts.json の `week` が実際に書く週キー。
+
 facts.json と news.json を読み、**あなた自身が**（エージェントを立てずに）
 銘柄ごとに notes.json を書く:
 
-- `summary`: 今週を一言で（太字1文）
+- `summary`: 今週を一言で（太字1文）。**週間騰落率から始めない**（一覧の「今週の動き」は
+  この最初の1文を出し、隣の列が前週末比を既に出している）。何が起きたか・材料の有無を書く
 - `interpretation`: 2〜4行。**新しい事実主張を書かない。** データ由来の事実と
   ニュース見出しの引用だけを材料にし、解釈には「〜と読める」「〜の可能性」を付ける
 - `news`: news.json から関連する見出しを**選ぶだけ**（date / title / url をそのまま）

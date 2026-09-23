@@ -83,6 +83,7 @@ index:
           url: "https://kabutan.jp/stock/kabuka?code=0010&ashi=day"
           paged_url: "https://kabutan.jp/stock/kabuka?code=0010&ashi=day&page={page}"
           table_selector: "table.stock_kabuka_dwm"
+          today_selector: "table.stock_kabuka0"   # 最新日は「本日」表（fetch.parse_ohlcv）
           columns: [date, open, high, low, close, change, change_pct, volume]
           date_format: "yy/mm/dd"
           rows_per_page: 30
@@ -103,6 +104,7 @@ index:
           url: "https://kabutan.jp/stock/kabuka?code=0012&ashi=day"
           paged_url: "https://kabutan.jp/stock/kabuka?code=0012&ashi=day&page={page}"
           table_selector: "table.stock_kabuka_dwm"
+          today_selector: "table.stock_kabuka0"   # 最新日は「本日」表（fetch.parse_ohlcv）
           columns: [date, open, high, low, close, change, change_pct, volume]
           date_format: "yy/mm/dd"
           rows_per_page: 30
@@ -642,6 +644,17 @@ tanshin:
     - PDF_IMAGE_ONLY      # テキスト層が無い（画像PDF・要OCR）
     - SUMMARY_UNPARSED    # PDF は読めたがサマリー表の構造に当たらなかった
     - NOT_FOUND           # 一覧に該当する短信が無い
+
+# 次回決算の発表予定日。src/fetch_earnings.py が読み、data/master.yaml の
+# next_earnings / next_earnings_source に書く（kabu-ledger SKILL の「next_earnings_source
+# （kabutan）は発表日の確認のみ」と同じ用途。**日付以外の数値は取らない**）。
+# 株探は会社が日程を開示した銘柄にだけ「決算発表予定日 YYYY/MM/DD」を出す
+# （2026-09-23 実地確認: 4440 は 2026/10/09、1942 は未掲載）。
+earnings_date:
+  - id: kabutan
+    operator: minkabu_infonoid
+    url: "https://kabutan.jp/stock/?code={code}"
+    pattern: "決算発表予定日\\s*(\\d{4})/(\\d{2})/(\\d{2})"
 
 fetch_policy:
   user_agent: "kabu-ledger/1.0 (personal research; contact via repo issues)"

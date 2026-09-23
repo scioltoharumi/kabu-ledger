@@ -384,6 +384,8 @@ stocks:
     sector: "情報・通信業"
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-10-09"
+    next_earnings_source: "https://kabutan.jp/stock/?code=4440"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
@@ -446,6 +448,8 @@ stocks:
     sector: "情報・通信業"
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-10-06"
+    next_earnings_source: "https://kabutan.jp/stock/?code=5243"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active

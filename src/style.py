@@ -104,6 +104,11 @@ white-space:nowrap}
 .kpi-tile .k-sub{display:block;font-size:.72rem;color:var(--dim);margin-top:.1rem;
 overflow-wrap:anywhere}
 .kpi-tile .k-value-sm{font-size:1.02rem;padding:.2rem 0 .15rem}
+/* トップのタイルは銘柄名を並べるので、sub を読める大きさ・行間にする */
+.kpi-index .k-sub{font-size:.76rem;line-height:1.75}
+.kpi-index .k-value .k-value-sm{white-space:normal}
+.kpi-index a{color:var(--ink)}
+.kpi-index .nw{white-space:nowrap}
 .k-unit{font-size:.8rem;font-weight:700;color:var(--dim);margin-left:.1rem}
 /* 騰落の色。図（.viz）と同じ意味づけ＝青が改善・赤が悪化（符号も必ず併記する。
    色だけに意味を持たせない） */
@@ -257,7 +262,9 @@ padding:.6rem .8rem;border-radius:3px;font-size:.86rem;line-height:1.8;margin:.9
    一次情報=グレー。色だけに意味を持たせない（記号そのものが常に見える） */
 .vm{font-size:.7em;font-weight:700;vertical-align:super;line-height:1;
 padding:0 .06em;cursor:help}
-.vm-ok{color:var(--pos)}
+/* ✓（照合済み）は大半の数値に付くので沈める。注意を要する ※ と区別できる
+   ことだけ残す（消すと、記号の無い計算値まで照合済みに見える。2026-09-23） */
+.vm-ok{color:#aeaca4;font-weight:400;font-size:.6em}
 .vm-ref{color:var(--warn)}
 .vm-pri{color:var(--dim)}
 
@@ -346,6 +353,9 @@ vertical-align:top}
 .list-table .one{color:var(--dim);font-size:.84rem;line-height:1.7;
 display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;
 overflow:hidden;margin-top:.4rem}
+/* 「今週の動き」は概要文（.one）と同じ大きさ・色。指定が無いと表の .9rem・
+   本文色を継いで、銘柄の説明より目立っていた（2026-09-23 マスター指摘） */
+.list-table .wk-txt{display:block;color:var(--dim);font-size:.84rem;line-height:1.7}
 .list-table .price{font-size:1.15rem;font-weight:700}
 /* nowrap にすると、中の長いURLが分割不能トークンになってスマホ幅で
    ページ自体を横スクロールさせる（tools\\shot.ps1 の採寸で 623px > 500px）。 */
@@ -405,8 +415,8 @@ main{padding:1.1rem .85rem 3rem}
    描画されないキーは :has が成立せず**表示側に倒れる**（隠れて消えない）。 */
 /* 対象外: チェックが外れている間だけ隠す（既定＝隠す） */
 .list-wrap:has(#f-excluded:not(:checked)) tr.row-excluded{display:none!important}
-/* 判定・裏取りの絞り込み。チップを外すとその状態の行を隠す。
-   キーは build.py の STAMP_KEYS / VF_LABELS と一対（固定語彙・全キーぶん置く） */
+/* 判定・形状の絞り込み。チップを外すとその状態の行を隠す。
+   キーは build.py の STAMP_KEYS / SHAPE_KEYS と一対（固定語彙・全キーぶん置く） */
 .list-wrap:has(#f-st-buy:not(:checked)) tr.st-buy{display:none!important}
 .list-wrap:has(#f-st-watch:not(:checked)) tr.st-watch{display:none!important}
 .list-wrap:has(#f-st-probe:not(:checked)) tr.st-probe{display:none!important}
@@ -416,9 +426,6 @@ main{padding:1.1rem .85rem 3rem}
 .list-wrap:has(#f-st-trend:not(:checked)) tr.st-trend{display:none!important}
 .list-wrap:has(#f-st-cloud:not(:checked)) tr.st-cloud{display:none!important}
 .list-wrap:has(#f-st-other:not(:checked)) tr.st-other{display:none!important}
-.list-wrap:has(#f-vf-ok:not(:checked)) tr.vf-ok{display:none!important}
-.list-wrap:has(#f-vf-part:not(:checked)) tr.vf-part{display:none!important}
-.list-wrap:has(#f-vf-none:not(:checked)) tr.vf-none{display:none!important}
 .list-wrap:has(#f-sh-upstop:not(:checked)) tr.sh-upstop{display:none!important}
 .list-wrap:has(#f-sh-up:not(:checked)) tr.sh-up{display:none!important}
 .list-wrap:has(#f-sh-surge:not(:checked)) tr.sh-surge{display:none!important}
