@@ -249,8 +249,8 @@ def test_margin_ratio_resolves():
 def test_margin_ratio_resolves_skips_excluded_stale_codes():
     """watch: excluded で取得が止まった銘柄は codes_with_margin_ratio() に含めない。
 
-    2026-09-25 に 3851（watch: excluded）で実際に発生: rd.codes() のまま
-    回すと、MARGIN_MAX_AGE_DAYS を超えて凍った信用残が resolve_metric で
+    3851（watch: excluded）で実際に発生: rd.codes() のまま回すと、
+    MARGIN_MAX_AGE_DAYS を超えて凍った信用残が resolve_metric で
     未計算（None）になり、「CSV最新行の値」という期待と食い違って落ちた。
     """
     excluded = set(rd.codes()) - set(rd.watched_codes())
