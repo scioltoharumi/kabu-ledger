@@ -87,7 +87,11 @@ def margin_latest(code: str) -> dict:
 
 
 def codes_with_margin_ratio() -> list[str]:
-    return [c for c in rd.codes()
+    # watch: excluded の銘柄は信用残の取得が止まって data が凍る（realdata.watched_codes
+    # の docstring どおり）。resolve_margin_metric は MARGIN_MAX_AGE_DAYS 超の行を
+    # 未計算にするので、rd.codes() のまま回すと対象外銘柄が古びた時点でここが落ちる
+    # （2026-09-25 に 3851 で実際に発生）。採点対象は取得を続けている銘柄だけでよい。
+    return [c for c in rd.watched_codes()
             if str(margin_latest(c).get("ratio") or "").strip()]
 
 
@@ -240,6 +244,19 @@ def test_margin_ratio_resolves():
         eq(mv.source, S.SRC_MARGIN, f"{code}: 経路は margin")
         close_to(mv.value, float(row["ratio"]), f"{code}: 信用倍率")
         eq(mv.as_of, str(row["date"]), f"{code}: 公表日")
+
+
+def test_margin_ratio_resolves_skips_excluded_stale_codes():
+    """watch: excluded で取得が止まった銘柄は codes_with_margin_ratio() に含めない。
+
+    2026-09-25 に 3851（watch: excluded）で実際に発生: rd.codes() のまま
+    回すと、MARGIN_MAX_AGE_DAYS を超えて凍った信用残が resolve_metric で
+    未計算（None）になり、「CSV最新行の値」という期待と食い違って落ちた。
+    """
+    excluded = set(rd.codes()) - set(rd.watched_codes())
+    assert excluded, "watch: excluded の銘柄が1つも無い（前提が変わっている）"
+    assert not excluded & set(codes_with_margin_ratio()), \
+        "watch: excluded の銘柄が codes_with_margin_ratio() に混入している"
 
 
 def test_margin_ratio_na_is_unresolved_not_zero():
