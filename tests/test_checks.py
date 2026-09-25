@@ -301,6 +301,39 @@ def test_append_only_accepts_appended_rows():
     expect_none(rep, checks.WARN, "append_only", "追記が0件")
 
 
+def test_append_only_accepts_tanshin_retry_status_change():
+    """決算短信の再取得で status だけ変わった新規行は「過去行の書き換え」ではない。
+
+    fetch_tanshin.py は (code, disclosed_on, pdf_url, status) を鍵に追記する
+    （同じ開示を再取得して結果が変わる場合があるため）。checks.py 側の鍵が
+    disclosed_on までしか見ていないと、この正当な追記を「過去行が変更されて
+    いる」と誤検知する（2026-09-26 に実際に発生）。
+    """
+    def mutate(d: Path) -> None:
+        p = d / "tanshin" / "fetch_log.csv"
+        fields, rows = read_csv(p)
+        # 既に別の試行（別 status）が記録されている開示は選ばない。
+        # 実データ側の再取得ログと衝突すると、この合成した2行目ではなく
+        # 実データの2行目と鍵が同じになってしまい、狙った検証にならない。
+        by_disclosure: dict[tuple[str, str, str], set[str]] = {}
+        for r in rows:
+            k = (r["code"], r["disclosed_on"], r["pdf_url"])
+            by_disclosure.setdefault(k, set()).add(r["status"])
+        ok_rows = [r for r in rows if r["status"] == "OK"
+                   and len(by_disclosure[(r["code"], r["disclosed_on"],
+                                          r["pdf_url"])]) == 1]
+        assert ok_rows, "tanshin/fetch_log.csv に単独の status=OK 行が無い"
+        retry = dict(ok_rows[0])
+        retry.update(status="DOWNLOAD_FAILED", pages="", text_chars="",
+                     metrics_written="0", note="",
+                     fetched_at="2099-01-01T00:00:00+09:00")
+        write_csv(p, fields, rows + [retry])
+
+    baseline = make_data()
+    rep = run(make_data(mutate), baseline_dir=baseline)
+    expect_none(rep, checks.FAIL, "append_only", "fetch_log.csv")
+
+
 # =============================================================================
 # 2. OHLC の整合性
 # =============================================================================

@@ -979,6 +979,16 @@ def _key_columns(rel: str, cols: list[str] | None = None) -> tuple[str, ...]:
             if extra in have:
                 keys.append(extra)
                 break
+    # data/tanshin/fetch_log.csv は disclosed_on（day）だけでは一意にならない。
+    # 同じ開示を再取得すると status が変わることがあり（初回 DOWNLOAD_FAILED →
+    # 再取得 OK、逆に一度 OK だった PDF が後日 404 になる、など）、
+    # fetch_tanshin.py 自身は (code, disclosed_on, pdf_url, status) を鍵に
+    # 追記している。ここが disclosed_on までしか見ないと、その正当な追記が
+    # 「過去行が変更されている」と誤検知される（2026-09-26 に実際に発生）。
+    if "metric" not in have and "pdf_url" in have and "status" in have:
+        for extra in ("pdf_url", "status"):
+            if extra in have and extra not in keys:
+                keys.append(extra)
     return tuple(keys)
 
 
