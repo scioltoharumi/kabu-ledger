@@ -1,0 +1,419 @@
+code: "4382"
+runs:
+  - run: "2026-09-27T17:00:00+09:00"
+    report_updated: "2026-09-27"
+    report_sha256: "c166e6e81d0e23d595648633141028e647001d86f2cef8ab75e1332343282fee"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    urls_refetched:
+      - {url: "https://heroz.co.jp/ir/", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=4382", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260924/140120260924539282/", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260918/140120260918538542/", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260917/140120260917538122/", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=4382&b=n202609270018", http_status: 200}
+      - {url: "https://www.release.tdnet.info/inbs/140120260911534909.pdf", http_status: 200}
+      - {url: "https://www.release.tdnet.info/inbs/140120260911535155.pdf", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260608/140120260608565515/", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260612/140120260612569450/", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260803/140120260803506831/", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=4382&b=n202609140220", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=4382&b=n202606090247", http_status: 200}
+      - {url: "https://kabuyoho.ifis.co.jp/index.php?action=tp1&sa=report&bcode=4382", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260626/140120260626581607/", http_status: 200}
+    urls_delegated:
+      - {url: "https://kabutan.jp/stock/?code=4382", to: "data/margin/4382.csv"}
+    claims:
+      - id: V01
+        section: company
+        quote: "今期（2027年4月期）は営業利益を前期比+53%の800百万円✓まで伸ばす計画"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4382.csv", "https://kabuyoho.ifis.co.jp/index.php?action=tp1&sa=report&bcode=4382"]
+        evidence: "採用値 FY2027-04 operating_income_plan=800（OK）・FY2026-04 operating_income=523（OK）。800/523−1=+52.96%→+53%。IFIS（再取得200）の業績推移にも「営業利益 | 306 | 523 70.9 % | 800 53.0 %」。"
+
+      - id: V02
+        section: company
+        quote: "第1四半期の営業利益は前年同期比+53.8%✓と計画並みの伸びで滑り出した"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4382.csv", "src/screen.py", "https://kabutan.jp/stock/news?code=4382&b=n202609270018"]
+        evidence: "採用値 Q2026-05_2026-07 operating_income=180（OK）・Q2025-05_2025-07 operating_income=117（OK|ROUNDING）。180/117−1=+53.85%。screen.screen_one('4382') の q0_yoy_pct=53.846。ただし株探「妙味株」記事（再取得200）は「営業利益が同52.8％増の1億8000万円」と書いており、百万円未満の原数値ベースでは +52.8%。"
+        action: "採用値（百万円単位）どうしの計算であることを明記するか、会社発表ベースの +52.8% を併記する（人間判断）"
+
+      - id: V03
+        section: company
+        quote: "経常利益の進捗は19.7%※にとどまり"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.ifis.co.jp/index.php?action=tp1&sa=report&bcode=4382", "data/fundamentals/4382.csv"]
+        evidence: "IFIS（再取得200）に「経常利益 (1Q) | 138」「進捗率 | 19.7 %」。採用値 Q2026-05_2026-07 ordinary_income=138（OK）/ FY2027-04 ordinary_income_plan=700（OK）=19.71%。"
+
+      - id: V04
+        section: financials
+        quote: "株式交換で発行済株式数は 15,206,964株 から 17,789,313株 へ約17%※ 増えた（決算短信）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260911534909.pdf", "https://kabutan.jp/stock/?code=4382"]
+        evidence: "出典の決算短信PDFは再取得200だがこの道具はPDFをテキスト化せず、data/tanshin/4382.csv も無い。株数 15,206,964・17,789,313 は確かめられない。株探（再取得200）の現在の「発行済株式数 | 17,856,708 株」とは桁が整合する。17,789,313/15,206,964 は 1.170 で「約17%」は株数どうしの式としては整合。"
+        action: "短信の株式数を data/tanshin に機械抽出するか、株数の載ったHTML出典を足す"
+
+      - id: V05
+        section: updates
+        quote: "採用終値は 9/18 の 843円✓ から 9/25 の 856円✓（+1.5%）。9/21〜23 は休場で、この週の取引は2日だけ"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv 4382: 2026-09-18 close=843.0（OK）・2026-09-24 close=838.0（OK）・2026-09-25 close=856.0（OK）。9/21〜9/23 の行なし。856/843−1=+1.54%。"
+
+      - id: V06
+        section: updates
+        quote: "9/24 に譲渡制限付株式報酬の新株払込完了（英文の遅延開示。日本語版は 9/18）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260924/140120260924539282/", "https://kabutan.jp/disclosures/pdf/20260918/140120260918538542/"]
+        evidence: "株探の開示ページ（再取得200）の題名: 「2026年09月24日 開示情報 - [Delayed] Notice Concerning Completion of Payment for New Shares as Remuneration for Restricted Stock」「2026年09月18日 開示情報 - 譲渡制限付株式報酬としての新株式の払込完了に関するお知らせ」。本文PDFは読めていない。"
+
+      - id: V07
+        section: updates
+        quote: "規模は小さく、株価材料ではないと読める"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260918/140120260918538542/"]
+        evidence: "再取得200だが株探の開示ページは題名と「PDFを別画面で開く」だけで、発行株数・金額は本文から取れない。規模は確かめられない。"
+        action: "発行株数を出典から明記する（例: 株数の載ったHTML出典）"
+
+      - id: V08
+        section: updates
+        quote: "9/16・9/17 に株式会社エンヴァリスによるアナリスト・レポート公開の開示"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260917/140120260917538122/"]
+        evidence: "再取得200。題名は「2026年09月17日 開示情報 - 株式会社エンヴァリスによる当社アナリスト・レポート公開のお知らせ」で 9/17 は確認。9/16 の開示はレポート記載のどの出典にも無い。"
+        action: "9/16 の開示の出典を足すか、日付を 9/17 のみにする"
+
+      - id: V09
+        section: updates
+        quote: "会社が費用を負担するスポンサード・レポートの可能性があり"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260917/140120260917538122/"]
+        evidence: "再取得200だが開示ページは題名のみで本文PDFは読めない。費用負担の有無は確かめられない（本文も assumed: true・未確認と自己申告している）。"
+        action: "開示PDF本文またはエンヴァリスのレポート本文を出典に足す"
+
+      - id: V10
+        section: updates
+        quote: "9/27 に株探が「今週の『妙味株』一本釣り！─ＨＥＲＯＺ」を掲載"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4382&b=n202609270018"]
+        evidence: "再取得200。「2026年09月27日09時00分」「今週の「妙味株」一本釣り！ ─ ＨＥＲＯＺ」「【目標株価】1200円（25日終値856円）」。"
+
+      - id: V11
+        section: updates
+        quote: "信用残（9/18 申込み分）は買残 338.7千株※・売残 214.8千株※・倍率 1.58倍※"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4382", "data/margin/4382.csv"]
+        evidence: "株探（再取得200）の信用取引表「09/18 | 214.8 | 338.7 | 1.58」（売り残・買い残・倍率）。data/margin/4382.csv 2026-09-18 long=338.7・short=214.8・ratio=1.58（OK）。"
+
+      - id: V12
+        section: updates
+        quote: "決算前の 9/4 から買残・売残とも増えており、売残の増え方が大きい"
+        verdict: supported
+        tier: dataset
+        sources: ["data/margin/4382.csv", "https://kabutan.jp/stock/?code=4382"]
+        evidence: "9/04 売残138.7・買残259.3 → 9/18 売残214.8・買残338.7（株探・margin.csv とも同値）。増加率は売残 214.8/138.7−1=+54.9%、買残 338.7/259.3−1=+30.6%で率では売残が大きい。増加株数は買残+79.4千株・売残+76.1千株で株数では買残がわずかに大きい。"
+        action: "「増え方」が率であることを明記する"
+
+      - id: V13
+        section: updates
+        quote: "9/14 の 729,700株 に次ぐ水準が出るか"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv 2026-09-14 volume=729700（行 status OK）。2025-09-29〜2026-09-25 の 4382 行で volume 最大は 2026-09-14。出来高自体は照合対象外（本文も ※）。"
+
+      - id: V14
+        section: updates
+        quote: "6か月の採用終値高値 890円✓（2026-04-16）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv 2026-03-25〜2026-09-25 の status OK 行で close 最大は 2026-04-16 close=890.0。"
+
+      - id: V15
+        section: company
+        quote: "**AIX事業**（外部売上 935百万円※）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260911534909.pdf", "data/fundamentals/4382.csv"]
+        evidence: "決算短信PDFは再取得200だがテキスト化されず、セグメント外部売上 935・709 は確認できない。整合性のみ: 935+709=1644 ≈ 連結売上 Q2026-05_2026-07 revenue=1643（採用値、OK|ROUNDING）。"
+        action: "セグメント数値を data/kpi か tanshin 抽出に載せて機械照合できるようにする"
+
+      - id: V16
+        section: company
+        quote: "売上の72.2%※がリカーリング（継続課金）売上（1Q 決算説明資料 p6）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260911535155.pdf"]
+        evidence: "決算説明資料PDFは再取得200だがテキスト化されず 72.2% は確認できない。"
+        action: "説明資料の該当値を機械照合できる形で取り込むか、HTML出典を足す"
+
+      - id: V17
+        section: company
+        quote: "セグメント利益は AI Security（272百万円※）が AIX（234百万円※）を上回り、そこから全社費用 327百万円※ を差し引いて営業利益になる構造"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260911534909.pdf", "data/fundamentals/4382.csv"]
+        evidence: "短信PDFはテキスト化されず個々の値は確認できない。整合性のみ: 272+234−327=179 ≈ Q2026-05_2026-07 operating_income=180（採用値 OK）。"
+        action: "セグメント損益を機械照合できる形で取り込む"
+
+      - id: V18
+        section: company
+        quote: "子会社エキストラ（AI研修。2026-08-03 に事業譲受を決議）"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260803/140120260803506831/"]
+        evidence: "再取得200。題名「2026年08月03日 開示情報 - 当社子会社における事業譲受に関するお知らせ」で、子会社による事業譲受の開示が 8/3 にあったことは確認。子会社名がエキストラであること・AI研修事業であることは題名に無く、本文PDFは読めない。"
+        action: "子会社名と事業内容が読める出典を足す"
+
+      - id: V19
+        section: company
+        quote: "2026-06-30 の株式交換で完全子会社化"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: "レポート記載の再取得可能な出典（HTML）に株式交換・完全子会社化の日付の記載は無い。短信・説明資料PDFはテキスト化されず確認できない。"
+        action: "株式交換の効力発生の適時開示を出典に足す"
+
+      - id: V20
+        section: financials
+        quote: "| 24/4期 | 4,841 | 451 | 368 | -1,134 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4382.csv"]
+        evidence: "FY2024-04 revenue=4841（OK|ROUNDING）・operating_income=451（OK）・ordinary_income=368（OK|ROUNDING）・net_income=-1134（OK|ROUNDING）。"
+
+      - id: V21
+        section: financials
+        quote: "| 26/4期 | 6,424 | 523 | 408 | 376 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4382.csv"]
+        evidence: "FY2026-04 revenue=6424（OK|ROUNDING）・operating_income=523（OK）・ordinary_income=408（OK）・net_income=376（OK）。"
+
+      - id: V22
+        section: financials
+        quote: "| 27/4期 会社計画 | 6,800 | 800 | 700 | 300 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4382.csv"]
+        evidence: "FY2027-04 revenue_plan=6800・operating_income_plan=800・ordinary_income_plan=700・net_income_plan=300（いずれも OK）。"
+
+      - id: V23
+        section: financials
+        quote: "今期計画は前期比+5.8%※ にとどまり"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4382&b=n202609270018", "https://kabuyoho.ifis.co.jp/index.php?action=tp1&sa=report&bcode=4382", "data/fundamentals/4382.csv"]
+        evidence: "株探「妙味株」記事（再取得200）に「売上高68億円（前期比5.8％増）」。一方 IFIS（再取得200）は「6,800 5.9 %」、株探銘柄ページ（再取得200）は前期比「+5.9」、採用値どうしは 6800/6424−1=+5.85%。百万円未満の原数値で 5.8% と 5.9% に分かれる。"
+
+      - id: V24
+        section: financials
+        quote: "ストラテジット社の連結除外（前期1Qに売上 79百万円※）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260911534909.pdf"]
+        evidence: "短信・説明資料PDFはテキスト化されず、HTML出典にストラテジットの記載は無い。確かめられない。"
+        action: "連結除外の開示を出典に足す"
+
+      - id: V25
+        section: financials
+        quote: "2023〜2025年4月期は営業黒字のまま純損失（2024年4月期は △1,134百万円✓）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4382.csv"]
+        evidence: "operating_income FY2023-04=257・FY2024-04=451・FY2025-04=306（いずれも OK系）、net_income FY2023-04=-574・FY2024-04=-1134・FY2025-04=-177（いずれも OK系）。"
+
+      - id: V26
+        section: financials
+        quote: "2026-06-08 の開示で、子会社株式売却益・法人税等調整額（益）の計上と暗号資産評価損を公表している"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260608/140120260608565515/", "https://kabutan.jp/stock/news?code=4382&b=n202606090247"]
+        evidence: "開示ページ（再取得200）の題名「2026年06月08日 開示情報 - 2026年４月期 通期連結業績予想の修正並びに子会社株式売却益、法人税等調整額（益）及び暗号資産評価損の計上に関するお知らせ」。株探記事（再取得200）「最終利益は従来予想の５０００万円から３億７６００万円に大幅増額」「連結子会社の株式譲渡に伴う売却益計上が反映された」。"
+
+      - id: V27
+        section: financials
+        quote: "| Q2026-05_2026-07 | 1,643 | 180 | 138 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4382.csv"]
+        evidence: "Q2026-05_2026-07 revenue=1643（OK|ROUNDING）・operating_income=180（OK）・ordinary_income=138（OK）。他の4行（1,514/117/94、1,584/141/118、1,589/100/53、1,737/165/143）も採用値と一致。"
+
+      - id: V28
+        section: financials
+        quote: "その前の4Q は +11.5%（前年同期 148百万円✓）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4382.csv", "src/screen.py"]
+        evidence: "Q2026-02_2026-04 operating_income=165（OK）・Q2025-02_2025-04=148（OK）。165/148−1=+11.49%。screen.screen_one('4382') q1_yoy_pct=11.486。"
+
+      - id: V29
+        section: financials
+        quote: "（`src/screen.py` の警告なし、2026-09-27 実行）"
+        verdict: supported
+        tier: dataset
+        sources: ["src/screen.py"]
+        evidence: "2026-09-27 に screen.screen_one('4382') を直接呼び出し（master.yaml を開かない経路）、flags=[]・render 出力「警告なし」。q0 +53.8%・q1 +11.5%・通期 +70.9%・計画 +53.0%。"
+
+      - id: V30
+        section: financials
+        quote: "自己資本比率 58.7%✓（2026年4月期末）、1Q末は 68.3%※"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4382.csv"]
+        evidence: "FY2026-04 equity_ratio=58.7（OK）。Q2026-05_2026-07 equity_ratio は SINGLE_SOURCE で value_primary=68.3（採用値ではなく、本文は ※ で明示）。振替の理由部分は短信PDFが読めず未確認。"
+
+      - id: V31
+        section: financials
+        quote: "現金同等物 3,367百万円✓、営業CF 647百万円✓（ともに2026年4月期）。有利子負債は 1,650百万円※（IR BANK のみ）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4382.csv"]
+        evidence: "FY2026-04 cash_equivalents=3367（OK|ROUNDING）・operating_cf=647（OK|ROUNDING）・interest_bearing_debt は SINGLE_SOURCE（irbank_bs、value_primary=1650）。"
+
+      - id: V32
+        section: financials
+        quote: "1株当たり利益の計画 17.28円※ はこの影響を織り込んだ値と短信は注記している。台帳の採用値は 16.87円✓"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260911534909.pdf", "data/fundamentals/4382.csv", "https://kabutan.jp/stock/?code=4382"]
+        evidence: "FY2027-04 eps_plan=16.87（OK|ROUNDING）は確認。株探（再取得200）も「予 2027.04 | … | 16.8」。17.28円と短信の注記は、短信PDFがテキスト化されず確認できない。"
+        action: "短信の1株当たり予想利益を機械抽出して採用値との差を確かめる"
+
+      - id: V33
+        section: outlook
+        quote: "1Q の進捗は売上 24.2%※、営業利益 22.5%※、経常利益 19.7%※"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/4382.csv", "https://kabuyoho.ifis.co.jp/index.php?action=tp1&sa=report&bcode=4382"]
+        evidence: "採用値: 1643/6800=24.16%、180/800=22.50%、138/700=19.71%。IFIS（再取得200）「進捗率 | 19.7 %」。"
+
+      - id: V34
+        section: outlook
+        quote: "1Q 売上は前年同期比+101.3%※、稼働案件数は+26.8%※"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260911535155.pdf", "https://kabutan.jp/stock/news?code=4382&b=n202609270018"]
+        evidence: "株探「妙味株」記事（再取得200）に「同期間の稼働案件数が同26.8％増」で +26.8% は確認。+101.3% は記事・HTML出典に無く、説明資料PDFはテキスト化されず確認できない。"
+        action: "HEROZ BtoB の売上成長率が読める出典を足す"
+
+      - id: V35
+        section: outlook
+        quote: "2026年7月末の ARR 2.3億円※、累計契約顧客 約470社※"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260911535155.pdf", "https://kabutan.jp/stock/news?code=4382&b=n202609270018"]
+        evidence: "株探「妙味株」記事（再取得200）に「7月末時点の累計契約顧客数は約470社まで拡大」で約470社は確認。ARR 2.3億円は記事に無く、説明資料PDFはテキスト化されず確認できない。"
+        action: "ARR の出典を機械で読める形で足す"
+
+      - id: V36
+        section: outlook
+        quote: "市場予想（IFIS）の経常利益 600百万円※ は会社計画 700百万円 を下回る"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.ifis.co.jp/index.php?action=tp1&sa=report&bcode=4382"]
+        evidence: "IFIS（再取得200）「コンセンサス予想 | 75 | -- | -- | 600」「経常利益予想 増益率 | 600 47.1 %」「会社予想 2026/09/11 700 71.6 %」。"
+
+      - id: V37
+        section: outlook
+        quote: "1Q の販管費は前年同期比+16.7%※（M&A関連費用・AKM の人件費）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://www.release.tdnet.info/inbs/140120260911534909.pdf"]
+        evidence: "短信PDFはテキスト化されず +16.7% と内訳は確認できない。"
+        action: "販管費の実額を機械照合できる形で取り込む"
+
+      - id: V38
+        section: outlook
+        quote: "前年は12月中旬に開示しており"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.ifis.co.jp/index.php?action=tp1&sa=report&bcode=4382"]
+        evidence: "IFIS（再取得200）の前期 202604 進ちょく結果「(12/12) 212 52.0 %」（中間）。前年の2Q開示は 12/12。"
+
+      - id: V39
+        section: price
+        quote: "2026-09-25 の採用終値 856円✓。52週の採用終値の高値は 1,190円✓（2025-10-08）、安値は 692円✓（2026-07-10）。高値からは約28%下、安値からは約24%上にいる"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv status OK 行（2025-09-29〜2026-09-25）で close 最大 2025-10-08=1190.0、最小 2026-07-10=692.0、2026-09-25=856.0。856/1190=0.719（約28%下）、856/692=1.237（約24%上）。"
+
+      - id: V40
+        section: price
+        quote: "2026-06-09：前日の 707円✓ から 807円✓（+14.1%）、出来高 662,200株※"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "2026-06-08 close=707.0（OK）・2026-06-09 close=807.0（OK）・volume=662200。807/707−1=+14.14%。"
+
+      - id: V41
+        section: price
+        quote: "2026-09-14：前営業日の 757円✓ から 842円✓（+11.2%）、出来高 729,700株※（直近1年で最大）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "2026-09-11 close=757.0（OK）・2026-09-14 close=842.0（OK）・volume=729700。842/757−1=+11.23%。2025-09-29以降の 4382 行で volume 最大。"
+
+      - id: V42
+        section: price
+        quote: "9/11 引け後の1Q決算（経常+46%）を受けた動き"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4382&b=n202609140220"]
+        evidence: "再取得200（本文が文字化けで返り、ptcp154→UTF-8 に戻して読んだ）。「同社は前週末１１日の取引終了後、２７年４月期第１四半期（５～７月）の連結決算を発表。売上高は前年同期比８．５％増の１６億４３００万円、経常利益は同４６．２％増の１億３８００万円となった」。"
+
+      - id: V43
+        section: price
+        quote: "PER 51.0倍※、PBR 2.65倍※、時価総額 153億円※、配当なし（今期予想も 0円）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4382"]
+        evidence: "株探（2026-09-27 再取得200）「51.0 倍 | 2.65 倍 | － ％ | 1.58 倍」「時価総額 | 153 億円」「予 2027.04 | 68.0 | 7.0 | 3.0 | 16.8 | 0.0」。2026-09-25 終値ベースの時点値。"
+
+      - id: V44
+        section: price
+        quote: "売残が多く、踏み上げ（買い戻し）が株価を押し上げやすい需給にある"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=4382", "data/margin/4382.csv"]
+        evidence: "株探（再取得200）・margin.csv とも 9/18 は買い残338.7千株・売り残214.8千株・倍率1.58倍で、買残が売残を上回る（買い長）。株探 6/9 記事（再取得200）の「信用倍率０．８８倍と売り長」「貸株規制対象」は6月時点の話で、現在の売り長を示す出典は無い。"
+        action: "「売残が9/4比+55%と増えた」等、出典で言える形に言い換えるか落とす"
+
+      - id: V45
+        section: price
+        quote: "6/9 の上昇も株探は「買い戻し」と表現している"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=4382&b=n202606090247"]
+        evidence: "再取得200。題名「ＨＥＲＯＺが急動意、２６年４月期最終利益大幅増額受け買い戻しに点火」、本文「空売り買い戻しを誘発した場合は戻り足が一気に加速する可能性がある」。"
+
+      - id: V46
+        section: sources
+        quote: "| 一次 | 会社IRページ | https://heroz.co.jp/ir/ | 2026-09-27 |"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://heroz.co.jp/ir/"]
+        evidence: "再取得200だが本文682字で「IRトップ」「決算短信」「IRニュース一覧」等のナビゲーションのみ（目次だけ）。本文のどの記述もこのページ単体では裏付けられない。"
+        action: "一次の出典は個別の開示・資料のURLを挙げる"
+
+      - id: V47
+        section: sources
+        quote: "2026-06-26 に開示された「2026年4月期 決算短信の一部訂正（数値データ訂正）」の中身"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260626/140120260626581607/"]
+        evidence: "再取得200。題名「2026年06月26日 開示情報 - （訂正・数値データ訂正）「2026年４月期 決算短信〔日本基準〕（連結）」の一部訂正について」で開示の存在は確認。中身は本文の自己申告どおり未読（PDF）。"
+        action: "訂正内容が採用値（FY2026-04）に影響しないか確認する"

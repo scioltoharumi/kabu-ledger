@@ -1,0 +1,415 @@
+code: '4075'
+runs:
+- run: '2026-09-27T17:00:00+09:00'
+  report_updated: '2026-09-27'
+  report_sha256: 6cd9303687f4aeb4a3f99cda3ca4a561edcfb238d47ae36ac7642e598d64a0b7
+  verifier: kabu-ledger-verify（別コンテキスト・F3）
+  urls_refetched:
+  - url: https://www.brains-tech.co.jp/ir/
+    http_status: 200
+  - url: https://www.brains-tech.co.jp/news/
+    http_status: 200
+  - url: https://www.brains-tech.co.jp/news/20260828_01-2/
+    http_status: 200
+  - url: https://www.brains-tech.co.jp/news/20260305_1/
+    http_status: 200
+  - url: https://www.brains-tech.co.jp/news/20260317_01/
+    http_status: 200
+  - url: https://www.brains-tech.co.jp/news/20260218/
+    http_status: 200
+  - url: https://www.brains-tech.co.jp/news/20260529/
+    http_status: 200
+  - url: https://kabutan.jp/stock/?code=4075
+    http_status: 200
+  - url: https://kabutan.jp/stock/news?code=4075
+    http_status: 200
+  - url: https://kabutan.jp/stock/news?code=4075&b=k202609110048
+    http_status: 200
+  - url: https://kabutan.jp/stock/news?code=4075&b=n202609150280
+    http_status: 200
+  - url: https://kabutan.jp/stock/news?code=4075&b=n202609180830
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf
+    http_status: 200
+  urls_delegated:
+  - url: https://kabutan.jp/stock/finance?code=4075
+    to: data/fundamentals/4075.csv
+  - url: https://irbank.net/E36722/results
+    to: data/fundamentals/4075.csv
+  claims:
+  - id: V01
+    section: outlook
+    quote: 2026年7月期は営業利益2.5億円✓（前期比+51%）と伸びたが、今期の会社計画は営業横ばい（2.5億円✓）・最終減益
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/4075.csv
+    - https://kabutan.jp/stock/news?code=4075&b=k202609110048
+    evidence: 採用値 FY2026-07 operating_income=250（OK）、FY2025-07=165（OK）。250/165-1=+51.5%→「+51%」。FY2027-07 operating_income_plan=250（OK）、net_income_plan=173 < FY2026-07 net_income=192。株探決算記事の表「前期比 | +19.1 | 0.0 | 0.0 | -9.9」。
+  - id: V02
+    section: updates
+    quote: 採用終値は9/24が1537円✓、9/25が1458円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'daily.csv 4075: 2026-09-24 close=1537.0 status=OK、2026-09-25 close=1458.0 status=OK。'
+  - id: V03
+    section: updates
+    quote: この週に会社の新しい開示は見当たらない
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.brains-tech.co.jp/news/
+    - https://kabutan.jp/stock/news?code=4075
+    evidence: 会社ニュース一覧（200）の最新は「2026/08/31 業務特化型AIエージェント…」で9月の項目なし。株探ニュース一覧（200）の9/21〜25は「26/09/21 19:30 | 特集 | 2026年【後半戦】急騰材料株 ベスト50」のみで「開示」区分の項目なし。
+  - id: V04
+    section: updates
+    quote: 前週（9/14〜18）に1204円→1591円（+32%）と急伸
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'daily.csv: 2026-09-11 close=1204（前週末・OK）、2026-09-18 close=1591（OK）。1591/1204-1=+32.1%。起点1204は9/14ではなく前週末9/11の終値（9/14 close=1155）。'
+    action: 起点が前週末終値であることを明記するとよい（任意）
+  - id: V05
+    section: updates
+    quote: 前週9/18は前日比+300円（1291円→1591円）で、株探の「本日の【ストップ高／ストップ安】(9月18日)」に名前が載った
+    verdict: supported
+    tier: secondary
+    sources:
+    - data/prices/daily.csv
+    - https://kabutan.jp/stock/news?code=4075&b=n202609180830
+    evidence: 'daily.csv: 2026-09-17 close=1291、09-18 close=1591（ともにOK）。1591-1291=+300。株探記事（200）本文「ブレインズ <4075> [東証Ｇ]　　　配分　前日もストップ高。」（見出しだけでなく本文でも確認）。'
+  - id: V06
+    section: updates
+    quote: 信用買い残※は9/18時点で330.3千株と、8/28時点の119.2千株から約2.8倍に膨らんだ
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=4075
+    - data/margin/4075.csv
+    evidence: 株探銘柄ページ（200）「09/18 | 18.2 | 330.3 | 18.15」「08/28 | 0.0 | 119.2 | －」。data/margin/4075.csv も同値。330.3/119.2=2.77倍。単一取得元（※表記は適切）。
+  - id: V07
+    section: updates
+    quote: 登録時点の screen.py は **PLAN_FLAT**（会社計画の営業増益率が+5%未満）を出している
+    verdict: supported
+    tier: dataset
+    sources:
+    - src/screen.py
+    evidence: python src/screen.py 4075 の出力「[PLAN_FLAT] 4075 ブレインズテクノロジー — 会社計画の伸びが +5% 未満」、会社計画 +0.0%。
+  - id: V08
+    section: updates
+    quote: 直近4Qの営業利益は前年同期比+168%✓と強い
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/4075.csv
+    - src/screen.py
+    evidence: screen.py「直近Q +168.2%」。採用値 Q2026-05_2026-07=118（OK）、Q2025-05_2025-07=44（OK）、118/44-1=+168.2%。「直近4Q」は第4四半期（単独3か月）の意。直近4四半期合計なら (−27+99+60+118)=250 対 165 で+51.5%。
+    action: 「直近4Q」を「直近の4Q（5〜7月・単独）」と書くと直近4四半期合計との誤読を防げる（提案）
+  - id: V09
+    section: updates
+    quote: 2026-09-27、楽天証券のスクリーニング（成長株0830・per）通過を起点に監視対象に登録した
+    verdict: unverifiable
+    tier: none
+    sources: []
+    evidence: 根拠として示されているのは data/master.yaml の watch_reason だが、検証の隔離範囲外（D18）で開いていない。出典URLなし。
+    action: 隔離の外にあるため検証者は確かめない。人間が master.yaml と照合する
+  - id: V10
+    section: company
+    quote: 企業のDXに使うAIを製品として売る「エンタープライズAIソフトウエア事業」の単一セグメント・非連結（決算短信）。2026年7月期末の従業員は70名
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf
+    evidence: '決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。 参考: 株探記事（MINKABU PRESS・200）に「エンタープライズＡＩソフトウェア事業」、株探決算記事に「【非連結】」はあるが、単一セグメント・従業員70名の記載は無い。'
+    action: src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V11
+    section: company
+    quote: 2014年のリリース以来、製造現場を中心に累計3.5万を超えるAIモデルが稼働しているという
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.brains-tech.co.jp/news/20260828_01-2/
+    - https://www.brains-tech.co.jp/news/20260305_1/
+    - https://www.brains-tech.co.jp/news/20260317_01/
+    evidence: 8/28リリース（200）「2014年のリリース以来、製造現場を中心に累計35,000を超えるAIモデルが稼働しており、設備の故障予兆、不良品の検出、作業工程の分析・改善など」。3/5・3/17リリースにも同文。
+  - id: V12
+    section: company
+    quote: 生成AI連携（Chat EI）やMicrosoft 365 Copilotからの検索（MCP対応）を足している
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.brains-tech.co.jp/news/20260529/
+    - https://www.brains-tech.co.jp/news/
+    evidence: 5/29リリース（200）「Neuron ES」において…「Model Context Protocol（MCP）」に対応したMCPサーバー機能の提供を開始」「Microsoft 365 Copilot…から…検索・参照できる」。ニュース一覧（200）「企業内検索システム「Neuron ES」生成AI連携オプション、生成AIナレッジチャット「Chat EI」が「Amazon Bedrock」に対応」(2025/05/30)。
+  - id: V13
+    section: company
+    quote: ITトレンドのエンタープライズサーチ部門で9年連続1位と会社は発表している
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.brains-tech.co.jp/news/20260218/
+    evidence: 2/18リリース（200）見出し「企業内検索システム「Neuron ES」、ITトレンドのエンタープライズサーチ部門にて9年連続1位を獲得」。
+  - id: V14
+    section: company
+    quote: 2026年3月に人型ロボットによる製造現場自働化の実証結果を公表し、同月にアイシンと共同でAWSジャパンの「フィジカルAI 開発支援プログラム」に採択された
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.brains-tech.co.jp/news/20260305_1/
+    - https://www.brains-tech.co.jp/news/20260317_01/
+    evidence: 3/5リリース（200）「ブレインズテクノロジー、ヒューマノイドロボットによる製造現場自働化の実証結果を公表」（2026年3月5日）。3/17リリース（200）「アイシンと共同で申請したプロジェクトが…「フィジカルAI 開発支援プログラム by AWSジャパン」に採択」（2026年3月17日）。
+  - id: V15
+    section: company
+    quote: 8月28日には工程選定から現場実装・運用定着まで請け負う「フィジカルAI 現場実装・ロボット導入支援サービス」を始めた
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.brains-tech.co.jp/news/20260828_01-2/
+    evidence: 8/28リリース（200・2026年8月28日）「製造現場向け「フィジカルAI 現場実装・ロボット導入支援サービス」を提供開始 〜…工程選定から実地検証、現場実装・運用定着まで一貫して支援〜」。
+  - id: V16
+    section: company
+    quote: 株探が「比較される銘柄」に挙げているのはABEJA、フレクト、TDSE（二次情報）
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=4075
+    evidence: 株探銘柄ページ（200）「比較される銘柄 ＡＢＥＪＡ , フレクト , ＴＤＳＥ」。
+  - id: V17
+    section: financials
+    quote: 売上高は2016年7月期の1.3億円✓から2026年7月期の14.3億円✓まで、2024年7月期（10.0億円✓）を除いて毎年伸びてきた
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/4075.csv
+    evidence: '採用値 revenue: FY2016=133, 17=236, 18=282, 19=432, 20=631, 21=854, 22=934, 23=1053, 24=1004, 25=1255, 26=1433（全てOK系）。前年割れは FY2024（1004<1053）のみ。'
+  - id: V18
+    section: financials
+    quote: 表の数値はすべて2ソース照合済みの採用値
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/4075.csv
+    evidence: '表の15値すべて status に OK を含む採用値と一致: FY2023 1053/163/122、FY2024 1004/73/48、FY2025 1255/165/133、FY2026 1433/250/192、FY2027計画 1707/250/173。'
+  - id: V19
+    section: financials
+    quote: 売上+14.1%に対し営業利益+50.9%
+    verdict: unsupported
+    tier: dataset
+    sources:
+    - data/fundamentals/4075.csv
+    - https://kabutan.jp/stock/news?code=4075&b=k202609110048
+    - src/screen.py
+    evidence: 採用値からは 1433/1255-1=+14.2%、250/165-1=+51.5%（screen.py 通期 +51.5%）。株探決算記事（200）「前年比 | +14.2 | +51.5 | +53.6 | +44.4」。+14.1%/+50.9% は百万円未満の端数を使えば起こりうる範囲（営業 249.5/165.5〜250.5/164.5 ⇒ +50.8〜+52.3%）だが、その値を示す出典（決算短信PDF）はテキスト化できず確かめられない。
+    action: 採用値どうしの比（+14.2%/+51.5%）に揃えるか、決算短信の増減率を data/tanshin に取り込んでから引く
+  - id: V20
+    section: financials
+    quote: 人員減少や外注費の削減で売上原価が前期より減り、売上総利益が+24.2%伸びた
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf
+    evidence: 決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。
+    action: src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V21
+    section: financials
+    quote: フィジカルAIやAIエージェントの研究開発費を中心に販管費が増えている
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf
+    evidence: 決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。
+    action: src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V22
+    section: financials
+    quote: 営業利益率は17.5%✓（前期13.2%※）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/4075.csv
+    evidence: FY2026-07 operating_margin=17.45（OK）。FY2025-07 operating_margin は MISMATCH（13.15 / 13.21）で ※表記は適切。
+  - id: V23
+    section: financials
+    quote: 26/7期は1Q -27百万円✓（前年同期 -62百万円✓）、2Q 99百万円✓（同55百万円✓）、3Q 60百万円✓（同128百万円※）、4Q 118百万円✓（同44百万円✓）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/4075.csv
+    evidence: 'operating_income 採用値: Q2025-08_10=-27, Q2025-11_01=99, Q2026-02_04=60, Q2026-05_07=118, Q2024-08_10=-62, Q2024-11_01=55, Q2025-05_07=44（いずれもOK系）。Q2025-02_04 は MISMATCH（128 / 130）で ※表記は適切。'
+  - id: V24
+    section: financials
+    quote: 直近の1Q（8〜10月）は2年続けて営業赤字
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/4075.csv
+    evidence: Q2024-08_2024-10 operating_income=-62（OK）、Q2025-08_2025-10=-27（OK）。
+  - id: V25
+    section: financials
+    quote: 2026年7月期末の自己資本比率は78.2%✓、現金及び現金同等物は16.8億円✓、総資産は23.6億円✓。営業キャッシュフローは4.3億円✓で当期純利益（1.9億円✓）を上回る
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/4075.csv
+    evidence: 'FY2026-07: equity_ratio=78.2（OK）、cash_equivalents=1675（OK|ROUNDING）、total_assets=2360（OK）、operating_cf=430（OK）、net_income=192（OK）。430>192。'
+  - id: V26
+    section: financials
+    quote: 減価償却費2.1億円が大きい。決算短信
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf
+    evidence: 決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。 data/fundamentals に減価償却費の項目は無い。
+    action: src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V27
+    section: financials
+    quote: 財務活動は新株予約権の行使による収入だけで、借入の記載はない
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf
+    evidence: 決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。 採用値 FY2026-07 financing_cf=11（OK）は収入超過と矛盾しないが、内訳（新株予約権の行使のみ）までは確かめられない。
+    action: src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V28
+    section: financials
+    quote: EPSは33.00円※（決算短信の記載値。台帳では2ソースが不一致）
+    verdict: unsupported
+    tier: secondary
+    sources:
+    - data/fundamentals/4075.csv
+    - https://kabutan.jp/stock/news?code=4075&b=k202609110048
+    evidence: FY2026-07 eps は MISMATCH（kabutan 33 / irbank 32.87）で採用値なし。株探決算記事（200）「実 2026.07 | 1,433 | 250 | 255 | 192 | 33」は二次情報。「決算短信の記載値」であることは短信PDFがテキスト化できず確かめられない。
+    action: 決算短信を data/tanshin に取り込んで短信の記載値を確かめる
+  - id: V29
+    section: financials
+    quote: 1株当たり純資産は315.48円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/4075.csv
+    evidence: FY2026-07 bps=315.48（OK・315.48/315.48）。
+  - id: V30
+    section: financials
+    quote: 無配で、2027年7月期も無配予想（決算短信）
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=4075&b=k202609110048
+    evidence: 株探決算記事（200）「2026.07 | 1,433 | 250 | 255 | 192 | 33.0 | 0 |」「予 2027.07 | 1,707 | 250 | 255 | 173 | 29.6 | 0 |」（修正1株配）。二次情報での裏付け。短信本体は未読。
+  - id: V31
+    section: outlook
+    quote: 売上高17.1億円✓（+19.1%）、営業利益2.5億円✓（+0.0%）、当期純利益1.7億円✓（-9.9%）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/4075.csv
+    - https://kabutan.jp/stock/news?code=4075&b=k202609110048
+    evidence: FY2027-07 revenue_plan=1707、operating_income_plan=250、net_income_plan=173（いずれもOK系）。1707/1433-1=+19.1%、250/250-1=0.0%、173/192-1=-9.9%。株探決算記事「前期比 | +19.1 | 0.0 | 0.0 | -9.9」と一致。
+  - id: V32
+    section: outlook
+    quote: 今期見通しの文面も「優秀な人材の採用およびソフトウェアの開発を推し進める」としているため
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf
+    - https://kabutan.jp/stock/news?code=4075&b=k202609110048
+    evidence: 決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。 株探決算記事（200）に当該文言は無い。
+    action: src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V33
+    section: outlook
+    quote: ただし現時点で受注額・案件数の開示は確認できていない
+    verdict: supported
+    tier: primary
+    sources:
+    - https://www.brains-tech.co.jp/news/20260828_01-2/
+    - https://www.brains-tech.co.jp/news/
+    evidence: 8/28リリース（200）本文にサービス内容・背景・展望はあるが受注額・案件数の記載なし。ニュース一覧（200）にもフィジカルAIの受注に関する項目なし。
+  - id: V34
+    section: outlook
+    quote: 小型株で、材料が出ない日の出来高※が数千株まで細る日がある（2026年8月下旬）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'daily.csv: 2026-08-26 volume=3000、08-27 volume=5500（出来高は照合対象外で ※表記は適切）。'
+  - id: V35
+    section: price
+    quote: 安値796円✓（2026-03-04）〜高値1861円✓（2026-03-18）。直近は1458円✓（2026-09-25）で高値の約78%
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    - src/screen.py
+    evidence: daily.csv の status OK 行（2025-09-26〜2026-09-25）で close 最小=796（2026-03-04）、最大=1861（2026-03-18）。1458/1861=0.783。screen.py 高値比 78%。
+  - id: V36
+    section: price
+    quote: 3/6・3/9は前日比+150円の上げ幅で出来高※が2万株前後と小さく
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'daily.csv: 03-05 close=826、03-06 close=976（+150・vol 22100）、03-09 open=high=low=close=1126（+150・vol 16100）。'
+  - id: V37
+    section: price
+    quote: AWSプログラム採択（3/17）で1818円✓、翌3/18に1861円✓の高値を付けた後、7月末には824円✓まで戻した
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'daily.csv: 03-17 close=1818、03-18 close=1861、07-30 close=824（いずれもOK）。'
+  - id: V38
+    section: price
+    quote: 8/31に1087円✓（+150円）、9/1に1387円✓（+300円）、9/3に1780円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'daily.csv: 08-28 close=937、08-31=1087（+150）、09-01=1387（+300）、09-03=1780（いずれもOK）。'
+  - id: V39
+    section: price
+    quote: 9/11の通期決算（今期営業横ばい計画）前後は1155〜1204円✓まで押し、9/15に急反発（株探は「フィジカルＡＩ関連で頭角現す」と報じた）、9/18にストップ高で1591円✓
+    verdict: supported
+    tier: secondary
+    sources:
+    - data/prices/daily.csv
+    - https://kabutan.jp/stock/news?code=4075&b=n202609150280
+    - https://kabutan.jp/stock/news?code=4075
+    evidence: 'daily.csv: 09-10 close=1165、09-11=1204、09-14=1155、09-15=1343、09-18=1591（OK）。株探記事（200）見出し「ブレインズが２０％超の急騰演じる、フィジカルＡＩ関連で頭角現す」（26/09/15 09:27）、ニュース一覧「26/09/11 15:30 | 決算 | ブレインズ、今期最終は10％減益へ」。'
+  - id: V40
+    section: price
+    quote: 時価総額87.1億円、PER 49.3倍、PBR 4.62倍、信用倍率18.15倍
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=4075
+    evidence: 株探銘柄ページ（200・2026-09-27再取得）「49.3 倍 | 4.62 倍 | － ％ | 18.15 倍」「時価総額 | 87.1 億円」「09/25 | PER | 49.3」。9/25終値基準の時点値。
+  - id: V41
+    section: sources
+    quote: '{label: "IR情報", url: "https://www.brains-tech.co.jp/ir/", primary: true}'
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://www.brains-tech.co.jp/ir/
+    evidence: 再取得（200・815字）。本文は「決算短信」「決算説明資料」「有価証券報告書」等のメニューのみで、本文のどの記述も支えていない（目次のみ）。
+    action: 一次の欄には個別資料（決算短信・説明資料）のURLを置く
+  - id: V42
+    section: sources
+    quote: '| 2026年7月期 決算短信（非連結・2026-09-11） | https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf | 2026-09-27 |'
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf
+    evidence: 決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。 決算短信を根拠とする記述（V10・V20・V21・V26・V27・V32）はいずれも確かめられていない。
+    action: src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V43
+    section: sources
+    quote: 代表者名の表記が資料で異なる（決算短信は「齋藤 佐和子」、8/28のリリースは「濱中佐和子」）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://www.brains-tech.co.jp/news/20260828_01-2/
+    - https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf
+    evidence: 8/28リリース（200）「代表取締役：濱中佐和子」は確認。決算短信側の「齋藤 佐和子」は PDF がテキスト化できず確かめられない（本文自身も未確認として掲げている）。
+    action: src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）

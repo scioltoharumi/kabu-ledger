@@ -1,0 +1,491 @@
+code: '5252'
+runs:
+- run: '2026-09-27T17:20:00+09:00'
+  report_updated: '2026-09-27'
+  report_sha256: b7ce7b050d316d6dd0987b74d055f24aa7d0970383c100f052b7cae37052059a
+  verifier: kabu-ledger-verify（別コンテキスト・F3）
+  urls_refetched:
+  - url: https://tdnet-pdf.kabutan.jp/20260925/140120260925540233.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260219/140120260217564019.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260814/140120260814520598.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260515/140120260507518628.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20260515/140120260515536409.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20250919/140120250916558473.pdf
+    http_status: 200
+  - url: https://tdnet-pdf.kabutan.jp/20250910/140120250902551893.pdf
+    http_status: 200
+  - url: https://kabutan.jp/news/marketnews/?b=n202609251003
+    http_status: 200
+  - url: https://kabutan.jp/stock/news?code=5252
+    http_status: 200
+  - url: https://www.nikkei.com/nkd/company/?scode=5252
+    http_status: 200
+  - url: https://kabutan.jp/stock/?code=5252
+    http_status: 200
+  - url: https://www.know-net.co.jp/ir
+    http_status: 200
+  urls_delegated:
+  - url: https://kabutan.jp/stock/finance?code=5252
+    to: data/fundamentals/5252.csv
+  - url: https://irbank.net/E38474/results
+    to: data/fundamentals/5252.csv
+  claims:
+  - id: V01
+    section: updates
+    quote: 今週の採用終値は 9/24 1,019円✓、9/25 1,024円✓（週2営業日。9/21〜23 は休場）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 'data/prices/daily.csv（5252・status OK）: 2026-09-18 close=1019 の次が 2026-09-24 close=1019、2026-09-25 close=1024。9/21〜9/23 の行は無い。'
+  - id: V02
+    section: updates
+    quote: 9/25 の 1,024円✓ は台帳にある採用終値の最高値
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: status に OK を含む 238 行（2025-09-29〜2026-09-25）の close 最大値は 2026-09-25 の 1024。
+  - id: V03
+    section: updates
+    quote: 9/2〜3 の 730円✓ から約3週間で約4割上がっている
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 採用値 2026-09-02 close=730・2026-09-03 close=730・2026-09-25 close=1024。1024/730-1=+40.3%。
+  - id: V04
+    section: updates
+    quote: その間（8/20〜9/24）に会社の開示は無く
+    verdict: contradicted
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=5252
+    evidence: 株探ニュース一覧を再取得（200）。「26/08/20 15:00 | 開示 | 譲渡制限付株式報酬としての新株式の発行の払込完了に関するお知らせ」があり、本文が示す期間 8/20〜9/24 の中に開示が1件ある。8/21〜9/24 には開示の行は無い（次は「26/09/25 16:00 | 開示 | 株式会社ビジネスブレイン太田昭和との資本提携契約の締結…」）。
+    action: 期間を「8/21〜9/24」に直すか「8/20 の株式報酬払込完了の開示を除き」と書く。直したら resolutions に記録する
+  - id: V05
+    section: updates
+    quote: 2026-09-25 にビジネスブレイン太田昭和（BBS）との資本提携と第三者割当
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/news?code=5252
+    - https://kabutan.jp/news/marketnews/?b=n202609251003
+    evidence: 株探ニュース一覧（200）「26/09/25 16:00 | 開示 | 株式会社ビジネスブレイン太田昭和との資本提携契約の締結、第三者割当による新株式発行及び株式の売出し並びに主要株主等の異動に関するお知らせ」。株探記事（200）「2026年09月25日16時00分」「日本ナレッジ、第三者割当増資の実施を発表」。
+  - id: V06
+    section: updates
+    quote: BBS（東証プライム上場）に新株 1,021,000株を 1株917円で割り当てる。払込 2026-11-02、調達額 約9.4億円（差引手取 約9.3億円）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260925/140120260925540233.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。 株探記事（200）は開示の表題のみで、株数・価格・払込日・金額の記載は無い。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V07
+    section: updates
+    quote: 直前1か月の終値平均（840.60円）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: 採用値 2026-08-25〜2026-09-24 の close 20件の平均 = 840.60（data/prices/daily.csv・status OK）。
+  - id: V08
+    section: updates
+    quote: 発行価格は前営業日（9/24）終値 1,019円の 90%
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260925/140120260925540233.pdf
+    - data/prices/daily.csv
+    evidence: 9/24 の採用終値 1019 は data/prices/daily.csv で確認。発行価格 917円は PDF がテキスト化できず確かめられない（917/1019=0.8999、917/840.60-1=+9.088% で本文の 90%・9.08% とは整合するが、917 自体の裏付けにはならない）。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V09
+    section: updates
+    quote: 希薄化は総議決権比 24.60%（7月決議の譲渡制限付株式報酬と合算で 24.92%）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260925/140120260925540233.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。 株探ニュース一覧に「26/07/22 15:00 | 開示 | 譲渡制限付株式報酬としての新株式の発行に関するお知らせ」はあるが、比率は確かめられない。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V10
+    section: updates
+    quote: 使途は AI 関連事業・人材育成 3.3億円、M&A・事業拠点拡充 6.0億円（支出予定 2026-11〜2031-03）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260925/140120260925540233.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V11
+    section: updates
+    quote: 筆頭株主（代表取締役社長・常務取締役の資産管理会社ウィステリアトラスト）が 35,000株を 917円で BBS に売り出す
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260925/140120260925540233.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。 株探の開示表題に「株式の売出し並びに主要株主等の異動」とあるのみで、売出人・株数・価格は確かめられない。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V12
+    section: updates
+    quote: 日本ナレッジは BBS の**持分法適用関連会社**になる見込み
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260925/140120260925540233.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V13
+    section: updates
+    quote: 中計の成長投資17億円（2027/3〜2029/3期）を「借入に囚われない資金調達」で賄う方針
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260219/140120260217564019.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V14
+    section: updates
+    quote: 現金 628百万円（6月末・一次情報）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520598.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。 data/fundamentals/5252.csv に Q2026-04_2026-06 の cash_equivalents 行は無い。
+    action: src/fetch_tanshin.py で 5252 の決算短信を data/tanshin/5252.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V15
+    section: updates
+    quote: 1株あたりの利益は約2割薄まるため、計画どおりの利益でも1株益は増資前の計画 25.43円（短信の予想値）より下がる
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520598.pdf
+    - data/fundamentals/5252.csv
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。 なお台帳の採用値 FY2027-03 eps_plan=25.2（kabutan_fy 25.2 / kabutan_fy10 25.2、status OK）で、25.43 とは一致しない（25.43 は四捨五入で 25.4）。
+    action: 短信の1株当たり予想当期純利益を data/tanshin に取り込み、25.43円と採用値 25.2円のどちらが短信の記載かを人間が確かめる
+  - id: V16
+    section: updates
+    quote: 信用買残は 9/18 時点 418.3千株※（売残0）
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=5252
+    - data/margin/5252.csv
+    evidence: 株探銘柄ページ（200）「09/18 | 0.0 | 418.3 | －」（売り残・買い残・倍率、単位 千株）。data/margin/5252.csv 2026-09-18 行も 418.3・0.0。
+  - id: V17
+    section: company
+    quote: 1985年10月創業（一次情報：9/25 開示）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260925/140120260925540233.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V18
+    section: company
+    quote: 1Q の外部売上 718百万円※・セグメント利益 105百万円※
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520598.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。
+    action: src/fetch_tanshin.py で 5252 の決算短信を data/tanshin/5252.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V19
+    section: company
+    quote: 1Q の外部売上 486百万円※・セグメント利益 63百万円※
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520598.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。
+    action: src/fetch_tanshin.py で 5252 の決算短信を data/tanshin/5252.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V20
+    section: company
+    quote: 全社費用（セグメントに配賦しない本社費）が 1Q で 175百万円※ あり、2セグメントの利益合計 169百万円※ をほぼ食い切る構造
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520598.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。 本文自身のセグメント利益 105+63=168 で「169」と1ずれる（百万円未満の端数なら起こりうるが確かめられない）。採用値 Q2026-04_2026-06 operating_income=-6 は 169-175=-6 と整合する。
+    action: src/fetch_tanshin.py で 5252 の決算短信を data/tanshin/5252.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V21
+    section: company
+    quote: 2026/3期の3Qから**連結決算に移った**
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 'data/fundamentals/5252.csv の status: Q2025-07_2025-09 revenue は「OK|ROUNDING|NONCONSOLIDATED」、Q2025-10_2025-12 revenue は「OK|ROUNDING」（NONCONSOLIDATED が外れる）。FY2026-03 も NONCONSOLIDATED なし。'
+  - id: V22
+    section: company
+    quote: 2025-10-01 にソフトウェア開発会社アルテックスを完全子会社化し（直近期売上 201百万円※・一次情報：2025-09-19 開示）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20250919/140120250916558473.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。 株探ニュース一覧の1ページ目は 26/05/29 までで、2025-09 の開示は載っていない。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V23
+    section: financials
+    quote: '| 売上高 | 3550 | 4076 | 4154 | 4558 | 5000 |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 revenue FY2023-03=3550, FY2024-03=4076, FY2025-03=4154, FY2026-03=4558、revenue_plan FY2027-03=5000（いずれも status OK）。
+  - id: V24
+    section: financials
+    quote: '| 営業利益 | 203 | 250 | 99 | 65 | 150 |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 operating_income FY2023-03=203, FY2024-03=250, FY2025-03=99, FY2026-03=65、operating_income_plan FY2027-03=150（status OK）。
+  - id: V25
+    section: financials
+    quote: '| 経常利益 | 191 | 266 | 115 | 128 | 157 |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 ordinary_income 191/266/115/128、ordinary_income_plan FY2027-03=157（status OK）。
+  - id: V26
+    section: financials
+    quote: '| 純利益 | 137 | 202 | 82 | 86 | 105 |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 net_income 137/202/82/86、net_income_plan FY2027-03=105（status OK）。
+  - id: V27
+    section: financials
+    quote: 売上高は4期続けて増えたが、営業利益は 2024/3期の 250百万円✓ から 2025/3期 99百万円✓、2026/3期 65百万円✓ と減った
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 revenue FY2022-03=3231 → 3550 → 4076 → 4154 → 4558（4期連続増）。operating_income 250 → 99 → 65。
+  - id: V28
+    section: financials
+    quote: 営業利益率は 6.1% → 2.4% → 1.4%（採用値からの計算）
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 250/4076=6.13%、99/4154=2.38%、65/4558=1.43%。採用値 operating_margin FY2025-03=2.38・FY2026-03=1.43 とも一致。
+  - id: V29
+    section: financials
+    quote: 長野県 ICT 産業立地助成金 42.5百万円※ を営業外収益に計上したため（一次情報：2026-05-15 開示）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260515/140120260515536409.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。 採用値 ordinary_income 128 − operating_income 65 = 63 で営業外が大きいことは事実だが、内訳は確かめられない。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V30
+    section: financials
+    quote: '**今期計画は営業利益 150百万円✓（前期比 +130.8%）**。売上高 5,000百万円✓（+9.7%）に対し利益率を 3.0% に戻す計画'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    - src/screen.py
+    evidence: 150/65-1=+130.77%（screen.screen_one("5252") の plan_yoy_pct=130.769）。5000/4558-1=+9.70%。採用値 operating_margin_plan FY2027-03=3。
+  - id: V31
+    section: financials
+    quote: 中計（2027/3〜2029/3期）の最終年度目標は連結売上高 62.0億円・営業利益 3.0億円・営業利益率 5.0%
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260219/140120260217564019.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。 株探記事の関連見出し「日本ナレッジは４日続伸、中計を評価 (26/02/20)」で中計公表は確認できるが、目標値は確かめられない。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V32
+    section: financials
+    quote: 1Q の営業利益は -37 → -23 → -6百万円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 operating_income Q2024-04_2024-06=-37、Q2025-04_2025-06=-23、Q2026-04_2026-06=-6（status OK）。
+  - id: V33
+    section: financials
+    quote: 前期は 4Q だけで 96百万円✓ を稼ぎ、通期 65百万円✓ を上回った
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 operating_income Q2026-01_2026-03=96、FY2026-03=65。
+  - id: V34
+    section: financials
+    quote: 今期1Q の売上高 1,204百万円✓ は前年同期 1,061百万円✓ 比 +13.5%
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 revenue Q2026-04_2026-06=1204、Q2025-04_2025-06=1061。1204/1061-1=+13.48%。
+  - id: V35
+    section: financials
+    quote: 上期計画は営業利益 34百万円※（台帳は1ソースのみ。決算短信にも同値の記載あり）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520598.pdf
+    - data/fundamentals/5252.csv
+    evidence: data/fundamentals の H2026-04_2026-09 operating_income_plan=34 は SINGLE_SOURCE（kabutan_half）で採用値ではなく裏付けに使えない。「決算短信にも同値」は PDF がテキスト化できず確かめられない。
+    action: src/fetch_tanshin.py で 5252 の決算短信を data/tanshin/5252.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V36
+    section: financials
+    quote: 過去2年の 2Q は 9.8百万円✓・-11百万円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 operating_income Q2024-07_2024-09=9.8、Q2025-07_2025-09=-11。
+  - id: V37
+    section: financials
+    quote: '| 2024/3期 | 51.1 | 127 | 782 |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 FY2024-03 equity_ratio=51.1、operating_cf=127、cash_equivalents=782（status OK）。
+  - id: V38
+    section: financials
+    quote: '| 2025/3期 | 53.6 | 53 | 672 |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 FY2025-03 equity_ratio=53.6、operating_cf=53、cash_equivalents=672（status OK）。
+  - id: V39
+    section: financials
+    quote: '| 2026/3期 | 53.5 | 56 | 605 |'
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/fundamentals/5252.csv
+    evidence: 採用値 FY2026-03 equity_ratio=53.5、operating_cf=56、cash_equivalents=605（status OK）。
+  - id: V40
+    section: financials
+    quote: 6月末は 53.4%※。借入金（短期・長期の合計）は約382百万円※、のれんは 64百万円※
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520598.pdf
+    - data/fundamentals/5252.csv
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。 台帳の Q2026-04_2026-06 equity_ratio=53.4 は SINGLE_SOURCE で採用値ではない。借入金・のれんの行は台帳に無い。
+    action: src/fetch_tanshin.py で 5252 の決算短信を data/tanshin/5252.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V41
+    section: outlook
+    quote: で **NO_QUARTERLY**（四半期の採用値で伸びを測れない）の警告
+    verdict: supported
+    tier: dataset
+    sources:
+    - src/screen.py
+    evidence: screen.screen_one("5252") の出力 flags=["NO_QUARTERLY"]、q0_period=Q2026-04_2026-06・q0_yoy_pct=null（前年同期 -23 が負で前年比が定義されない）。
+  - id: V42
+    section: outlook
+    quote: その前の Q（4Q）は +28.0%、通期実績は -34.3%、会社計画は +130.8%
+    verdict: supported
+    tier: dataset
+    sources:
+    - src/screen.py
+    - data/fundamentals/5252.csv
+    evidence: 'screen.screen_one("5252"): q1_yoy_pct=28.000、fy_yoy_pct=-34.343、plan_yoy_pct=130.769。採用値 96/75-1=+28.0%、65/99-1=-34.3%、150/65-1=+130.8%。'
+  - id: V43
+    section: outlook
+    quote: 直近20営業日の平均売買代金は約16百万円※
+    verdict: supported
+    tier: dataset
+    sources:
+    - src/judge.py
+    evidence: 'python src/judge.py --indicators-only の 5252: as_of=2026-09-25、avg_turnover_20d=16490790.0（約16.5百万円）。'
+  - id: V44
+    section: outlook
+    quote: BBS の顧客基盤（経営会計コンサル・システム構築・BPO）に検証・AI 品質保証を載せる構想（2026-05-15 開示）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260515/140120260507518628.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。
+    action: テキストで読める一次情報（会社IRのHTML版・EDINET等）を出典に足すか、本文で「未確認」と扱う
+  - id: V45
+    section: price
+    quote: 2026-09-25 の採用終値 1,024円✓ は、台帳にある採用終値（2025-09-29 以降）の最高値。安値は 2025-12-08 の 475円✓
+    verdict: supported
+    tier: dataset
+    sources:
+    - data/prices/daily.csv
+    evidence: status OK の行は 2025-09-29〜2026-09-25 の238件。close 最大 2026-09-25=1024、最小 2025-12-08=475。
+  - id: V46
+    section: price
+    quote: 記念配当と記念株主優待の発表で急伸（採用終値 487円✓ → 567円✓）
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/news/marketnews/?b=n202609251003
+    - data/prices/daily.csv
+    evidence: 株探記事（200）の関連見出し「日本ナレッジが後場終盤にカイ気配、記念配当と記念株主優待を発表 (25/10/01)」。採用値 2025-09-30 close=487、2025-10-01 close=567。（「創業40周年」の部分はこの出典に無い）
+  - id: V47
+    section: price
+    quote: 中期経営計画の公表（2/19）を受けて続伸（2/17 746円✓ → 2/20 868円✓）
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/news/marketnews/?b=n202609251003
+    - data/prices/daily.csv
+    evidence: 株探記事（200）の関連見出し「日本ナレッジは４日続伸、中計を評価 (26/02/20)」。採用値 2026-02-17=746、02-18=770、02-19=824、02-20=868。
+  - id: V48
+    section: price
+    quote: 時価総額 約42.6億円※、予想PER 40.6倍※、PBR 3.70倍※、予想配当利回り 0.68%※
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://www.nikkei.com/nkd/company/?scode=5252
+    - https://kabutan.jp/stock/?code=5252
+    evidence: 日経（200）「予想PER|40.6|倍|予想配当利回り|0.68|％|2026/9/25」「PBR（実績）|3.70|倍」「時価総額|4,264|百万円」。株探（200）「40.6 倍 | 3.70 倍 | 0.68 ％」「時価総額 | 42.6 億円」。いずれも 9/25 終値 1,024円ベース。
+  - id: V49
+    section: price
+    quote: 配当は前期 10円（期末）、今期予想 7円（1Q 決算短信・一次情報）
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520598.pdf
+    evidence: TDnet PDF は再取得（200・application/pdf）したが fetch_source.py はテキスト化しない（本文82文字）。data/tanshin/5252.csv は存在しない。確かめる材料が無い。 日経の予想配当利回り 0.68%×1,024円≈7.0円 とは矛盾しないが、配当額そのものは確かめられない。
+    action: src/fetch_tanshin.py で 5252 の決算短信を data/tanshin/5252.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+  - id: V50
+    section: price
+    quote: 発行済株式（約415万株）の約1割に当たる買い残
+    verdict: supported
+    tier: secondary
+    sources:
+    - https://kabutan.jp/stock/?code=5252
+    - https://www.nikkei.com/nkd/company/?scode=5252
+    evidence: 株探（200）「発行済株式数 | 4,164,500 株」、日経（200）「普通株式数|4,164,500|株」。買残 418.3千株/4,164.5千株=10.0%。株数は約416万株で「約415万株」は0.4%ずれるが、「約1割」の結論は変わらない。
+  - id: V51
+    section: sources
+    quote: '| 一次 | 企業IR https://www.know-net.co.jp/ir | 2026-09-27 | リンク |'
+    verdict: unsupported
+    tier: primary
+    sources:
+    - https://www.know-net.co.jp/ir
+    evidence: 再取得（200・994文字）。本文はサイトのナビゲーション（「IR NEWS」「決算短信」「適時開示」等のメニュー名）だけで、レポートの記述を支える内容は無い（目次のみ）。
+    action: 一次情報の欄には個別資料のURLを書く。リンク用途なら一次の出典表から外す
+  - id: V52
+    section: sources
+    quote: '| 一次 | 2027年3月期 第1四半期決算短信（2026-08-14）https://tdnet-pdf.kabutan.jp/20260814/140120260814520598.pdf | 2026-09-27 | セグメント・財政状態・配当・上期計画 |'
+    verdict: unverifiable
+    tier: primary
+    sources:
+    - https://tdnet-pdf.kabutan.jp/20260814/140120260814520598.pdf
+    - https://kabutan.jp/stock/news?code=5252
+    evidence: 株探ニュース一覧（200）に「26/08/14 15:00 | 開示 | 2027年３月期 第１四半期決算短信〔日本基準〕（連結）」があり表題・日付は確認できる。ただし PDF 本文は fetch_source.py がテキスト化せず、この表の「使った箇所」の数値は1件も確かめられない。
+    action: src/fetch_tanshin.py で 5252 の決算短信を data/tanshin/5252.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）
+resolutions:
+- {id: V04, resolved_at: '2026-09-27', how: rewritten, quote: その間（8/21〜9/24）に会社の開示は無く, note: 8/20 15:00 に譲渡制限付株式報酬の払込完了の開示があるため、期間を 8/21〜9/24 に直した（株探ニュース一覧で 8/21〜9/24 に開示の行が無いことは裏取りが確認済み）}

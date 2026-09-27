@@ -1,0 +1,351 @@
+# 裏取り記録（append-only）— reports/6554.md
+#
+# 手順の正: .claude/skills/kabu-ledger-verify/SKILL.md
+# 語彙の正: src/verification.py（VERDICTS / TIERS）
+#
+# レポートを書いた文脈とは別の文脈が、本文の出典URLを src/fetch_source.py で
+# 実際に再取得し、記述がその出典で裏付けられるかを1件ずつ判定した結果。
+# **過去の run は書き換えない。**新しい検証は runs の末尾に足す。
+code: "6554"
+runs:
+  - run: "2026-09-27T17:05:00+09:00"
+    report_updated: "2026-09-27"
+    report_sha256: "c5cdcfb3486d7ee2cb803461c06ffae75c8294f166d206d08ef87b4554d34572"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    note: >-
+      本文の出典URL 14件のうち 12件を再取得した（残り2件の株探決算ページ・IR BANK は
+      data/fundamentals/6554.csv に委譲）。一次情報のPDF 3件（3Q決算短信・支配株主・
+      業績予想修正）は到達できたが fetch_source.py はテキスト化せず、
+      data/tanshin/6554.csv も存在しないため、PDF にしか根拠のない記述は unverifiable とした。
+      企業IRの開示一覧ページ（ir-news）は再取得本文がナビゲーションのみで一覧が無い。
+      指示めいた文字列は検出されなかった。
+
+    urls_refetched:
+      - {url: "https://contents.xj-storage.jp/xcontents/AS97535/1258ecc5/492f/434f/8529/cb2e51fe7b3d/140120260812518017.pdf", http_status: 200}
+      - {url: "https://contents.xj-storage.jp/xcontents/AS97535/c0782f4d/3659/4f61/9545/b35b5ec435be/140120251120506581.pdf", http_status: 200}
+      - {url: "https://contents.xj-storage.jp/xcontents/AS97535/06624d78/b416/4770/8b4f/4a740607685f/140120260421507306.pdf", http_status: 200}
+      - {url: "https://prtimes.jp/main/html/rd/p/000000077.000106092.html", http_status: 200}
+      - {url: "https://www.sus-g.co.jp/business/ir/ir-news/", http_status: 200}
+      - {url: "https://www.sus-g.co.jp/ir/", http_status: 200}
+      - {url: "https://www.sus-g.co.jp/business/ir/", http_status: 200}
+      - {url: "https://finance.yahoo.co.jp/quote/6554.T/news", http_status: 200}
+      - {url: "https://finance.yahoo.co.jp/quote/6554.T/profile", http_status: 200}
+      - {url: "https://kabuyoho.jp/report?bcode=6554", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=6554", http_status: 200}
+      - {url: "https://minkabu.jp/stock/6554/analyst_consensus", http_status: 403}
+
+    urls_delegated:
+      - url: "https://kabutan.jp/stock/finance?code=6554"
+        to: "data/fundamentals/6554.csv"
+      - url: "https://irbank.net/E33357/results"
+        to: "data/fundamentals/6554.csv"
+
+    claims:
+      - id: V01
+        section: updates
+        quote: "前週末 1,140円✓ → 9/24 1,153円✓ → 9/25 1,171円✓（週間 +2.7%）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv（status=OK）: 2026-09-18 close=1140.0、2026-09-24 close=1153.0、2026-09-25 close=1171.0。1171/1140−1 = +2.72%。一致。"
+
+      - id: V02
+        section: updates
+        quote: "1,171円は 2026-02-06（1,181円✓）以来の高い終値"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv（OK行）: 2026-02-06 close=1181.0。2026-02-07〜2026-09-24 の OK 行に close≥1171 の日は無く、9/25 の 1171.0 が最初。一致。"
+
+      - id: V03
+        section: updates
+        quote: "9/25 の出来高 40,200株※は 8/14（44,000株※）以来の多さ"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv: 2026-09-25 volume=40200、2026-08-14 volume=44000。2026-08-15〜09-24 に volume≥40200 の日は無い。一致（出来高は2ソース照合の対象外で、本文も※で明示）。"
+
+      - id: V04
+        section: updates
+        quote: "TOPIX は 4,091.14 → 4,128.59✓（+0.9%）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/indices/topix.csv"]
+        evidence: "topix.csv（status=OK、kabutan/yahoo_jp 一致）: 2026-09-18 close=4091.14、2026-09-25 close=4128.59。4128.59/4091.14−1 = +0.92%。一致。"
+
+      - id: V05
+        section: updates
+        quote: "グロース250 は 808.98 → 800.55※（−1.0%）"
+        verdict: unsupported
+        tier: dataset
+        sources: ["data/indices/growth250.csv"]
+        evidence: "growth250.csv: 2026-09-18・2026-09-25 とも status=SINGLE_SOURCE・close 空（value_primary は kabutan の 808.98・800.55）。SINGLE_SOURCE は採用値ではないため裏付けに使えない（D7）。本文は※で未照合と明示している。"
+        action: "yahoo_jp 側の growth250 取得が成立するまで※のまま残すか、比較をTOPIXだけにする"
+
+      - id: V06
+        section: updates
+        quote: "年50円予想・前期45円"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.sus-g.co.jp/ir/"]
+        evidence: "企業IRトップ（200）: 「2025年9月期においては…配当を当初予想に10円を加えた1株当たり45円といたします。また、2026年9月期につきましては…1株当たり50円を予定しております。」本文が引く決算短信PDFはテキスト化できず未照合。"
+
+      - id: V07
+        section: updates
+        quote: "9/15・9/22 付で「9月の高利回り配当」特集が並んでいた"
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.yahoo.co.jp/quote/6554.T/news"]
+        evidence: "再取得（200）: 「まだ間に合う、9月配当【高利回り】ベスト30「スタンダード他」編 ＜割安株特集＞ 9/22 株探ニュース」「9月に配当取りを狙える【高利回り】ベスト30「スタンダード他」編 ＜割安株特集＞ 9/15 株探ニュース」。9/5 付の同種記事もある。見出しの存在のみ確認（上昇理由との関係は本文も推測と明示）。"
+
+      - id: V08
+        section: updates
+        quote: "最新は 2026-08-12 の3Q決算短信"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://www.sus-g.co.jp/business/ir/ir-news/"]
+        evidence: "再取得（200・1,086字）。本文はサイトのナビゲーション（IR NEWS／決算短信／適時開示情報 等のメニュー）のみで、開示の一覧・日付が1件も含まれない。「今週、適時開示は見当たらない」も同じ理由で確かめられない。"
+        action: "開示一覧が静的に取れる出典（TDnet 等の一覧URL）を本文に足すか、「開示一覧はJS描画で機械確認できていない」と明示する"
+
+      - id: V09
+        section: updates
+        quote: "11月予定の通期決算"
+        verdict: supported
+        tier: primary
+        sources: ["https://www.sus-g.co.jp/ir/"]
+        evidence: "IRカレンダー（200）: 「2026年11月 | 2026年9月期 決算発表」。日付は未記載（本文の未確認節とも整合）。"
+
+      - id: V10
+        section: company
+        quote: "2000年1月設立、2017年9月に上場し、現在は東証グロース。9月決算"
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.yahoo.co.jp/quote/6554.T/profile"]
+        evidence: "再取得（200）: 「設立年月日 | 2000年1月」「市場名 | 東証グロース」「上場年月日 | 2017年9月13日」「決算 | 9月末日」「本社所在地 | 〒600-8008 京都市下京区…」「代表者名 | 齋藤　公男」。"
+
+      - id: V11
+        section: company
+        quote: "代表取締役社長の齋藤公男氏が議決権の50.83%を持つ支配株主である（2025-09-30 現在）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://contents.xj-storage.jp/xcontents/AS97535/c0782f4d/3659/4f61/9545/b35b5ec435be/140120251120506581.pdf", "https://prtimes.jp/main/html/rd/p/000000077.000106092.html"]
+        evidence: "支配株主PDFは到達（200）したがテキスト化されず、50.83% を確認できない。氏名と役職は PR TIMES（200）の「代表取締役社長：齋藤 公男」で確認。"
+        action: "議決権比率はテキストで読める出典（有報・コーポレートガバナンス報告書のHTML等）を足す"
+
+      - id: V12
+        section: company
+        quote: "2026年6月末の在籍エンジニアは2,302人、3Q累計の稼働率は93.9%、派遣単価は前年同期比 +4.2%。2026年4月に新卒エンジニア265人が入社した"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://contents.xj-storage.jp/xcontents/AS97535/1258ecc5/492f/434f/8529/cb2e51fe7b3d/140120260812518017.pdf"]
+        evidence: "3Q決算短信PDFは到達（200）したが fetch_source.py はテキスト化しない（chars=82）。data/tanshin/6554.csv も存在しない。2,302／93.9／4.2／265 のいずれも照合できない。"
+        action: "src/fetch_tanshin.py で data/tanshin/6554.csv を作るか、テキストで読める出典を足す"
+
+      - id: V13
+        section: company
+        quote: "HRコンサルティングは2025年12月末に他社へ譲渡済み"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://prtimes.jp/main/html/rd/p/000000077.000106092.html"]
+        evidence: "再取得（200・2025年9月30日付）: 「2025年12月31日をもって、HRコンサルティングサービスをウェルネス・コミュニケーションズ株式会社…へ譲渡することを決議し、事業譲渡契約を締結いたしました。」予定日と契約締結は確認できるが、譲渡が実行済みであることはこの出典（実行前の発表）では確かめられない。"
+        action: "実行を示す出典（3Q決算短信の特別利益の記載をテキストで読める形で）を足す"
+
+      - id: V14
+        section: company
+        quote: "3Q累計ではソリューション事業以外の3区分はいずれも減益か赤字"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://contents.xj-storage.jp/xcontents/AS97535/1258ecc5/492f/434f/8529/cb2e51fe7b3d/140120260812518017.pdf"]
+        evidence: "セグメント情報は決算短信PDFにしかなく、PDFがテキスト化されないため照合できない。data/tanshin/6554.csv も無い。"
+        action: "data/tanshin/6554.csv を作るか、セグメント別の数値をテキストで読める出典を足す"
+
+      - id: V15
+        section: financials
+        quote: "| 売上高 | 10,465 | 11,501 | 13,219 | 15,015 | 16,902 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6554.csv"]
+        evidence: "採用値（OK）: revenue FY2022-09=10465・FY2023-09=11501・FY2024-09=13219・FY2025-09=15015、revenue_plan FY2026-09=16902。営業利益行 731/608/829/1212/1365、経常利益行 806/623/860/1258/1397、純利益行 316/461/602/915/991 も採用値と一致。"
+
+      - id: V16
+        section: financials
+        quote: "| フリーキャッシュフロー | 98 | 521 | 769 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6554.csv"]
+        evidence: "採用値（OK）: free_cf FY2023-09=98・FY2024-09=521・FY2025-09=769。同表の operating_cf 445/745/1062、cash_equivalents 2615/2812/3407、total_assets 5008/5650/6715 も一致。"
+
+      - id: V17
+        section: financials
+        quote: "| Q2026-04_2026-06 | 4,060 | 287 | +84.0% |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6554.csv", "src/screen.py"]
+        evidence: "採用値（OK）: Q2026-04_2026-06 revenue=4060・operating_income=287、Q2025-04_2025-06 operating_income=156。287/156−1 = +83.97%。他の2行も 341/379−1 = −10.03%、530/438−1 = +21.00%。python src/screen.py 6554 の出力「直近Q +84.0% その前Q +21.0%」「警告なし」と一致。"
+
+      - id: V18
+        section: financials
+        quote: "通期の営業利益は2025年9月期に 1,212百万円✓（前期比 +46.2%）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6554.csv", "src/screen.py"]
+        evidence: "採用値（OK）: operating_income FY2025-09=1212、FY2024-09=829。1212/829−1 = +46.20%。screen.py の通期 +46.2% と一致。"
+
+      - id: V19
+        section: financials
+        quote: "売上高 12,094百万円・営業利益 1,158百万円（いずれも四半期単独の採用値3本の合計✓）。前年同期比は売上高 +9.1%、営業利益 +19.0%"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6554.csv"]
+        evidence: "採用値（OK）の四半期: revenue 3924+4110+4060 = 12094、前年 3681+3776+3630 = 11087、12094/11087−1 = +9.08%。operating_income 341+530+287 = 1158、前年 379+438+156 = 973、1158/973−1 = +19.01%。一致。"
+
+      - id: V20
+        section: financials
+        quote: "純利益は 903百万円※（+33.9%）で、HRコンサルティング事業の譲渡益 70百万円（特別利益）を含む"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://contents.xj-storage.jp/xcontents/AS97535/1258ecc5/492f/434f/8529/cb2e51fe7b3d/140120260812518017.pdf", "data/fundamentals/6554.csv"]
+        evidence: "決算短信PDFはテキスト化されず、譲渡益 70百万円・+33.9% を照合できない。fundamentals の net_income C2025-10_2026-06=903・C2024-10_2025-06=674 はいずれも SINGLE_SOURCE（採用値ではない）で、その比 903/674−1 = +33.98% は百万円丸めの値どうしの計算であり +33.9% とも +34.0% とも確定できない。"
+        action: "data/tanshin/6554.csv で3Q累計の純利益と特別利益を照合する"
+
+      - id: V21
+        section: financials
+        quote: "残る4Q（7〜9月）に計画が求める営業利益は約207百万円で、前年の同じ四半期（239百万円✓）を下回る水準"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6554.csv"]
+        evidence: "採用値（OK）: operating_income_plan FY2026-09=1365 − 3Q累計（四半期採用値の合計）1158 = 207。operating_income Q2025-07_2025-09=239。207 < 239。一致。"
+
+      - id: V22
+        section: financials
+        quote: "3Q以降に新卒研修・エンジニアの報酬引き上げ・後ずれした販管費の執行を見込むとして通期予想を据え置いた"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://contents.xj-storage.jp/xcontents/AS97535/06624d78/b416/4770/8b4f/4a740607685f/140120260421507306.pdf"]
+        evidence: "業績予想修正PDFは到達（200）したがテキスト化されず、据え置きの理由の記載を照合できない。"
+        action: "テキストで読める出典（TDnet のHTML版・企業IRのニュース本文等）を足す"
+
+      - id: V23
+        section: financials
+        quote: "2025年9月期末の自己資本比率は 62.9%✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6554.csv", "https://kabuyoho.jp/report?bcode=6554"]
+        evidence: "採用値（OK）: equity_ratio FY2025-09=62.9（kabutan/irbank 一致）。株予報（200）も「自己資本比率 62.9 %」。"
+
+      - id: V24
+        section: financials
+        quote: "6月末の現金及び預金は 4,330百万円（決算短信）で、借入金は貸借対照表に計上されていない"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://contents.xj-storage.jp/xcontents/AS97535/1258ecc5/492f/434f/8529/cb2e51fe7b3d/140120260812518017.pdf"]
+        evidence: "決算短信PDFはテキスト化されず、4,330百万円・借入金の有無を照合できない。fundamentals に2026年6月末の現金・借入金の行は無い（C2025-10_2026-06 は equity_ratio=59.9 等が SINGLE_SOURCE のみ）。"
+        action: "data/tanshin/6554.csv で貸借対照表の値を照合する"
+
+      - id: V25
+        section: financials
+        quote: "ROE は 23.48%（株探）と 21.65%（IR BANK）で2ソースが食い違っている※"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6554.csv"]
+        evidence: "fundamentals: FY2025-09 roe status=MISMATCH、kabutan_fy_profit=23.48、irbank_pl_consolidated=21.65。食い違いの記述として一致（値自体は採用値ではない）。"
+
+      - id: V26
+        section: outlook
+        quote: "採用値の売上高は2017年9月期から2025年9月期まで毎期増えており"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/6554.csv"]
+        evidence: "採用値（OK）revenue: FY2017 6014 → FY2018 7106 → FY2019 8117 → FY2020 8967 → FY2021 9419 → FY2022 10465 → FY2023 11501 → FY2024 13219 → FY2025 15015。毎期増加。"
+
+      - id: V27
+        section: outlook
+        quote: "20日平均の売買代金は約13百万円※（出来高は未照合）"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py", "data/prices/daily.csv"]
+        evidence: "python src/judge.py --indicators-only（as_of 2026-09-25）: avg_turnover_20d=13491175.0（≈13.5百万円）、median_turnover_20d=11249550.0。daily.csv の 2026-08-26〜09-25 の20営業日で再計算しても平均 13.49百万円。一致。"
+
+      - id: V28
+        section: outlook
+        quote: "コンサルティング事業は3Q累計で売上高 −33.6%、AR/VR事業とその他は赤字"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://contents.xj-storage.jp/xcontents/AS97535/1258ecc5/492f/434f/8529/cb2e51fe7b3d/140120260812518017.pdf"]
+        evidence: "セグメント情報は決算短信PDFにのみあり、テキスト化されないため照合できない。"
+        action: "data/tanshin/6554.csv を作るか、テキストで読める出典を足す"
+
+      - id: V29
+        section: outlook
+        quote: "信用買残は 274.6千株※（2026-09-18 時点、売残 0）で、1日あたり出来高（20日平均 約12,000株※）の20倍を超える"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=6554", "data/margin/6554.csv", "data/prices/daily.csv"]
+        evidence: "株探（200）: 「09/18 | 0.0 | 274.6 | －」（売り残 | 買い残 | 倍率、単位千株）。data/margin/6554.csv も 2026-09-18 long=274.6・short=0.0。daily.csv の直近20営業日の平均出来高 11,960株、274,600/11,960 = 22.96倍。一致。"
+
+      - id: V30
+        section: outlook
+        quote: "みんかぶの該当ページが HTTP 403"
+        verdict: unverifiable
+        tier: none
+        sources: ["https://minkabu.jp/stock/6554/analyst_consensus"]
+        evidence: "本 run の再取得でも http_status 403（本文27字）。本文の「403 で見られない」という自己申告とは整合するが、到達できない出典では内容を何も確かめられない。コンセンサスの有無は未確認のまま。"
+        action: "アナリスト予想の有無を確かめるなら到達できる出典を足す（株予報の「目標株価(コ) --」は本 run で見えたが本文の出典として使われていない）"
+
+      - id: V31
+        section: price
+        quote: "採用終値の52週高値は 1,244円✓（2025-10-24）、安値は 946円✓（2026-06-04）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv の OK 行（2025-09-29〜2026-09-25）: 最大 close=1244.0（2025-10-24）、最小 close=946.0（2026-06-04）。一致。"
+
+      - id: V32
+        section: price
+        quote: "2025-11-17・18（通期決算の翌営業日以降、100,300株※・114,800株※）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://www.sus-g.co.jp/ir/"]
+        evidence: "daily.csv: 2025-11-17 volume=100300、2025-11-18 volume=114800。IRカレンダー（200）: 「2025年11月14日 | 2025年9月期 決算発表」（金曜）で、11/17 は翌営業日。一致。"
+
+      - id: V33
+        section: price
+        quote: "2026-04-23（中間期の業績予想上方修正の翌日、78,600株※）"
+        verdict: unverifiable
+        tier: primary
+        sources: ["data/prices/daily.csv", "https://contents.xj-storage.jp/xcontents/AS97535/06624d78/b416/4770/8b4f/4a740607685f/140120260421507306.pdf"]
+        evidence: "daily.csv: 2026-04-23 volume=78600（一致）。ただし修正発表日（本文は 2026-04-22）は PDF がテキスト化されず確認できない。PDF の URL 末尾は 140120260421507306 で、4/21 を示す可能性もある（未確認）。"
+        action: "発表日をテキストで確認できる出典を足す。4/21 発表なら「翌日」の記述を直す"
+
+      - id: V34
+        section: price
+        quote: "2026-08-14（3Q決算の2営業日後、44,000株※）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://www.sus-g.co.jp/ir/"]
+        evidence: "daily.csv: 2026-08-14 volume=44000。IRカレンダー（200）: 「2026年8月12日 | 2026年9月期 第3四半期決算発表」。8/12→8/13→8/14 で2営業日後。一致。"
+
+      - id: V35
+        section: price
+        quote: "2025-08-15〜2025-09-26 の株価は主ソースのみで照合が成立していない（`SINGLE_SOURCE`）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv の 6554: 最古行 2025-08-15、2025-08-15〜2025-09-26 の status は全行 SINGLE_SOURCE、最初の OK 行は 2025-09-29。一致。"
+
+      - id: V36
+        section: price
+        quote: "予想PER 10.6倍※・実績PBR 2.22倍※・予想配当利回り 4.27%※・時価総額 106億円※"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.jp/report?bcode=6554", "https://kabutan.jp/stock/?code=6554"]
+        evidence: "株予報（200）: 「PER (予) 10.6 倍」「PBR (実) 2.22 倍」「配当利回り (予) 4.27 %」「時価総額 106 億円(15:30)」、前日比 +18.0（1153→1171 の 9/25 と整合）。株探（200）も「10.6 倍 | 2.22 倍 | 4.27 ％」「時価総額 | 106 億円」。2026-09-27 取得時点の値。"
+
+      - id: V37
+        section: sources
+        quote: "| 1 | 2026年9月期 第3四半期決算短信（2026-08-12） |"
+        verdict: unverifiable
+        tier: primary
+        sources: ["https://contents.xj-storage.jp/xcontents/AS97535/1258ecc5/492f/434f/8529/cb2e51fe7b3d/140120260812518017.pdf"]
+        evidence: "一次情報 1〜3 の PDF はいずれも到達（200・application/pdf）したが、fetch_source.py はテキスト化しない。data/tanshin/6554.csv が無いため、本文中の「（決算短信）」を根拠とする記述はすべて機械で照合できない。発表日 2026-08-12 は IRカレンダーで確認。"
+        action: "src/fetch_tanshin.py で data/tanshin/6554.csv を作り、再検証する"

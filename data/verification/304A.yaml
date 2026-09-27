@@ -1,0 +1,343 @@
+code: "304A"
+runs:
+  - run: "2026-09-27T16:55:00+09:00"
+    report_updated: "2026-09-27"
+    report_sha256: "371283248935d67532fdc94a5e7a2855634b754459546a0e6c1e9df897ea74be"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    urls_refetched:
+      - {url: "https://www.forcia.com/ir/", http_status: 200}
+      - {url: "https://www.forcia.com/service/spook/", http_status: 200}
+      - {url: "https://www.nikkei.com/article/DGXZQOUC10B9Z0Q4A211C2000000/", http_status: 200}
+      - {url: "https://www.nikkei.com/nkd/disclosure/tdnr/20260414504137/", http_status: 200}
+      - {url: "https://www.release.tdnet.info/inbs/140120260527550757.pdf", http_status: 404}
+      - {url: "https://finance.biggo.jp/news/jpx_tdnet_140120260713592492", http_status: 200}
+      - {url: "https://finance.logmi.jp/articles/382583", http_status: 200}
+      - {url: "https://kabutan.jp/news/?b=k202510150127", http_status: 200}
+      - {url: "https://kabutan.jp/news/?b=k202604140177", http_status: 200}
+      - {url: "https://finance.yahoo.co.jp/quote/304A.T", http_status: 200}
+      - {url: "https://finance.yahoo.co.jp/quote/304A.T/news", http_status: 200}
+      - {url: "https://kabuyoho.ifis.co.jp/index.php?action=tp1&sa=report&bcode=304A", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=304A", http_status: 200}
+      - {url: "https://irbank.net/304A", http_status: 200}
+    claims:
+      - id: V01
+        section: company
+        quote: '会社は27/2期に売上31.1億円✓・営業利益4.12億円✓（前期比約5.8倍）を計画し'
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/304A.csv"]
+        evidence: 'FY2027-02 revenue_plan=3113（OK）、operating_income_plan=412（OK）、FY2026-02 operating_income=71（OK）。412/71=5.80。'
+      - id: V02
+        section: updates
+        quote: '採用終値は 9/18 の1,997円✓から 9/25 の2,065円✓へ約3.4%上昇'
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: '2026-09-18 close=1997.0（OK）、2026-09-25 close=2065.0（OK）。2065/1997-1=+3.41%。9/22 の行は無く、9/24・9/25 が OK。'
+      - id: V03
+        section: updates
+        quote: '出来高は 2,800株※・4,000株※と薄く'
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://kabutan.jp/stock/?code=304A"]
+        evidence: 'daily.csv 2026-09-24 volume=2800、2026-09-25 volume=4000。株探再取得（200）で「09月25日 … 出来高 | 4,000 株」。'
+      - id: V04
+        section: updates
+        quote: '今週、会社のIRニュースと株探・Yahoo!ファイナンスのニュース欄に本銘柄固有の新しい開示・報道は見当たらなかった'
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://finance.yahoo.co.jp/quote/304A.T/news", "https://www.forcia.com/ir/", "https://kabutan.jp/stock/?code=304A"]
+        evidence: 'Yahoo!ニュース欄（200）の最新は 9/14「【決算速報】トリプラ…」で 9/21〜9/27 の記事は0件。一方 forcia.com/ir/（200、1101字）はメニューのみでIRニュースの一覧が本文に無く、株探の銘柄ページ（200）にもニュース一覧が出ない。3か所のうち確かめられたのは Yahoo の1か所だけ。'
+        action: 'IRニュースの一覧ページ（会社サイトの IRニュース一覧）と株探のニュース一覧URLを出典に足すか、「Yahoo!ファイナンスのニュース欄では」に絞る'
+      - id: V05
+        section: updates
+        quote: '株予報（IFIS）は次回決算（2Q）を 2026-10-15 と表示している'
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.ifis.co.jp/index.php?action=tp1&sa=report&bcode=304A"]
+        evidence: '再取得（200）。「次回決算 / 2Q / 2026/10/15」。株探銘柄ページも「決算発表予定日 2026/10/15」。'
+      - id: V06
+        section: company
+        quote: '大手旅行会社の予約サイトや専門商社のECサイトに検索機能を提供している'
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.nikkei.com/article/DGXZQOUC10B9Z0Q4A211C2000000/"]
+        evidence: '再取得（200）。「大手旅行会社の予約サイトや膨大な商品を扱う専門商社の電子商取引（EC）サイトなど向けに高精度な検索エンジンを提供している。煩雑かつ膨大なデータを効率的に検索できる技術基盤「Spook（スプーク）」が強みだ。」'
+      - id: V07
+        section: company
+        quote: '顧客の約77%※が旅行・観光業界で'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.logmi.jp/articles/382583"]
+        evidence: '再取得（200、開催日 2025/07/14）。「当社の顧客の約77パーセントは旅行・観光業界が占めていますが」。2025-07 時点の説明で、最新値ではない。'
+      - id: V08
+        section: company
+        quote: '主要旅行会社上位10社中8社に検索機能を提供している'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.logmi.jp/articles/382583"]
+        evidence: '再取得（200）。「当社はすでに日本国内の主要旅行会社上位10社中8社に「検索機能」を提供しており」。話者が社長であることは本文の grep では確認していない。'
+      - id: V09
+        section: company
+        quote: '①**開発収益**＝システム構築・導入時の設定・カスタマイズ・コンサルティングの対価'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.biggo.jp/news/jpx_tdnet_140120260713592492"]
+        evidence: '再取得（200、27/2期1Q短信の転載）。「開発収益は、基幹システムの構築や導入時の設定・カスタマイズ、導入に関連した各種コンサルティング業務等に係る対価であり、原則としてプロジェクトの進捗に応じて収益を計上しております。月額収益は、システム稼働後の運用保守費やライセンス使用料、サービス利用料等により構成され、導入顧客数の増加にともなって安定的に積み上がる収益であります。」'
+      - id: V10
+        section: company
+        quote: '2020年から SaaS 型の提供も始めている'
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.nikkei.com/article/DGXZQOUC10B9Z0Q4A211C2000000/"]
+        evidence: '再取得（200）。「2020年にはネット経由でソフトを使えるSaaS（サース）サービスを始め」。'
+      - id: V11
+        section: company
+        quote: '2024年12月26日に上場（日本経済新聞）'
+        verdict: supported
+        tier: secondary
+        sources: ["https://www.nikkei.com/article/DGXZQOUC10B9Z0Q4A211C2000000/"]
+        evidence: '再取得（200）。見出し「フォルシアが26日上場、高精度検索エンジンを提供」、記事日付「2024年12月17日 18:00」。'
+      - id: V12
+        section: company
+        quote: '市場区分は東証グロース、業種は情報・通信（Yahoo!ファイナンス表示）'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.yahoo.co.jp/quote/304A.T"]
+        evidence: '再取得（200）。「東証GRT / フォルシア(株) / 304A / 情報・通信」。'
+      - id: V13
+        section: company
+        quote: '発行済株式数は約123万株※、時価総額は約25億円※'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.yahoo.co.jp/quote/304A.T"]
+        evidence: '再取得（200）。「時価総額 2,544 百万円 (09/25)」「発行済株式数 1,231,900 株 (09/25)」。2026-09-25 時点の値。'
+      - id: V14
+        section: company
+        quote: '自己資本比率は27/2期1Q末で87.3%※'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.biggo.jp/news/jpx_tdnet_140120260713592492"]
+        evidence: '再取得（200）。「2027年2月期第1四半期 | 2,326 | 2,030 | 87.3」（総資産・純資産・自己資本比率）。'
+      - id: V15
+        section: financials
+        quote: '| 26/2期 | 2197 | 71 | 74 | 48 |'
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/304A.csv"]
+        evidence: 'FY2026-02 revenue=2197・operating_income=71・ordinary_income=74・net_income=48（いずれも status OK）。'
+      - id: V16
+        section: financials
+        quote: '| 27/2期 会社計画 | 3113 | 412 | 415 | 275 |'
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/304A.csv", "https://finance.biggo.jp/news/jpx_tdnet_140120260713592492"]
+        evidence: 'FY2027-02 revenue_plan=3113・operating_income_plan=412・ordinary_income_plan=415・net_income_plan=275（OK）。1Q短信転載（200）「通期 | 3,113 | 41.7 | 412 | 477.2 | 415 | 457.8 | 275 | 465.7 | 223.72」。'
+      - id: V17
+        section: financials
+        quote: '監査法人との協議の結果、一部大型案件の売上を翌期（27/2期）の顧客検収時点で計上することになった'
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://www.nikkei.com/nkd/disclosure/tdnr/20260414504137/", "https://finance.biggo.jp/news/jpx_tdnet_140120260713592492"]
+        evidence: '日経の開示ページ（200、536字）は見出し「2026年2月期 業績予想と決算値との差異に関するお知らせ」のみで本文なし。1Q短信転載（200）には「前事業年度末における収益認識基準適用の見直しにより、進捗に応じた売上計上ではなく、顧客による検収時点で売上計上することが適切であると判断された一部大型案件」とあるが、「監査法人との協議」「4Q中に受注・契約締結」はヒットなし。'
+        action: '差異開示の本文（TDnet 等の一次）を出典に足すか、「収益認識基準適用の見直しにより」（1Q短信の表現）に改める'
+      - id: V18
+        section: financials
+        quote: '上期には「1Q〜2Qで予定していた大型案件の初期開発収益が下期以降に時期ずれ」とも説明しており'
+        verdict: unsupported
+        tier: none
+        sources: ["https://kabutan.jp/news/?b=k202510150127"]
+        evidence: '株探の上期決算速報（200）は「上期経常が58％減益で着地・6-8月期も69％減益」と数値のみで、「時期ずれ」「下期」「初期開発収益」はヒットなし。本文記載の他のURLにも該当文言なし。'
+        action: '26/2期上期の決算短信・説明資料（一次）を出典に足すか、この記述を落とす'
+      - id: V19
+        section: financials
+        quote: 'SaaS 型サービスの月額収益は26/2期に前年比27.0%増※'
+        verdict: unsupported
+        tier: none
+        sources: ["https://finance.logmi.jp/articles/382583"]
+        evidence: 'ログミー（200）は26/2期1Q説明会で、「27.0」はヒットなし（同記事にあるのは1Qの SaaS型売上 前年同期比14.4%増、通期計画 SaaS型 20.3%増）。本文記載の他のURLにも該当なし。'
+        action: '26/2期本決算の説明資料（一次）を出典に足すか、この記述を落とす'
+      - id: V20
+        section: financials
+        quote: '**27/2期1Qは前年同期比で売上高が約18%増、営業利益は約3倍**'
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/304A.csv", "https://finance.biggo.jp/news/jpx_tdnet_140120260713592492"]
+        evidence: 'Q2026-03_2026-05 revenue=665・operating_income=74、Q2025-03_2025-05 revenue=563・operating_income=25（OK）。665/563=1.181、74/25=2.96。短信転載「売上高は665百万円（前年同期比18.1％増）、営業利益は74百万円（同188.5％増）」。'
+      - id: V21
+        section: financials
+        quote: '「一部大型案件は検収時点で売上計上することが適切と判断し、第2四半期に売上計上予定」'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.biggo.jp/news/jpx_tdnet_140120260713592492"]
+        evidence: '再取得（200）。原文「顧客による検収時点で売上計上することが適切であると判断された一部大型案件については、当第1四半期において売上計上は行わず、第2四半期に売上計上する予定であります。」。趣旨は一致、鉤括弧内は逐語ではなく要約。'
+        action: '鉤括弧は原文の引用に見えるので、原文どおりにするか括弧を外す（提案）'
+      - id: V22
+        section: financials
+        quote: '26/2期の四半期営業利益は 25→7.5→17→21百万円✓'
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/304A.csv"]
+        evidence: 'operating_income: Q2025-03_2025-05=25、Q2025-06_2025-08=7.5、Q2025-09_2025-11=17、Q2025-12_2026-02=21（いずれも OK）。'
+      - id: V23
+        section: financials
+        quote: '26/2期末の現金同等物は1,287百万円✓、営業CFは181百万円✓、フリーCFは58百万円✓。25/2期は営業CFが27百万円✓まで細り、フリーCFは−84百万円✓だった'
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/304A.csv"]
+        evidence: 'FY2026-02 cash_equivalents=1287・operating_cf=181・free_cf=58、FY2025-02 operating_cf=27・free_cf=-84（いずれも OK）。'
+      - id: V24
+        section: financials
+        quote: '27/2期の会社計画は ROE 13.55%✓・EPS 223.23円✓'
+        verdict: superseded
+        tier: primary
+        sources: ["data/fundamentals/304A.csv", "https://finance.biggo.jp/news/jpx_tdnet_140120260713592492", "https://kabutan.jp/news/?b=k202604140177"]
+        evidence: 'FY2027-02 roe_plan=13.55・eps_plan=223.23（OK。ただし source_url は primary・secondary とも kabutan.jp/stock/finance）。株探 4/14 速報（200）の表は「予 2027.02 | 3,113 | 412 | 415 | 275 | 223.2 | 0 | 26/04/14」。27/2期1Q短信転載（200、2026-07-14 発表）の通期予想は「275 | 465.7 | 223.72」で、1株当たり予想は 223.72円。2026-07-14 時点で 223.72円に動いている（利益予想の修正は「無」）。'
+        action: 'EPS計画を「223.72円（2026-07-14 時点、1Q短信）」とするか、4/14 時点と明記する。eps_plan の2ソースが同じ運営（株探）に見える点は人間が確認'
+      - id: V25
+        section: outlook
+        quote: '成長戦略の3本柱は、①既存顧客へのアップセル（基幹システム刷新ニーズ）②観光DX・MaaS への新規参入企業の支援 ③旅行・観光業界を支えるマーケットプレイスの構築'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.logmi.jp/articles/382583"]
+        evidence: '再取得（200）。「まずは、既存顧客へのアップセル（成長戦略1 主要旅行業者との連携強化と新たな分野への拡大）、2つ目は新規顧客の取り込み（成長戦略2 観光DXを活用した新規参入企業支援と事業機会の拡大）、3つ目は旅行・観光業界を支えるマーケットプレイスの構築（成長戦略3）です。」「基幹システム刷新ニーズを新たな事業機会に」「非旅行会社の観光MaaS市場進出を支援」。'
+      - id: V26
+        section: outlook
+        quote: '会社は1Q時点で計画を据え置いた'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.biggo.jp/news/jpx_tdnet_140120260713592492"]
+        evidence: '再取得（200）。「2027年2月期の通期の業績予想につきましては、2026年4月14日公表の「2026年2月期決算短信」から変更はありません。」「直近に公表されている業績予想からの修正の有無 ： 無」。'
+      - id: V27
+        section: outlook
+        quote: '直近60営業日の中央値は約850株※'
+        verdict: contradicted
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: 'daily.csv の 304A を日付順に並べた末尾60行（2026-06-29〜2026-09-25）の volume の中央値は 700（statistics.median。59行・61行でも 700）。約850とはならない。'
+        action: '「約700株※」に直す（直したら resolutions に rewritten で記録）'
+      - id: V28
+        section: outlook
+        quote: '決算翌日には10万株を超える日もあり'
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: 'daily.csv で volume>100000 の行は 2026-04-15（110000）の1行のみ。4/14 本決算発表の翌日。'
+      - id: V29
+        section: outlook
+        quote: '人員（従業員138名、約半数がエンジニア。25年7月時点）'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.logmi.jp/articles/382583"]
+        evidence: '再取得（200、開催日 2025/07/14）。「現在従業員数は138名で、その約半数がエンジニアとなっており」。'
+      - id: V30
+        section: outlook
+        quote: '大型案件対応で「エンジニア稼働1日当たり売上高」が一時的に低下したと会社自身が説明している'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.logmi.jp/articles/382583"]
+        evidence: '再取得（200）。「KPI② エンジニア稼働１日当たり売上高」の節で「一部案件の売上時期の延伸と大型案件のリリース等による外注パートナーの増加に伴い、一人当たり売上高および営業利益率が一時的に低下しました」。'
+      - id: V31
+        section: outlook
+        quote: '無配（Yahoo!ファイナンスの配当利回り表示 0.00%※）'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.yahoo.co.jp/quote/304A.T", "https://finance.biggo.jp/news/jpx_tdnet_140120260713592492"]
+        evidence: 'Yahoo（200）「配当利回り（会社予想）0.00 % (09/25)」「1株配当（会社予想）0.00 円 (2027/02)」。1Q短信転載「2027年2月期(予想) |  | 0.00 | — | 0.00 | 0.00」「無配を継続する方針」。'
+      - id: V32
+        section: outlook
+        quote: '26/2期は期ずれが2度起き、実績は予想を下回った（差異開示あり）'
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://www.nikkei.com/nkd/disclosure/tdnr/20260414504137/", "https://kabutan.jp/news/?b=k202510150127", "https://kabutan.jp/news/?b=k202604140177"]
+        evidence: '差異開示の存在は日経開示ページ見出しで確認（「2026年2月期 業績予想と決算値との差異に関するお知らせ 2026年4月14日」）。株探 10/15 速報「通期計画の2億4900万円」、4/14 速報「26年2月期の経常利益(非連結)は前の期比62.6％減の7400万円」で予想未達も確認。「期ずれが2度」は V17・V18 と同じく出典にヒットなし。'
+        action: '「期ずれが2度」を支える一次を足すか、「実績は予想を下回った（差異開示あり）」に絞る'
+      - id: V33
+        section: price
+        quote: '最高値は 2025-09-29 の2,695円✓、最安値は 2026-06-04 の1,703円✓、直近は 2026-09-25 の2,065円✓'
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: 'status に OK を含む304Aの行（230行、初行 2025-09-29）で close 最大=2695.0（2025-09-29）、最小=1703.0（2026-06-04）、最終=2065.0（2026-09-25）。2025-08-15〜2025-09-26 の行は SINGLE_SOURCE で close 空。'
+      - id: V34
+        section: price
+        quote: '26/2期上期決算（2025-10-15 発表。上期経常58%減益）'
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/news/?b=k202510150127"]
+        evidence: '再取得（200）。「フォルシア【304A】、上期経常が58％減益で着地・6-8月期も69％減益」「2025年10月15日16時30分」。'
+      - id: V35
+        section: price
+        quote: '10/15 の2,425円✓→10/16 の2,100円✓と約13%下落'
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: '2025-10-15 close=2425.0、2025-10-16 close=2100.0（OK）。2100/2425-1=-13.4%。'
+      - id: V36
+        section: price
+        quote: '26/2期本決算と今期計画（2026-04-14 発表。経常5.6倍の計画）'
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/news/?b=k202604140177"]
+        evidence: '再取得（200）。「フォルシア【304A】、今期経常は5.6倍増で2期ぶり最高益更新へ」「2026年04月14日16時00分」。'
+      - id: V37
+        section: price
+        quote: '4/14 の1,890円✓→4/15 の2,082円✓と約10%上昇。ただし翌日以降は1,900円台へ戻した'
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: '2026-04-14 close=1890.0、2026-04-15 close=2082.0（OK）。2082/1890-1=+10.2%。以降 4/16=1980、4/17=2049、4/20=1952、4/21=1994、4/22=1952、4/23=1900、4/24=1920、4/27=1890、4/28=1841。4/17 のみ2,000円台。'
+      - id: V38
+        section: price
+        quote: '7/14 の1,998円✓→7/15 の1,866円✓と約7%下落'
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: '2026-07-14 close=1998.0、2026-07-15 close=1866.0（OK）。1866/1998-1=-6.6%。'
+      - id: V39
+        section: price
+        quote: '会社計画ベースの予想PERは約9.3倍※、実績PBRは約1.25倍※'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.yahoo.co.jp/quote/304A.T", "https://kabutan.jp/stock/?code=304A"]
+        evidence: 'Yahoo（200）「PER（会社予想）(単) 9.25 倍 (09/25)」「PBR（実績）(単) 1.25 倍」。株探（200）「PER | PBR … 9.3 倍 | 1.25 倍」。2026-09-25 時点。'
+      - id: V40
+        section: price
+        quote: '株予報（IFIS）ではアナリストのコンセンサスは「--」で'
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabuyoho.ifis.co.jp/index.php?action=tp1&sa=report&bcode=304A"]
+        evidence: '再取得（200）。「レーティング： -- 」「コンセンサス予想 | -- | -- | -- | --」「経常利益予想 増益率 | -- -- %」（2026/09/25 更新）。'
+      - id: V41
+        section: sources
+        quote: '| 一次（企業IR） | https://www.forcia.com/ir/ | IRニュースの有無 |'
+        verdict: unsupported
+        tier: primary
+        sources: ["https://www.forcia.com/ir/"]
+        evidence: '再取得（200、1101字）。本文はメニュー（「IR News / Read More」「IRライブラリー」等）のみで、IRニュースの一覧・日付は本文に無い。目次ページ。'
+        action: 'IRニュース一覧の個別ページURLを一次の出典にする'
+      - id: V42
+        section: sources
+        quote: '| 一次（企業） | https://www.forcia.com/service/spook/ | Spook の概要 |'
+        verdict: supported
+        tier: primary
+        sources: ["https://www.forcia.com/service/spook/"]
+        evidence: '再取得（200、final_url は https://www.forcia.com/technology/ へ転送）。「Spook（スプーク）は、各企業が独自に持つ膨大で複雑なデータに合わせて、最適な検索を実現するための「技術基盤」です。」'
+        action: '転送先 https://www.forcia.com/technology/ に出典URLを差し替える（提案）'
+      - id: V43
+        section: sources
+        quote: '| 一次（成長可能性資料・未取得） | https://www.release.tdnet.info/inbs/140120260527550757.pdf | 取得が403で失敗。内容は未確認 |'
+        verdict: unverifiable
+        tier: none
+        sources: ["https://www.release.tdnet.info/inbs/140120260527550757.pdf"]
+        evidence: '再取得で http_status 404（403ではない）。到達不能。PDF は fetch_source.py でテキスト化されない。'
+        action: 'TDnet の公開期間切れの可能性。会社IRライブラリの同資料URLを出典にする'
+      - id: V44
+        section: sources
+        quote: '| 一次（決算短信・二次サイト経由） | https://finance.biggo.jp/news/jpx_tdnet_140120260713592492 |'
+        verdict: supported
+        tier: secondary
+        sources: ["https://finance.biggo.jp/news/jpx_tdnet_140120260713592492"]
+        evidence: '再取得（200、7445字）。27/2期1Q決算短信の定性情報・財政状態・業績予想の表が転載されている（「当社の収益は、主として開発収益及び月額収益により構成」「87.3」「第2四半期に売上計上する予定」）。区分は二次サイト経由と明記されており表記どおり。'
+resolutions:
+  - {id: V27, resolved_at: "2026-09-27", how: rewritten, quote: "直近60営業日の中央値は約700株※", note: "data/prices/daily.csv の直近60行（2026-06-29〜09-25）の出来高中央値を計算し直すと700株（裏取りと同値）。本文の約850株を約700株に直した"}

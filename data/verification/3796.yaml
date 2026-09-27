@@ -1,0 +1,491 @@
+# 裏取り記録（append-only）— reports/3796.md
+#
+# 手順の正: .claude/skills/kabu-ledger-verify/SKILL.md
+code: "3796"
+runs:
+  - run: "2026-09-27T16:53:06+09:00"
+    report_updated: "2026-09-27"
+    report_sha256: "fe6b22dbc922539adc19bd785ffc158f7acb6c6f6cc275b514be007c8c8ffdbd"
+    verifier: "kabu-ledger-verify（別コンテキスト・F3）"
+    urls_refetched:
+      - {url: "https://www.e-seikatsu.info/IR/", http_status: 200}
+      - {url: "https://kabutan.jp/stock/?code=3796", http_status: 200}
+      - {url: "https://irbank.net/E05551/results", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=3796&nmode=3", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260514/140120260514532684/", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260824/140120260824525083/", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260806/140120260806511563/", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260806/140120260806512040/", http_status: 200}
+      - {url: "https://kabutan.jp/disclosures/pdf/20260427/140120260427511141/", http_status: 200}
+      - {url: "https://kabutan.jp/stock/news?code=3796&b=n202604280265", http_status: 200}
+    urls_delegated:
+      - {url: "https://kabutan.jp/stock/finance?code=3796", to: "data/fundamentals/3796.csv"}
+    claims:
+      - id: V01
+        section: updates
+        quote: "終値は 9/18 の334円✓から 9/25 の338円✓へ+1.2%"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv 3796 の 2026-09-18 close=334.0・2026-09-25 close=338.0（いずれも status=OK、kabutan/yahoo_jp 一致）。338/334=1.0120 → +1.2%。"
+
+      - id: V02
+        section: updates
+        quote: "9/24 の出来高は96,000株※と今月の中では多かった"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv 3796 の 2026-09-24 行は volume=96000（status=OK）。2026-09-01〜09-25 の各日出来高（最大の次点は 9/04 の75200）の中で最大。"
+
+      - id: V03
+        section: updates
+        quote: "会社側の開示は今週見当たらず"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3796&nmode=3"]
+        evidence: "再取得（200）。開示一覧の最新行は「26/09/18 10:00 | 開示 | 世田谷区のハウジングプラザが「いい生活Square」で賃貸住宅の情報流通を開始」で、9/21以降の日付の行は無い。"
+
+      - id: V04
+        section: updates
+        quote: "初の株主優待（QUOカード）の基準日が 2026-09-30。100株以上が対象"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260514/140120260514532684/"]
+        evidence: "再取得（200）だが本文は145文字で、表題「いい生活【3796】2026年05月14日 開示情報 - 株主優待制度の導入に関するお知らせ」とナビのみ（PDF本体はテキスト化されない）。QUOカード・基準日・100株の文言は取得本文に無い。"
+        action: "優待の内容・基準日を会社IRの優待ページ等テキストで読める一次情報で出典に足すか、「未確認」を残す"
+
+      - id: V05
+        section: updates
+        quote: "次回の月次概況（8月度）は 2026-09-28 開示予定と会社が告知している"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260824/140120260824525083/"]
+        evidence: "再取得（200）だが本文は153文字で、表題「2026年7月度　月次概況（速報）に関するお知らせ」とナビのみ。次回開示予定日の記載は取得本文に無い。"
+        action: "IRカレンダー等テキストの一次情報を足すか、9/28 の開示を待って確かめる"
+
+      - id: V06
+        section: updates
+        quote: "7月度は+6.6%※"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260824/140120260824525083/"]
+        evidence: "再取得（200）だが表題とナビのみ（153文字）。サブスクリプション売上の前年同月比は取得本文に無い。"
+        action: "PDF本文を読める形で確認できるまで※（未確認）のまま"
+
+      - id: V07
+        section: company
+        quote: "開示上は「クラウドソリューション事業」の単一セグメント"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806511563/"]
+        evidence: "再取得（200）だが本文は156文字で、表題「2027年3月期 第1四半期決算短信〔日本基準〕（連結）」とナビのみ。セグメントの記載は取得本文に無い。"
+        action: "テキストで読める一次情報（有報・IRの事業内容ページ等）を出典に足す"
+
+      - id: V08
+        section: company
+        quote: "27/3期1Qはサブスクリプションが売上の93%※を占めた"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806511563/"]
+        evidence: "再取得（200）だが表題とナビのみ。売上区分の内訳は取得本文に無く、data/fundamentals/3796.csv にも売上区分の行は無い。"
+        action: "※のまま残すか、読める一次情報を足す"
+
+      - id: V09
+        section: company
+        quote: "1Q時点の有料課金法人数は1,584法人※（前年同月1,566法人※）"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806512040/"]
+        evidence: "再取得（200）だが本文は149文字で、表題「2027年3月期 第1四半期 決算説明資料」とナビのみ。法人数は取得本文に無い。"
+        action: "※のまま残すか、読める一次情報を足す"
+
+      - id: V10
+        section: company
+        quote: "平均月額単価は約150千円※（前年同月比+6.5%※）"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806512040/"]
+        evidence: "再取得（200）だが表題とナビのみ。単価は取得本文に無い。"
+        action: "本文の展望節は『平均月額単価100千円』を目標として掲げるとしており、現状約150千円と並べると目標が現状より低いことになる。どちらかの読み違い（単位・定義）の可能性があるので説明資料の原本で両方を確かめる"
+
+      - id: V11
+        section: company
+        quote: "MRR解約率は0.31%※（6月単月、会社定義）"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806512040/"]
+        evidence: "再取得（200）だが表題とナビのみ。解約率は取得本文に無い。"
+        action: "※のまま残すか、読める一次情報を足す"
+
+      - id: V12
+        section: company
+        quote: "電子決済等代行業の登録（2026年7月）"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://www.e-seikatsu.info/IR/", "https://kabutan.jp/stock/news?code=3796&nmode=3"]
+        evidence: "IRトップ再取得（200）にはナビ項目「電子決済等代行業に係る表示」があるのみで、登録時期の記載は無い。株探開示一覧（200）の1ページ目（26/08/21〜26/09/18）にも該当の開示行は無い。"
+        action: "登録時期を示す一次情報（会社の該当ページ・プレスリリース）のURLを出典に足す"
+
+      - id: V13
+        section: company
+        quote: "三井住友銀行との銀行API接続（2026年9月）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3796&nmode=3"]
+        evidence: "再取得（200）に「26/09/04 10:00 | 開示 | いい生活の不動産業務基幹システムが銀行APIを通じて三井住友銀行の口座情報と直結」が存在。"
+
+      - id: V14
+        section: company
+        quote: "東京ガス・NHK・保証会社との申込情報連携"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3796&nmode=3"]
+        evidence: "再取得（200）に「26/08/25 10:00 | 開示 | いい生活、東京ガスと業務委託契約を締結　入居申込情報と連携し、スムーズなライフライン契約手続きを実現」「26/09/07 10:00 | 開示 | いい生活、ドコモのあんしん賃貸保証とシステム連携を開始」はあるが、「NHK」はヒット0件。"
+        action: "NHK との連携の出典を足すか、NHK を落とす"
+
+      - id: V15
+        section: company
+        quote: "株探は比較銘柄としてシステムソフト・マーキュリー・GMOテックを挙げている"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=3796"]
+        evidence: "再取得（200）に「比較される銘柄 / システムソフ / マーキュリー / ＧＭＯテック」が存在。"
+
+      - id: V16
+        section: financials
+        quote: "| 26/3期 | 3,232 | 229 | 236 | 151 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3796.csv"]
+        evidence: "FY2026-03 の採用値: revenue=3232・operating_income=229・ordinary_income=236・net_income=151（いずれも status に OK）。23/3〜25/3期の行も FY2023-03〜FY2025-03 の採用値（2696/234/236/158、2808/176/208/146、3028/-37/-42/-39）と一致。"
+
+      - id: V17
+        section: financials
+        quote: "| 27/3期 会社計画 | 3,415 | 319 | 317 | 195 |"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3796.csv"]
+        evidence: "FY2027-03 の採用値: revenue_plan=3415・operating_income_plan=319・ordinary_income_plan=317・net_income_plan=195（いずれも OK）。"
+
+      - id: V18
+        section: financials
+        quote: "27/3期計画も+5.7%"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3796.csv"]
+        evidence: "revenue_plan(FY2027-03)=3415 ÷ revenue(FY2026-03)=3232 = 1.0566 → +5.7%。"
+
+      - id: V19
+        section: financials
+        quote: "会社は4月27日に26/3期の営業利益予想を170百万円から229百万円へ上方修正しており"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3796&b=n202604280265"]
+        evidence: "再取得（200）の記事本文に「２７日取引終了後に２６年３月期業績予想の修正を発表、営業損益は従来計画の１億７０００万円の黒字から２億２９００万円の黒字に増額した」。一次の上方修正PDF（20260427）は表題のみで本文は取れていない。"
+
+      - id: V20
+        section: financials
+        quote: "理由を「AIテクノロジー活用等による省力化」の成果としている"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3796&b=n202604280265", "https://kabutan.jp/disclosures/pdf/20260427/140120260427511141/"]
+        evidence: "株探記事（200）の表現は「ＡＩテクノロジーなどを活用した合理化努力が収益採算の改善につながっている」で、鉤括弧で引かれた「AIテクノロジー活用等による省力化」の文言は無い。一次PDF（200）は表題「2026年3月期通期連結業績予想の修正（上方修正）に関するお知らせ」とナビのみ。"
+        action: "会社の文言として鉤括弧で引くなら一次の本文で確かめる。確かめられないなら括弧を外して二次の要旨として書く"
+
+      - id: V21
+        section: financials
+        quote: "26/3期の営業利益は1Q -13百万円✓、2Q 79〜81百万円※（2ソースが不一致）、3Q 38百万円✓、4Q 125百万円✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3796.csv"]
+        evidence: "operating_income: Q2025-04_2025-06=-13（OK）、Q2025-07_2025-09 は MISMATCH（kabutan_q=79・irbank_q=81）、Q2025-10_2025-12=38（OK）、Q2026-01_2026-03=125（OK）。"
+
+      - id: V22
+        section: financials
+        quote: "4Q（1〜3月）の売上894百万円✓は年間で最も大きく"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3796.csv"]
+        evidence: "revenue: Q2025-04_2025-06=749・Q2025-07_2025-09=813・Q2025-10_2025-12=776・Q2026-01_2026-03=894（いずれも OK）。894 が最大。"
+
+      - id: V23
+        section: financials
+        quote: "3月の月次ではソリューション売上が突出している"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260824/140120260824525083/"]
+        evidence: "再取得（200）だが表題とナビのみ。月次の区分別売上は取得本文に無い。"
+        action: "読める一次情報を足すか「未確認」を残す"
+
+      - id: V24
+        section: financials
+        quote: "売上767百万円✓（前年同期749百万円✓、+2.3%）"
+        verdict: unsupported
+        tier: dataset
+        sources: ["data/fundamentals/3796.csv"]
+        evidence: "revenue: Q2026-04_2026-06=767（OK）、Q2025-04_2025-06=749（OK）。767/749=1.0240 で採用値どうしの比は +2.4%。百万円未満の端数次第で +2.3% もあり得る（766.5/749.5=1.0227）が、その端数は data に無い。"
+        action: "採用値から出す比率は +2.4% と書くか、短信記載の％であることを出典付きで示す"
+
+      - id: V25
+        section: financials
+        quote: "サブスクリプションは+9.4%※だが、前年同期にあった大型導入案件の反動でソリューションが-44.8%※"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806511563/"]
+        evidence: "再取得（200）だが表題とナビのみ。区分別の増減率と理由は取得本文に無い。"
+        action: "※のまま残すか、読める一次情報を足す"
+
+      - id: V26
+        section: financials
+        quote: "売上原価は+5.7%※、販管費は-4.2%※"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806511563/"]
+        evidence: "再取得（200）だが表題とナビのみ。data/fundamentals の cost_ratio・sga_ratio は irbank_q の SINGLE_SOURCE で採用値ではないため裏付けに使わない。"
+        action: "※のまま残すか、読める一次情報を足す"
+
+      - id: V27
+        section: financials
+        quote: "**1Q進捗率は営業利益で約1%**（3百万円✓÷計画319百万円✓）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3796.csv"]
+        evidence: "operating_income(Q2026-04_2026-06)=3（OK） ÷ operating_income_plan(FY2027-03)=319（OK） = 0.0094 → 約0.9%。"
+
+      - id: V28
+        section: financials
+        quote: "自己資本比率は26/3期末74.5%✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3796.csv"]
+        evidence: "equity_ratio(FY2026-03)=74.5（OK。kabutan_bs/irbank_bs 一致）。"
+
+      - id: V29
+        section: financials
+        quote: "1Q末78.2%※"
+        verdict: unsupported
+        tier: dataset
+        sources: ["data/fundamentals/3796.csv"]
+        evidence: "equity_ratio(Q2026-04_2026-06) は SINGLE_SOURCE（kabutan_bs=78.2）で採用値が無い。本文の※表示は状態と合っている。"
+        action: "※のまま残す（二つ目の取得元で照合されるまで）"
+
+      - id: V30
+        section: financials
+        quote: "営業CFは24/3期618百万円✓、25/3期316百万円✓、26/3期760百万円✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3796.csv"]
+        evidence: "operating_cf: FY2024-03=618・FY2025-03=316・FY2026-03=760（いずれも OK）。"
+
+      - id: V31
+        section: financials
+        quote: "有利子負債は長期借入金の返済が続いている程度（1Q短信）"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806511563/", "https://irbank.net/E05551/results"]
+        evidence: "1Q短信（200）は表題とナビのみで借入金の記載は取れない。IR BANK（200）の財務表は「2025/03 | 23.5億 | 18.7億 | 18.7億 | 79.7 | 665百万 | 0 | 0 | 135.67」「2026/03 | 26.7億 | 19.9億 | 19.9億 | 74.5 | 781百万 | 154百万 | 7.75 | 144.13」で、26/3期に有利子負債が0→154百万円に増えている（data の financing_cf(FY2026-03)=120 も OK）。本文の書きぶりはこの増加に触れていない。"
+        action: "26/3期に借入れが発生した事実を併記するか、1Q短信の該当箇所を読める形で確かめる"
+
+      - id: V32
+        section: financials
+        quote: "2026年4月1日付で1株→2株の分割"
+        verdict: unsupported
+        tier: none
+        sources: ["data/prices/daily.csv"]
+        evidence: "出典表に分割の開示が無い。daily.csv の 2026-03-27 行は MISMATCH（kabutan=274.0・yahoo_jp=548.0）でちょうど2倍のずれがあり、2026-03-30 以降は OK だが、これは状況証拠で分割日・比率の一次記載ではない。"
+        action: "株式分割の適時開示のURLを出典に足す"
+
+      - id: V33
+        section: financials
+        quote: "1株純資産は株探とIR BANKで分割前後の基準が混在しており、台帳上は不一致（※）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/fundamentals/3796.csv"]
+        evidence: "bps は FY2024-03〜FY2026-03 がいずれも MISMATCH（例: FY2026-03 kabutan_bs=288.26・irbank_bs=144.13。288.26/144.13=2.0）。"
+
+      - id: V34
+        section: outlook
+        quote: "会社は1Qを「業績予想対比でも順調」としている"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806511563/"]
+        evidence: "再取得（200）だが表題とナビのみ。会社の評価文言は取得本文に無い。「1Q時点で修正なし」も同じく取得本文では確かめられない（data の FY2027-03 計画値 3415/319/317/195 が現時点の採用値である、までは言える）。"
+        action: "鉤括弧の引用は一次本文で確かめてから残す"
+
+      - id: V35
+        section: outlook
+        quote: "決算説明資料では顧客法人数5,000社・平均月額単価100千円を「目標とする指標」として掲げる"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806512040/"]
+        evidence: "再取得（200）だが表題とナビのみ。目標指標の記載は取得本文に無い。"
+        action: "会社節の『平均月額単価は約150千円』と並べると目標が現状を下回り辻褄が合わない。説明資料原本で目標値と単価の定義を確かめる"
+
+      - id: V36
+        section: outlook
+        quote: "`screen.py` は NO_QUARTERLY を付けている"
+        verdict: unverifiable
+        tier: none
+        sources: []
+        evidence: "screen.py は data/master.yaml を読んで動くため、隔離規定（master.yaml を開かない）の下では実行していない。実行結果の記録も data/ に無い。"
+        action: "人間側で python src/screen.py 3796 を実行して警告を確かめる"
+
+      - id: V37
+        section: outlook
+        quote: "2Q決算（例年11月上旬。日付は未確認）"
+        verdict: unsupported
+        tier: none
+        sources: ["https://kabutan.jp/stock/?code=3796"]
+        evidence: "株探基本情報（200）の業績推移は本決算の発表日（25/05/15・26/05/14）のみで、2Q決算の例年の時期は取得本文に無い。本文自身も日付は未確認と明示している。"
+        action: "IRカレンダー等で確かめるまで未確認のまま"
+
+      - id: V38
+        section: price
+        quote: "**株価の採用終値は 2026-03-30 以降しか無い**（270営業日中121日が照合済み）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "daily.csv の code=3796 は270行、status に OK を含む行は121行。OK 行の最初は 2026-03-30、最後は 2026-09-25。"
+
+      - id: V39
+        section: price
+        quote: "例: 254円と508円"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "例えば 2026-03-11 行は status=MISMATCH・kabutan=254.0・yahoo_jp=508.0（2025-09-29・2025-11-11・2026-02-13・2026-03-02 も同じ組）。"
+
+      - id: V40
+        section: price
+        quote: "4/24 の319円✓から 4/27 に386円✓（出来高3,558,900株※）"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "2026-04-24 close=319.0（OK）、2026-04-27 close=386.0・high=399.0・volume=3558900（OK）。"
+
+      - id: V41
+        section: price
+        quote: "株探は4/27に一時ストップ高の399円まで上げたと報じている（二次）"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3796&b=n202604280265"]
+        evidence: "再取得（200）の記事本文に「前日は一時値幅制限上限の８０円高で３９９円まで上値を伸ばす場面があった」（記事日時 2026年04月28日09時06分）。"
+
+      - id: V42
+        section: price
+        quote: "26/3期予想の上方修正は同日15:30の開示"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3796&b=n202604280265"]
+        evidence: "記事（200）は「２７日取引終了後に２６年３月期業績予想の修正を発表」で、引け後であることは裏付くが「15:30」の時刻は無い。開示一覧（nmode=3）の再取得1ページ目は 26/08/21 以降のみで4月の行は取れていない。"
+        action: "時刻を落として「引け後」と書くか、開示時刻の分かる出典を足す"
+
+      - id: V43
+        section: price
+        quote: "翌4/28は335円✓、4/30は300円✓まで戻した"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "2026-04-28 close=335.0（OK）、2026-04-30 close=300.0（OK）。"
+
+      - id: V44
+        section: price
+        quote: "5/15 は261円✓→287円✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "2026-05-14 close=261.0（OK）、2026-05-15 close=287.0（OK）。"
+
+      - id: V45
+        section: price
+        quote: "8/7 は302円✓→294円✓と小幅安"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv"]
+        evidence: "2026-08-06 close=302.0（OK）、2026-08-07 close=294.0（OK）。"
+
+      - id: V46
+        section: price
+        quote: "6/11 の253円✓を底に切り上がり、9/4（三井住友銀行との銀行API接続を発表）に344円✓"
+        verdict: supported
+        tier: dataset
+        sources: ["data/prices/daily.csv", "https://kabutan.jp/stock/news?code=3796&nmode=3"]
+        evidence: "2026-04-01 以降の OK 行の最小 close は 2026-06-11 の253.0（6/12 も253.0で同値）、6/11〜9/25 に253未満の OK 行は無い。2026-09-04 close=344.0（OK）。開示一覧（200）に「26/09/04 10:00 | 開示 | いい生活の不動産業務基幹システムが銀行APIを通じて三井住友銀行の口座情報と直結」。"
+
+      - id: V47
+        section: price
+        quote: "株探（2026-09-25時点）で時価総額49.2億円※、PER23.9倍※、PBR2.39倍※、配当利回り0.89%※、信用倍率1.88倍※"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=3796"]
+        evidence: "再取得（200、2026-09-27取得・09/25終値338円表示）に「23.9 倍 | 2.39 倍 | 0.89 ％ | 1.88 倍」「時価総額 | 49.2 億円」。信用倍率は 09/18 の「84.3 | 158.6 | 1.88」。取得日時点の値。"
+
+      - id: V48
+        section: price
+        quote: "27/3期の配当予想は分割後1株3円"
+        verdict: supported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/?code=3796"]
+        evidence: "再取得（200）の業績推移に「予 2027.03 | 34.1 | 3.2 | 1.9 | 14.1 | 3.0 | 26/05/14」（１株配 3.0円）。本文が一次として挙げる1Q短信は表題のみで取れていないため二次での裏付け。"
+
+      - id: V49
+        section: price
+        quote: "直近20営業日の売買代金は1日平均で約1千万円※"
+        verdict: supported
+        tier: dataset
+        sources: ["src/judge.py"]
+        evidence: "python src/judge.py --indicators-only の 3796: as_of=2026-09-25・avg_turnover_20d=9972345.0（約997万円）。"
+
+      - id: V50
+        section: sources
+        quote: "| 株探「いい生活は朝安後プラス圏浮上、三井住友銀行と銀行ＡＰＩ接続サービスの利用契約締結」（2026-09-04） | https://kabutan.jp/stock/news?code=3796&nmode=3 |"
+        verdict: unsupported
+        tier: secondary
+        sources: ["https://kabutan.jp/stock/news?code=3796&nmode=3"]
+        evidence: "再取得（200）した URL は開示一覧で、「朝安後プラス圏浮上」はヒット0件。同日の行は会社開示「いい生活の不動産業務基幹システムが銀行APIを通じて三井住友銀行の口座情報と直結」のみ。表の見出しとURLが対応していない。"
+        action: "記事個別のURL（news?code=3796&b=n…）に差し替えるか、行の見出しを開示一覧に直す"
+
+      - id: V51
+        section: sources
+        quote: "| 27/3期 1Q 決算短信（2026-08-06） | https://kabutan.jp/disclosures/pdf/20260806/140120260806511563/ |"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806511563/"]
+        evidence: "再取得（200、156文字）は表題とナビのみ（PDF本体はテキスト化されない）。一次の欄の出典として本文の記述を支えられない。"
+        action: "data/tanshin/3796.csv が無い。kabu-ledger スキルで短信を取り込めば数値は data 経由で裏付けられる"
+
+      - id: V52
+        section: sources
+        quote: "| 27/3期 1Q 決算説明資料（2026-08-06） | https://kabutan.jp/disclosures/pdf/20260806/140120260806512040/ |"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260806/140120260806512040/"]
+        evidence: "再取得（200、149文字）は表題とナビのみ。"
+        action: "会社IRの説明資料ページ等、本文が読める一次情報を足す"
+
+      - id: V53
+        section: sources
+        quote: "| 26/3期 業績予想の上方修正（2026-04-27） | https://kabutan.jp/disclosures/pdf/20260427/140120260427511141/ |"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260427/140120260427511141/"]
+        evidence: "再取得（200、161文字）は表題とナビのみ。"
+        action: "本文が読める一次情報を足す"
+
+      - id: V54
+        section: sources
+        quote: "| 株主優待制度の導入（2026-05-14） | https://kabutan.jp/disclosures/pdf/20260514/140120260514532684/ |"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260514/140120260514532684/"]
+        evidence: "再取得（200、145文字）は表題とナビのみ。"
+        action: "本文が読める一次情報を足す"
+
+      - id: V55
+        section: sources
+        quote: "| 2026年7月度 月次概況（2026-08-24） | https://kabutan.jp/disclosures/pdf/20260824/140120260824525083/ |"
+        verdict: unsupported
+        tier: primary
+        sources: ["https://kabutan.jp/disclosures/pdf/20260824/140120260824525083/"]
+        evidence: "再取得（200、153文字）は表題とナビのみ。"
+        action: "本文が読める一次情報を足す"

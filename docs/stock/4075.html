@@ -1,0 +1,721 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>ブレインズテクノロジー（4075）</title><style>
+:root{--paper:#f5f4f0;--card:#ffffff;--ink:#1c1c1a;--dim:#5f5e58;--rule:#dedcd4;
+--soft:#f0eee8;--accent:#23548c;--accent-soft:#eef3f9;--warn:#8a5a00;
+--danger:#9a3324;--good:#1f6f43;--flag:#7a4f9a;
+--pos:#1d5fae;--neg:#b32e2e;
+--shadow:0 1px 2px rgba(28,28,26,.05);--shadow-2:0 2px 8px rgba(28,28,26,.07)}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);margin:0;
+font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+line-height:1.85;font-size:15.5px;-webkit-text-size-adjust:100%}
+main{max-width:52rem;margin:0 auto;padding:1.6rem 1.25rem 4rem}
+/* 全ページ共通の固定ヘッダー。どのページからでも1タップで台帳へ戻れる */
+.site{position:sticky;top:0;z-index:30;background:var(--paper);
+border-bottom:1px solid var(--rule)}
+@supports (backdrop-filter:blur(8px)){
+.site{background:color-mix(in srgb,var(--paper) 86%,transparent);
+backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}}
+/* ヘッダーは全幅（ブランド左端・ナビ右端）。本文列の幅がページごとに
+   違っても（52rem / wide 74rem）、ヘッダーだけはどのページでも同じ見え方 */
+.site-in{margin:0 auto;display:flex;align-items:center;
+gap:.4rem .9rem;padding:.5rem 1.5rem;flex-wrap:wrap}
+.brand{font-weight:700;color:var(--ink);text-decoration:none;font-size:.95rem;
+letter-spacing:.02em;white-space:nowrap}
+.brand:hover{color:var(--accent)}
+.site nav{margin:0 0 0 auto;display:flex;gap:.4rem;flex-wrap:wrap}
+h1{font-size:1.7rem;font-weight:700;letter-spacing:.02em;margin:0 0 .4rem;line-height:1.35}
+h2{font-size:1.15rem;font-weight:700;margin:3rem 0 1rem;padding:.15rem 0 .15rem .7rem;
+border-left:4px solid var(--accent);border-bottom:0;line-height:1.5}
+h3{font-size:1rem;font-weight:700;margin:2rem 0 .4rem;color:var(--ink)}
+h4{font-size:.92rem;font-weight:700;margin:1.4rem 0 .3rem;color:var(--dim)}
+p{margin:.7rem 0}
+.lede{color:var(--dim);margin:0 0 1.5rem;font-size:.92rem}
+nav{font-size:.82rem;color:var(--dim)}
+nav a{display:inline-block;padding:.16rem .7rem;
+background:var(--card);border:1px solid var(--rule);border-radius:999px;
+text-decoration:none;color:var(--dim)}
+nav a:hover{color:var(--ink);border-color:var(--ink)}
+nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:1rem 0;
+background:var(--card);border:1px solid var(--rule);border-radius:6px;
+box-shadow:var(--shadow)}
+.scroll table{margin:0}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.88rem}
+th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--rule);
+vertical-align:top}
+thead th{font-weight:700;color:var(--dim);font-size:.76rem;letter-spacing:.04em;
+white-space:nowrap;background:var(--soft);border-bottom:1px solid var(--rule)}
+tbody tr:last-child td{border-bottom:0}
+/* ゼブラ。行を目で追いやすくする（一覧表はホバー色があるので除外） */
+table:not(.list-table) tbody tr:nth-child(even) td{background:#faf9f6}
+/* 1列目を折り返さないのは、日付・コードのような短い見出し列だけを想定している。
+   本文が入る列にかかると表が画面外まで伸び、他の列が押し出されて行が縦に潰れる。
+   本文を持つ表（一覧・Markdown 由来）は .prose-table を付けて折り返させる。 */
+td:first-child{white-space:nowrap}
+.prose-table td{white-space:normal;overflow-wrap:anywhere}
+blockquote{margin:1.2rem 0;padding:.9rem 1.1rem;background:var(--accent-soft);
+border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:.92rem}
+blockquote p{margin:.3rem 0}
+ul,ol{margin:.7rem 0;padding-left:1.4rem}
+li{margin:.35rem 0}
+code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.85em;
+background:var(--soft);padding:.08rem .32rem;border-radius:2px;overflow-wrap:anywhere}
+pre{background:var(--soft);padding:.9rem;overflow-x:auto;font-size:.82rem;
+line-height:1.6;border-radius:6px}
+pre code{background:none;padding:0}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;
+text-decoration-color:var(--rule);overflow-wrap:anywhere}
+a:hover{text-decoration-color:var(--accent)}
+hr{border:0;border-top:1px solid var(--rule);margin:2.5rem 0}
+footer{margin-top:4rem;padding-top:1rem;border-top:1px solid var(--rule);
+color:var(--dim);font-size:.78rem}
+
+/* KPI タイル。重要数値を大きく・囲って出す（値はすべて data/ 由来。
+   採用値でないものはラベルに（参考）等を必ず併記する） */
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));
+gap:.7rem;margin:1.3rem 0 1.8rem}
+.kpi-tile{background:var(--card);border:1px solid var(--rule);border-radius:8px;
+padding:.75rem .9rem .7rem;box-shadow:var(--shadow)}
+.kpi-tile .k-label{display:block;font-size:.72rem;font-weight:700;
+color:var(--dim);letter-spacing:.05em;margin-bottom:.15rem}
+.kpi-tile .k-value{display:block;font-size:1.45rem;font-weight:700;
+line-height:1.3;font-variant-numeric:tabular-nums;letter-spacing:.01em;
+white-space:nowrap}
+.kpi-tile .k-sub{display:block;font-size:.72rem;color:var(--dim);margin-top:.1rem;
+overflow-wrap:anywhere}
+.kpi-tile .k-value-sm{font-size:1.02rem;padding:.2rem 0 .15rem}
+/* トップのタイルは銘柄名を並べるので、sub を読める大きさ・行間にする */
+.kpi-index .k-sub{font-size:.76rem;line-height:1.75}
+.kpi-index .k-value .k-value-sm{white-space:normal}
+.kpi-index a{color:var(--ink)}
+.kpi-index .nw{white-space:nowrap}
+.k-unit{font-size:.8rem;font-weight:700;color:var(--dim);margin-left:.1rem}
+/* 騰落の色。図（.viz）と同じ意味づけ＝青が改善・赤が悪化（符号も必ず併記する。
+   色だけに意味を持たせない） */
+.chg-pos{color:var(--pos)}
+.chg-neg{color:var(--neg)}
+
+/* 銘柄カード（一覧） */
+.card{border:1px solid var(--rule);border-radius:8px;padding:1.1rem 1.2rem;
+margin:1.1rem 0;background:var(--card);box-shadow:var(--shadow)}
+.card h3{margin:0 0 .1rem;font-size:1.1rem}
+.card .meta{color:var(--dim);font-size:.78rem;margin:0 0 .7rem}
+.card .oneline{font-size:.95rem;margin:.5rem 0 .8rem}
+.card .week{background:var(--soft);padding:.6rem .8rem;border-radius:6px;
+font-size:.86rem;margin:.6rem 0 0}
+.card .week .wk{font-weight:700;font-size:.78rem;color:var(--dim);
+display:block;margin-bottom:.2rem}
+.flag{display:inline-block;padding:.08rem .55rem;border-radius:999px;font-size:.72rem;
+font-weight:700;color:#fff;background:var(--flag);margin-left:.4rem;
+vertical-align:middle}
+.pill{display:inline-block;padding:.08rem .55rem;border-radius:999px;font-size:.72rem;
+font-weight:700;background:var(--soft);color:var(--dim);margin-right:.4rem}
+.pill-warn{background:#f8ecd4;color:var(--warn)}
+.pill-danger{background:#f7e5e1;color:var(--danger)}
+.pill-good{background:#e2efe6;color:var(--good)}
+.none{color:var(--dim);font-size:.9rem;padding:1rem;background:var(--soft);
+border-radius:6px}
+.num{font-variant-numeric:tabular-nums;
+font-family:ui-monospace,"SF Mono",Menlo,monospace}
+/* 数値セルは桁の途中で折り返さない（.prose-table の overflow-wrap:anywhere が
+   数字にも効いて「1桁ずつ縦に落ちる」のを防ぐ。幅が足りない表は .scroll が
+   横スクロールで受ける） */
+td.num,th.num{white-space:nowrap;overflow-wrap:normal}
+/* 週次アップデートの1エントリ＝1カード。長い時系列を面で区切る */
+.upd{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--accent);
+border-radius:6px;padding:1rem 1.2rem;margin:1.1rem 0;box-shadow:var(--shadow)}
+.upd h3{display:inline-block;margin:0 0 .5rem;font-size:.8rem;font-weight:700;
+color:var(--accent);background:var(--accent-soft);padding:.12rem .7rem;
+border-radius:999px}
+.upd h4{margin-top:1rem}
+
+/* 図。色は dataviz のバリデータで検証済み（light 面 #fdfdfc 上で全項目 PASS）。
+   黒字=青 / 赤字=赤。「黒字=緑」は赤緑色覚で赤との ΔE が 4.1 しかなく採らない。 */
+.viz{margin:1.6rem 0;background:var(--card);border:1px solid var(--rule);
+border-radius:8px;padding:1rem 1rem .8rem;box-shadow:var(--shadow);
+--viz-pos:#2a78d6;--viz-neg:#d03b3b;--viz-grid:#e1e0d9;--viz-axis:#c3c2b7;
+--viz-ink:#0b0b0b;--viz-muted:#898781;--viz-surface:#ffffff}
+.viz svg{width:100%;height:auto;display:block;overflow:visible}
+.viz figcaption{color:var(--dim);font-size:.82rem;margin-top:.5rem;line-height:1.7}
+/* 図の出所。検証済みか手書きかを図と一緒に必ず見せる（同じ見た目で並べない） */
+.viz-src{color:var(--dim);font-size:.74rem;line-height:1.6;margin:.45rem 0 0;
+padding:.35rem .55rem;background:var(--soft);border-left:2px solid var(--good);
+border-radius:2px;overflow-wrap:anywhere}
+.viz-src-hand{border-left-color:var(--warn);background:#f8ecd4;color:var(--warn)}
+/* 一覧のフィルター（checkbox + label + 兄弟セレクタ。JS なし）。
+   既定は対象外を隠し、ボタンで出す。隠した行は Ctrl+F でも当たらないので、
+   ボタンのラベルに件数を必ず出す（build.py 側で組み立てている）。
+   ★行を隠す規則そのものは**スタイルシート末尾**にある（カスケードの教訓） */
+.list-wrap{position:relative}
+.filter-toggle{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.list-toolbar{display:flex;align-items:center;gap:.5rem .8rem;flex-wrap:wrap;
+margin:1rem 0 .2rem}
+.filter-btn{display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;
+user-select:none;padding:.34rem .9rem;border:1px solid var(--rule);
+border-radius:999px;background:var(--card);color:var(--dim);
+font-size:.8rem;font-weight:700;line-height:1.6;box-shadow:var(--shadow);
+transition:background .12s ease,color .12s ease,border-color .12s ease}
+.filter-btn::before{content:"";width:.55rem;height:.55rem;border-radius:50%;
+background:var(--rule);transition:background .12s ease}
+.filter-btn:hover{background:var(--soft);color:var(--ink)}
+/* トグルの input は自分の label の**直前**に置く（build.py の _toggle が正）。
+   見た目は隣接セレクタ + で自分の label だけに効かせる。
+   行の表示・非表示は末尾の :has() 規則が担う */
+.filter-toggle:focus-visible+.filter-btn{
+outline:2px solid var(--accent);outline-offset:2px}
+.filter-toggle:checked+.filter-btn{background:var(--accent-soft);
+border-color:var(--accent);color:var(--accent)}
+.filter-toggle:checked+.filter-btn::before{background:var(--accent)}
+.filter-btn .f-off{display:none}
+.filter-toggle:checked+.filter-btn .f-on{display:none}
+.filter-toggle:checked+.filter-btn .f-off{display:inline}
+/* 絞り込みチップ。既定=表示（checked）なので、checked を強調色にせず
+   「外した（隠している）」側を消し込みの見た目にする */
+.filter-btn.chip{padding:.16rem .6rem;font-size:.74rem;box-shadow:none;
+margin:0}
+.filter-toggle:checked+.filter-btn.chip{background:var(--card);
+border-color:var(--rule);color:var(--dim)}
+.filter-toggle:checked+.filter-btn.chip::before{background:var(--good)}
+.filter-toggle:not(:checked)+.filter-btn.chip{opacity:.5;border-style:dashed;
+text-decoration:line-through}
+.list-filters{margin:.1rem 0 .2rem;gap:.35rem .45rem}
+.fl-cap{font-size:.72rem;font-weight:700;color:var(--dim);margin-left:.3rem}
+.fl-cap:first-child{margin-left:0}
+.filter-note{font-size:.74rem;color:var(--dim);line-height:1.7;flex:1 1 16rem}
+/* 表示中の対象外行は「凍った記録」だと分かる見た目にする（PC・スマホ共通） */
+tr.row-excluded td{background:#f6f3ea}
+.list-table tr.row-excluded:hover td{background:#f6f3ea}
+tr.row-excluded .nm a{color:var(--dim)}
+/* 一覧の判定スタンプと前週末比・スパークライン */
+.stamp{display:inline-block;padding:.1rem .6rem;border-radius:6px;
+font-size:.76rem;font-weight:700;background:var(--soft);color:var(--dim);
+border:1px solid var(--rule);margin-top:.4rem}
+.stamp-buy{background:#e2efe6;color:var(--good);border-color:#bcd9c6}
+.stamp-sell{background:#f7e5e1;color:var(--danger);border-color:#e5c0b8}
+.stamp-hot{background:#f8ecd4;color:var(--warn);border-color:#e6d3a8}
+.wchg{display:block;font-size:.78rem;font-weight:700;margin-top:.25rem}
+/* チャート形状（6か月・画像判定※）。一覧の独立した列と銘柄ページのタイルに出す */
+.shape-cell .shape-img{display:block;width:6.5rem;max-width:100%;height:auto;border-radius:4px}
+/* 分類語は枠付きのバッジ。色調は上向き／下向き／横ばいの3つだけで、語が常に見える */
+.shape-cell .shape-nm{display:inline-block;margin-top:.3rem;padding:.12rem .55rem;
+border-radius:6px;border:1.5px solid var(--rule);font-weight:700;font-size:.86rem;
+line-height:1.35;background:var(--card);color:var(--ink)}
+.shape-cell .shape-nm.tone-up{border-color:#8fc4a4;background:#e9f4ec;color:var(--good)}
+.shape-cell .shape-nm.tone-down{border-color:#e0a89c;background:#f9e9e5;color:var(--danger)}
+.shape-cell .shape-nm.tone-flat{border-color:#cfcbbf;background:#f2f0ea;color:var(--ink)}
+.shape-cell .shape-nm.tone-none{border-style:dashed;color:var(--dim);font-weight:600}
+.shape-cell .shape-sub{display:block;font-size:.68rem;color:var(--dim);margin-top:.1rem}
+/* 推定営業利益の列。項目を縦に積み、ラベルの途中で折らない */
+.est-cell{display:block;font-size:.76rem;line-height:1.55;color:var(--ink)}
+.est-cell .nb{display:block;white-space:nowrap}
+.est-cell .op{font-weight:700;font-size:.86rem}
+.est-cell .k-unit{font-size:.68rem}
+.est-cell .pill{margin:.15rem 0 0 0}
+.kpi-tile .shape-img{display:block;width:100%;max-width:12rem;height:auto;border-radius:4px;margin:.25rem 0 .1rem}
+/* 推定と会社計画・市場予想の乖離（一覧）。コンパクト表示でも隠さない */
+.est-line{display:block;font-size:.74rem;font-weight:700;color:var(--ink);
+margin-top:.35rem;line-height:1.7;white-space:normal;cursor:help}
+.est-line .k-unit{font-size:.68rem}
+.est-line .pill{margin:0 0 0 .3rem}
+.est-line .nb{white-space:nowrap}
+/* 一覧の並び替え（推定由来の数値）。select は静的で、並べ替えだけを小さな
+   スクリプトが行う。JS が無ければコード順のまま */
+.list-sort-wrap{display:inline-flex;align-items:center;gap:.35rem;margin-left:.3rem}
+.list-sort-label{font-size:.74rem;font-weight:700;color:var(--dim)}
+.list-sort{font:inherit;font-size:.78rem;padding:.22rem .55rem;border:1px solid var(--rule);
+border-radius:999px;background:#fff;color:var(--ink);max-width:100%;cursor:pointer}
+.list-sort:hover{border-color:var(--ink)}
+
+/* 監視対象から外した銘柄の注記。図の「手書き（未検証）」と同じ扱いで、
+   同じ見た目のまま黙って並べない（消す方法は用意しない） */
+.note-warn{border-left:3px solid var(--warn);background:#f8ecd4;color:var(--warn);
+padding:.6rem .8rem;border-radius:3px;font-size:.86rem;line-height:1.8;margin:.9rem 0}
+.viz-tick{fill:#898781;font-size:12px;font-family:inherit}
+.viz-value{fill:#0b0b0b;font-size:13px;font-weight:700;font-family:inherit}
+.viz-bar rect,.viz-dot circle{transition:opacity .12s ease}
+.viz-bar:hover rect,.viz-dot:hover circle{opacity:.72}
+.viz-bar,.viz-dot{cursor:default}
+
+/* 検証状態の記号バッジ（✓=2ソース照合済み ※=未照合参考 †=一次情報から直接）。
+   意味は title 属性（ブラウザ標準 tooltip）と about.html の凡例が持つ。
+   上付き風に小さく出す。色: 照合済み=青（.chg-pos と同系）・参考=橙（警告系）・
+   一次情報=グレー。色だけに意味を持たせない（記号そのものが常に見える） */
+.vm{font-size:.7em;font-weight:700;vertical-align:super;line-height:1;
+padding:0 .06em;cursor:help}
+/* ✓（照合済み）は大半の数値に付くので沈める。注意を要する ※ と区別できる
+   ことだけ残す（消すと、記号の無い計算値まで照合済みに見える。2026-09-23） */
+.vm-ok{color:#aeaca4;font-weight:400;font-size:.6em}
+.vm-ref{color:var(--warn)}
+.vm-pri{color:var(--dim)}
+
+/* 週次アップデートの古い週の折りたたみ。カード（.upd）より一段控えめにして
+   「畳んであるだけで消えてはいない」ことを見せる */
+details.upd-old{background:var(--soft);border-style:dashed;
+box-shadow:none;padding:.5rem .8rem}
+details.upd-old>summary{font-weight:400}
+
+/* 折りたたみ（裏取りで「裏付けが取れた記述」を畳む。JSは使わない） */
+details{margin:1rem 0;border:1px solid var(--rule);border-radius:6px;
+padding:.5rem .8rem;background:var(--card)}
+details summary{cursor:pointer;font-size:.88rem;font-weight:700;color:var(--dim)}
+details[open] summary{margin-bottom:.4rem}
+
+/* 銘柄ページの2大セクション（週次アップデート／会社概要）。既定は閉。
+   #verify 等へのアンカーは、現行ブラウザが details を自動展開して届く */
+details.sec{margin:1.6rem 0;padding:0;border:1px solid var(--rule);
+border-radius:8px;background:var(--card);box-shadow:var(--shadow)}
+details.sec>summary{list-style:none;cursor:pointer;margin:0;
+padding:1.05rem 1.2rem;display:flex;align-items:baseline;gap:.6rem;
+flex-wrap:wrap;color:var(--ink)}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::before{content:"▸";color:var(--accent);
+font-size:1.05rem;line-height:1}
+details.sec[open]>summary::before{content:"▾"}
+details.sec[open]>summary{margin:0;border-bottom:1px solid var(--rule)}
+details.sec .sec-title{font-size:1.12rem;font-weight:700}
+details.sec .sec-hint{font-size:.76rem;color:var(--dim);font-weight:400}
+details.sec>.sec-body{padding:.2rem 1.2rem 1.3rem}
+details.sec>.sec-body>h2:first-child{margin-top:1.4rem}
+details.sec>summary:hover .sec-title{color:var(--accent)}
+/* 推定フォールド内の表は、狭い画面で潰して桁を折るより横スクロールさせる */
+.est .scroll table{min-width:34rem}
+/* 変数カード（推定）。表に長文メモを並べると他列が潰れて変数名が縦に折れる。
+   メモ・出典はカードの中に畳み、クリックで開く */
+.var-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));
+gap:.6rem;margin:1rem 0}
+details.var{margin:0;padding:0;border:1px solid var(--rule);border-radius:8px;
+background:var(--card)}
+details.var>summary{list-style:none;cursor:pointer;padding:.6rem .75rem .55rem;
+display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;margin:0}
+details.var>summary::-webkit-details-marker{display:none}
+details.var>summary::after{content:"▾";color:var(--dim);font-size:.72rem;
+margin-left:auto}
+details.var[open]>summary::after{content:"▴"}
+details.var[open]>summary{margin:0}
+details.var code{white-space:nowrap;overflow-wrap:normal;background:none;
+padding:0;font-size:.78rem;color:var(--dim)}
+details.var .v-seg{font-size:.68rem;color:var(--dim);width:100%;line-height:1.4}
+details.var .v-val{font-weight:700;font-variant-numeric:tabular-nums;
+font-size:1.08rem;white-space:nowrap}
+details.var>div{margin:0 .75rem .6rem;padding-top:.5rem;font-size:.8rem;
+color:var(--dim);line-height:1.75;border-top:1px dashed var(--rule);
+overflow-wrap:anywhere}
+/* PC では推定フォールドだけ、**開いたときに限り**本文列（52rem）より広く使う。
+   閉じたままでも広げると、他のフォールドと左右が揃わず枠だけがはみ出して
+   「崩れて」見える（2026-09-05 に実際に指摘された）。表・タイルに幅が要るのは
+   開いたときだけなので、[open] で切る */
+@media(min-width:1140px){
+details.sec.sec-wide[open]{width:min(76rem,calc(100vw - 5rem));position:relative;
+left:50%;transform:translateX(-50%)}
+details.sec.sec-wide[open] .est .kpi{grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))}
+}
+
+/* 読み取りの手がかり（図の下に置く短い注記） */
+.readout{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:.6rem 0 0;
+font-size:.82rem;color:var(--dim)}
+.readout b{color:var(--ink);font-weight:700}
+
+/* 一覧表（銘柄が増えても詰まらないように） */
+.list-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+.list-table th{font-size:.75rem;color:var(--dim);text-align:left;
+padding:.5rem .6rem;border-bottom:1px solid var(--rule);white-space:nowrap;
+background:var(--soft)}
+.list-table td{padding:.85rem .6rem;border-bottom:1px solid var(--rule);
+vertical-align:top}
+.list-table tr:hover td{background:#f8f7f3}
+/* 行全体がタップ領域（data-href。委譲スクリプトが拾う）。指す先が
+   分かるよう、ホバーで銘柄名をリンク色にする */
+.list-table tr[data-href]{cursor:pointer}
+.list-table tr[data-href]:hover .nm a{color:var(--accent)}
+.list-table .nm{font-weight:700;font-size:1.02rem}
+.list-table .nm a{color:var(--ink);text-decoration-color:var(--rule)}
+.list-table .sub{color:var(--dim);font-size:.76rem;display:block;margin-top:.15rem}
+.list-table .one{color:var(--dim);font-size:.84rem;line-height:1.7;
+display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;
+overflow:hidden;margin-top:.4rem}
+/* 「今週の動き」は概要文（.one）と同じ大きさ・色。指定が無いと表の .9rem・
+   本文色を継いで、銘柄の説明より目立っていた（2026-09-23 マスター指摘） */
+.list-table .wk-txt{display:block;color:var(--dim);font-size:.84rem;line-height:1.7}
+.list-table .price{font-size:1.15rem;font-weight:700}
+/* nowrap にすると、中の長いURLが分割不能トークンになってスマホ幅で
+   ページ自体を横スクロールさせる（tools\shot.ps1 の採寸で 623px > 500px）。 */
+.ext{font-size:.72rem;color:var(--dim);text-decoration:none;
+border:1px solid var(--rule);border-radius:999px;padding:.02rem .45rem;
+margin-left:.35rem;white-space:normal;overflow-wrap:anywhere;
+max-width:100%;display:inline-block}
+.ext:hover{border-color:var(--ink);color:var(--ink)}
+/* 列幅を固定し、余りを1列目（銘柄と概要）に渡す。auto レイアウトだと概要文の
+   長さで毎週列幅が動き、右2列が潰れて行の高さがばらつく。 */
+@media(min-width:641px){
+.est-cell .op-l{display:none}   /* PC では列見出しが語を持つ */
+.list-table{table-layout:fixed}
+.list-table th:nth-child(2),.list-table td:nth-child(2){width:9.5rem}
+.list-table th:nth-child(3),.list-table td:nth-child(3){width:7.5rem}
+.list-table th:nth-child(4),.list-table td:nth-child(4){width:11rem}
+.list-table th:nth-child(5),.list-table td:nth-child(5){width:12rem}
+.list-table td:nth-child(2) .sub{white-space:nowrap}
+}
+/* PC の広い画面では**トップページ全体**（main.wide）を広く使う。
+   一覧だけを translateX で広げると、見出し・KPI と左端が揃わず崩れて見える */
+@media(min-width:1140px){
+main.wide{max-width:74rem}
+}
+
+@media(max-width:640px){
+body{font-size:15px}
+h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:2.2rem}
+table{font-size:.8rem}th,td{padding:.45rem .5rem}
+.card{padding:.9rem 1rem}
+.kpi{grid-template-columns:repeat(2,1fr);gap:.55rem}
+.kpi-tile .k-value{font-size:1.25rem}
+.upd{padding:.85rem 1rem}
+details.sec>summary{padding:.85rem .9rem}
+details.sec>.sec-body{padding:.2rem .9rem 1rem}
+/* 一覧表はスマホでカード状に積む（横スクロールさせない） */
+.list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
+.list-table thead{display:none}
+.list-table tr{border:1px solid var(--rule);border-radius:8px;
+padding:.7rem .8rem;margin:.7rem 0;background:var(--card);box-shadow:var(--shadow)}
+.list-table td{border:0;padding:.15rem 0}
+.list-table td[data-l]::before{content:attr(data-l) "　";color:var(--dim);
+font-size:.72rem;font-weight:700}
+.list-table tr:hover td{background:transparent}
+.viz{padding:.7rem .7rem .6rem}
+.viz figcaption{font-size:.78rem}
+.viz-tick{font-size:15px}.viz-value{font-size:16px}
+.site-in{padding:.45rem .85rem}
+main{padding:1.1rem .85rem 3rem}
+}
+
+/* ★表示切り替えの規則は必ずスタイルシートの末尾に置く（!important 併用）。
+   スマホのカード積み替え（.list-table tr{display:block}）と同じ詳細度の
+   display 規則は後勝ちで負けるため、位置と !important の両方で守る。
+   トグルが増えたため、状態は :has() で引く（input が label の直前にあり、
+   .scroll の兄弟ではないので兄弟セレクタでは届かない）。input が
+   描画されないキーは :has が成立せず**表示側に倒れる**（隠れて消えない）。 */
+/* 対象外: チェックが外れている間だけ隠す（既定＝隠す） */
+.list-wrap:has(#f-excluded:not(:checked)) tr.row-excluded{display:none!important}
+/* 判定・形状の絞り込み。チップを外すとその状態の行を隠す。
+   キーは build.py の STAMP_KEYS / SHAPE_KEYS と一対（固定語彙・全キーぶん置く） */
+.list-wrap:has(#f-st-buy:not(:checked)) tr.st-buy{display:none!important}
+.list-wrap:has(#f-st-watch:not(:checked)) tr.st-watch{display:none!important}
+.list-wrap:has(#f-st-probe:not(:checked)) tr.st-probe{display:none!important}
+.list-wrap:has(#f-st-hot:not(:checked)) tr.st-hot{display:none!important}
+.list-wrap:has(#f-st-sell:not(:checked)) tr.st-sell{display:none!important}
+.list-wrap:has(#f-st-liq:not(:checked)) tr.st-liq{display:none!important}
+.list-wrap:has(#f-st-trend:not(:checked)) tr.st-trend{display:none!important}
+.list-wrap:has(#f-st-cloud:not(:checked)) tr.st-cloud{display:none!important}
+.list-wrap:has(#f-st-other:not(:checked)) tr.st-other{display:none!important}
+.list-wrap:has(#f-sh-upstop:not(:checked)) tr.sh-upstop{display:none!important}
+.list-wrap:has(#f-sh-up:not(:checked)) tr.sh-up{display:none!important}
+.list-wrap:has(#f-sh-surge:not(:checked)) tr.sh-surge{display:none!important}
+.list-wrap:has(#f-sh-pullback:not(:checked)) tr.sh-pullback{display:none!important}
+.list-wrap:has(#f-sh-range:not(:checked)) tr.sh-range{display:none!important}
+.list-wrap:has(#f-sh-rebound:not(:checked)) tr.sh-rebound{display:none!important}
+.list-wrap:has(#f-sh-plunge:not(:checked)) tr.sh-plunge{display:none!important}
+.list-wrap:has(#f-sh-down:not(:checked)) tr.sh-down{display:none!important}
+.list-wrap:has(#f-sh-downstop:not(:checked)) tr.sh-downstop{display:none!important}
+.list-wrap:has(#f-sh-none:not(:checked)) tr.sh-none{display:none!important}
+/* コンパクト表示（既定=ON。build.py が checked で出す）: 概要文・外部リンク・
+   スパークラインを畳み、1行1銘柄で 20〜30 銘柄を見渡せるようにする */
+.list-wrap:has(#v-compact:checked) .one,
+.list-wrap:has(#v-compact:checked) .ext{display:none!important}
+/* セルの中身を流し込んで行高を最小にする（.sub/.wchg は通常 block）。
+   終値セルは nowrap のままだと固定列幅を突き抜けて隣に重なるので折り返す。
+   繰り返しの日付・週ラベル（全行同じ）はこの表示では出さない */
+.list-wrap:has(#v-compact:checked) .list-table .sub{display:inline!important;
+margin:0 0 0 .5rem}
+.list-wrap:has(#v-compact:checked) td[data-l="終値・判定"]{white-space:normal;
+overflow-wrap:normal}
+.list-wrap:has(#v-compact:checked) td[data-l="終値・判定"] .sub{display:none!important}
+.list-wrap:has(#v-compact:checked) td[data-l="今週"] .sub{display:none!important}
+.list-wrap:has(#v-compact:checked) .wk-txt{display:-webkit-box;
+-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.list-wrap:has(#v-compact:checked) .wchg{display:inline-block!important;margin:0}
+.list-wrap:has(#v-compact:checked) .stamp{display:inline-block!important;
+margin:0;padding:.02rem .5rem}
+.list-wrap:has(#v-compact:checked) .stamp .st-p{display:none}
+.list-wrap:has(#v-compact:checked) .shape-cell .shape-img{width:4.5rem}
+.list-wrap:has(#v-compact:checked) .shape-cell .shape-nm{font-size:.78rem;margin-top:.2rem;padding:.06rem .45rem}
+.list-wrap:has(#v-compact:checked) .shape-cell .shape-sub{display:none}
+.list-wrap:has(#v-compact:checked) .list-table .nm{font-size:.95rem}
+.list-wrap:has(#v-compact:checked) .list-table .price{font-size:1rem;
+margin-right:.5rem}
+@media(min-width:641px){
+.list-wrap:has(#v-compact:checked) .list-table td{padding:.4rem .6rem}
+.list-wrap:has(#v-compact:checked) .list-table th:nth-child(2),
+.list-wrap:has(#v-compact:checked) .list-table td:nth-child(2){width:12.5rem}
+}
+@media(max-width:640px){
+/* スマホのコンパクトはカードの見出しラベルと余白も詰める */
+.list-wrap:has(#v-compact:checked) .list-table td[data-l]::before{content:none}
+.list-wrap:has(#v-compact:checked) .list-table tr{padding:.5rem .75rem;
+margin:.45rem 0}
+}
+
+/* --- 前提知識（knowledge.html） -------------------------------------------
+   左カラム＝分類ツリー、右＝記事。表示切替は :target のみ（JSなし）。
+   どの記事も選ばれていないときは一覧（.kb-home）が出る。 */
+.kb-wrap{display:grid;grid-template-columns:14.5rem minmax(0,1fr);
+gap:1.4rem;align-items:start}
+@media(max-width:760px){.kb-wrap{grid-template-columns:1fr}}
+.kb-side{position:sticky;top:3.4rem;background:var(--card);
+border:1px solid var(--rule);border-radius:8px;padding:.9rem 1rem;
+font-size:.85rem;max-height:calc(100vh - 4.4rem);overflow-y:auto}
+@media(max-width:760px){.kb-side{position:static;max-height:none}}
+.kb-side .kb-cat{font-weight:700;margin:.8rem 0 .15rem;color:var(--ink)}
+.kb-side .kb-cat:first-child{margin-top:0}
+.kb-side .kb-cat.d1{margin-left:.6rem;font-size:.8rem;color:var(--dim)}
+.kb-side .kb-cat.d2{margin-left:1.2rem;font-size:.8rem;color:var(--dim)}
+.kb-side a{display:block;background:none;border:0;border-radius:0;
+border-left:2px solid var(--rule);margin:.12rem 0 .12rem .35rem;
+padding:.2rem .55rem;color:var(--accent);text-decoration:none;
+font-size:.85rem;line-height:1.5}
+.kb-side a:hover{border-left-color:var(--accent);color:var(--ink)}
+.kb-article{display:none;scroll-margin-top:3.6rem}
+.kb-article:target{display:block}
+.kb-main:has(.kb-article:target) .kb-home{display:none}
+.kb-crumb{font-size:.78rem;color:var(--dim);margin:0 0 .6rem}
+.kb-crumb .kb-date{margin-left:.8rem}
+.kb-index{padding-left:1.2rem}
+.kb-index li{margin:.6rem 0}
+.kb-index .kb-crumb{margin:0}
+/* 図（手描きSVG）。狭い画面では横スクロールで原寸を保つ */
+.kb-figure{margin:1.2rem 0 0;background:var(--card);
+border:1px solid var(--rule);border-radius:6px;padding:1rem .9rem .5rem}
+.kb-fig-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.kb-fig-scroll svg{display:block;min-width:760px;width:100%;height:auto}
+.kb-figure figcaption{font-size:.8rem;color:var(--dim);
+border-top:1px dashed var(--rule);margin-top:.7rem;
+padding:.6rem .2rem .4rem;line-height:1.7}
+.kb-kpis{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.2rem 0 0}
+.kb-kpi{flex:1 1 11rem;background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.7rem .9rem}
+.kb-kpi .v{font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.kb-kpi .l{font-size:.76rem;color:var(--dim);line-height:1.6;margin-top:.15rem}
+.kb-src,.kb-srcs{font-size:.72rem;color:var(--dim)}
+.kb-srcs{padding-left:1.2rem}
+.kb-srcs li{margin:.3rem 0;overflow-wrap:anywhere}
+.kb-note{background:var(--soft);border-left:3px solid var(--warn);
+padding:.7rem 1rem;border-radius:0 6px 6px 0;font-size:.86rem;margin:1.2rem 0 0}
+.kb-eq{display:flex;flex-wrap:wrap;gap:.5rem;align-items:stretch;
+justify-content:center;background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:1rem;margin:1.2rem 0 0}
+.kb-eq .term{flex:1 1 9rem;max-width:14rem;text-align:center;
+padding:.7rem .5rem;border:1px dashed var(--rule);border-radius:6px}
+.kb-eq .term.hot{border:1.5px solid var(--accent);background:var(--accent-soft)}
+.kb-eq .op{align-self:center;font-size:1.4rem;color:var(--dim)}
+.kb-eq .t-name{font-weight:700}
+.kb-eq .t-desc{font-size:.76rem;color:var(--dim);margin-top:.2rem;line-height:1.6}
+.kb-vs{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1.2rem 0 0}
+@media(max-width:640px){.kb-vs{grid-template-columns:1fr}}
+.kb-vs .col{background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.9rem 1rem}
+.kb-vs .col.hot{border-color:var(--accent)}
+.kb-vs .tag{font-size:.72rem;letter-spacing:.1em;color:var(--dim)}
+.kb-vs .col.hot .tag{color:var(--accent)}
+.kb-vs h3{margin:.3rem 0 .4rem}
+.kb-vs ul{margin:0;padding-left:1.2em;font-size:.84rem;color:var(--dim)}
+.kb-vs li{margin:.3em 0}
+.kb-vs .q{margin-top:.7rem;padding-top:.5rem;
+border-top:1px dashed var(--rule);font-size:.85rem}
+.kb-layers{display:flex;flex-direction:column;gap:.6rem;margin:1.2rem 0 0}
+.kb-layer{background:var(--card);border:1px solid var(--rule);
+border-left-width:4px;border-radius:6px;padding:.8rem 1rem}
+.kb-layer.v-takes{border-left-color:var(--good)}
+.kb-layer.v-open{border-left-color:var(--warn)}
+.kb-layer.v-pass,.kb-layer.v-out{border-left-color:var(--dim)}
+.kb-layer .who{font-size:.78rem;color:var(--dim);margin-top:.1rem}
+.kb-layer .why{font-size:.85rem;margin-top:.35rem}
+.kb-pill{display:inline-block;font-size:.68rem;font-weight:700;
+padding:.1rem .6rem;border-radius:999px;white-space:nowrap;
+vertical-align:.1em;background:var(--soft)}
+.kb-pill.p-takes{color:var(--good)}
+.kb-pill.p-open{color:var(--warn)}
+.kb-pill.p-pass,.kb-pill.p-out{color:var(--dim)}
+.kb-cands{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));
+gap:.6rem;margin:1.2rem 0 0}
+.kb-cand{background:var(--card);border:1px solid var(--rule);
+border-radius:6px;padding:.7rem .9rem}
+.kb-cand .code{font-size:.72rem;color:var(--accent);font-weight:700}
+.kb-cand .nm{font-weight:700;margin:.1rem 0 .3rem}
+.kb-cand p{font-size:.78rem;color:var(--dim);margin:0;line-height:1.65}
+</style></head><body><header class="site"><div class="site-in"><a class="brand" href="../index.html">銘柄調査台帳</a><nav><a href="../index.html">台帳</a><a href="../knowledge.html">前提知識</a><a href="../data.html">データの出どころ</a><a href="../about.html">読み方</a></nav></div></header><main><h1>ブレインズテクノロジー（4075）</h1><p class="lede">東証グロース／レポート更新 2026-09-27<br><a class="ext" href="https://www.brains-tech.co.jp/ir/" target="_blank" rel="noopener">IR情報 ↗</a><a class="ext" href="https://www.brains-tech.co.jp/news/" target="_blank" rel="noopener">ニュース（会社） ↗</a><a class="ext" href="https://kabutan.jp/stock/?code=4075" target="_blank" rel="noopener">株探 ↗</a></p><div class="kpi"><div class="kpi-tile"><span class="k-label">採用終値</span><span class="k-value">1,458<span class="k-unit">円</span></span><span class="k-sub">2026-09-25・2ソース照合済み</span></div><div class="kpi-tile"><span class="k-label">前週末比</span><span class="k-value"><span class="chg-neg">-8.4%</span></span><span class="k-sub">2026-09-18 比／前採用日比 -5.1%</span></div><div class="kpi-tile"><span class="k-label">52週レンジ</span><span class="k-value"><span class="k-value-sm">796 〜 1,861</span></span><span class="k-sub">採用終値ベース・円</span></div><div class="kpi-tile"><span class="k-label">判定</span><span class="k-value"><span class="k-value-sm">様子見(過熱)</span></span><span class="k-sub">過熱（25日乖離率 20.00% &gt; 8.0% / 信用倍率 18.15倍 &gt; 5.0倍（2026-09-18））</span></div><div class="kpi-tile"><span class="k-label">チャート形状</span><span class="k-value"><span class="k-value-sm">急上昇</span><img class="shape-img" src="../shapes/4075.png" alt=""></span><span class="k-sub">画像判定※・6か月・基準日 2026-09-25</span></div></div><blockquote>
+<p><strong>一行でいうと</strong>：異常検知AI「Impulse」と企業内検索「Neuron ES」を売る東証グロースのAIソフト会社。2026年7月期は営業利益2.5億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（前期比+51%）と伸びたが、今期の会社計画は営業横ばい（2.5億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）・最終減益。株価は「フィジカルAI」の発表を材料に3月と8月末〜9月に急騰を繰り返しており、業績より材料で動いている局面と読める。</p>
+</blockquote><details class="sec"><summary><span class="sec-title">週次アップデート</span><span class="sec-hint">最新 2026-W39・全 1 件</span></summary><div class="sec-body"><p class="lede">新しい週を上に置いている。過去の記述は書き換えず、そのまま残している。</p><div class="upd"><h3>2026-W39（2026-09-21 週）</h3><p><strong>監視開始の週。前週のストップ高（9/18）の後、祝日明けの2営業日で終値1591円→1458円（-8.4%）に押し戻された。</strong></p>
+<ul>
+<li>2026-09-27、楽天証券のスクリーニング（成長株0830・per）通過を起点に監視対象に登録した（<code>data/master.yaml</code> の watch_reason）</li>
+<li>今週は9/21〜23が祝日で、取引は9/24・9/25の2日。採用終値は9/24が1537円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、9/25が1458円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。この週に会社の新しい開示は見当たらない（会社ニュース一覧 https://www.brains-tech.co.jp/news/ 、株探ニュース一覧 https://kabutan.jp/stock/news?code=4075 、いずれも2026-09-27取得）。下げた理由は特定できていないが、前週（9/14〜18）に1204円→1591円（+32%）と急伸した反動の可能性がある</li>
+<li>前週9/18は前日比+300円（1291円→1591円）で、株探の「本日の【ストップ高／ストップ安】(9月18日)」に名前が載った（二次情報・https://kabutan.jp/stock/news?code=4075&amp;b=n202609180830 、見出しのみ確認・2026-09-27取得）</li>
+<li>信用買い残<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>は9/18時点で330.3千株と、8/28時点の119.2千株から約2.8倍に膨らんだ（株探・https://kabutan.jp/stock/?code=4075 、2026-09-27取得）。急騰局面で積み上がった買い残は、先々の売り圧力になりうると読める</li>
+<li>登録時点の screen.py は <strong>PLAN_FLAT</strong>（会社計画の営業増益率が+5%未満）を出している。直近4Qの営業利益は前年同期比+168%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>と強いが、会社自身は今期を横ばいと見ている。この警告が消えるまで「有望」とは書かない</li>
+</ul>
+<p><strong>次週に見ること</strong>：①1458円からさらに押すか（9/14の1155円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>が直近の押し目） ②信用買い残<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>の増減 ③フィジカルAI関連の追加開示（受注・導入事例）の有無</p></div></div></details><details class="sec sec-wide"><summary><span class="sec-title">次期売上・利益推定</span><span class="sec-hint">対象 FY2027-07・作成済み・変数 7 個</span></summary><div class="sec-body"><div class="est"><p class="lede"><span class="pill pill-good">作成済み</span> 対象期 <b>FY2027-07</b>・起案 2026-09-27。検証済みデータと<strong>明示した仮定</strong>から機械計算した概算であり、会社計画でも的中予想でもない。<span class="pill pill-warn">推定</span> の付いた変数を疑うための頁。</p><div class="kpi"><div class="kpi-tile"><span class="k-label">推定売上</span><span class="k-value">1,596<span class="k-unit">百万円</span></span><span class="k-sub">対象期 FY2027-07</span></div><div class="kpi-tile"><span class="k-label">推定営業利益</span><span class="k-value">208<span class="k-unit">百万円</span></span><span class="k-sub">営業利益率 13.0%（仮定）</span></div><div class="kpi-tile"><span class="k-label">会社計画比（営業利益）</span><span class="k-value"><span class="chg-neg">-17.0%</span></span><span class="k-sub">会社計画 250 百万円</span></div><div class="kpi-tile"><span class="k-label">最も効く変数（売上側）</span><span class="k-value"><span class="k-value-sm">perpetual_growth</span></span><span class="k-sub">+10%で営業利益 +3.4%</span></div></div><h3>会社計画・市場予想・実績との比較（百万円）</h3><div class="scroll"><table class="prose-table est-mkt"><thead><tr><th>指標</th><th>前期実績</th><th>会社計画</th><th>市場予想</th><th>当台帳推定</th><th>市場予想比</th></tr></thead><tbody><tr><td>売上</td><td class="num">1,433</td><td class="num">1,707</td><td class="num">—</td><td class="num"><strong>1,596</strong></td><td class="num">—</td></tr><tr><td>営業利益</td><td class="num">250</td><td class="num">250</td><td class="num">—</td><td class="num"><strong>208</strong></td><td class="num">—</td></tr></tbody></table></div><p class="lede">市場予想: 未確認。みんかぶの証券アナリスト予想ページ（https://minkabu.jp/stock/4075/analyst_consensus、2026-09-27取得試行）は HTTP 403 で本文を読めず、コンセンサスの有無を確かめられていない。売上 14億円規模のグロース銘柄でカバーは薄いと見るが推測。 比較対象は会社計画のみ</p><h3>計算の分解</h3><div class="scroll"><table class="prose-table est-vars"><thead><tr><th>セグメント</th><th>式（値を代入）</th><th>売上（百万円）</th></tr></thead><tbody><tr><td>ストック売上（利用料＋保守。ライセンス数×1本当たり年間売上）</td><td class="num">495 × 1.03 = 509.85</td><td class="num"><strong>510</strong></td></tr><tr><td>買取ライセンス売上（前期×伸び）</td><td class="num">458 × 1.2 = 549.6</td><td class="num"><strong>550</strong></td></tr><tr><td>サービス売上（導入・構築・カスタマイズ等。前期×伸び）</td><td class="num">488 × 1.1 = 536.8</td><td class="num"><strong>537</strong></td></tr></tbody></table></div><h3>変数と根拠</h3><p class="lede">カードを押すと、その値の置き方（メモ・出典）が開く。<span class="pill pill-warn">推定</span> の変数から疑うこと。</p><div class="var-grid"><details class="var"><summary><span class="v-seg">ストック売上（利用料＋保守。ライセンス数×1本当たり年間売上）</span><code>stock_licenses</code><span class="v-val">495</span><span class="pill pill-warn">推定</span></summary><div>前期末のストックライセンス 487本（前期末比横ばい。4Q は増加24・解約等17の純増7。決算説明資料 p.20、 https://www.release.tdnet.info/inbs/140120260911534973.pdf、2026-09-27取得）。アップグレードでは本数が増えない数え方で、 解約は3月末（3Q）に偏る。前期並みの純増ゼロ〜4Q並みの年間 +20 程度の間として期中平均 495 と置いた</div></details><details class="var"><summary><span class="v-seg">ストック売上（利用料＋保守。ライセンス数×1本当たり年間売上）</span><code>revenue_per_stock_license</code><span class="v-val">1.03</span><span class="pill pill-warn">推定</span></summary><div>百万円/本・年。前期のストック売上は売上の 34%（決算説明資料 p.38）≒ 487（1,433×0.34。比率が整数丸めのため ±7 の幅）で、 期末 487本で割ると約 1.00。会社は『アップグレード時は既存のストックライセンス単価が上昇する』『ストック売上は今後緩やかに上昇』 と説明（同資料 p.19・p.21）。単価の上昇率は開示が無く、+3% は推測</div></details><details class="var"><summary><span class="v-seg">買取ライセンス売上（前期×伸び）</span><code>perpetual_prev</code><span class="v-val">458</span><span class="pill">開示（一次）</span></summary><div>決算説明資料 p.38 のソフトウェア売上 945（買取＋ストック）から上のストック推計 ≒487 を引いた値（≒458。±7 の幅）。 買取売上は大型ライセンスで伸び、4Q は前年同期比 +111.5%（同資料 p.19） <a class="ext" href="https://www.release.tdnet.info/inbs/140120260911534973.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">買取ライセンス売上（前期×伸び）</span><code>perpetual_growth</code><span class="v-val">1.2</span><span class="pill pill-warn">推定</span></summary><div>感度で最も効く部類。買取は1件ごとの大型案件で振れが大きい（前期は期ずれで4Qに集中、4Q売上は前年同期比 +41.3%）。 公共・地方自治体への導入が進み買取ライセンスは高水準（同資料 p.20）。会社計画の +19.1% と同程度の +20% と置いたが、 前期4Qの大型案件が再現する保証は無く、一次情報で内訳の計画は確認できていない</div></details><details class="var"><summary><span class="v-seg">サービス売上（導入・構築・カスタマイズ等。前期×伸び）</span><code>service_prev</code><span class="v-val">488</span><span class="pill">開示（一次）</span></summary><div>売上 1,433 からソフトウェア売上 945 を引いた値（決算説明資料 p.38。ソフトウェア売上比率 66%） <a class="ext" href="https://www.release.tdnet.info/inbs/140120260911534973.pdf" target="_blank" rel="noopener">出典 ↗</a></div></details><details class="var"><summary><span class="v-seg">サービス売上（導入・構築・カスタマイズ等。前期×伸び）</span><code>service_growth</code><span class="v-val">1.1</span><span class="pill pill-warn">推定</span></summary><div>導入作業はエンジニアの工数に比例する。前期末従業員 70人（前期末比 −3人。同資料 p.26）で、今期は給与テーブル改定と オフィス移転で採用・定着を図る計画（同資料 p.46）。人員が増えるまでは工数の伸びは限られ、AIエージェント・フィジカルAI の 新規案件（PoC・構築）が上乗せ分。+10% と推測</div></details><details class="var"><summary><span class="v-seg">全社</span><code>op_margin</code><span class="v-val">0.13</span><span class="pill pill-warn">推定</span></summary><div>前期 17.5%（250÷1,433）、会社計画 14.7%（250÷1,707）。会社は『売上がコストと連動しておらず、固定費の人的コストを 超過した部分がそのまま利益になる』と説明（決算説明資料 p.25）。計画の費用は 1,457（1,707−250。前期 1,183 から +23%）で、 売上が計画を下回ればその分がほぼそのまま減益になる。一方、前期は費用が計画を約 8% 下回った（計画費用 1,286→実績 1,183）。 推定売上に対し費用を計画の約 97%（≒1,420）とみると率は 13〜14%。低い側の 13% と置いた</div></details></div><h3>感度 — この推定を最も動かす変数</h3><p class="lede">各変数を +10% したときの営業利益の変化。上にある変数ほど、根拠を厚く確かめる価値がある。ただし <code>op_margin</code> だけは別扱い——営業利益 = 売上合計 × op_margin なので +10% は定義上つねに +10% になり、売上側の変数と大小を比べても意味が無い。</p><div class="scroll"><table class="prose-table"><thead><tr><th>変数</th><th>セグメント</th><th>営業利益への影響</th></tr></thead><tbody><tr><td><code>op_margin</code></td><td>全社 <span class="pill pill-warn">定義上</span></td><td class="num">+10.0%<br><span class="k-sub">乗法モデルなので定義上つねに +10%。売上側の変数との大小比較には意味が無い（率の水準そのものを疑うこと）</span></td></tr><tr><td><code>perpetual_growth</code></td><td>買取ライセンス売上（前期×伸び）</td><td class="num">+3.4%</td></tr><tr><td><code>perpetual_prev</code></td><td>買取ライセンス売上（前期×伸び）</td><td class="num">+3.4%</td></tr><tr><td><code>service_growth</code></td><td>サービス売上（導入・構築・カスタマイズ等。前期×伸び）</td><td class="num">+3.4%</td></tr><tr><td><code>service_prev</code></td><td>サービス売上（導入・構築・カスタマイズ等。前期×伸び）</td><td class="num">+3.4%</td></tr><tr><td><code>revenue_per_stock_license</code></td><td>ストック売上（利用料＋保守。ライセンス数×1本当たり年間売上）</td><td class="num">+3.2%</td></tr></tbody></table></div><h3>推定の変遷</h3><p class="lede">過去の版は書き換えずに残す。数値感がどう変わってきたかが学習の履歴になる。</p><div class="scroll"><table class="prose-table"><thead><tr><th>起案日</th><th>対象期</th><th>売上</th><th>営業利益</th><th>何を変えたか</th></tr></thead><tbody><tr><td>2026-09-27</td><td>FY2027-07</td><td class="num">1,596</td><td class="num">208</td><td>初版（Claude 起案・人間未確認）。報告セグメントは単一（エンタープライズAIソフトウェア事業。Neuron ES＝企業内検索、 Impulse＝製造業向け異常検知）だが、会社が決算説明資料で売上を『ストック（利用料＋保守）』『買取ライセンス』 『それ以外（導入・構築・カスタマイズ等のサービス）』に分けて比率を開示しているので、この3区分で切った。 7月決算で 2026-09-11 に本決算が出たばかり（今期の四半期実績はまだ無い）。前期（FY2026-07）実績は売上 1,433・営業利益 250 （fundamentals の採用値）。会社計画は売上 1,707（+19.1%）・営業利益 250（±0%）で、オフィス移転・給与テーブル改定・ AIエージェント／フィジカルAI への投資で費用が大きく増える前提（決算説明資料 p.46、https://www.release.tdnet.info/inbs/140120260911534973.pdf、 2026-09-27取得）。前期は売上が計画 1,510 に対し 94.9% と未達、費用が計画を下回って利益だけ超過した。 推定は売上・営業利益とも会社計画を下回る。12月の1Q決算で置き直す前提</td></tr></tbody></table></div></div></div></details><details class="sec"><summary><span class="sec-title">会社概要</span><span class="sec-hint">この会社は何者か・財務の推移と健全性・今後の展望とリスク・値動きと市場の評価・出典・検証の記録</span></summary><div class="sec-body"><h2>この会社は何者か</h2><ul>
+<li><strong>事業</strong>：企業のDXに使うAIを製品として売る「エンタープライズAIソフトウエア事業」の単一セグメント・非連結（決算短信）。2026年7月期末の従業員は70名</li>
+<li><strong>2つの主力製品</strong>（いずれも会社発表）</li>
+<li><strong>Impulse</strong>：センサー・音声・画像・動画から異常を検知するAI。2014年のリリース以来、製造現場を中心に累計3.5万を超えるAIモデルが稼働しているという。設備の故障予兆、不良品検出、作業分析に使われる</li>
+<li><strong>Neuron ES</strong>：企業内の文書を横断検索する全文検索システム。生成AI連携（Chat EI）やMicrosoft 365 Copilotからの検索（MCP対応）を足している。ITトレンドのエンタープライズサーチ部門で9年連続1位と会社は発表している</li>
+<li><strong>新しい柱として打ち出しているもの＝フィジカルAI</strong>：Impulseで培った画像認識とロボット基盤モデルを組み合わせ、ロボットに製造現場の作業をさせる領域。2026年3月に人型ロボットによる製造現場自働化の実証結果を公表し、同月にアイシンと共同でAWSジャパンの「フィジカルAI 開発支援プログラム」に採択された。8月28日には工程選定から現場実装・運用定着まで請け負う「フィジカルAI 現場実装・ロボット導入支援サービス」を始めた</li>
+<li>株探が「比較される銘柄」に挙げているのはABEJA、フレクト、TDSE（二次情報）</li>
+</ul><h2>財務の推移と健全性</h2><figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">17.1億円</text><g class="viz-bar"><title>2016/7: 1.33億円</title><rect x="64.4" y="230.1" width="33.8" height="17.9" fill="var(--viz-pos)" rx="3"/></g><text x="81.2" y="268.0" text-anchor="middle" class="viz-tick">2016/7</text><g class="viz-bar"><title>2017/7: 2.36億円</title><rect x="118.9" y="216.2" width="33.8" height="31.8" fill="var(--viz-pos)" rx="3"/></g><text x="135.8" y="268.0" text-anchor="middle" class="viz-tick">2017/7</text><g class="viz-bar"><title>2018/7: 2.82億円</title><rect x="173.4" y="210.0" width="33.8" height="38.0" fill="var(--viz-pos)" rx="3"/></g><text x="190.2" y="268.0" text-anchor="middle" class="viz-tick">2018/7</text><g class="viz-bar"><title>2019/7: 4.32億円</title><rect x="227.9" y="189.8" width="33.8" height="58.2" fill="var(--viz-pos)" rx="3"/></g><text x="244.8" y="268.0" text-anchor="middle" class="viz-tick">2019/7</text><g class="viz-bar"><title>2020/7: 6.31億円</title><rect x="282.4" y="163.0" width="33.8" height="85.0" fill="var(--viz-pos)" rx="3"/></g><text x="299.2" y="268.0" text-anchor="middle" class="viz-tick">2020/7</text><g class="viz-bar"><title>2021/7: 8.54億円</title><rect x="336.9" y="132.9" width="33.8" height="115.1" fill="var(--viz-pos)" rx="3"/></g><text x="353.8" y="268.0" text-anchor="middle" class="viz-tick">2021/7</text><g class="viz-bar"><title>2022/7: 9.34億円</title><rect x="391.4" y="122.2" width="33.8" height="125.8" fill="var(--viz-pos)" rx="3"/></g><text x="408.2" y="268.0" text-anchor="middle" class="viz-tick">2022/7</text><g class="viz-bar"><title>2023/7: 10.5億円</title><rect x="445.9" y="106.1" width="33.8" height="141.9" fill="var(--viz-pos)" rx="3"/></g><text x="462.8" y="268.0" text-anchor="middle" class="viz-tick">2023/7</text><g class="viz-bar"><title>2024/7: 10.0億円</title><rect x="500.4" y="112.7" width="33.8" height="135.3" fill="var(--viz-pos)" rx="3"/></g><text x="517.2" y="268.0" text-anchor="middle" class="viz-tick">2024/7</text><g class="viz-bar"><title>2025/7: 12.6億円</title><rect x="554.9" y="78.9" width="33.8" height="169.1" fill="var(--viz-pos)" rx="3"/></g><text x="571.8" y="268.0" text-anchor="middle" class="viz-tick">2025/7</text><g class="viz-bar"><title>2026/7: 14.3億円</title><rect x="609.4" y="54.9" width="33.8" height="193.1" fill="var(--viz-pos)" rx="3"/></g><text x="626.2" y="268.0" text-anchor="middle" class="viz-tick">2026/7</text><g class="viz-bar"><title>2027/7予: 17.1億円 — 会社計画</title><rect x="663.9" y="18.0" width="33.8" height="230.0" fill="var(--viz-pos)" rx="3"/></g><text x="680.8" y="12.0" text-anchor="middle" class="viz-value">17.1億円</text><text x="680.8" y="268.0" text-anchor="middle" class="viz-tick">2027/7予</text></svg><figcaption>売上高（通期）と今期の会社計画</figcaption><p class="viz-src">出所: data/fundamentals/4075.csv の採用値（別サイト2つ以上が一致した値だけ）。12/12点を採用。</p></figure>
+<p>売上高は2016年7月期の1.3億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>から2026年7月期の14.3億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>まで、2024年7月期（10.0億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）を除いて毎年伸びてきた。</p>
+<div class="scroll"><table class="prose-table">
+<thead>
+<tr>
+<th>期</th>
+<th>売上高（百万円）</th>
+<th>営業利益（百万円）</th>
+<th>当期純利益（百万円）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2023年7月期</td>
+<td>1053</td>
+<td>163</td>
+<td>122</td>
+</tr>
+<tr>
+<td>2024年7月期</td>
+<td>1004</td>
+<td>73</td>
+<td>48</td>
+</tr>
+<tr>
+<td>2025年7月期</td>
+<td>1255</td>
+<td>165</td>
+<td>133</td>
+</tr>
+<tr>
+<td>2026年7月期</td>
+<td>1433</td>
+<td>250</td>
+<td>192</td>
+</tr>
+<tr>
+<td>2027年7月期（会社計画）</td>
+<td>1707</td>
+<td>250</td>
+<td>173</td>
+</tr>
+</tbody>
+</table></div>
+<p>表の数値はすべて2ソース照合済みの採用値。</p>
+<ul>
+<li><strong>2026年7月期</strong>：売上+14.1%に対し営業利益+50.9%。決算短信によれば、人員減少や外注費の削減で売上原価が前期より減り、売上総利益が+24.2%伸びた。一方で、フィジカルAIやAIエージェントの研究開発費を中心に販管費が増えている。営業利益率は17.5%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（前期13.2%<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）</li>
+<li><strong>四半期の勢い</strong>（下図。単独3か月の営業利益）：26/7期は1Q -27百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（前年同期 -62百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）、2Q 99百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（同55百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）、3Q 60百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（同128百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）、4Q 118百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（同44百万円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）。<strong>3Qは前年同期を下回った</strong>（前年3Qの値は2ソースが一致しておらず<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）。直近の1Q（8〜10月）は2年続けて営業赤字で、期初が弱く期末に寄る季節性があると読める</li>
+</ul>
+<figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="168.8" x2="708" y2="168.8" stroke="var(--viz-axis)" stroke-width="1.5"/><text x="46" y="172.8" text-anchor="end" class="viz-tick">0</text><line x1="54" y1="18.0" x2="708" y2="18.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="22.0" text-anchor="end" class="viz-tick">118百万円</text><line x1="54" y1="248.0" x2="708" y2="248.0" stroke="var(--viz-grid)" stroke-width="1" stroke-dasharray="2 3"/><text x="46" y="252.0" text-anchor="end" class="viz-tick">-62.0百万円</text><g class="viz-bar"><title>8〜10月(2024): -62.0百万円</title><rect x="71.9" y="168.8" width="46.0" height="79.2" fill="var(--viz-neg)" rx="3"/></g><text x="94.9" y="268.0" text-anchor="middle" class="viz-tick">8〜10月(2024)</text><g class="viz-bar"><title>11〜1月(2024-25): 55.0百万円</title><rect x="153.6" y="98.5" width="46.0" height="70.3" fill="var(--viz-pos)" rx="3"/></g><text x="176.6" y="268.0" text-anchor="middle" class="viz-tick">11〜1月(2024-25)</text><text x="258.4" y="162.8" text-anchor="middle" class="viz-tick">—</text><text x="258.4" y="268.0" text-anchor="middle" class="viz-tick">2〜4月(2025)</text><g class="viz-bar"><title>5〜7月(2025): 44.0百万円</title><rect x="317.1" y="112.6" width="46.0" height="56.2" fill="var(--viz-pos)" rx="3"/></g><text x="340.1" y="268.0" text-anchor="middle" class="viz-tick">5〜7月(2025)</text><g class="viz-bar"><title>8〜10月(2025): -27.0百万円</title><rect x="398.9" y="168.8" width="46.0" height="34.5" fill="var(--viz-neg)" rx="3"/></g><text x="421.9" y="268.0" text-anchor="middle" class="viz-tick">8〜10月(2025)</text><g class="viz-bar"><title>11〜1月(2025-26): 99.0百万円</title><rect x="480.6" y="42.3" width="46.0" height="126.5" fill="var(--viz-pos)" rx="3"/></g><text x="503.6" y="268.0" text-anchor="middle" class="viz-tick">11〜1月(2025-26)</text><g class="viz-bar"><title>2〜4月(2026): 60.0百万円</title><rect x="562.4" y="92.1" width="46.0" height="76.7" fill="var(--viz-pos)" rx="3"/></g><text x="585.4" y="268.0" text-anchor="middle" class="viz-tick">2〜4月(2026)</text><g class="viz-bar"><title>5〜7月(2026): 118百万円</title><rect x="644.1" y="18.0" width="46.0" height="150.8" fill="var(--viz-pos)" rx="3"/></g><text x="667.1" y="268.0" text-anchor="middle" class="viz-tick">5〜7月(2026)</text></svg><figcaption>営業利益（単独3か月）の推移</figcaption><p class="viz-src">出所: data/fundamentals/4075.csv の採用値（別サイト2つ以上が一致した値だけ）。7/8点を採用、欠測 2〜4月(2025)（照合が成立していない（MISMATCH））。</p></figure>
+<ul>
+<li><strong>健全性</strong>：2026年7月期末の自己資本比率は78.2%<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、現金及び現金同等物は16.8億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、総資産は23.6億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。営業キャッシュフローは4.3億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>で当期純利益（1.9億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>）を上回る（減価償却費2.1億円が大きい。決算短信）。財務活動は新株予約権の行使による収入だけで、借入の記載はない</li>
+<li><strong>1株指標・還元</strong>：EPSは33.00円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>（決算短信の記載値。台帳では2ソースが不一致）、1株当たり純資産は315.48円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。無配で、2027年7月期も無配予想（決算短信）</li>
+</ul><h2>今後の展望とリスク</h2><ul>
+<li><strong>会社計画（2027年7月期）</strong>：売上高17.1億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（+19.1%）、営業利益2.5億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（+0.0%）、当期純利益1.7億円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（-9.9%）。売上は2割伸ばすが利益は横ばい〜減益という計画で、増える粗利をフィジカルAI等の研究開発と採用に回す前提と読める（assumed: true。根拠＝前期の販管費増が研究開発費中心だったと決算短信にあり、今期見通しの文面も「優秀な人材の採用およびソフトウェアの開発を推し進める」としているため。費目別の計画値は確認していない）</li>
+<li><strong>上振れの芽</strong>：フィジカルAIの導入支援が受注として積み上がれば、横ばい計画を上回る余地がある。ただし現時点で受注額・案件数の開示は確認できていない</li>
+<li><strong>リスク</strong></li>
+<li>利益計画が横ばいで、screen.py の PLAN_FLAT に該当する。業績の伸びより「フィジカルAI」という話題で株価が動いている</li>
+<li>1Qが営業赤字になりやすい季節性。次の1Q（2026年8〜10月）の開示で赤字が出ても、それ自体は例年どおりの可能性がある</li>
+<li>急騰後の信用買い残<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>の増加（週次アップデート参照）</li>
+<li>小型株で、材料が出ない日の出来高<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>が数千株まで細る日がある（2026年8月下旬）</li>
+</ul><h2>値動きと市場の評価</h2><figure class="viz"><svg viewBox="0 0 720 300" role="img" preserveAspectRatio="xMidYMid meet"><line x1="54" y1="59.2" x2="704" y2="59.2" stroke="var(--viz-grid)" stroke-width="1"/><text x="46" y="63.2" text-anchor="end" class="viz-tick">1,861円</text><line x1="54" y1="226.8" x2="704" y2="226.8" stroke="var(--viz-grid)" stroke-width="1"/><text x="46" y="230.8" text-anchor="end" class="viz-tick">796円</text><path d="M54.0,212.8 L55.8,212.0 L57.6,212.5 L59.4,212.8 L61.2,211.7 L66.6,212.2 L68.4,208.1 L70.2,207.3 L72.0,205.6 L73.8,209.5 L81.0,218.0 L82.8,216.5 L84.6,216.3 L86.4,218.8 L91.8,217.9 L93.6,219.6 L95.4,218.0 L97.2,217.7 L99.0,218.7 L104.4,219.9 L106.2,219.3 L108.0,222.1 L109.8,219.0 L111.6,219.9 L118.8,218.7 L120.6,222.3 L122.4,220.1 L124.2,221.2 L129.6,221.7 L131.4,219.3 L133.2,217.2 L135.0,213.9 L136.8,214.2 L142.2,214.6 L144.0,217.9 L145.8,215.0 L147.6,216.8 L149.4,214.2 L156.6,211.6 L158.4,199.3 L160.2,199.9 L162.0,201.0 L167.4,203.2 L169.2,206.4 L171.0,206.5 L172.8,206.8 L174.6,211.3 L180.0,210.0 L181.8,204.2 L183.6,197.9 L185.4,197.9 L187.2,199.0 L192.6,214.2 L194.4,222.6 L196.2,221.5 L198.0,222.1 L199.8,223.4 L205.2,219.9 L207.0,219.8 L208.8,221.5 L210.6,221.7 L212.4,222.1 L217.9,221.5 L219.7,220.7 L230.5,222.0 L232.3,222.6 L234.1,222.6 L235.9,224.3 L237.7,224.2 L244.9,222.1 L246.7,224.0 L248.5,224.5 L250.3,222.9 L255.7,222.3 L257.5,221.0 L259.3,221.2 L261.1,222.0 L262.9,221.0 L268.3,222.9 L270.1,222.9 L271.9,223.2 L273.7,223.7 L275.5,223.7 L280.9,223.1 L282.7,221.3 L284.5,221.5 L286.3,220.5 L288.1,218.5 L293.5,220.9 L295.3,218.0 L298.9,219.4 L300.7,223.4 L306.1,222.4 L307.9,221.5 L309.7,221.0 L311.5,218.7 L313.3,223.1 L320.5,220.1 L322.3,219.4 L324.1,218.7 L325.9,219.1 L331.3,219.3 L333.1,225.7 L334.9,226.8 L336.7,222.1 L338.5,198.5 L343.9,174.9 L345.7,145.0 L347.5,127.2 L349.3,97.9 L351.1,98.2 L356.5,111.3 L358.3,65.9 L360.1,59.2 L361.9,89.7 L369.1,135.0 L370.9,147.0 L372.7,138.7 L374.5,148.1 L376.3,142.0 L381.7,148.4 L383.5,155.4 L385.3,145.3 L387.1,148.4 L388.9,150.0 L394.3,143.1 L396.1,155.2 L397.9,148.3 L399.7,158.2 L401.5,156.5 L406.9,152.1 L408.7,155.7 L410.5,143.6 L412.3,144.8 L414.1,144.5 L419.5,150.0 L421.3,156.0 L423.1,151.0 L424.9,154.9 L426.7,156.3 L432.1,163.2 L433.9,168.0 L437.5,168.9 L439.3,179.0 L450.1,177.1 L451.9,171.4 L457.3,166.2 L459.1,167.2 L460.9,165.6 L462.7,167.0 L464.5,166.1 L469.9,168.7 L471.7,170.3 L473.5,179.8 L475.3,182.0 L477.1,175.2 L482.5,174.1 L484.3,181.0 L486.1,181.8 L487.9,185.1 L489.7,183.1 L495.1,184.5 L496.9,188.3 L498.7,185.1 L500.5,185.0 L502.3,182.0 L507.7,190.0 L509.5,190.8 L511.3,188.4 L513.1,193.5 L514.9,193.2 L520.3,220.7 L522.1,220.5 L523.9,222.3 L525.7,219.4 L527.5,223.9 L532.9,220.5 L534.7,217.2 L536.5,216.6 L538.3,214.9 L540.1,219.4 L545.6,214.6 L547.4,211.6 L549.2,212.4 L551.0,213.6 L552.8,211.3 L558.2,209.1 L560.0,211.7 L561.8,214.2 L563.6,214.2 L565.4,211.9 L570.8,210.2 L572.6,211.3 L574.4,207.0 L576.2,210.5 L578.0,214.2 L585.2,214.4 L587.0,215.7 L588.8,212.4 L590.6,213.6 L596.0,214.6 L597.8,216.5 L599.6,219.6 L601.4,222.4 L603.2,219.9 L608.6,220.5 L610.4,219.4 L612.2,216.6 L614.0,218.5 L615.8,216.5 L621.2,215.8 L624.8,210.6 L626.6,214.4 L628.4,209.5 L633.8,210.0 L635.6,210.8 L637.4,211.6 L639.2,206.5 L641.0,208.7 L646.4,209.2 L648.2,211.9 L650.0,211.7 L651.8,209.5 L653.6,204.6 L659.0,181.0 L660.8,133.8 L662.6,119.1 L664.4,71.9 L666.2,132.7 L671.6,144.3 L673.4,150.3 L675.2,158.5 L677.0,168.7 L678.8,162.6 L684.2,170.3 L686.0,140.7 L687.8,130.3 L689.6,148.9 L691.4,101.7 L702.2,110.2 L704.0,122.6" fill="none" stroke="var(--viz-pos)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><text x="54" y="272" text-anchor="start" class="viz-tick">25/9/29</text><text x="704" y="272" text-anchor="end" class="viz-tick">26/9/25</text><g class="viz-dot"><title>26/3/5 人型ロボット実証を公表: 826円</title><circle cx="336.7" cy="222.1" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="336.7" y1="214.1" x2="336.7" y2="192.1" stroke="var(--viz-muted)" stroke-width="1"/><text x="336.7" y="188.1" text-anchor="middle" class="viz-value">人型ロボット実証を公表</text><text x="336.7" y="202.1" text-anchor="middle" class="viz-tick">26/3/5</text><g class="viz-dot"><title>26/3/17 AWSのフィジカルAI支援に採択: 1,818円</title><circle cx="358.3" cy="65.9" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="358.3" y1="73.9" x2="358.3" y2="79.9" stroke="var(--viz-muted)" stroke-width="1"/><text x="358.3" y="91.9" text-anchor="middle" class="viz-value">AWSのフィジカルAI支援に採択</text><text x="358.3" y="105.9" text-anchor="middle" class="viz-tick">26/3/17</text><g class="viz-dot"><title>26/8/28 フィジカルAI導入支援を開始: 937円</title><circle cx="653.6" cy="204.6" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="653.6" y1="196.6" x2="592.0" y2="174.6" stroke="var(--viz-muted)" stroke-width="1"/><text x="592.0" y="170.6" text-anchor="middle" class="viz-value">フィジカルAI導入支援を開始</text><text x="592.0" y="184.6" text-anchor="middle" class="viz-tick">26/8/28</text><g class="viz-dot"><title>26/9/11 通期決算（今期は営業横ばい計画）: 1,204円</title><circle cx="678.8" cy="162.6" r="5.5" fill="var(--viz-pos)" stroke="var(--viz-surface)" stroke-width="2"/></g><line x1="678.8" y1="154.6" x2="576.0" y2="132.6" stroke="var(--viz-muted)" stroke-width="1"/><text x="576.0" y="128.6" text-anchor="middle" class="viz-value">通期決算（今期は営業横ばい計画）</text><text x="576.0" y="142.6" text-anchor="middle" class="viz-tick">26/9/11</text></svg><figcaption>採用終値の推移と会社発表の日付</figcaption><p class="viz-src">出所: data/prices/daily.csv の採用終値（2つの取得元が一致した終値だけ）。ザラ場の高値・安値は照合を通っていないので使っていない。245/245点を採用、52週の採用終値 241営業日、出来事 4/4件を配置。</p></figure>
+<ul>
+<li><strong>52週の採用終値レンジ</strong>：安値796円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（2026-03-04）〜高値1861円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（2026-03-18）。直近は1458円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（2026-09-25）で高値の約78%</li>
+<li><strong>3月の急騰</strong>：人型ロボット実証の公表（3/5）の翌日から上げ始め、3/6・3/9は前日比+150円の上げ幅で出来高<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>が2万株前後と小さく、買い気配のまま値が付きにくいストップ高型の上げだったと読める。AWSプログラム採択（3/17）で1818円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>、翌3/18に1861円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>の高値を付けた後、7月末には824円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>まで戻した</li>
+<li><strong>8月末〜9月の急騰</strong>：フィジカルAI導入支援サービスの開始発表（8/28・金）の後、8/31に1087円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（+150円）、9/1に1387円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>（+300円）、9/3に1780円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>。9/11の通期決算（今期営業横ばい計画）前後は1155〜1204円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>まで押し、9/15に急反発（株探は「フィジカルＡＩ関連で頭角現す」と報じた）、9/18にストップ高で1591円<span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span></li>
+<li><strong>バリュエーション</strong>（株探・2026-09-27取得、いずれも<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）：時価総額87.1億円、PER 49.3倍、PBR 4.62倍、信用倍率18.15倍</li>
+</ul><h2>出典</h2><p>凡例: <span class="vm vm-ok" title="2ソース照合済みの採用値（status OK）">✓</span>=2ソース照合済みの採用値 ／ <span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>=未照合・参考値 ／ <span class="vm vm-pri" title="決算短信（一次情報）から機械抽出。まとめサイトとの2ソース照合なし">†</span>=決算短信（一次情報）から直接</p>
+<p><strong>一次情報</strong></p>
+<div class="scroll"><table class="prose-table">
+<thead>
+<tr>
+<th>資料</th>
+<th>URL</th>
+<th>取得日</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026年7月期 決算短信（非連結・2026-09-11）</td>
+<td>https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf</td>
+<td>2026-09-27</td>
+</tr>
+<tr>
+<td>会社ニュース一覧</td>
+<td>https://www.brains-tech.co.jp/news/</td>
+<td>2026-09-27</td>
+</tr>
+<tr>
+<td>フィジカルAI 現場実装・ロボット導入支援サービス 提供開始（2026-08-28）</td>
+<td>https://www.brains-tech.co.jp/news/20260828_01-2/</td>
+<td>2026-09-27</td>
+</tr>
+<tr>
+<td>人型ロボットによる製造現場自働化の実証結果（2026-03-05）</td>
+<td>https://www.brains-tech.co.jp/news/20260305_1/</td>
+<td>2026-09-27（一覧で見出しのみ確認）</td>
+</tr>
+<tr>
+<td>アイシンと共同でAWSジャパン「フィジカルAI 開発支援プログラム」に採択（2026-03-17）</td>
+<td>https://www.brains-tech.co.jp/news/20260317_01/</td>
+<td>2026-09-27（一覧で見出しのみ確認）</td>
+</tr>
+<tr>
+<td>Neuron ES、ITトレンド9年連続1位（2026-02-18）</td>
+<td>https://www.brains-tech.co.jp/news/20260218/</td>
+<td>2026-09-27（一覧で見出しのみ確認）</td>
+</tr>
+<tr>
+<td>Neuron ES、MCPサーバー対応（2026-05-29）</td>
+<td>https://www.brains-tech.co.jp/news/20260529/</td>
+<td>2026-09-27（一覧で見出しのみ確認）</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>二次情報</strong></p>
+<div class="scroll"><table class="prose-table">
+<thead>
+<tr>
+<th>資料</th>
+<th>URL</th>
+<th>取得日</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>株探 銘柄ページ（時価総額・PER・PBR・信用残・比較銘柄）</td>
+<td>https://kabutan.jp/stock/?code=4075</td>
+<td>2026-09-27</td>
+</tr>
+<tr>
+<td>株探 ニュース一覧</td>
+<td>https://kabutan.jp/stock/news?code=4075</td>
+<td>2026-09-27</td>
+</tr>
+<tr>
+<td>株探「ブレインズ、今期最終は10％減益へ」（2026-09-11）</td>
+<td>https://kabutan.jp/stock/news?code=4075&amp;b=k202609110048</td>
+<td>2026-09-27</td>
+</tr>
+<tr>
+<td>株探（MINKABU PRESS）「ブレインズが２０％超の急騰演じる、フィジカルＡＩ関連で頭角現す」（2026-09-15）</td>
+<td>https://kabutan.jp/stock/news?code=4075&amp;b=n202609150280</td>
+<td>2026-09-27</td>
+</tr>
+<tr>
+<td>株探「本日の【ストップ高／ストップ安】(9月18日)」</td>
+<td>https://kabutan.jp/stock/news?code=4075&amp;b=n202609180830</td>
+<td>2026-09-27（見出しのみ確認）</td>
+</tr>
+</tbody>
+</table></div>
+<p>財務数値・株価の採用値は <code>data/fundamentals/4075.csv</code> と <code>data/prices/daily.csv</code>、信用残は <code>data/margin/4075.csv</code>。</p>
+<p><strong>未確認</strong></p>
+<ul>
+<li>次回（2027年7月期1Q）の決算発表日。<code>master.yaml</code> の各項目（fiscal_year_end・ir_url など）もまだ TO_VERIFY</li>
+<li>2025年7月期3Qの営業利益（128百万円<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>）。2ソースが一致していない</li>
+<li>売上のうちストック（ライセンス・保守）とフロー（導入・受託）の比率</li>
+<li>フィジカルAI事業の受注額・案件数（開示を確認できていない）</li>
+<li>代表者名の表記が資料で異なる（決算短信は「齋藤 佐和子」、8/28のリリースは「濱中佐和子」）。同一人物の旧姓・通称の違いと見られるが確認していない（assumed: true）</li>
+<li>8/31・9/1の出来高<span class="vm vm-ref" title="未照合・参考値（SINGLE_SOURCE / MISMATCH / 出来高・信用残）">※</span>が1万株前後と小さいのが、ストップ高張り付きによるものか取得側の問題かは確かめていない</li>
+</ul><h2 id="verify">記述の裏取り</h2><p class="lede">本文の記述を、書いたのとは別の文脈が出典URLを取り直して1件ずつ判定した結果（<a href="../about.html">読み方</a>）。</p><p class="readout"><span>検証日 <b>2026-09-27</b></span><span>検証した記述 <b>43</b></span><span>裏付けあり <b>31</b></span><span>この出典では確かめられない（別の出典が要る） <b>3</b></span><span>確かめられない（到達不可・出典なし） <b>9</b></span><span>再取得した出典 <b>13</b></span></p><h3>裏が取れなかった記述</h3><p>出典を取り直しても確かめられなかったもの。<strong>本文に残っているが、確認済みとして読んではいけない。</strong></p><div class="scroll"><table><thead><tr><th>判定</th><th>本文の記述</th><th>再取得して分かったこと</th><th>出典</th><th>どうするか</th></tr></thead><tbody><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>2026-09-27、楽天証券のスクリーニング（成長株0830・per）通過を起点に監視対象に登録した</td><td>根拠として示されているのは data/master.yaml の watch_reason だが、検証の隔離範囲外（D18）で開いていない。出典URLなし。</td><td>出典なし<br>—</td><td>隔離の外にあるため検証者は確かめない。人間が master.yaml と照合する</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>企業のDXに使うAIを製品として売る「エンタープライズAIソフトウエア事業」の単一セグメント・非連結（決算短信）。2026年7月期末の従業員は70名</td><td>決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。 参考: 株探記事（MINKABU PRESS・200）に「エンタープライズＡＩソフトウェア事業」、株探決算記事に「【非連結】」はあるが、単一セグメント・従業員70名の記載は無い。</td><td>一次情報<br><a class="ext" href="https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）</td></tr><tr><td><span class="pill pill-warn">この出典では確かめられない（別の出典が要る）</span></td><td>売上+14.1%に対し営業利益+50.9%</td><td>採用値からは 1433/1255-1=+14.2%、250/165-1=+51.5%（screen.py 通期 +51.5%）。株探決算記事（200）「前年比 | +14.2 | +51.5 | +53.6 | +44.4」。+14.1%/+50.9% は百万円未満の端数を使えば起こりうる範囲（営業 249.5/165.5〜250.5/164.5 ⇒ +50.8〜+52.3%）だが、その値を示す出典（決算短信PDF）はテキスト化できず確かめられない。</td><td>検証済みデータ<br><code>data/fundamentals/4075.csv</code> <a class="ext" href="https://kabutan.jp/stock/news?code=4075&amp;b=k202609110048" target="_blank" rel="noopener">出典 ↗</a> <code>src/screen.py</code></td><td>採用値どうしの比（+14.2%/+51.5%）に揃えるか、決算短信の増減率を data/tanshin に取り込んでから引く</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>人員減少や外注費の削減で売上原価が前期より減り、売上総利益が+24.2%伸びた</td><td>決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。</td><td>一次情報<br><a class="ext" href="https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>フィジカルAIやAIエージェントの研究開発費を中心に販管費が増えている</td><td>決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。</td><td>一次情報<br><a class="ext" href="https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>減価償却費2.1億円が大きい。決算短信</td><td>決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。 data/fundamentals に減価償却費の項目は無い。</td><td>一次情報<br><a class="ext" href="https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>財務活動は新株予約権の行使による収入だけで、借入の記載はない</td><td>決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。 採用値 FY2026-07 financing_cf=11（OK）は収入超過と矛盾しないが、内訳（新株予約権の行使のみ）までは確かめられない。</td><td>一次情報<br><a class="ext" href="https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）</td></tr><tr><td><span class="pill pill-warn">この出典では確かめられない（別の出典が要る）</span></td><td>EPSは33.00円※（決算短信の記載値。台帳では2ソースが不一致）</td><td>FY2026-07 eps は MISMATCH（kabutan 33 / irbank 32.87）で採用値なし。株探決算記事（200）「実 2026.07 | 1,433 | 250 | 255 | 192 | 33」は二次情報。「決算短信の記載値」であることは短信PDFがテキスト化できず確かめられない。</td><td>二次情報<br><code>data/fundamentals/4075.csv</code> <a class="ext" href="https://kabutan.jp/stock/news?code=4075&amp;b=k202609110048" target="_blank" rel="noopener">出典 ↗</a></td><td>決算短信を data/tanshin に取り込んで短信の記載値を確かめる</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>今期見通しの文面も「優秀な人材の採用およびソフトウェアの開発を推し進める」としているため</td><td>決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。 株探決算記事（200）に当該文言は無い。</td><td>一次情報<br><a class="ext" href="https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://kabutan.jp/stock/news?code=4075&amp;b=k202609110048" target="_blank" rel="noopener">出典 ↗</a></td><td>src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）</td></tr><tr><td><span class="pill pill-warn">この出典では確かめられない（別の出典が要る）</span></td><td>{label: &quot;IR情報&quot;, url: &quot;https://www.brains-tech.co.jp/ir/&quot;, primary: true}</td><td>再取得（200・815字）。本文は「決算短信」「決算説明資料」「有価証券報告書」等のメニューのみで、本文のどの記述も支えていない（目次のみ）。</td><td>一次情報<br><a class="ext" href="https://www.brains-tech.co.jp/ir/" target="_blank" rel="noopener">出典 ↗</a></td><td>一次の欄には個別資料（決算短信・説明資料）のURLを置く</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>| 2026年7月期 決算短信（非連結・2026-09-11） | https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf | 2026-09-27 |</td><td>決算短信PDFは再取得（200・application/pdf）したが fetch_source.py はテキスト化しない。data/tanshin/4075.csv は存在しない。確かめる材料が無い。 決算短信を根拠とする記述（V10・V20・V21・V26・V27・V32）はいずれも確かめられていない。</td><td>一次情報<br><a class="ext" href="https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）</td></tr><tr><td><span class="pill pill-warn">確かめられない（到達不可・出典なし）</span></td><td>代表者名の表記が資料で異なる（決算短信は「齋藤 佐和子」、8/28のリリースは「濱中佐和子」）</td><td>8/28リリース（200）「代表取締役：濱中佐和子」は確認。決算短信側の「齋藤 佐和子」は PDF がテキスト化できず確かめられない（本文自身も未確認として掲げている）。</td><td>一次情報<br><a class="ext" href="https://www.brains-tech.co.jp/news/20260828_01-2/" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf" target="_blank" rel="noopener">出典 ↗</a></td><td>src/fetch_tanshin.py で 4075 の決算短信を data/tanshin/4075.csv に取り込み、次の verify で照合する（それまで本文は「未確認」扱い）</td></tr></tbody></table></div><details><summary>裏付けが取れた記述 31件</summary><div class="scroll"><table><thead><tr><th>判定</th><th>本文の記述</th><th>再取得して分かったこと</th><th>出典</th><th>どうするか</th></tr></thead><tbody><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2026年7月期は営業利益2.5億円✓（前期比+51%）と伸びたが、今期の会社計画は営業横ばい（2.5億円✓）・最終減益</td><td>採用値 FY2026-07 operating_income=250（OK）、FY2025-07=165（OK）。250/165-1=+51.5%→「+51%」。FY2027-07 operating_income_plan=250（OK）、net_income_plan=173 &lt; FY2026-07 net_income=192。株探決算記事の表「前期比 | +19.1 | 0.0 | 0.0 | -9.9」。</td><td>検証済みデータ<br><code>data/fundamentals/4075.csv</code> <a class="ext" href="https://kabutan.jp/stock/news?code=4075&amp;b=k202609110048" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>採用終値は9/24が1537円✓、9/25が1458円✓</td><td>daily.csv 4075: 2026-09-24 close=1537.0 status=OK、2026-09-25 close=1458.0 status=OK。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>この週に会社の新しい開示は見当たらない</td><td>会社ニュース一覧（200）の最新は「2026/08/31 業務特化型AIエージェント…」で9月の項目なし。株探ニュース一覧（200）の9/21〜25は「26/09/21 19:30 | 特集 | 2026年【後半戦】急騰材料株 ベスト50」のみで「開示」区分の項目なし。</td><td>一次情報<br><a class="ext" href="https://www.brains-tech.co.jp/news/" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://kabutan.jp/stock/news?code=4075" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>前週（9/14〜18）に1204円→1591円（+32%）と急伸</td><td>daily.csv: 2026-09-11 close=1204（前週末・OK）、2026-09-18 close=1591（OK）。1591/1204-1=+32.1%。起点1204は9/14ではなく前週末9/11の終値（9/14 close=1155）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>起点が前週末終値であることを明記するとよい（任意）</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>前週9/18は前日比+300円（1291円→1591円）で、株探の「本日の【ストップ高／ストップ安】(9月18日)」に名前が載った</td><td>daily.csv: 2026-09-17 close=1291、09-18 close=1591（ともにOK）。1591-1291=+300。株探記事（200）本文「ブレインズ &lt;4075&gt; [東証Ｇ]　　　配分　前日もストップ高。」（見出しだけでなく本文でも確認）。</td><td>二次情報<br><code>data/prices/daily.csv</code> <a class="ext" href="https://kabutan.jp/stock/news?code=4075&amp;b=n202609180830" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>信用買い残※は9/18時点で330.3千株と、8/28時点の119.2千株から約2.8倍に膨らんだ</td><td>株探銘柄ページ（200）「09/18 | 18.2 | 330.3 | 18.15」「08/28 | 0.0 | 119.2 | －」。data/margin/4075.csv も同値。330.3/119.2=2.77倍。単一取得元（※表記は適切）。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/?code=4075" target="_blank" rel="noopener">出典 ↗</a> <code>data/margin/4075.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>登録時点の screen.py は PLAN_FLAT（会社計画の営業増益率が+5%未満）を出している</td><td>python src/screen.py 4075 の出力「[PLAN_FLAT] 4075 ブレインズテクノロジー — 会社計画の伸びが +5% 未満」、会社計画 +0.0%。</td><td>検証済みデータ<br><code>src/screen.py</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>直近4Qの営業利益は前年同期比+168%✓と強い</td><td>screen.py「直近Q +168.2%」。採用値 Q2026-05_2026-07=118（OK）、Q2025-05_2025-07=44（OK）、118/44-1=+168.2%。「直近4Q」は第4四半期（単独3か月）の意。直近4四半期合計なら (−27+99+60+118)=250 対 165 で+51.5%。</td><td>検証済みデータ<br><code>data/fundamentals/4075.csv</code> <code>src/screen.py</code></td><td>「直近4Q」を「直近の4Q（5〜7月・単独）」と書くと直近4四半期合計との誤読を防げる（提案）</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2014年のリリース以来、製造現場を中心に累計3.5万を超えるAIモデルが稼働しているという</td><td>8/28リリース（200）「2014年のリリース以来、製造現場を中心に累計35,000を超えるAIモデルが稼働しており、設備の故障予兆、不良品の検出、作業工程の分析・改善など」。3/5・3/17リリースにも同文。</td><td>一次情報<br><a class="ext" href="https://www.brains-tech.co.jp/news/20260828_01-2/" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://www.brains-tech.co.jp/news/20260305_1/" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://www.brains-tech.co.jp/news/20260317_01/" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>生成AI連携（Chat EI）やMicrosoft 365 Copilotからの検索（MCP対応）を足している</td><td>5/29リリース（200）「Neuron ES」において…「Model Context Protocol（MCP）」に対応したMCPサーバー機能の提供を開始」「Microsoft 365 Copilot…から…検索・参照できる」。ニュース一覧（200）「企業内検索システム「Neuron ES」生成AI連携オプション、生成AIナレッジチャット「Chat EI」が「Amazon Bedrock」に対応」(2025/05/30)。</td><td>一次情報<br><a class="ext" href="https://www.brains-tech.co.jp/news/20260529/" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://www.brains-tech.co.jp/news/" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>ITトレンドのエンタープライズサーチ部門で9年連続1位と会社は発表している</td><td>2/18リリース（200）見出し「企業内検索システム「Neuron ES」、ITトレンドのエンタープライズサーチ部門にて9年連続1位を獲得」。</td><td>一次情報<br><a class="ext" href="https://www.brains-tech.co.jp/news/20260218/" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2026年3月に人型ロボットによる製造現場自働化の実証結果を公表し、同月にアイシンと共同でAWSジャパンの「フィジカルAI 開発支援プログラム」に採択された</td><td>3/5リリース（200）「ブレインズテクノロジー、ヒューマノイドロボットによる製造現場自働化の実証結果を公表」（2026年3月5日）。3/17リリース（200）「アイシンと共同で申請したプロジェクトが…「フィジカルAI 開発支援プログラム by AWSジャパン」に採択」（2026年3月17日）。</td><td>一次情報<br><a class="ext" href="https://www.brains-tech.co.jp/news/20260305_1/" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://www.brains-tech.co.jp/news/20260317_01/" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>8月28日には工程選定から現場実装・運用定着まで請け負う「フィジカルAI 現場実装・ロボット導入支援サービス」を始めた</td><td>8/28リリース（200・2026年8月28日）「製造現場向け「フィジカルAI 現場実装・ロボット導入支援サービス」を提供開始 〜…工程選定から実地検証、現場実装・運用定着まで一貫して支援〜」。</td><td>一次情報<br><a class="ext" href="https://www.brains-tech.co.jp/news/20260828_01-2/" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>株探が「比較される銘柄」に挙げているのはABEJA、フレクト、TDSE（二次情報）</td><td>株探銘柄ページ（200）「比較される銘柄 ＡＢＥＪＡ , フレクト , ＴＤＳＥ」。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/?code=4075" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>売上高は2016年7月期の1.3億円✓から2026年7月期の14.3億円✓まで、2024年7月期（10.0億円✓）を除いて毎年伸びてきた</td><td>採用値 revenue: FY2016=133, 17=236, 18=282, 19=432, 20=631, 21=854, 22=934, 23=1053, 24=1004, 25=1255, 26=1433（全てOK系）。前年割れは FY2024（1004&lt;1053）のみ。</td><td>検証済みデータ<br><code>data/fundamentals/4075.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>表の数値はすべて2ソース照合済みの採用値</td><td>表の15値すべて status に OK を含む採用値と一致: FY2023 1053/163/122、FY2024 1004/73/48、FY2025 1255/165/133、FY2026 1433/250/192、FY2027計画 1707/250/173。</td><td>検証済みデータ<br><code>data/fundamentals/4075.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>営業利益率は17.5%✓（前期13.2%※）</td><td>FY2026-07 operating_margin=17.45（OK）。FY2025-07 operating_margin は MISMATCH（13.15 / 13.21）で ※表記は適切。</td><td>検証済みデータ<br><code>data/fundamentals/4075.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>26/7期は1Q -27百万円✓（前年同期 -62百万円✓）、2Q 99百万円✓（同55百万円✓）、3Q 60百万円✓（同128百万円※）、4Q 118百万円✓（同44百万円✓）</td><td>operating_income 採用値: Q2025-08_10=-27, Q2025-11_01=99, Q2026-02_04=60, Q2026-05_07=118, Q2024-08_10=-62, Q2024-11_01=55, Q2025-05_07=44（いずれもOK系）。Q2025-02_04 は MISMATCH（128 / 130）で ※表記は適切。</td><td>検証済みデータ<br><code>data/fundamentals/4075.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>直近の1Q（8〜10月）は2年続けて営業赤字</td><td>Q2024-08_2024-10 operating_income=-62（OK）、Q2025-08_2025-10=-27（OK）。</td><td>検証済みデータ<br><code>data/fundamentals/4075.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>2026年7月期末の自己資本比率は78.2%✓、現金及び現金同等物は16.8億円✓、総資産は23.6億円✓。営業キャッシュフローは4.3億円✓で当期純利益（1.9億円✓）を上回る</td><td>FY2026-07: equity_ratio=78.2（OK）、cash_equivalents=1675（OK|ROUNDING）、total_assets=2360（OK）、operating_cf=430（OK）、net_income=192（OK）。430&gt;192。</td><td>検証済みデータ<br><code>data/fundamentals/4075.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>1株当たり純資産は315.48円✓</td><td>FY2026-07 bps=315.48（OK・315.48/315.48）。</td><td>検証済みデータ<br><code>data/fundamentals/4075.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>無配で、2027年7月期も無配予想（決算短信）</td><td>株探決算記事（200）「2026.07 | 1,433 | 250 | 255 | 192 | 33.0 | 0 |」「予 2027.07 | 1,707 | 250 | 255 | 173 | 29.6 | 0 |」（修正1株配）。二次情報での裏付け。短信本体は未読。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/news?code=4075&amp;b=k202609110048" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>売上高17.1億円✓（+19.1%）、営業利益2.5億円✓（+0.0%）、当期純利益1.7億円✓（-9.9%）</td><td>FY2027-07 revenue_plan=1707、operating_income_plan=250、net_income_plan=173（いずれもOK系）。1707/1433-1=+19.1%、250/250-1=0.0%、173/192-1=-9.9%。株探決算記事「前期比 | +19.1 | 0.0 | 0.0 | -9.9」と一致。</td><td>検証済みデータ<br><code>data/fundamentals/4075.csv</code> <a class="ext" href="https://kabutan.jp/stock/news?code=4075&amp;b=k202609110048" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>ただし現時点で受注額・案件数の開示は確認できていない</td><td>8/28リリース（200）本文にサービス内容・背景・展望はあるが受注額・案件数の記載なし。ニュース一覧（200）にもフィジカルAIの受注に関する項目なし。</td><td>一次情報<br><a class="ext" href="https://www.brains-tech.co.jp/news/20260828_01-2/" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://www.brains-tech.co.jp/news/" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>小型株で、材料が出ない日の出来高※が数千株まで細る日がある（2026年8月下旬）</td><td>daily.csv: 2026-08-26 volume=3000、08-27 volume=5500（出来高は照合対象外で ※表記は適切）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>安値796円✓（2026-03-04）〜高値1861円✓（2026-03-18）。直近は1458円✓（2026-09-25）で高値の約78%</td><td>daily.csv の status OK 行（2025-09-26〜2026-09-25）で close 最小=796（2026-03-04）、最大=1861（2026-03-18）。1458/1861=0.783。screen.py 高値比 78%。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code> <code>src/screen.py</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>3/6・3/9は前日比+150円の上げ幅で出来高※が2万株前後と小さく</td><td>daily.csv: 03-05 close=826、03-06 close=976（+150・vol 22100）、03-09 open=high=low=close=1126（+150・vol 16100）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>AWSプログラム採択（3/17）で1818円✓、翌3/18に1861円✓の高値を付けた後、7月末には824円✓まで戻した</td><td>daily.csv: 03-17 close=1818、03-18 close=1861、07-30 close=824（いずれもOK）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>8/31に1087円✓（+150円）、9/1に1387円✓（+300円）、9/3に1780円✓</td><td>daily.csv: 08-28 close=937、08-31=1087（+150）、09-01=1387（+300）、09-03=1780（いずれもOK）。</td><td>検証済みデータ<br><code>data/prices/daily.csv</code></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>9/11の通期決算（今期営業横ばい計画）前後は1155〜1204円✓まで押し、9/15に急反発（株探は「フィジカルＡＩ関連で頭角現す」と報じた）、9/18にストップ高で1591円✓</td><td>daily.csv: 09-10 close=1165、09-11=1204、09-14=1155、09-15=1343、09-18=1591（OK）。株探記事（200）見出し「ブレインズが２０％超の急騰演じる、フィジカルＡＩ関連で頭角現す」（26/09/15 09:27）、ニュース一覧「26/09/11 15:30 | 決算 | ブレインズ、今期最終は10％減益へ」。</td><td>二次情報<br><code>data/prices/daily.csv</code> <a class="ext" href="https://kabutan.jp/stock/news?code=4075&amp;b=n202609150280" target="_blank" rel="noopener">出典 ↗</a> <a class="ext" href="https://kabutan.jp/stock/news?code=4075" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr><tr><td><span class="pill pill-good">裏付けあり</span></td><td>時価総額87.1億円、PER 49.3倍、PBR 4.62倍、信用倍率18.15倍</td><td>株探銘柄ページ（200・2026-09-27再取得）「49.3 倍 | 4.62 倍 | － ％ | 18.15 倍」「時価総額 | 87.1 億円」「09/25 | PER | 49.3」。9/25終値基準の時点値。</td><td>二次情報<br><a class="ext" href="https://kabutan.jp/stock/?code=4075" target="_blank" rel="noopener">出典 ↗</a></td><td>—</td></tr></tbody></table></div></details><h3>この欄の材料</h3><p>検証した時刻 2026-09-27T17:00:00+09:00。記録は <code>data/verification/4075.yaml</code>（append-only）。</p><h4>実際に取り直した出典</h4><ul><li><a class="ext" href="https://www.brains-tech.co.jp/ir/" target="_blank" rel="noopener">https://www.brains-tech.co.jp/ir/ ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.brains-tech.co.jp/news/" target="_blank" rel="noopener">https://www.brains-tech.co.jp/news/ ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.brains-tech.co.jp/news/20260828_01-2/" target="_blank" rel="noopener">https://www.brains-tech.co.jp/news/20260828_01-2/ ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.brains-tech.co.jp/news/20260305_1/" target="_blank" rel="noopener">https://www.brains-tech.co.jp/news/20260305_1/ ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.brains-tech.co.jp/news/20260317_01/" target="_blank" rel="noopener">https://www.brains-tech.co.jp/news/20260317_01/ ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.brains-tech.co.jp/news/20260218/" target="_blank" rel="noopener">https://www.brains-tech.co.jp/news/20260218/ ↗</a>（HTTP 200）</li><li><a class="ext" href="https://www.brains-tech.co.jp/news/20260529/" target="_blank" rel="noopener">https://www.brains-tech.co.jp/news/20260529/ ↗</a>（HTTP 200）</li><li><a class="ext" href="https://kabutan.jp/stock/?code=4075" target="_blank" rel="noopener">https://kabutan.jp/stock/?code=4075 ↗</a>（HTTP 200）</li><li><a class="ext" href="https://kabutan.jp/stock/news?code=4075" target="_blank" rel="noopener">https://kabutan.jp/stock/news?code=4075 ↗</a>（HTTP 200）</li><li><a class="ext" href="https://kabutan.jp/stock/news?code=4075&amp;b=k202609110048" target="_blank" rel="noopener">https://kabutan.jp/stock/news?code=4075&amp;b=k202609110048 ↗</a>（HTTP 200）</li><li><a class="ext" href="https://kabutan.jp/stock/news?code=4075&amp;b=n202609150280" target="_blank" rel="noopener">https://kabutan.jp/stock/news?code=4075&amp;b=n202609150280 ↗</a>（HTTP 200）</li><li><a class="ext" href="https://kabutan.jp/stock/news?code=4075&amp;b=n202609180830" target="_blank" rel="noopener">https://kabutan.jp/stock/news?code=4075&amp;b=n202609180830 ↗</a>（HTTP 200）</li><li><a class="ext" href="https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf" target="_blank" rel="noopener">https://tdnet-pdf.kabutan.jp/20260911/140120260911534968.pdf ↗</a>（HTTP 200）</li></ul><h4>機械抽出に委ねている出典</h4><p>毎週コードが表を抜いて突き合わせているもの。人が読み直すより、そちらの記録のほうが強い。</p><ul><li><a class="ext" href="https://kabutan.jp/stock/finance?code=4075" target="_blank" rel="noopener">https://kabutan.jp/stock/finance?code=4075 ↗</a> → <code>data/fundamentals/4075.csv</code></li><li><a class="ext" href="https://irbank.net/E36722/results" target="_blank" rel="noopener">https://irbank.net/E36722/results ↗</a> → <code>data/fundamentals/4075.csv</code></li></ul><h2>数値の検証状況</h2><p class="lede">2つの取得元で一致した値だけを採用し、欠測は0で埋めない。この銘柄でどこまで確かめられているかの開示（<a href="../about.html">読み方</a>）。</p><p class="readout"><span>2ソース照合済み <b>108</b></span><span>2ソースが食い違う <b>12</b></span><span>1ソースのみ <b>266</b></span><span>決算短信から直接 <b>0</b></span><span>株価の採用終値 <b>241</b>/270日</span></p><div class="scroll"><table><thead><tr><th>図</th><th>数値の出どころ</th><th>状態</th></tr></thead><tbody><tr><td><code>events_52w</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>245/245点すべて採用値</td></tr><tr><td><code>op_quarterly</code></td><td><span class="pill pill-warn">一部欠測</span>検証済みCSVから自動で組み立て</td><td>7/8点を採用（残りは照合不成立）</td></tr><tr><td><code>revenue_10y</code></td><td><span class="pill pill-good">照合済み</span>検証済みCSVから自動で組み立て</td><td>12/12点すべて採用値</td></tr></tbody></table></div><h3>2つの取得元が食い違った項目</h3><p>どちらが正しいか決められないため、<strong>どちらの値も採用していない</strong>。この項目を本文で断定形で書いてはいけない。</p><p>2025/7 ROA、2025/7 ROE、2025/7 営業利益率、2026/7 1株益、2026/7 ROA、2026/7 ROE、24/11-25/1 営業利益率、24/8-10 営業利益率、25/11-26/1 営業利益率、25/2-4 営業利益、25/2-4 営業利益率、26/2-4 営業利益率</p><h3>図に穴があるところ</h3><ul><li>op_quarterly: 欠測 1点 — 2〜4月(2025)（照合が成立していない（MISMATCH））</li></ul><h3>この欄の材料</h3><ul><li>財務数値: <code>data/fundamentals/4075.csv</code>（386行）— 2サイトの表を機械的に抜いて突き合わせた結果</li><li>決算短信: <code>data/tanshin/4075.csv</code>（0行・開示日 —）— PDF本文からの抽出 </li><li>株価: <code>data/prices/daily.csv</code> の <code>close</code>。始値・高値・安値・出来高は主ソースのみで照合を通っていないため、図には使っていない</li></ul></div></details><footer>集計基準日 2026-09-25／本サイトは個人の検討用であり、投資助言ではありません。売買の判断は人間が行います。数値はすべて出所と取得日を併記しています。</footer></main></body></html>
