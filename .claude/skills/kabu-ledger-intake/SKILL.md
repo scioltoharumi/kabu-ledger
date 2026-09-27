@@ -124,6 +124,14 @@ Workflow: .claude/workflows/kabu-weekly-reports.js
 
 1銘柄だけなら `.claude/skills/kabu-ledger-report/SKILL.md` に直接従ってよい。
 
+### 5.5 推定モデルを作る（レポートと並行でよい）
+
+**監視中の全銘柄は推定モデル（`estimates/{code}.yaml`）を持つ**（2026-09-05 方針）。
+`tests/test_index_sort.py` がこれを強制するので、推定の無い新規銘柄を push すると
+CI が赤くなり公開されない。1銘柄1エージェントで `.claude/skills/kabu-ledger-estimate/SKILL.md`
+に従わせる。書くのは `estimates/{code}.yaml` だけなので、手順5のレポート執筆と衝突しない
+（レポートの完成は待たせず、財務データと一次情報から組ませる）。
+
 ### 6. 生成して push する
 
 ```powershell

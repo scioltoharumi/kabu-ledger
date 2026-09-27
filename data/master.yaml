@@ -11,9 +11,11 @@
 
 screening:
   name: "成長株0830（per）"
-  captured_at: "2026-08-30T19:15:00+09:00"
+  # 2026-09-27 受領のスクショ（画面の時計 16:02・株価時刻 15:22。撮影日は画像に無い）。
+  # 前回 2026-08-30T19:15 は通過10件。条件を変えたかは不明のため revision は据え置き
+  captured_at: "2026-09-27"
   source: "楽天証券アプリ / 検索結果 / 15分ディレイ"
-  hit_count: 10
+  hit_count: 8
   note: "スクリーニング条件そのものは Notion 側。条件変更時は screening.revision を上げる"
   revision: 2
 
@@ -558,6 +560,118 @@ stocks:
     watch_reason: >-
       スクリーニング起点。楽天証券「成長株0830（per）」2026-08-30 19:15 取得の通過10件のうちの1件
     watch_since: "2026-08-30"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "304A"
+    name: "フォルシア"
+    market: TO_VERIFY
+    sector: TO_VERIFY
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-10-15"
+    next_earnings_source: "https://kabutan.jp/stock/?code=304A"
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-09-27 受領のスクショ（通過8件）のうちの1件
+    watch_since: "2026-09-27"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "3796"
+    name: "いい生活"
+    market: TO_VERIFY
+    sector: TO_VERIFY
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-09-27 受領のスクショ（通過8件）のうちの1件
+    watch_since: "2026-09-27"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "4075"
+    # スクショでは「ブレインズテクノ…」と省略されていた。株探のタイトル
+    # 「ブレインズテクノロジー【4075】」で補った（推測で埋めていない）
+    name: "ブレインズテクノロジー"
+    market: TO_VERIFY
+    sector: TO_VERIFY
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-09-27 受領のスクショ（通過8件）のうちの1件
+    watch_since: "2026-09-27"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "4382"
+    name: "HEROZ"
+    market: TO_VERIFY
+    sector: TO_VERIFY
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-09-27 受領のスクショ（通過8件）のうちの1件
+    watch_since: "2026-09-27"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "5252"
+    name: "日本ナレッジ"
+    market: TO_VERIFY
+    sector: TO_VERIFY
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-09-27 受領のスクショ（通過8件）のうちの1件
+    watch_since: "2026-09-27"
+    holding:
+      status: none
+      buy_price: null
+      buy_date: null
+      shares: null
+
+  - code: "6554"
+    name: "エスユーエス"
+    market: TO_VERIFY
+    sector: TO_VERIFY
+    valuation_model: TO_VERIFY
+    fiscal_year_end: TO_VERIFY
+    ir_url: TO_VERIFY
+    peers: TO_VERIFY
+    watch: active
+    watch_reason: >-
+      スクリーニング起点。楽天証券「成長株0830（per）」2026-09-27 受領のスクショ（通過8件）のうちの1件
+    watch_since: "2026-09-27"
     holding:
       status: none
       buy_price: null
