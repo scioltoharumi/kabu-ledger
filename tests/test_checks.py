@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import shutil
 import sys
 import tempfile
@@ -691,14 +692,17 @@ def test_split_detected():
 def test_split_acknowledged_becomes_warn():
     def mutate(d: Path) -> None:
         _halve_last("3851")(d)
-        (d / "corporate_actions.yaml").write_text(
-            "actions:\n"
-            "  - code: \"3851\"\n"
-            f"    date: \"{latest_date('3851')}\"\n"
-            "    kind: split\n"
-            "    ratio: \"1:2\"\n"
-            "    source_url: \"https://www.release.tdnet.info/example\"\n",
-            encoding="utf-8")
+        # 実データの確認記録（実在の分割）は残したまま 3851 を足す。上書きすると
+        # 実データ側の分割が「確認記録が無い」FAIL に戻り、この検査と無関係に落ちる
+        path = d / "corporate_actions.yaml"
+        doc = (checks.Y.safe_load(path.read_text(encoding="utf-8"))
+               if path.exists() else None) or {}
+        actions = list(doc.get("actions") or [])
+        actions.append({"code": "3851", "date": latest_date("3851"),
+                        "kind": "split", "ratio": "1:2",
+                        "source_url": "https://www.release.tdnet.info/example"})
+        path.write_text(json.dumps({"actions": actions}, ensure_ascii=False),
+                        encoding="utf-8")                # JSON は YAML としても読める
     rep = run(make_data(mutate))
     expect_none(rep, checks.FAIL, "split")
     expect(rep, checks.WARN, "split", "確認済み: split 1:2")
