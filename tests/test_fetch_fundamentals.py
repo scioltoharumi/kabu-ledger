@@ -209,6 +209,21 @@ def test_irbank_code_gives_up_when_it_cannot_pick_one():
             "絞れなければ諦める")
 
 
+def test_irbank_code_accepts_name_alias_from_master():
+    """IR BANK はホールディングスを「PHC HD」のように略す（実測: 6523 / 6533 / 9246 で
+    タイトル不一致 → 財務が全行 SINGLE_SOURCE）。master.yaml の `name_aliases` に
+    書かれた別名も会社名として認める。**書かれていなければ従来どおり弾く**。
+    """
+    html = ("<html><head><title>6523 PHC HD | 株式情報</title></head><body>"
+            '<a href="/E36666">6523 PHC HD</a></body></html>')
+    is_none(FF.resolve_irbank_code(_StubFetcher(html), _IRBANK_CFG, "6523",
+                                   "PHCホールディングス"),
+            "別名が無ければ正式名だけで照合して弾く")
+    eq(FF.resolve_irbank_code(_StubFetcher(html), _IRBANK_CFG, "6523",
+                              "PHCホールディングス", ["PHC HD"]),
+       "E36666", "別名が一致すれば解決する（空白は無視）")
+
+
 def test_two_sites_exactly_equal_is_ok():
     rows = FF.reconcile("9999", [obs("a", "s1", 1588.0, 1.0, 0),
                                  obs("b", "s2", 1588.0, 1.0, 1)], 2, "t")

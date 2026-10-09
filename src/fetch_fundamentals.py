@@ -629,12 +629,16 @@ class Fetcher:
 
 
 def resolve_irbank_code(fetcher: Fetcher, cfg: dict, code: str,
-                        name: str) -> str | None:
+                        name: str, aliases=None) -> str | None:
     """証券コードから IR BANK の企業コード（E36666 等）を**一覧ページから解決する**。
 
     証券コードと企業コードは別体系で、規則的な対応も無い。推測で URL を組み立てない
     （.claude/skills/kabu-ledger/SKILL.md「source_url のでっち上げ禁止」）。解決したうえで、ページのタイトルに
     証券コードと会社名の両方が含まれることを確認する（別会社を掴んでいないことの確認）。
+
+    IR BANK はホールディングスを「PHC HD」「プロジェクト HD」のように略すので、
+    master.yaml の `name_aliases`（任意・人間が書く）も会社名として受け付ける。
+    別名も推測しない——書かれていなければ従来どおり `name` だけで照合する。
     """
     spec = cfg.get("irbank_index") or {}
     url = spec.get("url", "").format(code=code)
@@ -645,7 +649,8 @@ def resolve_irbank_code(fetcher: Fetcher, cfg: dict, code: str,
         return None
     soup = BeautifulSoup(html, "html.parser")
     title = squeeze(soup.title.get_text()) if soup.title else ""
-    if code not in title or squeeze(name) not in title:
+    names = [name] + [str(a) for a in (aliases or []) if a]
+    if code not in title or not any(squeeze(n) in title for n in names):
         print("  [%s] IR BANK のタイトルが一致しない: %r" % (code, title),
               file=sys.stderr)
         return None
@@ -906,14 +911,14 @@ def append_only(path: Path, rows: list, now: str = "",
 # =============================================================================
 
 def collect(code: str, name: str, cfg: dict, pol: dict,
-            fetcher: Fetcher) -> list:
+            fetcher: Fetcher, aliases=None) -> list:
     """1銘柄ぶんの Obs をすべての取得元から集める。"""
     metrics = cfg["metrics"]
     na_marks = [squeeze(m) for m in cfg.get("na_marks") or []]
     ecode = None
     needs_ecode = any("{ecode}" in s["url"] for s in cfg["sources"])
     if needs_ecode:
-        ecode = resolve_irbank_code(fetcher, cfg, code, name)
+        ecode = resolve_irbank_code(fetcher, cfg, code, name, aliases)
         if ecode:
             print("  IR BANK 企業コード: %s" % ecode)
 
@@ -988,7 +993,8 @@ def main(argv=None) -> int:
     for stock in stocks:
         code = str(stock["code"])
         print("取得中: %s %s" % (code, stock["name"]))
-        observations = collect(code, str(stock["name"]), cfg, pol, fetcher)
+        observations = collect(code, str(stock["name"]), cfg, pol, fetcher,
+                               stock.get("name_aliases"))
         if not observations:
             failed.append(code)
             print("  1件も取得できなかった", file=sys.stderr)

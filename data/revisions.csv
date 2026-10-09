@@ -1497,3 +1497,11 @@ revised_at,file,key,column,old_value,new_value,kind,reason
 2026-10-03T04:20:45.466615+09:00,data/fundamentals/9344.csv,9344/FY2027-06/roa_plan,sources_all,kabutan_fy_profit=8.83,kabutan_fy_profit=8.83|irbank_pl_comprehensive=8.83,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
 2026-10-03T04:20:45.466615+09:00,data/fundamentals/9344.csv,9344/FY2027-06/roa_plan,source_url_secondary,,https://irbank.net/E38452/results,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
 2026-10-03T04:20:45.466615+09:00,data/fundamentals/9344.csv,9344/FY2027-06/roa_plan,fetched_at,2026-08-31T01:24:49.228521+09:00,2026-10-03T04:20:45.466615+09:00,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-09T22:21:14.745823+09:00,data/fundamentals/5243.csv,5243/FY2026-11/eps_plan,value,,61.8,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-09T22:21:14.745823+09:00,data/fundamentals/5243.csv,5243/FY2026-11/eps_plan,status,MISMATCH,OK,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-09T22:21:14.745823+09:00,data/fundamentals/5243.csv,5243/FY2026-11/eps_plan,source_secondary,irbank_pl_comprehensive,kabutan_fy10,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-09T22:21:14.745823+09:00,data/fundamentals/5243.csv,5243/FY2026-11/eps_plan,value_secondary,61.96,61.8,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-09T22:21:14.745823+09:00,data/fundamentals/5243.csv,5243/FY2026-11/eps_plan,raw_secondary,61.96,61.8,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-09T22:21:14.745823+09:00,data/fundamentals/5243.csv,5243/FY2026-11/eps_plan,sources_all,kabutan_fy=61.8|kabutan_fy10=61.8|kabutan_fy_profit=61.8|irbank_pl_comprehensive=61.96,kabutan_fy=61.8|kabutan_fy10=61.8|kabutan_fy_profit=61.8|irbank_pl_comprehensive=61.8,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-09T22:21:14.745823+09:00,data/fundamentals/5243.csv,5243/FY2026-11/eps_plan,source_url_secondary,https://irbank.net/E38043/results,https://kabutan.jp/stock/finance?code=5243,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-09T22:21:14.745823+09:00,data/fundamentals/5243.csv,5243/FY2026-11/eps_plan,fetched_at,2026-08-31T01:24:49.228521+09:00,2026-10-09T22:21:14.745823+09:00,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した

@@ -116,6 +116,9 @@ TDnet の一次情報で確認したら `data/corporate_actions.yaml` に
 `code / date / kind / ratio / source_url` を記録する（FAIL が WARN に落ちる。
 `source_url` が空の記録は「確認していない」として FAIL のまま）。
 残るのは調整係数を別列で保持する部分（**生値は書き換えない**）。
+2026-10-09: 6622 ダイヘンの 1:5 分割（corporate_actions.yaml に記録済み）で
+`shape_chart.py` の線画が崖になり、画像判定が成立しない。調整係数が入るまで
+6622 の形状は**未判定のまま置く**（崖を「急落」と記録しない）。
 
 ### 4. 鉄則のうち未実装の観点
 
@@ -150,12 +153,14 @@ Issue にラベルを付けて閉じたときの記録は未実装。`decisions/
 別コンテキストで `.claude/skills/kabu-ledger-verify/SKILL.md` に従って実施する。
 埋まるまで WARN が出続けるのは仕様（隠す手段は用意しない）。
 
-### 8. fetch*.py の銘柄指定オプション
+### 8. fetch*.py の銘柄指定オプション（2026-10-09 `fetch.py --code` を追加して解消）
 
 intake（新規銘柄の登録）時、`fetch.py --historical` が master.yaml の**全銘柄**の
 過去ページを再クロールする（銘柄単位の指定が無い）。既存銘柄ぶんは追記0件で
 無害だが、銘柄数×約13秒の無駄。銘柄が増えて intake が遅くなったら
 `--code` オプションを追加する（優先度低・現4銘柄では困らない）。
+→ 2026-10-09 の intake（44銘柄・1銘柄あたり約3分）で `fetch.py --code A,B,...`
+（カンマ区切り）を追加。`fetch_fundamentals.py` / `fetch_margin.py` には以前から `--code` がある。
 
 ### 7. 決算短信（一次情報）が 4073 と 150A の2件しかない
 

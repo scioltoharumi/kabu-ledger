@@ -185,6 +185,10 @@ def min_bars_needed() -> int:
         ind.ICHIMOKU_SPAN_B_PERIODS + ind.ICHIMOKU_DISPLACEMENT + 1,
         ind.VOLUME_RATIO_LOOKBACK_DAYS + ind.VOLUME_RATIO_WINDOW_DAYS,
         ind.WEEKLY_MA_LONG_PERIODS * 5,      # 26週ぶんの営業日
+        # RSI は Wilder 平滑のウォームアップぶんを含めて窓を取る（`indicators.rsi`）。
+        # ここを入れないと、窓の外（131〜141本前）の欠測で RSI だけが None になり、
+        # 「穴が無いのに未計算」と誤って落ちる（実測 2026-10-09: 3796 の 2026-03 の MISMATCH）
+        ind.RSI_PERIODS * ind.RSI_WARMUP_MULTIPLE + 1,
     )
 
 

@@ -1,4 +1,14 @@
 {
+  "142A": {
+    "as_of": "2026-10-09",
+    "image_sha256": "628bf7182e89714af4a52d09be0db7aa3c44db0f4f572761e5c29b6b16157436",
+    "shape": "急上昇"
+  },
+  "173A": {
+    "as_of": "2026-10-09",
+    "image_sha256": "927149edcd2746e4f32a8571f13bb0d767f60cac81ff0621add3d09d2b11815b",
+    "shape": "急上昇"
+  },
   "1942": {
     "as_of": "2026-10-02",
     "image_sha256": "69965fd4a18e341a8650e98929a1b9778d899c77dbcf2d46e99839689646acc0",
@@ -19,6 +29,11 @@
     "image_sha256": "5b664ac4701b7593ccc275a10b5c56e5ae37292840933c5b473248907d08de4d",
     "shape": "リバウンド"
   },
+  "3040": {
+    "as_of": "2026-10-09",
+    "image_sha256": "45449d24e45488e1abde662a79d3fbaac9f8634cab5dd48d1be354f2f6aad825",
+    "shape": "上昇"
+  },
   "304A": {
     "as_of": "2026-10-02",
     "image_sha256": "cb05ac8bdeec4b453f7088358ba0decd661c150750c72cf4641bfa06b61df6eb",
@@ -29,24 +44,64 @@
     "image_sha256": "f5eda030b768103075e87be7a421c77f0f267b6be019c16bddaab51e975809ae",
     "shape": "リバウンド"
   },
+  "3968": {
+    "as_of": "2026-10-09",
+    "image_sha256": "1368600e3cc243a6e54e19a88de0cbada04802058c9c9f15502d911188d08199",
+    "shape": "急上昇"
+  },
   "4075": {
     "as_of": "2026-10-02",
     "image_sha256": "a68a2c1b49f177abdb41417e9e06435342e5a2805b39fda5d9ad996323602831",
     "shape": "急上昇"
+  },
+  "4258": {
+    "as_of": "2026-10-09",
+    "image_sha256": "0dafb34461875dfd6e4c5d802ece5fe642e1dd5a9db6643241b5cd524f1fa168",
+    "shape": "上昇"
   },
   "4382": {
     "as_of": "2026-10-02",
     "image_sha256": "c4a3df2bdad416bb5a15f3b78f3a6d5d2ac145eae2a4addeb5e7312cf55360b0",
     "shape": "リバウンド"
   },
+  "4386": {
+    "as_of": "2026-10-09",
+    "image_sha256": "1472ecb2a6ec9d90deea183d75acf444d8128d3b204289fe7fec52d9e1257bee",
+    "shape": "リバウンド"
+  },
+  "4398": {
+    "as_of": "2026-10-09",
+    "image_sha256": "d286bcdc331af7bd9f4cf221673716e4a81590299179c26dd908b2d0cc0ce24e",
+    "shape": "急上昇"
+  },
+  "4417": {
+    "as_of": "2026-10-09",
+    "image_sha256": "b1817fdcacc83d6d6f34901e6c1d91d7b12a701c928d8a47b6f392d09af5100b",
+    "shape": "上昇"
+  },
   "4440": {
     "as_of": "2026-10-02",
     "image_sha256": "65242a3239366862d61b6fea7f6852ae5ffa5713cf409649672a31473c50cd15",
     "shape": "急上昇"
   },
+  "4475": {
+    "as_of": "2026-10-09",
+    "image_sha256": "cf9f6f3b82740d1d6fdd3cfea87242151bfcba7aa6d0c465b125589c8a89b254",
+    "shape": "上昇"
+  },
+  "4477": {
+    "as_of": "2026-10-09",
+    "image_sha256": "32a8ee83bb25eb09f134365b961284e9519dc4c7e36257ad281b1e8810f973c3",
+    "shape": "急上昇"
+  },
   "4707": {
     "as_of": "2026-10-02",
     "image_sha256": "3d8a81adf8c05e0515bfc50e54979f520d281fafa69e0928cd938709ed293bd7",
+    "shape": "急上昇"
+  },
+  "4847": {
+    "as_of": "2026-10-09",
+    "image_sha256": "e89f3a5672f9a874807f4da69708758ef4e55cc34cff711fa45f47803c45df25",
     "shape": "急上昇"
   },
   "5137": {
@@ -74,6 +129,16 @@
     "image_sha256": "44e188c7286df64f311558d0fed77a5deec167a1b1adbd218329e747704ecee5",
     "shape": "上昇"
   },
+  "6523": {
+    "as_of": "2026-10-09",
+    "image_sha256": "cb36c5db7f9263ac494a96a962791cb1e1d91f62e9b353e32285bd1563a6de0a",
+    "shape": "急上昇"
+  },
+  "6533": {
+    "as_of": "2026-10-09",
+    "image_sha256": "a4928bd85a10df32ef2d5429687f9e2c81e6eec106d2b538e247b0bc57a69eb3",
+    "shape": "急上昇"
+  },
   "6554": {
     "as_of": "2026-10-02",
     "image_sha256": "4018f77c076b236d15b50810dd9363de26ba8e979dd03fa647263bec78c2415c",
@@ -94,15 +159,40 @@
     "image_sha256": "4686100f49214ba82126943a25cb5f93628db18c4c8f5cf0a6d20afc8a346efa",
     "shape": "急上昇"
   },
+  "6888": {
+    "as_of": "2026-10-09",
+    "image_sha256": "cc641e042702ebae72dc319802f1825690702a7711612456d699e52742c1a3d4",
+    "shape": "リバウンド"
+  },
   "6904": {
     "as_of": "2026-10-02",
     "image_sha256": "c9b9ca713906cc81dd2071d9c4cd3bfd0b7ae2f21f33452054d8bfbffa34a109",
     "shape": "急上昇"
   },
+  "7083": {
+    "as_of": "2026-10-09",
+    "image_sha256": "360923836c65c3604c436190b4c5f09af781f07dfdbb2f0e11c33c5111343dbc",
+    "shape": "上昇"
+  },
   "7093": {
     "as_of": "2026-10-02",
     "image_sha256": "1450320c4d1ccbea7581c87b6fd8c39597e09e1089ba86dff430b1c5aac62579",
     "shape": "リバウンド"
+  },
+  "7807": {
+    "as_of": "2026-10-09",
+    "image_sha256": "92e4f0e7e20bfb06b75f714412a4d175c5847e2af6e4de7435007c7e22eeb932",
+    "shape": "リバウンド"
+  },
+  "7980": {
+    "as_of": "2026-10-09",
+    "image_sha256": "bbe8a06350cba220b6bf480e39485b5b830630a0ec4185f438b7b120c84e6fbc",
+    "shape": "リバウンド"
+  },
+  "9246": {
+    "as_of": "2026-10-09",
+    "image_sha256": "85fe827d0f51247a7c17f5264f66b5af4a65e40ceed89235a9e0ca16c013c345",
+    "shape": "上昇ストップ"
   },
   "9344": {
     "as_of": "2026-10-02",

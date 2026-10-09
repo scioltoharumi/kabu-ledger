@@ -364,7 +364,12 @@ def test_metric_is_read_as_of_resolve_by_not_latest():
     履歴の初回一括取得の範囲が変わったときに黙って前提が崩れる。
     """
     repo = S.Repo()
-    code = rd.codes()[2]
+    # 履歴の中ほどの日で出来高平均が算出できる銘柄を使う。穴のある薄い銘柄だと
+    # その日の値が（設計どおり）未計算になり、この検査の主旨と無関係に落ちる
+    # （実測 2026-10-09: 銘柄追加で3番目が 173A になり、2026-03 の NO_TRADE で None）
+    code = next(c for c in rd.codes()
+                if S.resolve_metric(c, "avg_turnover_20d", rd.mid_date(c), repo).value
+                is not None)
     early_day = rd.mid_date(code)
     early = S.resolve_metric(code, "avg_turnover_20d", early_day, repo)
     late = S.resolve_metric(code, "avg_turnover_20d", AS_OF, repo)
