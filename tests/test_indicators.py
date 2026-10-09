@@ -477,6 +477,15 @@ def _min_bars_needed() -> int:
     return rd.min_bars_needed()
 
 
+def test_min_bars_needed_covers_rsi_window():
+    """穴の数え窓は RSI の warmup 窓（n*倍率+1 本）を含む。
+
+    含まないと、その差の区間にある穴で rsi14 が None になるのに「穴なし」と
+    数え、実データ検査が落ちる（2026年10月の週次で 3796 が該当）。
+    """
+    assert _min_bars_needed() >= ind.RSI_PERIODS * ind.RSI_WARMUP_MULTIPLE + 1
+
+
 def test_real_data_all_indicators():
     rows = _load_real_rows()
     need = _min_bars_needed()

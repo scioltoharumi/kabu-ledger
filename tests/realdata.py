@@ -185,6 +185,9 @@ def min_bars_needed() -> int:
         ind.ICHIMOKU_SPAN_B_PERIODS + ind.ICHIMOKU_DISPLACEMENT + 1,
         ind.VOLUME_RATIO_LOOKBACK_DAYS + ind.VOLUME_RATIO_WINDOW_DAYS,
         ind.WEEKLY_MA_LONG_PERIODS * 5,      # 26週ぶんの営業日
+        # RSI は warmup 込みで n*倍率+1 本を見る。抜くと 131〜141本前の穴を
+        # 「穴なし」と数え、rsi14 の未計算を欠陥と誤判定する（2026年10月 3796）
+        ind.RSI_PERIODS * ind.RSI_WARMUP_MULTIPLE + 1,
     )
 
 
