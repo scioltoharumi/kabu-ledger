@@ -29,8 +29,8 @@ MASTER = """stocks:
 
 
 def test_parse_date():
-    html = "<div>決算発表予定日 <span>2026/10/09</span></div><p>発表日 2025/10/10</p>"
-    assert FE.parse_date(html, PATTERN) == "2026-10-09"
+    html = "<div>決算発表予定日 <span>2026/10/30</span></div><p>発表日 2025/10/10</p>"
+    assert FE.parse_date(html, PATTERN) == "2026-10-30"
     assert FE.parse_date("<p>決算期 発表日 2025/10/10</p>", PATTERN) is None, \
         "予定日の見出しが無いページから過去の発表日を拾わない"
 

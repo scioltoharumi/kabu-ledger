@@ -434,7 +434,10 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--historical", action="store_true",
                     help="初回の遡り取得（sources.yaml の historical_pages 分）")
+    ap.add_argument("--code", help="指定した銘柄だけ取得する（カンマ区切りで複数可。"
+                                   "intake で新規銘柄だけ遡るとき用。BACKLOG タスク8）")
     args = ap.parse_args()
+    only = {c.strip() for c in (args.code or "").split(",") if c.strip()}
 
     cfg = yaml.safe_load((ROOT / "data" / "sources.yaml").read_text(encoding="utf-8"))
     master = yaml.safe_load((ROOT / "data" / "master.yaml").read_text(encoding="utf-8"))
@@ -449,6 +452,8 @@ def main() -> int:
     # 監視対象だけ取りに行く（watch: excluded は取得しない）。
     for s in Y.watched_stocks(master):
         code = s["code"]
+        if only and str(code) not in only:
+            continue
         label = f"（遡り {days}営業日）" if days else "（直近）"
         print(f"取得中: {code} {s['name']}{label}")
         by_source: list[list[Bar]] = []

@@ -82,6 +82,10 @@ description: 楽天証券スクリーニング結果のスクショから銘柄�
       shares: null
 ```
 
+- IR BANK はホールディングスを「PHC HD」「プロジェクト HD」のように略すため、
+  `fetch_fundamentals.py` が「タイトルが一致しない」と言って IR BANK を捨てることがある
+  （財務が全行 SINGLE_SOURCE になる）。そのときは IR BANK のタイトル表記を
+  `name_aliases: ["PHC HD"]` に書いて取り直す（2026-10-09。6523 / 6533 / 9246 で実測）
 - **確認できないものは `TO_VERIFY` のまま残す。推測で埋めない。**
   `sector` と `peers` は**二重照合が成立しないことが既に判明している**
   （出所がミンカブ運営の1サイトに閉じており、株予報Proは別の3社を挙げる）。
@@ -91,18 +95,21 @@ description: 楽天証券スクリーニング結果のスクショから銘柄�
 
 ### 4. 履歴を取る
 
-**注意: `fetch*.py` に銘柄単位の指定は無く、master.yaml の全銘柄を対象に回る**
-（既存銘柄ぶんは追記0件で終わるが、`--historical` は既存銘柄の過去ページも再クロールする。
-銘柄数が増えて intake が遅くなったら銘柄指定オプションの追加を検討 → BACKLOG.md タスク8）。
+**注意: `fetch_index.py` / `fetch_tanshin.py` / `fetch_earnings.py` に銘柄単位の指定は無く、
+master.yaml の全銘柄を対象に回る**（既存銘柄ぶんは追記0件で終わる）。
+`fetch.py` / `fetch_fundamentals.py` / `fetch_margin.py` は `--code` で絞れる
+（`fetch.py` はカンマ区切りで複数可。2026-10-09 追加。`--historical` を全銘柄で回すと
+1銘柄あたり約3分かかるので、**新規銘柄だけ**に絞る）。
 
 ```powershell
 $env:PYTHONIOENCODING = "utf-8"
-python src/fetch.py --historical        # 日足を1年分さかのぼる（D16）
+python src/fetch.py --historical --code 0000,1111   # 日足を1年分さかのぼる（D16）。新規銘柄だけ
 python src/fetch_index.py               # 指数。**株価だけ進めると相対騰落率が
                                         #   算出できずテストが落ちる。必ず対で回す**
 python src/fetch_margin.py              # 信用残（直近4週ぶんが毎回返る）
 python src/fetch_fundamentals.py        # 財務数値（別サイト2つの一致でだけ採用）
 python src/fetch_tanshin.py             # 決算短信PDF。落ちても止めない
+python src/fetch_earnings.py            # 次回決算日（master.yaml の next_earnings に書く）
 python src/checks.py --scan-all         # 初回だけ全履歴で分割・外れ値を走査
 ```
 
