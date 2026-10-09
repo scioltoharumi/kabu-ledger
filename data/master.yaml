@@ -142,6 +142,8 @@ stocks:
     # 変更後は FY####-03 で、株探と IR BANK の別サイト2件が一致した行
     # （FY2015-03 / FY2016-03 revenue が status=OK）で裏付いている。
     fiscal_year_end: "03"
+    next_earnings: "2026-11-11"
+    next_earnings_source: "https://kabutan.jp/stock/?code=6570"
     # reports/6570.md の primary リンクと同じURL。data/link_status.csv 2026-08-13 で 200、
     # 公式ドメイン（www.kyowa-corp.co.jp）は株探の銘柄ページの会社リンクとも一致。
     ir_url: "https://www.kyowa-corp.co.jp/ir/"
@@ -192,6 +194,8 @@ stocks:
     # 各社の「2026年3月期／2027年3月期」決算報道が一致している（二次情報）。
     # 一次情報での確認は決算短信の取得後に行う。
     fiscal_year_end: "03"
+    next_earnings: "2026-10-30"
+    next_earnings_source: "https://kabutan.jp/stock/?code=1942"
     # 公式サイトを直接取得し HTTP 200・title に社名を確認（2026-08-29）
     ir_url: "https://www.kandenko.co.jp/ir/index.html"
     # segments/ai-datacenter-build.yaml の D2 電気設備工事 の顔ぶれ（自社を除く）
@@ -224,6 +228,8 @@ stocks:
     # 各社の「2026年3月期／2027年3月期」決算報道が一致している（二次情報）。
     # 一次情報での確認は決算短信の取得後に行う。
     fiscal_year_end: "03"
+    next_earnings: "2026-10-30"
+    next_earnings_source: "https://kabutan.jp/stock/?code=1944"
     # 公式サイトを直接取得し HTTP 200・title に社名を確認（2026-08-29）
     ir_url: "https://www.kinden.co.jp/ir/"
     # segments/ai-datacenter-build.yaml の D2 電気設備工事 の顔ぶれ（自社を除く）
@@ -252,6 +258,8 @@ stocks:
     # 各社の「2026年3月期／2027年3月期」決算報道が一致している（二次情報）。
     # 一次情報での確認は決算短信の取得後に行う。
     fiscal_year_end: "03"
+    next_earnings: "2026-10-29"
+    next_earnings_source: "https://kabutan.jp/stock/?code=1959"
     # 公式サイトを直接取得し HTTP 200・title に社名を確認（2026-08-29）
     ir_url: "https://www.kraftia.co.jp/ir/"
     # segments/ai-datacenter-build.yaml の D2 電気設備工事 の顔ぶれ（自社を除く）
@@ -337,6 +345,8 @@ stocks:
     valuation_model: TO_VERIFY
     # 決算短信・決算補足資料が3月期で揃っている（一次情報・2026-09-01 確認）
     fiscal_year_end: "03"
+    next_earnings: "2026-10-30"
+    next_earnings_source: "https://kabutan.jp/stock/?code=6508"
     # 公式サイトを直接取得し HTTP 200・title に社名を確認（2026-09-01）
     ir_url: "https://www.meidensha.co.jp/ir/"
     # segments/ai-dc-power-cooling.yaml の E1 の顔ぶれ（自社と非上場を除く）
@@ -362,6 +372,8 @@ stocks:
     valuation_model: TO_VERIFY
     # 決算短信が3月期（一次情報・2026-09-01 確認）
     fiscal_year_end: "03"
+    next_earnings: "2026-11-05"
+    next_earnings_source: "https://kabutan.jp/stock/?code=6622"
     # 公式サイトを直接取得し HTTP 200・title に社名を確認（2026-09-01）
     ir_url: "https://www.daihen.co.jp/ir/"
     # segments/ai-dc-power-cooling.yaml の E1 の顔ぶれ（自社と非上場を除く）
@@ -428,6 +440,8 @@ stocks:
     sector: "情報・通信業"
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-11-13"
+    next_earnings_source: "https://kabutan.jp/stock/?code=5137"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
@@ -492,6 +506,8 @@ stocks:
     sector: "電気機器"
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-11-06"
+    next_earnings_source: "https://kabutan.jp/stock/?code=6647"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
@@ -512,6 +528,8 @@ stocks:
     sector: "電気機器"
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-11-12"
+    next_earnings_source: "https://kabutan.jp/stock/?code=6904"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
@@ -532,6 +550,8 @@ stocks:
     sector: "サービス業"
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-11-13"
+    next_earnings_source: "https://kabutan.jp/stock/?code=7093"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
@@ -554,6 +574,8 @@ stocks:
     sector: "サービス業"
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-11-13"
+    next_earnings_source: "https://kabutan.jp/stock/?code=9344"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
@@ -648,6 +670,8 @@ stocks:
     sector: TO_VERIFY
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-11-13"
+    next_earnings_source: "https://kabutan.jp/stock/?code=5252"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
@@ -666,6 +690,8 @@ stocks:
     sector: TO_VERIFY
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-11-13"
+    next_earnings_source: "https://kabutan.jp/stock/?code=6554"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
