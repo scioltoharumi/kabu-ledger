@@ -486,6 +486,8 @@ stocks:
     sector: "サービス業"
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-11-11"
+    next_earnings_source: "https://kabutan.jp/stock/?code=6027"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
