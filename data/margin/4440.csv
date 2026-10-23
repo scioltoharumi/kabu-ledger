@@ -11,3 +11,4 @@ date,code,long_balance,short_balance,ratio,unit,status,source_url,fetched_at
 2026-09-25,4440,258.6,33.6,7.7,千株,OK,https://kabutan.jp/stock/?code=4440,2026-10-03T04:19:25.695996+09:00
 2026-10-02,4440,237.4,31.5,7.54,千株,OK,https://kabutan.jp/stock/?code=4440,2026-10-10T04:19:58.312541+09:00
 2026-10-09,4440,231.3,25.6,9.04,千株,OK,https://kabutan.jp/stock/?code=4440,2026-10-17T04:19:17.935421+09:00
+2026-10-16,4440,200.4,46.2,4.34,千株,OK,https://kabutan.jp/stock/?code=4440,2026-10-24T04:19:53.346081+09:00
