@@ -1565,3 +1565,12 @@ revised_at,file,key,column,old_value,new_value,kind,reason
 2026-10-17T04:32:49.015372+09:00,data/prices/daily.csv,5243/2026-10-16,source_secondary,,yahoo_jp,repair,照合不成立で採用値が空だった行が、今回の取得で運営の異なる2つの取得元で一致した
 2026-10-17T04:32:49.015372+09:00,data/prices/daily.csv,5243/2026-10-16,value_secondary,,3015.0,repair,照合不成立で採用値が空だった行が、今回の取得で運営の異なる2つの取得元で一致した
 2026-10-17T04:32:49.015372+09:00,data/prices/daily.csv,5243/2026-10-16,fetched_at,2026-10-17T04:16:04.406426+09:00,2026-10-17T04:30:06.589227+09:00,repair,照合不成立で採用値が空だった行が、今回の取得で運営の異なる2つの取得元で一致した
+2026-10-31T04:11:02.455002+09:00,data/fundamentals/4075.csv,4075/FY2026-07/eps,value,,33,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-31T04:11:02.455002+09:00,data/fundamentals/4075.csv,4075/FY2026-07/eps,tolerance,0.1,1,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-31T04:11:02.455002+09:00,data/fundamentals/4075.csv,4075/FY2026-07/eps,status,MISMATCH,OK,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-31T04:11:02.455002+09:00,data/fundamentals/4075.csv,4075/FY2026-07/eps,source_secondary,irbank_pl,kabutan_fy_profit,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-31T04:11:02.455002+09:00,data/fundamentals/4075.csv,4075/FY2026-07/eps,value_secondary,32.87,33,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-31T04:11:02.455002+09:00,data/fundamentals/4075.csv,4075/FY2026-07/eps,raw_secondary,32.87,33.0,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-31T04:11:02.455002+09:00,data/fundamentals/4075.csv,4075/FY2026-07/eps,sources_all,kabutan_fy=33|kabutan_fy_profit=33|kabutan_record_fy=33|irbank_pl=32.87,kabutan_fy=33|kabutan_fy_profit=33|kabutan_record_fy=33|irbank_pl=33,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-31T04:11:02.455002+09:00,data/fundamentals/4075.csv,4075/FY2026-07/eps,source_url_secondary,https://irbank.net/E36722/results,https://kabutan.jp/stock/finance?code=4075,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
+2026-10-31T04:11:02.455002+09:00,data/fundamentals/4075.csv,4075/FY2026-07/eps,fetched_at,2026-09-27T11:10:09.225419+09:00,2026-10-31T04:11:02.455002+09:00,repair,照合不成立で採用値が空だった行が、今回の取得で別サイト2つ以上と一致した
