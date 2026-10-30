@@ -37,10 +37,10 @@ def test_parse_date():
 
 def test_insert_after_fiscal_year_end():
     lines = MASTER.splitlines(keepends=True)
-    assert FE.set_earnings(lines, "1111", "2026-10-30", "https://k/1111")
+    assert FE.set_earnings(lines, "1111", "2030-10-30", "https://k/1111")
     text = "".join(lines)
     assert ('    fiscal_year_end: "03"   # 決算月\n'
-            '    next_earnings: "2026-10-30"\n'
+            '    next_earnings: "2030-10-30"\n'
             '    next_earnings_source: "https://k/1111"\n'
             "    holding:\n") in text, text
     assert text.count("next_earnings:") == 2, "他の銘柄のブロックに書かない"
