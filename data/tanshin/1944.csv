@@ -1,0 +1,11 @@
+date,code,metric,value,value_extracted,unit,definition,assumed,source,tier,status,source_url,fetched_at
+2026-10-30,1944,eps,175.13,175.13,JPY,FY2027Q2cum|連結|日本基準|1株当たり中間純利益,false,tanshin,primary,EPS_CROSS_OK|YOY_CHECK_NA,https://www.release.tdnet.info/inbs/140120261028557709.pdf,2026-10-31T04:40:50+09:00
+2026-10-30,1944,eps_prev_year,113.87,113.87,JPY,FY2026Q2cum|連結|日本基準|1株当たり中間純利益,false,tanshin,primary,YOY_CHECK_NA,https://www.release.tdnet.info/inbs/140120261028557709.pdf,2026-10-31T04:40:50+09:00
+2026-10-30,1944,net_income,31321,31321,JPY_million,FY2027Q2cum|連結|日本基準|親会社株主に帰属する中間純利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261028557709.pdf,2026-10-31T04:40:50+09:00
+2026-10-30,1944,net_income_prev_year,22565,22565,JPY_million,FY2026Q2cum|連結|日本基準|親会社株主に帰属する中間純利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261028557709.pdf,2026-10-31T04:40:50+09:00
+2026-10-30,1944,operating_income,41970,41970,JPY_million,FY2027Q2cum|連結|日本基準|営業利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261028557709.pdf,2026-10-31T04:40:50+09:00
+2026-10-30,1944,operating_income_prev_year,31791,31791,JPY_million,FY2026Q2cum|連結|日本基準|営業利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261028557709.pdf,2026-10-31T04:40:50+09:00
+2026-10-30,1944,ordinary_income,42606,42606,JPY_million,FY2027Q2cum|連結|日本基準|経常利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261028557709.pdf,2026-10-31T04:40:50+09:00
+2026-10-30,1944,ordinary_income_prev_year,33976,33976,JPY_million,FY2026Q2cum|連結|日本基準|経常利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261028557709.pdf,2026-10-31T04:40:50+09:00
+2026-10-30,1944,revenue,358195,358195,JPY_million,FY2027Q2cum|連結|日本基準|売上高,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261028557709.pdf,2026-10-31T04:40:50+09:00
+2026-10-30,1944,revenue_prev_year,321378,321378,JPY_million,FY2026Q2cum|連結|日本基準|売上高,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261028557709.pdf,2026-10-31T04:40:50+09:00

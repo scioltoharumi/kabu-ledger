@@ -374,7 +374,6 @@ def test_score_survives_an_unconfirmed_day():
     repo = S.Repo(root=base)
     eq(repo.data_as_of(), day, "集計基準日はデータの最終営業日（壁時計ではない）")
 
-    as_of = last_confirmed(base, rd.codes()[0])
     price_metrics = [m.name for m in S.CATALOG if m.source == S.SRC_PRICE]
     need = rd.min_bars_needed()
     for code in rd.codes():
@@ -382,6 +381,10 @@ def test_score_survives_an_unconfirmed_day():
         # 未確定の1日とは無関係なので、この検査の対象から外す。
         if rd.close_gap_days(code, need):
             continue
+        # 基準日は銘柄ごとの最終確定日。close_gap_days が見る窓と揃える
+        # （先頭銘柄＝対象外で凍った 150A の日付で全銘柄を測ると、窓から
+        # 抜けた古い穴で未計算になり誤って落ちる。2026-W44 3796）
+        as_of = last_confirmed(base, code)
         for name in price_metrics:
             mv = S.resolve_metric(code, name, as_of, repo)
             assert mv.value is not None, f"{code} {name} が未計算: {mv.detail}"

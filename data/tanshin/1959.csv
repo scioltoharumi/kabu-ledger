@@ -1,0 +1,17 @@
+date,code,metric,value,value_extracted,unit,definition,assumed,source,tier,status,source_url,fetched_at
+2026-10-29,1959,eps,301.74,301.74,JPY,FY2027Q2cum|連結|日本基準|1株当たり中間純利益,false,tanshin,primary,EPS_CROSS_OK|YOY_CHECK_NA,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,eps_prev_year,211.18,211.18,JPY,FY2026Q2cum|連結|日本基準|1株当たり中間純利益,false,tanshin,primary,YOY_CHECK_NA,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,equity_ratio,69.7,69.7,pct,FY2027Q2cum|連結|日本基準|自己資本比率,false,tanshin,primary,EQUITY_CROSS_OK,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,equity_ratio_prev_fy,66.4,66.4,pct,FY2026Q4cum|連結|日本基準|自己資本比率,false,tanshin,primary,EQUITY_CROSS_OK,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,net_assets,366579,366579,JPY_million,FY2027Q2cum|連結|日本基準|純資産,false,tanshin,primary,NOT_CROSS_CHECKED,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,net_assets_prev_fy,351644,351644,JPY_million,FY2026Q4cum|連結|日本基準|純資産,false,tanshin,primary,NOT_CROSS_CHECKED,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,net_income,21344,21344,JPY_million,FY2027Q2cum|連結|日本基準|親会社株主に帰属する中間純利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,net_income_prev_year,14937,14937,JPY_million,FY2026Q2cum|連結|日本基準|親会社株主に帰属する中間純利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,operating_income,28652,28652,JPY_million,FY2027Q2cum|連結|日本基準|営業利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,operating_income_prev_year,22804,22804,JPY_million,FY2026Q2cum|連結|日本基準|営業利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,ordinary_income,31312,31312,JPY_million,FY2027Q2cum|連結|日本基準|経常利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,ordinary_income_prev_year,24178,24178,JPY_million,FY2026Q2cum|連結|日本基準|経常利益,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,revenue,218544,218544,JPY_million,FY2027Q2cum|連結|日本基準|売上高,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,revenue_prev_year,207725,207725,JPY_million,FY2026Q2cum|連結|日本基準|売上高,false,tanshin,primary,OK,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,total_assets,520481,520481,JPY_million,FY2027Q2cum|連結|日本基準|総資産,false,tanshin,primary,NOT_CROSS_CHECKED,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00
+2026-10-29,1959,total_assets_prev_fy,523268,523268,JPY_million,FY2026Q4cum|連結|日本基準|総資産,false,tanshin,primary,NOT_CROSS_CHECKED,https://www.release.tdnet.info/inbs/140120261029559360.pdf,2026-10-31T04:40:17+09:00

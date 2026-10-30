@@ -4,3 +4,7 @@ disclosed_on,code,pdf_url,status,pages,text_chars,metrics_written,note,fetched_a
 2026-08-13,150A,https://www.release.tdnet.info/inbs/140120260812517623.pdf,OK,13,12425,21,,2026-08-21T13:12:39+09:00
 2026-08-10,6570,https://www.release.tdnet.info/inbs/140120260810516597.pdf,OK,12,10925,10,行ラベルを解釈できない: 第2四半期(累計) / 行ラベルを解釈できない: 通期,2026-08-26T15:05:59+09:00
 2026-08-10,6570,https://www.release.tdnet.info/inbs/140120260810516597.pdf,DOWNLOAD_FAILED,,,0,,2026-09-26T04:11:41+09:00
+2026-10-29,1959,https://www.release.tdnet.info/inbs/140120261029559360.pdf,OK,12,11427,16,,2026-10-31T04:40:17+09:00
+2026-10-30,1944,https://www.release.tdnet.info/inbs/140120261028557709.pdf,OK,19,17735,10,,2026-10-31T04:40:50+09:00
+2026-10-30,6508,https://www.release.tdnet.info/inbs/140120261029560117.pdf,OK,12,11440,16,,2026-10-31T04:40:54+09:00
+2026-10-30,1942,https://www.release.tdnet.info/inbs/140120261030560441.pdf,OK,13,9512,10,,2026-10-31T04:40:59+09:00
