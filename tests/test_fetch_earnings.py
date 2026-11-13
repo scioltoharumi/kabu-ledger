@@ -48,12 +48,12 @@ def test_insert_after_fiscal_year_end():
 
 def test_replace_existing_value_only():
     lines = MASTER.splitlines(keepends=True)
-    assert FE.set_earnings(lines, "2222", "2026-11-13", "https://k/2222")
+    assert FE.set_earnings(lines, "2222", "2030-11-13", "https://k/2222")
     text = "".join(lines)
-    assert '    next_earnings: "2026-11-13"\n' in text
+    assert '    next_earnings: "2030-11-13"\n' in text
     assert '"2026-08-14"' not in text
     assert "    watch: active\n" in text, "他のキーは残す"
-    assert not FE.set_earnings(lines, "2222", "2026-11-13", "https://k/2222"), \
+    assert not FE.set_earnings(lines, "2222", "2030-11-13", "https://k/2222"), \
         "同じ値なら変更なし"
 
 
