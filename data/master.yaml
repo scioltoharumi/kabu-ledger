@@ -420,6 +420,8 @@ stocks:
     sector: "サービス業"
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-12-04"
+    next_earnings_source: "https://kabutan.jp/stock/?code=4707"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
@@ -638,6 +640,8 @@ stocks:
     sector: TO_VERIFY
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-12-11"
+    next_earnings_source: "https://kabutan.jp/stock/?code=4075"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
@@ -656,6 +660,8 @@ stocks:
     sector: TO_VERIFY
     valuation_model: TO_VERIFY
     fiscal_year_end: TO_VERIFY
+    next_earnings: "2026-12-11"
+    next_earnings_source: "https://kabutan.jp/stock/?code=4382"
     ir_url: TO_VERIFY
     peers: TO_VERIFY
     watch: active
